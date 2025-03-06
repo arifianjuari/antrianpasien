@@ -527,7 +527,8 @@ error_log("Data pasien: " . json_encode($pasien));
                                                     <td><?= $sg['Kontrasepsi_terakhir'] ?? '-' ?></td>
                                                     <td><?= $sg['lama_menikah_th'] ?? '-' ?></td>
                                                     <td>
-                                                        <a href="index.php?module=rekam_medis&action=edit_status_ginekologi&id=<?= $sg['id_status_ginekologi'] ?>" class="btn btn-warning btn-sm edit-ginekologi" data-id="<?= $sg['id_status_ginekologi'] ?>">
+                                                        <?php error_log("ID status ginekologi: " . $sg['id_status_ginekologi']); ?>
+                                                        <a href="index.php?module=rekam_medis&action=edit_status_ginekologi&id=<?= $sg['id_status_ginekologi'] ?>" class="btn btn-warning btn-sm">
                                                             <i class="fas fa-edit"></i>
                                                         </a>
                                                         <a href="index.php?module=rekam_medis&action=hapus_status_ginekologi&id=<?= $sg['id_status_ginekologi'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
@@ -819,14 +820,6 @@ error_log("Data pasien: " . json_encode($pasien));
                     console.error('Error:', error);
                     alert('Terjadi kesalahan saat mengubah status');
                 });
-        });
-    });
-    // Add event handler for gynecological status edit
-    document.querySelectorAll('.edit-ginekologi').forEach(button => {
-        button.addEventListener('click', function(e) {
-            e.preventDefault();
-            const id = this.getAttribute('data-id');
-            window.location.href = `index.php?module=rekam_medis&action=edit_status_ginekologi&id=${id}`;
         });
     });
 </script>

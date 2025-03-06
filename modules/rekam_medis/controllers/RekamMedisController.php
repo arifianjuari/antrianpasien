@@ -2027,43 +2027,49 @@ class RekamMedisController
 
     public function edit_status_ginekologi()
     {
-        if (!isset($_GET['id'])) {
-            $_SESSION['error'] = "ID status ginekologi tidak ditemukan.";
-            header("Location: index.php?module=rekam_medis");
+        try {
+            if (!isset($_GET['id'])) {
+                throw new Exception("ID status ginekologi tidak ditemukan.");
+            }
+
+            $statusGinekologiModel = new StatusGinekologi($this->pdo);
+            $statusGinekologi = $statusGinekologiModel->getStatusGinekologiById($_GET['id']);
+
+            if (!$statusGinekologi) {
+                throw new Exception("Data status ginekologi tidak ditemukan.");
+            }
+
+            $pasienModel = new RekamMedis($this->pdo);
+            $pasien = $pasienModel->getPasienById($statusGinekologi['no_rkm_medis']);
+
+            if (!$pasien) {
+                throw new Exception("Data pasien tidak ditemukan.");
+            }
+
+            require_once 'modules/rekam_medis/views/form_status_ginekologi.php';
+        } catch (Exception $e) {
+            $_SESSION['error'] = $e->getMessage();
+
+            // Jika kita memiliki no_rkm_medis dari status ginekologi, gunakan itu untuk redirect
+            if (isset($statusGinekologi) && isset($statusGinekologi['no_rkm_medis'])) {
+                header("Location: index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=" . $statusGinekologi['no_rkm_medis']);
+            } else {
+                header("Location: index.php?module=rekam_medis&action=data_pasien");
+            }
             exit;
         }
-
-        $statusGinekologiModel = new StatusGinekologi($this->pdo);
-        $statusGinekologi = $statusGinekologiModel->getStatusGinekologiById($_GET['id']);
-
-        if (!$statusGinekologi) {
-            $_SESSION['error'] = "Data status ginekologi tidak ditemukan.";
-            header("Location: index.php?module=rekam_medis");
-            exit;
-        }
-
-        $pasienModel = new RekamMedis($this->pdo);
-        $pasien = $pasienModel->getPasienById($statusGinekologi['no_rkm_medis']);
-
-        if (!$pasien) {
-            $_SESSION['error'] = "Data pasien tidak ditemukan.";
-            header("Location: index.php?module=rekam_medis");
-            exit;
-        }
-
-        require_once 'modules/rekam_medis/views/form_status_ginekologi.php';
     }
 
     public function update_status_ginekologi()
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header("Location: index.php?module=rekam_medis");
+            header("Location: index.php?module=rekam_medis&action=data_pasien");
             exit;
         }
 
         if (!isset($_POST['id_status_ginekologi'])) {
             $_SESSION['error'] = "ID status ginekologi tidak ditemukan.";
-            header("Location: index.php?module=rekam_medis");
+            header("Location: index.php?module=rekam_medis&action=data_pasien");
             exit;
         }
 
@@ -2089,7 +2095,7 @@ class RekamMedisController
     {
         if (!isset($_GET['id'])) {
             $_SESSION['error'] = "ID status ginekologi tidak ditemukan.";
-            header("Location: index.php?module=rekam_medis");
+            header("Location: index.php?module=rekam_medis&action=data_pasien");
             exit;
         }
 
