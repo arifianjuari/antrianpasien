@@ -190,6 +190,22 @@ if ($module == 'rekam_medis') {
             case 'hapus_riwayat_kehamilan':
                 $rekamMedisController->hapus_riwayat_kehamilan();
                 break;
+            case 'tambah_status_ginekologi':
+                $rekamMedisController->tambah_status_ginekologi();
+                break;
+            case 'simpan_status_ginekologi':
+                $rekamMedisController->simpan_status_ginekologi();
+                break;
+            case 'edit_status_ginekologi':
+                $rekamMedisController->edit_status_ginekologi();
+                break;
+            case 'update_status_ginekologi':
+                $rekamMedisController->update_status_ginekologi();
+                break;
+            case 'generate_pdf':
+                error_log("Routing to generate_pdf");
+                $rekamMedisController->generate_pdf();
+                break;
             default:
                 $rekamMedisController->index();
                 break;

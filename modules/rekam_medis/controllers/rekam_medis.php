@@ -14,7 +14,7 @@ switch ($_REQUEST['action']) {
             $statusObstetri = mysqli_fetch_all(mysqli_query($conn, $query_obstetri), MYSQLI_ASSOC);
 
             // Query untuk riwayat pemeriksaan
-            $query_pemeriksaan = "SELECT * FROM pemeriksaan_ralan WHERE no_rkm_medis = '$no_rkm_medis' ORDER BY tgl_registrasi DESC";
+            $query_pemeriksaan = "SELECT * FROM penilaian_medis_ralan_kandungan WHERE no_rawat = '$no_rkm_medis' ORDER BY tanggal DESC";
             $riwayatPemeriksaan = mysqli_fetch_all(mysqli_query($conn, $query_pemeriksaan), MYSQLI_ASSOC);
 
             // Generate PDF

@@ -1,4 +1,8 @@
 <?php
+// Enable error reporting
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 require_once 'config/database.php';
 require_once 'modules/rekam_medis/models/RekamMedis.php';
 require_once 'modules/rekam_medis/models/TindakanMedis.php';
@@ -1982,142 +1986,260 @@ class RekamMedisController
 
     public function tambah_status_ginekologi()
     {
+        // Pastikan no_rkm_medis tersedia
         if (!isset($_GET['no_rkm_medis'])) {
-            $_SESSION['error'] = "Data pasien tidak ditemukan.";
-            header("Location: index.php?module=rekam_medis");
+            $_SESSION['error'] = 'Nomor rekam medis tidak ditemukan';
+            header('Location: index.php?module=rekam_medis');
             exit;
         }
 
-        $pasienModel = new RekamMedis($this->pdo);
-        $pasien = $pasienModel->getPasienById($_GET['no_rkm_medis']);
+        $no_rkm_medis = $_GET['no_rkm_medis'];
 
-        if (!$pasien) {
-            $_SESSION['error'] = "Data pasien tidak ditemukan.";
-            header("Location: index.php?module=rekam_medis");
-            exit;
-        }
-
-        require_once 'modules/rekam_medis/views/form_status_ginekologi.php';
+        // Tampilkan form
+        require_once('modules/rekam_medis/views/form_status_ginekologi.php');
     }
 
     public function simpan_status_ginekologi()
     {
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header("Location: index.php?module=rekam_medis");
+        try {
+            // Koneksi ke database
+            $db2_host = 'auth-db1151.hstgr.io';
+            $db2_username = 'u609399718_admin_klinik';
+            $db2_password = 'Juari@2591';
+            $db2_database = 'u609399718_klinik_obgin';
+
+            $koneksi = new mysqli($db2_host, $db2_username, $db2_password, $db2_database);
+
+            if ($koneksi->connect_error) {
+                throw new Exception("Koneksi database gagal: " . $koneksi->connect_error);
+            }
+
+            // Validasi input
+            $required_fields = ['no_rkm_medis', 'parturien', 'abortus', 'hpht', 'lama_menikah'];
+            foreach ($required_fields as $field) {
+                if (empty($_POST[$field])) {
+                    throw new Exception("Field $field harus diisi");
+                }
+            }
+
+            // Generate UUID untuk id_status_ginekologi
+            $uuid = sprintf(
+                '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
+                mt_rand(0, 0xffff),
+                mt_rand(0, 0xffff),
+                mt_rand(0, 0xffff),
+                mt_rand(0, 0x0fff) | 0x4000,
+                mt_rand(0, 0x3fff) | 0x8000,
+                mt_rand(0, 0xffff),
+                mt_rand(0, 0xffff),
+                mt_rand(0, 0xffff)
+            );
+
+            // Sanitasi input
+            $id_status_ginekologi = $uuid;
+            $no_rkm_medis = $koneksi->real_escape_string($_POST['no_rkm_medis']);
+            $parturien = (int)$_POST['parturien'];
+            $abortus = (int)$_POST['abortus'];
+            $hpht = $koneksi->real_escape_string($_POST['hpht']);
+            $kontrasepsi = !empty($_POST['kontrasepsi']) ? $koneksi->real_escape_string($_POST['kontrasepsi']) : 'Tidak Ada';
+            $lama_menikah = (int)$_POST['lama_menikah'];
+
+            // Query untuk menyimpan data
+            $query = "INSERT INTO status_ginekologi 
+                     (id_status_ginekologi, no_rkm_medis, Parturien, Abortus, Hari_pertama_haid_terakhir, Kontrasepsi_terakhir, lama_menikah_th) 
+                     VALUES 
+                     (?, ?, ?, ?, ?, ?, ?)";
+
+            $stmt = $koneksi->prepare($query);
+            $stmt->bind_param(
+                "ssiissi",
+                $id_status_ginekologi,
+                $no_rkm_medis,
+                $parturien,
+                $abortus,
+                $hpht,
+                $kontrasepsi,
+                $lama_menikah
+            );
+
+            if ($stmt->execute()) {
+                $_SESSION['success'] = 'Data status ginekologi berhasil disimpan';
+            } else {
+                throw new Exception("Gagal menyimpan data: " . $stmt->error);
+            }
+
+            $stmt->close();
+            $koneksi->close();
+
+            // Redirect kembali ke halaman detail pasien
+            header("Location: index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=" . $no_rkm_medis);
+            exit;
+        } catch (Exception $e) {
+            $_SESSION['error'] = $e->getMessage();
+            header("Location: index.php?module=rekam_medis&action=tambah_status_ginekologi&no_rkm_medis=" . $_POST['no_rkm_medis']);
             exit;
         }
-
-        $statusGinekologiModel = new StatusGinekologi($this->pdo);
-
-        try {
-            $result = $statusGinekologiModel->tambahStatusGinekologi($_POST);
-
-            if ($result) {
-                $_SESSION['success'] = "Data status ginekologi berhasil disimpan.";
-            } else {
-                $_SESSION['error'] = "Gagal menyimpan data status ginekologi.";
-            }
-        } catch (Exception $e) {
-            $_SESSION['error'] = "Terjadi kesalahan: " . $e->getMessage();
-        }
-
-        header("Location: index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=" . $_POST['no_rkm_medis']);
-        exit;
     }
 
     public function edit_status_ginekologi()
     {
+        // Pastikan parameter id tersedia
+        if (!isset($_GET['id']) || empty($_GET['id'])) {
+            $_SESSION['error'] = "Parameter ID tidak ditemukan";
+            header("Location: index.php?module=rekam_medis");
+            exit;
+        }
+
+        $id_status_ginekologi = $_GET['id'];
+
         try {
-            if (!isset($_GET['id'])) {
-                throw new Exception("ID status ginekologi tidak ditemukan.");
+            // Koneksi ke database
+            $db2_host = 'auth-db1151.hstgr.io';
+            $db2_username = 'u609399718_admin_klinik';
+            $db2_password = 'Juari@2591';
+            $db2_database = 'u609399718_klinik_obgin';
+
+            $koneksi = new mysqli($db2_host, $db2_username, $db2_password, $db2_database);
+
+            if ($koneksi->connect_error) {
+                throw new Exception("Koneksi database gagal: " . $koneksi->connect_error);
             }
 
-            $statusGinekologiModel = new StatusGinekologi($this->pdo);
-            $statusGinekologi = $statusGinekologiModel->getStatusGinekologiById($_GET['id']);
+            // Query untuk mengambil data status ginekologi
+            $query = "SELECT * FROM status_ginekologi WHERE id_status_ginekologi = ?";
+            $stmt = $koneksi->prepare($query);
+            $stmt->bind_param("s", $id_status_ginekologi);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $status_ginekologi = $result->fetch_assoc();
 
-            if (!$statusGinekologi) {
-                throw new Exception("Data status ginekologi tidak ditemukan.");
+            if (!$status_ginekologi) {
+                throw new Exception("Data status ginekologi tidak ditemukan");
             }
 
-            $pasienModel = new RekamMedis($this->pdo);
-            $pasien = $pasienModel->getPasienById($statusGinekologi['no_rkm_medis']);
+            $stmt->close();
+            $koneksi->close();
 
-            if (!$pasien) {
-                throw new Exception("Data pasien tidak ditemukan.");
-            }
-
-            require_once 'modules/rekam_medis/views/form_status_ginekologi.php';
+            // Tampilkan form edit
+            require_once('modules/rekam_medis/views/form_edit_status_ginekologi.php');
         } catch (Exception $e) {
             $_SESSION['error'] = $e->getMessage();
-
-            // Jika kita memiliki no_rkm_medis dari status ginekologi, gunakan itu untuk redirect
-            if (isset($statusGinekologi) && isset($statusGinekologi['no_rkm_medis'])) {
-                header("Location: index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=" . $statusGinekologi['no_rkm_medis']);
-            } else {
-                header("Location: index.php?module=rekam_medis&action=data_pasien");
-            }
+            header("Location: index.php?module=rekam_medis");
             exit;
         }
     }
 
     public function update_status_ginekologi()
     {
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header("Location: index.php?module=rekam_medis&action=data_pasien");
-            exit;
-        }
-
-        if (!isset($_POST['id_status_ginekologi'])) {
-            $_SESSION['error'] = "ID status ginekologi tidak ditemukan.";
-            header("Location: index.php?module=rekam_medis&action=data_pasien");
-            exit;
-        }
-
-        $statusGinekologiModel = new StatusGinekologi($this->pdo);
-
         try {
-            $result = $statusGinekologiModel->updateStatusGinekologi($_POST['id_status_ginekologi'], $_POST);
+            // Koneksi ke database
+            $db2_host = 'auth-db1151.hstgr.io';
+            $db2_username = 'u609399718_admin_klinik';
+            $db2_password = 'Juari@2591';
+            $db2_database = 'u609399718_klinik_obgin';
 
-            if ($result) {
-                $_SESSION['success'] = "Data status ginekologi berhasil diperbarui.";
-            } else {
-                $_SESSION['error'] = "Gagal memperbarui data status ginekologi.";
+            $koneksi = new mysqli($db2_host, $db2_username, $db2_password, $db2_database);
+
+            if ($koneksi->connect_error) {
+                throw new Exception("Koneksi database gagal: " . $koneksi->connect_error);
             }
-        } catch (Exception $e) {
-            $_SESSION['error'] = "Terjadi kesalahan: " . $e->getMessage();
-        }
 
-        header("Location: index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=" . $_POST['no_rkm_medis']);
-        exit;
+            // Validasi input
+            $required_fields = ['id_status_ginekologi', 'no_rkm_medis', 'parturien', 'abortus', 'hpht', 'lama_menikah'];
+            foreach ($required_fields as $field) {
+                if (empty($_POST[$field])) {
+                    throw new Exception("Field $field harus diisi");
+                }
+            }
+
+            // Sanitasi input
+            $id_status_ginekologi = $koneksi->real_escape_string($_POST['id_status_ginekologi']);
+            $no_rkm_medis = $koneksi->real_escape_string($_POST['no_rkm_medis']);
+            $parturien = (int)$_POST['parturien'];
+            $abortus = (int)$_POST['abortus'];
+            $hpht = $koneksi->real_escape_string($_POST['hpht']);
+            $kontrasepsi = !empty($_POST['kontrasepsi']) ? $koneksi->real_escape_string($_POST['kontrasepsi']) : 'Tidak Ada';
+            $lama_menikah = (int)$_POST['lama_menikah'];
+
+            // Query untuk update data
+            $query = "UPDATE status_ginekologi 
+                     SET Parturien = ?, 
+                         Abortus = ?, 
+                         Hari_pertama_haid_terakhir = ?, 
+                         Kontrasepsi_terakhir = ?, 
+                         lama_menikah_th = ?,
+                         updated_at = CURRENT_TIMESTAMP
+                     WHERE id_status_ginekologi = ?";
+
+            $stmt = $koneksi->prepare($query);
+            $stmt->bind_param(
+                "iissss",
+                $parturien,
+                $abortus,
+                $hpht,
+                $kontrasepsi,
+                $lama_menikah,
+                $id_status_ginekologi
+            );
+
+            if ($stmt->execute()) {
+                $_SESSION['success'] = 'Data status ginekologi berhasil diupdate';
+            } else {
+                throw new Exception("Gagal mengupdate data: " . $stmt->error);
+            }
+
+            $stmt->close();
+            $koneksi->close();
+
+            // Redirect kembali ke halaman detail pasien
+            header("Location: index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=" . $no_rkm_medis);
+            exit;
+        } catch (Exception $e) {
+            $_SESSION['error'] = $e->getMessage();
+            header("Location: index.php?module=rekam_medis&action=edit_status_ginekologi&id=" . $_POST['id_status_ginekologi']);
+            exit;
+        }
     }
 
-    public function hapus_status_ginekologi()
+    public function generate_pdf()
     {
-        if (!isset($_GET['id'])) {
-            $_SESSION['error'] = "ID status ginekologi tidak ditemukan.";
-            header("Location: index.php?module=rekam_medis&action=data_pasien");
-            exit;
+        if (!isset($_GET['no_rkm_medis'])) {
+            die("Nomor rekam medis tidak ditemukan");
         }
 
-        $statusGinekologiModel = new StatusGinekologi($this->pdo);
+        $no_rkm_medis = $_GET['no_rkm_medis'];
 
         try {
-            // Ambil no_rkm_medis sebelum menghapus untuk redirect
-            $statusGinekologi = $statusGinekologiModel->getStatusGinekologiById($_GET['id']);
-            $no_rkm_medis = $statusGinekologi['no_rkm_medis'];
+            // Query untuk mendapatkan data pasien
+            $query_pasien = "SELECT * FROM pasien WHERE no_rkm_medis = :no_rkm_medis";
+            $stmt_pasien = $this->pdo->prepare($query_pasien);
+            $stmt_pasien->execute([':no_rkm_medis' => $no_rkm_medis]);
+            $pasien = $stmt_pasien->fetch(PDO::FETCH_ASSOC);
 
-            $result = $statusGinekologiModel->hapusStatusGinekologi($_GET['id']);
-
-            if ($result) {
-                $_SESSION['success'] = "Data status ginekologi berhasil dihapus.";
-            } else {
-                $_SESSION['error'] = "Gagal menghapus data status ginekologi.";
+            if (!$pasien) {
+                die("Data pasien tidak ditemukan");
             }
-        } catch (Exception $e) {
-            $_SESSION['error'] = "Terjadi kesalahan: " . $e->getMessage();
-        }
 
-        header("Location: index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=" . $no_rkm_medis);
-        exit;
+            // Query untuk status obstetri
+            $query_obstetri = "SELECT * FROM status_obstetri WHERE no_rkm_medis = :no_rkm_medis ORDER BY created_at DESC";
+            $stmt_obstetri = $this->pdo->prepare($query_obstetri);
+            $stmt_obstetri->execute([':no_rkm_medis' => $no_rkm_medis]);
+            $statusObstetri = $stmt_obstetri->fetchAll(PDO::FETCH_ASSOC);
+
+            // Query untuk riwayat pemeriksaan
+            $query_pemeriksaan = "SELECT * FROM penilaian_medis_ralan_kandungan WHERE no_rawat = :no_rkm_medis ORDER BY tanggal DESC";
+            $stmt_pemeriksaan = $this->pdo->prepare($query_pemeriksaan);
+            $stmt_pemeriksaan->execute([':no_rkm_medis' => $no_rkm_medis]);
+            $riwayatPemeriksaan = $stmt_pemeriksaan->fetchAll(PDO::FETCH_ASSOC);
+
+            // Generate PDF
+            require_once('modules/rekam_medis/generate_resume_pdf.php');
+        } catch (PDOException $e) {
+            error_log("Database error in generate_pdf: " . $e->getMessage());
+            die("Error: " . $e->getMessage());
+        } catch (Exception $e) {
+            error_log("General error in generate_pdf: " . $e->getMessage());
+            die("Error: " . $e->getMessage());
+        }
     }
 }
