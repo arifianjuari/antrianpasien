@@ -1,13 +1,14 @@
 <?php
-$host = '103.76.149.29';
-$username = 'simsvbaru';
-$password = 'web_hasta';
-$database = '@Admin123/';
+// Database RS (readonly) - db1
+$db1_host = '103.76.149.29';
+$db1_username = 'web_hasta';
+$db1_password = '@Admin123/';
+$db1_database = 'simsvbaru';
 
 try {
-    $conn = new PDO("mysql:host=$host;dbname=$database", $username, $password);
-    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $conn_db1 = new PDO("mysql:host=$db1_host;dbname=$db1_database", $db1_username, $db1_password);
+    $conn_db1->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch (PDOException $e) {
-    echo "Connection failed: " . $e->getMessage();
+    echo "Connection to DB1 (RS) failed: " . $e->getMessage();
     die();
 }

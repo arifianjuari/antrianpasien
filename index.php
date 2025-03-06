@@ -1,117 +1,211 @@
 <?php
-require_once 'config.php';
+// Enable error reporting for debugging
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
-$discharge_date = isset($_GET['discharge_date']) ? $_GET['discharge_date'] : date('Y-m-d');
-$search = isset($_GET['search']) ? $_GET['search'] : '';
+// Define base path
+define('BASE_PATH', __DIR__);
+
+// Start session if not already started
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Include database configuration
+require_once 'config/database.php';
+
+// Log database connection status
+error_log("Checking database connection in index.php");
+
+// Cek koneksi database
+if (!isset($conn) || !($conn instanceof PDO)) {
+    error_log("Database connection not available in index.php");
+    die("Koneksi database tidak tersedia. Silakan hubungi administrator.");
+}
 
 try {
-    $query = "SELECT ran.no_rawat as no_rawat, pasien.nm_pasien as nama,
-            bgl.nm_bangsal as bgsl, bgl.kd_bangsal as kdbgs, pasien.alamat as alamat, reg.p_jawab as pj,
-            kel.nm_kel as kel, kec.nm_kec as kec, kab.nm_kab as kab, prop.nm_prop as prov
-            FROM kamar_inap as ran
-            INNER JOIN reg_periksa as reg ON ran.no_rawat = reg.no_rawat
-            INNER JOIN pasien as pasien ON pasien.no_rkm_medis = reg.no_rkm_medis
-            INNER JOIN kamar as kmr ON ran.kd_kamar = kmr.kd_kamar
-            INNER JOIN bangsal as bgl ON bgl.kd_bangsal = kmr.kd_bangsal
-            INNER JOIN kelurahan as kel ON pasien.kd_kel = kel.kd_kel
-            INNER JOIN kecamatan as kec ON pasien.kd_kec = kec.kd_kec
-            INNER JOIN kabupaten as kab ON pasien.kd_kab = kab.kd_kab
-            INNER JOIN propinsi as prop ON pasien.kd_prop = prop.kd_prop
-            WHERE tgl_keluar = :discharge_date AND stts_pulang = '-'";
-    
-    if ($search) {
-        $query .= " AND (pasien.nm_pasien LIKE :search OR ran.no_rawat LIKE :search OR bgl.nm_bangsal LIKE :search)";
+    // Test koneksi
+    $test = $conn->query("SELECT 1");
+    if (!$test) {
+        throw new PDOException("Koneksi database tidak dapat melakukan query");
     }
-    
-    $query .= " ORDER BY bgl.nm_bangsal";
-    
-    $stmt = $conn->prepare($query);
-    $stmt->bindValue(':discharge_date', $discharge_date, PDO::PARAM_STR);
-    
-    if ($search) {
-        $searchParam = "%$search%";
-        $stmt->bindValue(':search', $searchParam, PDO::PARAM_STR);
-    }
-    
-    $stmt->execute();
-    $patients = $stmt->fetchAll(PDO::FETCH_ASSOC);
-} catch(PDOException $e) {
-    echo "Error: " . $e->getMessage();
-    die();
+    error_log("Database connection test successful in index.php");
+} catch (PDOException $e) {
+    error_log("Database test failed in index.php: " . $e->getMessage());
+    die("Koneksi database bermasalah: " . $e->getMessage());
 }
-?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Patient List</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
-</head>
-<body>
-    <div class="container mt-5">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2>Patient List</h2>
-            <button onclick="window.location.reload()" class="btn btn-secondary">
-                <i class="bi bi-arrow-clockwise"></i> Refresh
-            </button>
-        </div>
-        
-        <div class="row mb-4">
-            <div class="col-md-6">
-                <form class="d-flex" method="GET">
-                    <input type="date" name="discharge_date" value="<?php echo htmlspecialchars($discharge_date); ?>" class="form-control me-2">
-                    <input type="text" name="search" value="<?php echo htmlspecialchars($search); ?>" placeholder="Search..." class="form-control me-2">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="bi bi-search"></i> Search
-                    </button>
-                </form>
-            </div>
-        </div>
+require_once 'config/config.php';
 
-        <div class="table-responsive">
-            <table class="table table-striped table-hover">
-                <thead class="table-dark">
-                    <tr>
-                        <th>No Rawat</th>
-                        <th>Nama Pasien</th>
-                        <th>Bangsal</th>
-                        <th>Kode Bangsal</th>
-                        <th>Alamat</th>
-                        <th>Penanggung Jawab</th>
-                        <th>Kelurahan</th>
-                        <th>Kecamatan</th>
-                        <th>Kabupaten</th>
-                        <th>Provinsi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php if (count($patients) > 0): ?>
-                        <?php foreach($patients as $patient): ?>
-                            <tr>
-                                <td><?php echo htmlspecialchars($patient['no_rawat']); ?></td>
-                                <td><?php echo htmlspecialchars($patient['nama']); ?></td>
-                                <td><?php echo htmlspecialchars($patient['bgsl']); ?></td>
-                                <td><?php echo htmlspecialchars($patient['kdbgs']); ?></td>
-                                <td><?php echo htmlspecialchars($patient['alamat']); ?></td>
-                                <td><?php echo htmlspecialchars($patient['pj']); ?></td>
-                                <td><?php echo htmlspecialchars($patient['kel']); ?></td>
-                                <td><?php echo htmlspecialchars($patient['kec']); ?></td>
-                                <td><?php echo htmlspecialchars($patient['kab']); ?></td>
-                                <td><?php echo htmlspecialchars($patient['prov']); ?></td>
-                            </tr>
-                        <?php endforeach; ?>
-                    <?php else: ?>
-                        <tr>
-                            <td colspan="10" class="text-center">No patients found</td>
-                        </tr>
-                    <?php endif; ?>
-                </tbody>
-            </table>
-        </div>
-    </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+// Cek apakah user sudah login
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit;
+}
+
+// Load controller
+require_once 'modules/rekam_medis/controllers/RekamMedisController.php';
+
+// Inisialisasi controller dengan koneksi database
+$rekamMedisController = new RekamMedisController($conn);
+
+// Ambil modul dari parameter GET
+$module = isset($_GET['module']) ? $_GET['module'] : '';
+$action = isset($_GET['action']) ? $_GET['action'] : '';
+
+// Jika tidak ada action yang ditentukan untuk modul rekam_medis, arahkan ke data_pasien
+if ($module == 'rekam_medis' && empty($action)) {
+    header('Location: index.php?module=rekam_medis&action=data_pasien');
+    exit;
+}
+
+// Start output buffering
+ob_start();
+
+// Routing untuk modul rekam medis
+if ($module == 'rekam_medis') {
+    // Set page title
+    $page_title = "Rekam Medis";
+
+    try {
+        // Routing berdasarkan action
+        switch ($action) {
+            case 'manajemen_antrian':
+                $rekamMedisController->manajemenAntrian();
+                break;
+            case 'data_pasien':
+                $rekamMedisController->dataPasien();
+                break;
+            case 'cari_pasien':
+                $rekamMedisController->cariPasien();
+                break;
+            case 'tambah_pasien':
+                $rekamMedisController->tambahPasien();
+                break;
+            case 'simpan_pasien':
+                $rekamMedisController->simpanPasien();
+                break;
+            case 'detailPasien':
+                $rekamMedisController->detailPasien($_GET['no_rkm_medis']);
+                break;
+            case 'detail_pasien':
+                $rekamMedisController->detailPasien($_GET['no_rkm_medis']);
+                break;
+            case 'editPasien':
+                $rekamMedisController->editPasien();
+                break;
+            case 'updatePasien':
+                $rekamMedisController->updatePasien();
+                break;
+            case 'tambah_pemeriksaan':
+                error_log("Routing to tambah_pemeriksaan");
+                $rekamMedisController->tambah_pemeriksaan();
+                break;
+            case 'simpan_pemeriksaan':
+                error_log("Routing to simpan_pemeriksaan");
+                $rekamMedisController->simpan_pemeriksaan();
+                break;
+            case 'edit_pemeriksaan':
+                error_log("Routing to edit_pemeriksaan with id: " . ($_GET['id'] ?? 'no id'));
+                $rekamMedisController->edit_pemeriksaan();
+                break;
+            case 'update_pemeriksaan':
+                $rekamMedisController->update_pemeriksaan();
+                break;
+            case 'tambah_penilaian_medis':
+                $rekamMedisController->tambahPenilaianMedis();
+                break;
+            case 'simpan_penilaian_medis':
+                $rekamMedisController->simpanPenilaianMedis();
+                break;
+            case 'simpan_penilaian_medis_ralan_kandungan':
+                $rekamMedisController->simpan_penilaian_medis_ralan_kandungan();
+                break;
+            case 'edit_pemeriksaan':
+                $rekamMedisController->edit_pemeriksaan();
+                break;
+            case 'update_pemeriksaan':
+                $rekamMedisController->update_pemeriksaan();
+                break;
+            case 'tambah_tindakan_medis':
+                $rekamMedisController->tambahTindakanMedis();
+                break;
+            case 'simpan_tindakan_medis':
+                $rekamMedisController->simpanTindakanMedis();
+                break;
+            case 'edit_tindakan_medis':
+                $rekamMedisController->editTindakanMedis($_GET['id']);
+                break;
+            case 'update_tindakan_medis':
+                $rekamMedisController->updateTindakanMedis();
+                break;
+            case 'hapus_tindakan_medis':
+                $rekamMedisController->hapusTindakanMedis($_GET['id']);
+                break;
+            case 'detail_tindakan_medis':
+                $rekamMedisController->detailTindakanMedis($_GET['id']);
+                break;
+            case 'form_penilaian_medis_ralan_kandungan':
+                $rekamMedisController->formPenilaianMedisRalanKandungan();
+                break;
+            case 'edit_kunjungan':
+                $rekamMedisController->edit_kunjungan();
+                break;
+            case 'update_kunjungan':
+                $rekamMedisController->update_kunjungan();
+                break;
+            case 'hapus_kunjungan':
+                $rekamMedisController->hapus_kunjungan();
+                break;
+            case 'update_status':
+                $rekamMedisController->update_status();
+                break;
+            case 'tambah_status_obstetri':
+                $rekamMedisController->tambah_status_obstetri();
+                break;
+            case 'simpan_status_obstetri':
+                $rekamMedisController->simpan_status_obstetri();
+                break;
+            case 'edit_status_obstetri':
+                $rekamMedisController->edit_status_obstetri();
+                break;
+            case 'update_status_obstetri':
+                $rekamMedisController->update_status_obstetri();
+                break;
+            case 'hapus_status_obstetri':
+                $rekamMedisController->hapus_status_obstetri();
+                break;
+            case 'tambah_riwayat_kehamilan':
+                $rekamMedisController->tambah_riwayat_kehamilan();
+                break;
+            case 'simpan_riwayat_kehamilan':
+                $rekamMedisController->simpan_riwayat_kehamilan();
+                break;
+            case 'edit_riwayat_kehamilan':
+                $rekamMedisController->edit_riwayat_kehamilan();
+                break;
+            case 'update_riwayat_kehamilan':
+                $rekamMedisController->update_riwayat_kehamilan();
+                break;
+            case 'hapus_riwayat_kehamilan':
+                $rekamMedisController->hapus_riwayat_kehamilan();
+                break;
+            default:
+                $rekamMedisController->index();
+                break;
+        }
+    } catch (Exception $e) {
+        error_log("Error in controller execution: " . $e->getMessage());
+        die("Terjadi kesalahan: " . $e->getMessage());
+    }
+} else {
+    // Jika modul tidak ditemukan, redirect ke home
+    header("Location: home.php");
+    exit;
+}
+
+// Get the buffered content
+$content = ob_get_clean();
+
+// Include the layout template
+include 'template/layout.php';
