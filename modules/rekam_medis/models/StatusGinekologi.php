@@ -25,12 +25,16 @@ class StatusGinekologi
     public function getStatusGinekologiById($id)
     {
         try {
+            error_log("Mencari status ginekologi dengan ID: " . $id);
             $query = "SELECT * FROM status_ginekologi WHERE id_status_ginekologi = ?";
             $stmt = $this->db->prepare($query);
             $stmt->execute([$id]);
-            return $stmt->fetch(PDO::FETCH_ASSOC);
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            error_log("Hasil query: " . ($result ? json_encode($result) : "tidak ditemukan"));
+            return $result;
         } catch (PDOException $e) {
             error_log("Error getting status ginekologi by ID: " . $e->getMessage());
+            error_log("Stack trace: " . $e->getTraceAsString());
             return false;
         }
     }

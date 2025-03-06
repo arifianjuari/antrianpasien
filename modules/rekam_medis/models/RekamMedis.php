@@ -1185,4 +1185,27 @@ class RekamMedis
             return false;
         }
     }
+
+    public function updateStatusBayar($no_rawat)
+    {
+        try {
+            $stmt = $this->pdo->prepare("UPDATE reg_periksa SET status_bayar = 'Sudah Bayar' WHERE no_rawat = ?");
+            return $stmt->execute([$no_rawat]);
+        } catch (PDOException $e) {
+            error_log("Error updating status bayar: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    public function getNoRkmMedisByNoRawat($no_rawat)
+    {
+        try {
+            $stmt = $this->pdo->prepare("SELECT no_rkm_medis FROM reg_periksa WHERE no_rawat = ?");
+            $stmt->execute([$no_rawat]);
+            return $stmt->fetchColumn();
+        } catch (PDOException $e) {
+            error_log("Error in getNoRkmMedisByNoRawat: " . $e->getMessage());
+            return false;
+        }
+    }
 }
