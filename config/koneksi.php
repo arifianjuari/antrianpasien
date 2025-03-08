@@ -1,9 +1,10 @@
 <?php
 try {
     $host = 'auth-db1151.hstgr.io';
-    $dbname = 'u609399718_klinik_obgin';
-    $username = 'u609399718_admin_klinik';
-    $password = 'Juari@2591';
+    $dbname = 'u609399718_praktekobgin';
+    $username = 'u609399718_adminpraktek';
+    $password = 'Obgin@12345';
+
 
     $pdo = new PDO(
         "mysql:host=$host;dbname=$dbname;charset=utf8mb4",

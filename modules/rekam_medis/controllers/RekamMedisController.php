@@ -20,9 +20,9 @@ class RekamMedisController
             // Jika koneksi tidak valid, buat koneksi baru
             if (!isset($pdo) || !($pdo instanceof PDO)) {
                 $db2_host = 'auth-db1151.hstgr.io';
-                $db2_username = 'u609399718_admin_klinik';
-                $db2_password = 'Juari@2591';
-                $db2_database = 'u609399718_klinik_obgin';
+                $db2_username = 'u609399718_adminpraktek';
+                $db2_password = 'Obgin@12345';
+                $db2_database = 'u609399718_praktekobgin';
 
                 $pdo = new PDO(
                     "mysql:host=$db2_host;dbname=$db2_database;charset=utf8mb4",
@@ -179,9 +179,11 @@ class RekamMedisController
         try {
             // Buat koneksi langsung ke database
             $db2_host = 'auth-db1151.hstgr.io';
-            $db2_username = 'u609399718_admin_klinik';
-            $db2_password = 'Juari@2591';
-            $db2_database = 'u609399718_klinik_obgin';
+            $db2_username = 'u609399718_adminpraktek';
+            $db2_password = 'Obgin@12345';
+            $db2_database = 'u609399718_praktekobgin';
+
+
 
             $pdo = new PDO(
                 "mysql:host=$db2_host;dbname=$db2_database;charset=utf8mb4",
@@ -2159,9 +2161,9 @@ class RekamMedisController
         try {
             // Koneksi ke database
             $db2_host = 'auth-db1151.hstgr.io';
-            $db2_username = 'u609399718_admin_klinik';
-            $db2_password = 'Juari@2591';
-            $db2_database = 'u609399718_klinik_obgin';
+            $db2_username = 'u609399718_adminpraktek';
+            $db2_password = 'Obgin@12345';
+            $db2_database = 'u609399718_praktekobgin';
 
             $koneksi = new mysqli($db2_host, $db2_username, $db2_password, $db2_database);
 
@@ -2250,9 +2252,9 @@ class RekamMedisController
         try {
             // Koneksi ke database
             $db2_host = 'auth-db1151.hstgr.io';
-            $db2_username = 'u609399718_admin_klinik';
-            $db2_password = 'Juari@2591';
-            $db2_database = 'u609399718_klinik_obgin';
+            $db2_username = 'u609399718_adminpraktek';
+            $db2_password = 'Obgin@12345';
+            $db2_database = 'u609399718_praktekobgin';
 
             $koneksi = new mysqli($db2_host, $db2_username, $db2_password, $db2_database);
 
@@ -2289,9 +2291,9 @@ class RekamMedisController
         try {
             // Koneksi ke database
             $db2_host = 'auth-db1151.hstgr.io';
-            $db2_username = 'u609399718_admin_klinik';
-            $db2_password = 'Juari@2591';
-            $db2_database = 'u609399718_klinik_obgin';
+            $db2_username = 'u609399718_adminpraktek';
+            $db2_password = 'Obgin@12345';
+            $db2_database = 'u609399718_praktekobgin';
 
             $koneksi = new mysqli($db2_host, $db2_username, $db2_password, $db2_database);
 
