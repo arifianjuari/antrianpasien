@@ -3,7 +3,7 @@ name: Deploy ke Hostinger via FTP
 on:
   push:
     branches:
-      - alpha_v1  # Deploy otomatis setiap push ke branch ini
+      - main  # Deploy otomatis setiap push ke branch ini
 
 jobs:
   deploy:
