@@ -3,7 +3,7 @@ name: Deploy ke Hostinger via FTP
 on:
   push:
     branches:
-      - alpha_v1  # Akan berjalan otomatis saat push ke branch alpha_v1
+      - alpha_v1  # Akan berjalan otomatis saat push ke branch alpha_v1 
 
   workflow_dispatch:  # Menambahkan opsi trigger manual di GitHub Actions
 
