@@ -7,6 +7,7 @@ require_once 'email_helper.php';
 
 $error = '';
 $success = '';
+$base_url = "http://{$_SERVER['HTTP_HOST']}" . dirname($_SERVER['PHP_SELF']);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Validate CSRF token
@@ -40,7 +41,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $stmt->execute([$user['id'], $token_hash, $token_expires]);
 
                         // Send reset email
-                        $base_url = "http://{$_SERVER['HTTP_HOST']}" . dirname($_SERVER['PHP_SELF']);
                         $reset_link = rtrim($base_url, '/') . "/reset_password.php?token=" . urlencode($reset_token);
                         $subject = "Reset Password - Sistem Antrian Pasien";
                         $message = "Hai {$user['username']},<br><br>";

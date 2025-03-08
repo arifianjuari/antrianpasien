@@ -1,9 +1,6 @@
 <?php
 session_start();
 
-// Simpan pesan sukses sebelum menghapus session
-$_SESSION['logout_message'] = "Anda telah berhasil keluar dari sistem.";
-
 // Hapus semua data session
 $_SESSION = array();
 
@@ -15,10 +12,10 @@ if (isset($_COOKIE[session_name()])) {
 // Hancurkan session
 session_destroy();
 
-// Start session baru untuk pesan
+// Start session baru khusus untuk pesan
 session_start();
 $_SESSION['success_message'] = "Anda telah berhasil keluar dari sistem.";
 
-// Redirect ke home.php
+// Redirect ke halaman login
 header("Location: pendaftaran/form_pendaftaran_pasien.php");
 exit;
