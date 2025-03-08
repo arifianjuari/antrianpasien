@@ -129,7 +129,7 @@ function clean_url($url)
                         </li>
                         <li>
                             <a href="<?php echo $base_url; ?>/admin_praktek/manajemen_user.php" class="nav-link text-dark">
-                                <i class="bi bi-people-gear"></i>
+                                <i class="bi bi-person-gear"></i>
                                 <span class="menu-text">Manajemen User</span>
                             </a>
                         </li>

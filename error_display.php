@@ -6,8 +6,12 @@ ini_set('display_errors', 1);
 // Fungsi untuk menangani error
 function customErrorHandler($errno, $errstr, $errfile, $errline)
 {
+    // Ubah lokasi file log ke direktori tmp yang biasanya dapat diakses
+    $log_dir = sys_get_temp_dir();
     $error_message = date('Y-m-d H:i:s') . " Error [$errno]: $errstr in $errfile on line $errline\n";
-    error_log($error_message, 3, "error.log");
+
+    // Coba tulis ke log file, jika gagal, abaikan saja (gunakan @ untuk menekan error)
+    @error_log($error_message, 3, $log_dir . "/antrian_pasien_error.log");
 
     if (!(error_reporting() & $errno)) {
         return false;

@@ -10,6 +10,7 @@ $is_logged_in = isset($_SESSION['user_id']);
 $tanggal = isset($_GET['tanggal']) ? $_GET['tanggal'] : date('Y-m-d');
 $id_tempat_praktek = isset($_GET['tempat']) ? $_GET['tempat'] : '';
 $id_dokter = isset($_GET['dokter']) ? $_GET['dokter'] : '';
+$hari = isset($_GET['hari']) ? $_GET['hari'] : '';
 
 // Ambil data tempat praktek
 try {
@@ -48,7 +49,13 @@ try {
             jr.Jam_Selesai,
             jr.Jenis_Layanan,
             tp.Nama_Tempat,
-            d.Nama_Dokter
+            d.Nama_Dokter,
+            p.Waktu_Pendaftaran,
+            (SELECT COUNT(*) + 1 FROM pendaftaran p2 
+             JOIN jadwal_rutin jr2 ON p2.ID_Jadwal = jr2.ID_Jadwal_Rutin 
+             WHERE jr2.Hari = jr.Hari 
+             AND p2.Waktu_Pendaftaran < p.Waktu_Pendaftaran
+             AND p2.Status_Pendaftaran NOT IN ('Dibatalkan', 'Selesai')) AS Nomor_Urut
         FROM 
             pendaftaran p
         JOIN 
@@ -61,6 +68,11 @@ try {
     ";
 
     $params = [];
+
+    if (!empty($_GET['tanggal'])) {
+        $query .= " AND DATE(p.Waktu_Pendaftaran) = :tanggal";
+        $params[':tanggal'] = $_GET['tanggal'];
+    }
 
     if (!empty($_GET['hari'])) {
         $query .= " AND jr.Hari = :hari";
@@ -118,7 +130,11 @@ ob_start();
                 <div class="collapse" id="filterSection">
                     <div class="card-body bg-light">
                         <form id="filterForm" method="GET" class="row g-3">
-                            <div class="col-md-4">
+                            <div class="col-md-3">
+                                <label for="tanggal" class="form-label">Tanggal Pendaftaran</label>
+                                <input type="date" class="form-select" id="tanggal" name="tanggal" value="<?= htmlspecialchars($tanggal) ?>">
+                            </div>
+                            <div class="col-md-3">
                                 <label for="hari" class="form-label">Hari</label>
                                 <select class="form-select" id="hari" name="hari">
                                     <option value="">Semua Hari</option>
@@ -131,7 +147,7 @@ ob_start();
                                     ?>
                                 </select>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <label for="tempat" class="form-label">Tempat Praktek</label>
                                 <select class="form-select" id="tempat" name="tempat">
                                     <option value="">Semua Tempat</option>
@@ -143,7 +159,7 @@ ob_start();
                                     <?php endforeach; ?>
                                 </select>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <label for="dokter" class="form-label">Dokter</label>
                                 <select class="form-select" id="dokter" name="dokter">
                                     <option value="">Semua Dokter</option>
@@ -171,23 +187,29 @@ ob_start();
                             Tidak ada data antrian untuk filter yang dipilih.
                         </div>
                     <?php else: ?>
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle"></i> Nomor antrian dihitung berdasarkan hari dan waktu pendaftaran. Pasien yang mendaftar lebih awal untuk hari yang sama akan mendapatkan nomor antrian yang lebih kecil.
+                        </div>
                         <div class="table-responsive">
                             <table class="table table-striped table-hover">
                                 <thead class="table-light">
                                     <tr>
                                         <th>No. Antrian</th>
+                                        <th>ID Pendaftaran</th>
                                         <th>Nama Pasien</th>
                                         <th>Hari</th>
                                         <th>Jadwal</th>
                                         <th>Tempat Praktek</th>
                                         <th>Dokter</th>
                                         <th>Jenis Layanan</th>
+                                        <th>Waktu Daftar</th>
                                         <th>Status</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <?php foreach ($antrian as $a): ?>
                                         <tr>
+                                            <td><span class="badge bg-primary"><?= htmlspecialchars($a['Nomor_Urut']) ?></span></td>
                                             <td><?= htmlspecialchars($a['ID_Pendaftaran']) ?></td>
                                             <td><?= htmlspecialchars($a['nm_pasien']) ?></td>
                                             <td><?= htmlspecialchars($a['Hari']) ?></td>
@@ -195,6 +217,7 @@ ob_start();
                                             <td><?= htmlspecialchars($a['Nama_Tempat']) ?></td>
                                             <td><?= htmlspecialchars($a['Nama_Dokter']) ?></td>
                                             <td><?= htmlspecialchars($a['Jenis_Layanan']) ?></td>
+                                            <td><?= date('d/m/Y H:i', strtotime($a['Waktu_Pendaftaran'])) ?></td>
                                             <td><?= htmlspecialchars($a['Status_Pendaftaran']) ?></td>
                                         </tr>
                                     <?php endforeach; ?>
@@ -284,6 +307,14 @@ $additional_css = "
     .border-bottom {
         border-bottom: 2px solid #dee2e6 !important;
         margin-bottom: 1rem;
+    }
+    .badge.bg-primary {
+        font-size: 1rem;
+        padding: 0.5rem 0.8rem;
+        border-radius: 50%;
+        min-width: 2.5rem;
+        display: inline-block;
+        text-align: center;
     }
 ";
 
