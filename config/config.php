@@ -1,6 +1,7 @@
 <?php
 // Definisikan base URL
 // Untuk pengembangan lokal
+// gantikan ini jika beralih ke xampp lokal
 // $base_url = 'http://localhost/antrian%20pasien';
 
 // Untuk server produksi (uncomment dan sesuaikan saat deploy ke hosting)
