@@ -1,0 +1,24 @@
+name: Deploy ke Hostinger via FTP
+
+on:
+  push:
+    branches:
+      - alpha_v1  # Akan berjalan otomatis saat push ke branch alpha_v1
+
+  workflow_dispatch:  # Menambahkan opsi trigger manual di GitHub Actions
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Deploy via FTP
+        uses: SamKirkland/FTP-Deploy-Action@4.3.4
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./
+          server-dir: /public_html/
