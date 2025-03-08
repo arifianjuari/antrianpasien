@@ -98,12 +98,6 @@ function clean_url($url)
                     </a>
                     <ul class="submenu collapse">
                         <li>
-                            <a href="<?php echo $base_url; ?>/admin_praktek/data_pasien.php" class="nav-link text-dark">
-                                <i class="bi bi-people"></i>
-                                <span class="menu-text">Data Pasien</span>
-                            </a>
-                        </li>
-                        <li>
                             <a href="<?php echo $base_url; ?>/admin_praktek/data_dokter.php" class="nav-link text-dark">
                                 <i class="bi bi-person-vcard"></i>
                                 <span class="menu-text">Data Dokter</span>

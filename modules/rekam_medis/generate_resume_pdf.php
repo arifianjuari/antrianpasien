@@ -15,34 +15,43 @@ if (session_status() === PHP_SESSION_NONE) {
 $log_file = __DIR__ . '/../../pdf_debug.log';
 file_put_contents($log_file, "PDF generation started at " . date('Y-m-d H:i:s') . "\n", FILE_APPEND);
 
+// Konfigurasi database
+$db_host = 'auth-db1151.hstgr.io';
+$db_username = 'u609399718_admin_klinik';
+$db_password = 'Juari@2591';
+$db_name = 'u609399718_klinik_obgin';
+
+// Koneksi database
+try {
+    $pdo = new PDO(
+        "mysql:host=$db_host;dbname=$db_name;charset=utf8",
+        $db_username,
+        $db_password,
+        array(
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
+        )
+    );
+    file_put_contents($log_file, "Database connection established\n", FILE_APPEND);
+} catch (PDOException $e) {
+    file_put_contents($log_file, "Database connection failed: " . $e->getMessage() . "\n", FILE_APPEND);
+    die("Koneksi database gagal: " . $e->getMessage());
+}
+
 // Impor TCPDF
 require_once(__DIR__ . '/../../vendor/tecnickcom/tcpdf/tcpdf.php');
 
 // Extend TCPDF
 class ResumePDF extends TCPDF
 {
-    // Header
     public function Header()
     {
-        // Set font
-        $this->SetFont('helvetica', 'B', 14);
-
-        // Title
-        $this->Cell(0, 15, 'RESUME MEDIS PASIEN', 0, false, 'C', 0, '', 0, false, 'M', 'M');
-        $this->Ln(10);
-
-        // Subtitle
-        $this->SetFont('helvetica', '', 12);
-        $this->Cell(0, 15, 'Klinik Kandungan', 0, false, 'C', 0, '', 0, false, 'M', 'M');
-        $this->Ln(20);
+        // Kosongkan header
     }
 
-    // Footer
     public function Footer()
     {
-        $this->SetY(-15);
-        $this->SetFont('helvetica', 'I', 8);
-        $this->Cell(0, 10, 'Halaman ' . $this->getAliasNumPage() . '/' . $this->getAliasNbPages(), 0, false, 'C');
+        // Kosongkan footer
     }
 }
 
@@ -58,131 +67,112 @@ if (!isset($pasien)) {
 file_put_contents($log_file, "Data pasien tersedia: " . $pasien['no_rkm_medis'] . "\n", FILE_APPEND);
 
 try {
-    // Buat instance PDF
-    $pdf = new ResumePDF('P', 'mm', 'A4');
+    // Debug: Tampilkan struktur tabel yang lebih detail
+    $debug_query1 = "SELECT COLUMN_NAME, DATA_TYPE, COLUMN_COMMENT 
+                    FROM INFORMATION_SCHEMA.COLUMNS 
+                    WHERE TABLE_SCHEMA = '$db_name' 
+                    AND TABLE_NAME = 'penilaian_medis_ralan_kandungan'";
+    $debug_stmt1 = $pdo->query($debug_query1);
+    $kolom_tabel1 = $debug_stmt1->fetchAll(PDO::FETCH_ASSOC);
+    file_put_contents($log_file, "Detail kolom penilaian_medis_ralan_kandungan:\n" . print_r($kolom_tabel1, true) . "\n", FILE_APPEND);
+
+    $debug_query2 = "SELECT COLUMN_NAME, DATA_TYPE, COLUMN_COMMENT 
+                    FROM INFORMATION_SCHEMA.COLUMNS 
+                    WHERE TABLE_SCHEMA = '$db_name' 
+                    AND TABLE_NAME = 'status_obstetri'";
+    $debug_stmt2 = $pdo->query($debug_query2);
+    $kolom_tabel2 = $debug_stmt2->fetchAll(PDO::FETCH_ASSOC);
+    file_put_contents($log_file, "Detail kolom status_obstetri:\n" . print_r($kolom_tabel2, true) . "\n", FILE_APPEND);
+
+    // Debug: Tampilkan contoh data dari tabel
+    $debug_query3 = "SELECT * FROM penilaian_medis_ralan_kandungan LIMIT 1";
+    $debug_stmt3 = $pdo->query($debug_query3);
+    $contoh_data1 = $debug_stmt3->fetch(PDO::FETCH_ASSOC);
+    file_put_contents($log_file, "Contoh data penilaian_medis_ralan_kandungan:\n" . print_r($contoh_data1, true) . "\n", FILE_APPEND);
+
+    // Debug: Tampilkan nilai no_rkm_medis yang digunakan
+    file_put_contents($log_file, "Nilai no_rkm_medis yang digunakan: " . $pasien['no_rkm_medis'] . "\n", FILE_APPEND);
+
+    // Debug: Tampilkan struktur tabel status_obstetri
+    $debug_query4 = "DESCRIBE status_obstetri";
+    $debug_stmt4 = $pdo->query($debug_query4);
+    $struktur_obstetri = $debug_stmt4->fetchAll(PDO::FETCH_ASSOC);
+    file_put_contents($log_file, "Struktur tabel status_obstetri:\n" . print_r($struktur_obstetri, true) . "\n", FILE_APPEND);
+
+    // Buat instance PDF dengan ukuran khusus (100x52 mm)
+    $pdf = new ResumePDF('L', 'mm', array(52, 100));
     file_put_contents($log_file, "PDF instance created\n", FILE_APPEND);
 
-    // Set informasi dokumen
-    $pdf->SetCreator('Sistem Rekam Medis');
-    $pdf->SetAuthor('Klinik Kandungan');
-    $pdf->SetTitle('Resume Medis - ' . $pasien['nm_pasien']);
-
-    // Set margin
-    $pdf->SetMargins(15, 40, 15);
-    $pdf->SetHeaderMargin(10);
-    $pdf->SetFooterMargin(10);
-
-    // Set auto page breaks
-    $pdf->SetAutoPageBreak(TRUE, 15);
+    // Set margin minimal
+    $pdf->SetMargins(3, 2, 3);
+    $pdf->SetAutoPageBreak(TRUE, 2);
 
     // Tambah halaman
     $pdf->AddPage();
     file_put_contents($log_file, "Page added\n", FILE_APPEND);
 
-    // Set font default
-    $pdf->SetFont('helvetica', '', 10);
+    // Ambil data pemeriksaan terbaru dari tabel penilaian_medis_ralan_kandungan
+    $query_pemeriksaan = "SELECT pmrk.tanggal as tanggal, pmrk.ket_fisik, pmrk.lab, pmrk.ultra, pmrk.diagnosis, pmrk.tata 
+                         FROM penilaian_medis_ralan_kandungan pmrk
+                         JOIN reg_periksa rp ON pmrk.no_rawat = rp.no_rawat
+                         WHERE rp.no_rkm_medis = ? 
+                         ORDER BY pmrk.tanggal DESC LIMIT 1";
+    $stmt_pemeriksaan = $pdo->prepare($query_pemeriksaan);
+    $stmt_pemeriksaan->execute([$pasien['no_rkm_medis']]);
+    $pemeriksaan = $stmt_pemeriksaan->fetch(PDO::FETCH_ASSOC);
 
-    // Data Pasien
-    $pdf->SetFont('helvetica', 'B', 12);
-    $pdf->Cell(0, 10, 'DATA PRIBADI', 0, 1, 'L');
-    $pdf->SetFont('helvetica', '', 10);
+    // Debug: Tampilkan hasil query pemeriksaan
+    file_put_contents($log_file, "Hasil query pemeriksaan:\n" . print_r($pemeriksaan, true) . "\n", FILE_APPEND);
 
-    // Buat tabel informasi pasien
-    $pdf->Cell(50, 7, 'No. Rekam Medis', 0);
-    $pdf->Cell(5, 7, ':', 0);
-    $pdf->Cell(0, 7, $pasien['no_rkm_medis'], 0, 1);
+    // Ambil data obstetri terbaru dari tabel status_obstetri
+    $query_obstetri = "SELECT tanggal_tp_penyesuaian, faktor_risiko_umum, faktor_risiko_obstetri, faktor_risiko_preeklampsia 
+                      FROM status_obstetri 
+                      WHERE no_rkm_medis = ? 
+                      ORDER BY tanggal_tp_penyesuaian DESC LIMIT 1";
+    $stmt_obstetri = $pdo->prepare($query_obstetri);
+    $stmt_obstetri->execute([$pasien['no_rkm_medis']]);
+    $obstetri = $stmt_obstetri->fetch(PDO::FETCH_ASSOC);
 
-    $pdf->Cell(50, 7, 'Nama Lengkap', 0);
-    $pdf->Cell(5, 7, ':', 0);
-    $pdf->Cell(0, 7, $pasien['nm_pasien'], 0, 1);
+    // Debug: Tampilkan hasil query obstetri
+    file_put_contents($log_file, "Hasil query obstetri:\n" . print_r($obstetri, true) . "\n", FILE_APPEND);
 
-    $pdf->Cell(50, 7, 'Tempat, Tgl Lahir', 0);
-    $pdf->Cell(5, 7, ':', 0);
-    $pdf->Cell(0, 7, $pasien['tmp_lahir'] . ', ' . date('d-m-Y', strtotime($pasien['tgl_lahir'])), 0, 1);
+    // Reset ke font 6pt untuk label dan 8pt untuk isi
+    $pdf->SetFont('helvetica', '', 6);
+    $pdf->Cell(20, 2, 'Tanggal Periksa ', 0, 0, 'L');
+    $pdf->SetFont('helvetica', '', 8);
+    $pdf->Cell(0, 2, !empty($pemeriksaan['tanggal']) ? date('d-m-Y', strtotime($pemeriksaan['tanggal'])) : '-', 0, 1, 'L');
 
-    $pdf->Cell(50, 7, 'Umur', 0);
-    $pdf->Cell(5, 7, ':', 0);
-    $pdf->Cell(0, 7, $pasien['umur'] . ' tahun', 0, 1);
+    // Fisik Umum
+    $pdf->SetFont('helvetica', '', 6);
+    $pdf->Cell(20, 2, 'Fisik Umum ', 0, 0, 'L');
+    $pdf->SetFont('helvetica', '', 8);
+    $pdf->MultiCell(0, 2, !empty($pemeriksaan['ket_fisik']) ? $pemeriksaan['ket_fisik'] : '-', 0, 'L');
 
-    $pdf->Cell(50, 7, 'Alamat', 0);
-    $pdf->Cell(5, 7, ':', 0);
-    $pdf->MultiCell(0, 7, $pasien['alamat'], 0, 'L');
+    // Lab Penting
+    $pdf->SetFont('helvetica', '', 6);
+    $pdf->Cell(20, 2, 'Lab Penting ', 0, 0, 'L');
+    $pdf->SetFont('helvetica', '', 8);
+    $pdf->MultiCell(0, 2, !empty($pemeriksaan['lab']) ? $pemeriksaan['lab'] : '-', 0, 'L');
 
-    file_put_contents($log_file, "Patient data added\n", FILE_APPEND);
+    // Hasil USG
+    $pdf->SetFont('helvetica', '', 6);
+    $pdf->Cell(20, 2, 'Hasil USG ', 0, 0, 'L');
+    $pdf->SetFont('helvetica', '', 8);
+    $pdf->MultiCell(0, 2, !empty($pemeriksaan['ultra']) ? $pemeriksaan['ultra'] : '-', 0, 'L');
 
-    // Status Obstetri
-    if (!empty($statusObstetri)) {
-        $pdf->Ln(5);
-        $pdf->SetFont('helvetica', 'B', 12);
-        $pdf->Cell(0, 10, 'STATUS OBSTETRI', 0, 1, 'L');
-        $pdf->SetFont('helvetica', '', 10);
+    // Diagnosis
+    $pdf->SetFont('helvetica', '', 6);
+    $pdf->Cell(20, 2, 'Diagnosis ', 0, 0, 'L');
+    $pdf->SetFont('helvetica', '', 8);
+    $pdf->MultiCell(0, 2, !empty($pemeriksaan['diagnosis']) ? $pemeriksaan['diagnosis'] : '-', 0, 'L');
 
-        foreach ($statusObstetri as $so) {
-            $pdf->Cell(50, 7, 'G-P-A', 0);
-            $pdf->Cell(5, 7, ':', 0);
-            $pdf->Cell(0, 7, $so['gravida'] . '-' . $so['paritas'] . '-' . $so['abortus'], 0, 1);
+    // Rencana dan Saran
+    $pdf->SetFont('helvetica', '', 6);
+    $pdf->Cell(20, 2, 'Rencana & Saran ', 0, 0, 'L');
+    $pdf->SetFont('helvetica', '', 8);
+    $pdf->MultiCell(0, 2, !empty($pemeriksaan['tata']) ? $pemeriksaan['tata'] : '-', 0, 'L');
 
-            $pdf->Cell(50, 7, 'HPHT', 0);
-            $pdf->Cell(5, 7, ':', 0);
-            $pdf->Cell(0, 7, !empty($so['tanggal_hpht']) ? date('d-m-Y', strtotime($so['tanggal_hpht'])) : '-', 0, 1);
-
-            $pdf->Cell(50, 7, 'TP', 0);
-            $pdf->Cell(5, 7, ':', 0);
-            $pdf->Cell(0, 7, !empty($so['tanggal_tp']) ? date('d-m-Y', strtotime($so['tanggal_tp'])) : '-', 0, 1);
-
-            if (!empty($so['faktor_risiko_umum']) || !empty($so['faktor_risiko_obstetri'])) {
-                $pdf->Cell(50, 7, 'Faktor Risiko', 0);
-                $pdf->Cell(5, 7, ':', 0);
-                $risiko = [];
-                if (!empty($so['faktor_risiko_umum'])) $risiko[] = 'Umum: ' . $so['faktor_risiko_umum'];
-                if (!empty($so['faktor_risiko_obstetri'])) $risiko[] = 'Obstetri: ' . $so['faktor_risiko_obstetri'];
-                $pdf->MultiCell(0, 7, implode("\n", $risiko), 0, 'L');
-            }
-        }
-        file_put_contents($log_file, "Obstetric status added\n", FILE_APPEND);
-    }
-
-    // Riwayat Kunjungan Terakhir
-    if (!empty($riwayatPemeriksaan)) {
-        $pdf->Ln(5);
-        $pdf->SetFont('helvetica', 'B', 12);
-        $pdf->Cell(0, 10, 'RIWAYAT KUNJUNGAN TERAKHIR', 0, 1, 'L');
-        $pdf->SetFont('helvetica', '', 10);
-
-        $lastVisit = $riwayatPemeriksaan[0];
-
-        $pdf->Cell(50, 7, 'Tanggal Kunjungan', 0);
-        $pdf->Cell(5, 7, ':', 0);
-        $pdf->Cell(0, 7, date('d-m-Y', strtotime($lastVisit['tanggal'])), 0, 1);
-
-        if (!empty($lastVisit['keluhan_utama'])) {
-            $pdf->Cell(50, 7, 'Keluhan Utama', 0);
-            $pdf->Cell(5, 7, ':', 0);
-            $pdf->MultiCell(0, 7, $lastVisit['keluhan_utama'], 0, 'L');
-        }
-
-        if (!empty($lastVisit['diagnosis'])) {
-            $pdf->Cell(50, 7, 'Diagnosis', 0);
-            $pdf->Cell(5, 7, ':', 0);
-            $pdf->MultiCell(0, 7, $lastVisit['diagnosis'], 0, 'L');
-        }
-
-        if (!empty($lastVisit['tata'])) {
-            $pdf->Cell(50, 7, 'Tatalaksana', 0);
-            $pdf->Cell(5, 7, ':', 0);
-            $pdf->MultiCell(0, 7, $lastVisit['tata'], 0, 'L');
-        }
-        file_put_contents($log_file, "Visit history added\n", FILE_APPEND);
-    }
-
-    // Tanda tangan
-    $pdf->Ln(20);
-    $pdf->Cell(120);
-    $pdf->Cell(0, 5, 'Dokter Pemeriksa,', 0, 1, 'L');
-    $pdf->Ln(15);
-    $pdf->Cell(120);
-    $pdf->Cell(0, 5, 'dr. ............................', 0, 1, 'L');
-    file_put_contents($log_file, "Signature added\n", FILE_APPEND);
+    file_put_contents($log_file, "All data added to PDF\n", FILE_APPEND);
 
     // Bersihkan output buffer sebelum mengirim header
     if (ob_get_length()) {

@@ -35,13 +35,16 @@ try {
             tp.Nama_Tempat,
             tp.Alamat_Lengkap as Alamat_Tempat,
             d.Nama_Dokter,
-            d.Spesialisasi
+            d.Spesialisasi,
+            jr.Hari as hari
         FROM 
             pendaftaran p
         LEFT JOIN 
             tempat_praktek tp ON p.ID_Tempat_Praktek = tp.ID_Tempat_Praktek
         LEFT JOIN 
             dokter d ON p.ID_Dokter = d.ID_Dokter
+        LEFT JOIN
+            jadwal_rutin jr ON p.ID_Jadwal = jr.ID_Jadwal_Rutin
         WHERE 
             p.ID_Pendaftaran = :id_pendaftaran
     ";
@@ -53,11 +56,18 @@ try {
 
     // Jika pendaftaran tidak ditemukan
     if (!$pendaftaran) {
-        throw new Exception("Data pendaftaran tidak ditemukan");
+        throw new Exception("Data pendaftaran tidak ditemukan untuk ID: " . $id_pendaftaran);
     }
+
+    // Debug: Tampilkan data yang diambil
+    error_log("Data pendaftaran: " . print_r($pendaftaran, true));
 
     // Ambil data jadwal
     $id_jadwal = $pendaftaran['ID_Jadwal'];
+
+    if (empty($id_jadwal)) {
+        error_log("ID Jadwal kosong untuk pendaftaran ID: " . $id_pendaftaran);
+    }
 
     // Cek apakah jadwal adalah jadwal rutin atau khusus
     $query_jadwal_rutin = "SELECT * FROM jadwal_rutin WHERE ID_Jadwal_Rutin = :id_jadwal";
@@ -69,6 +79,7 @@ try {
     if ($jadwal_rutin) {
         $jadwal = $jadwal_rutin;
         $jadwal['Jenis_Jadwal'] = 'Rutin';
+        error_log("Jadwal Rutin ditemukan: " . print_r($jadwal_rutin, true));
     } else {
         $query_jadwal_khusus = "SELECT * FROM jadwal_praktek WHERE ID_Jadwal_Praktek = :id_jadwal";
         $stmt_jadwal_khusus = $conn->prepare($query_jadwal_khusus);
@@ -79,11 +90,15 @@ try {
         if ($jadwal_khusus) {
             $jadwal = $jadwal_khusus;
             $jadwal['Jenis_Jadwal'] = 'Khusus';
+            error_log("Jadwal Khusus ditemukan: " . print_r($jadwal_khusus, true));
+        } else {
+            error_log("Tidak ada jadwal yang ditemukan untuk ID: " . $id_jadwal);
         }
     }
 } catch (Exception $e) {
-    error_log("Error: " . $e->getMessage());
-    $error_message = "Terjadi kesalahan saat mengambil data pendaftaran";
+    error_log("Error detail: " . $e->getMessage());
+    error_log("Stack trace: " . $e->getTraceAsString());
+    $error_message = "Terjadi kesalahan saat mengambil data pendaftaran: " . $e->getMessage();
 }
 
 // Start output buffering
@@ -193,16 +208,23 @@ ob_start();
                                             <div class="col-md-5 fw-bold">Dokter:</div>
                                             <div class="col-md-7">
                                                 <?php echo htmlspecialchars($pendaftaran['Nama_Dokter']); ?>
-                                                <div class="small text-muted"><?php echo htmlspecialchars($pendaftaran['Spesialisasi']); ?></div>
                                             </div>
                                         </div>
+                                        <?php if (isset($pendaftaran['hari']) && !empty($pendaftaran['hari'])): ?>
+                                            <div class="row mb-2">
+                                                <div class="col-md-5 fw-bold">Hari:</div>
+                                                <div class="col-md-7">
+                                                    <?php echo htmlspecialchars($pendaftaran['hari']); ?>
+                                                </div>
+                                            </div>
+                                        <?php endif; ?>
                                         <div class="row mb-2">
-                                            <div class="col-md-5 fw-bold">Tanggal:</div>
-                                            <div class="col-md-7"><?php echo date('d-m-Y', strtotime($pendaftaran['Tanggal_Kunjungan'])); ?></div>
+                                            <div class="col-md-5 fw-bold">Tanggal Daftar:</div>
+                                            <div class="col-md-7"><?php echo date('d-m-Y', strtotime($pendaftaran['Waktu_Pendaftaran'])); ?></div>
                                         </div>
                                         <?php if ($jadwal): ?>
                                             <div class="row mb-2">
-                                                <div class="col-md-5 fw-bold">Waktu:</div>
+                                                <div class="col-md-5 fw-bold">Waktu Praktek:</div>
                                                 <div class="col-md-7">
                                                     <?php echo date('H:i', strtotime($jadwal['Jam_Mulai'])); ?> -
                                                     <?php echo date('H:i', strtotime($jadwal['Jam_Selesai'])); ?>

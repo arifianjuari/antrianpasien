@@ -101,6 +101,59 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ]);
 
                 $_SESSION['success'] = "Data pasien berhasil diperbarui";
+            } elseif ($_POST['action'] === 'add') {
+                // Generate nomor rekam medis baru
+                $query_last_rm = "SELECT MAX(CAST(no_rkm_medis AS UNSIGNED)) as last_rm FROM pasien";
+                $stmt_last_rm = $conn_db2->prepare($query_last_rm);
+                $stmt_last_rm->execute();
+                $last_rm = $stmt_last_rm->fetch(PDO::FETCH_ASSOC);
+                $new_rm = $last_rm['last_rm'] + 1;
+                $no_rkm_medis = str_pad($new_rm, 6, '0', STR_PAD_LEFT);
+
+                // Hitung umur berdasarkan tanggal lahir
+                $umur = date_diff(date_create($_POST['tgl_lahir']), date_create('today'))->y;
+
+                // Tambah data pasien baru
+                $query = "INSERT INTO pasien (
+                            no_rkm_medis, nm_pasien, no_ktp, jk, tgl_lahir, 
+                            alamat, pekerjaan, no_tlp, umur, kd_kec, 
+                            nm_ibu, namakeluarga, kd_pj, kd_kel, kd_kab, tgl_daftar
+                        ) VALUES (
+                            :no_rkm_medis, :nama, :no_ktp, :jk, :tgl_lahir, 
+                            :alamat, :pekerjaan, :no_tlp, :umur, :kd_kec, 
+                            :nm_ibu, :namakeluarga, :kd_pj, :kd_kel, :kd_kab, :tgl_daftar
+                        )";
+
+                $stmt = $conn_db2->prepare($query);
+                $stmt->execute([
+                    'no_rkm_medis' => $no_rkm_medis,
+                    'nama' => $_POST['nama_pasien'],
+                    'no_ktp' => $_POST['no_ktp'],
+                    'jk' => $_POST['jenis_kelamin'],
+                    'tgl_lahir' => $_POST['tgl_lahir'],
+                    'alamat' => $_POST['alamat'],
+                    'pekerjaan' => $_POST['pekerjaan'],
+                    'no_tlp' => $_POST['no_tlp'],
+                    'umur' => $umur,
+                    'kd_kec' => $_POST['kd_kec'],
+                    'nm_ibu' => $_POST['nm_ibu'],
+                    'namakeluarga' => $_POST['namakeluarga'],
+                    'kd_pj' => $_POST['kd_pj'],
+                    'kd_kel' => $_POST['kd_kel'],
+                    'kd_kab' => $_POST['kd_kab'],
+                    'tgl_daftar' => $_POST['tgl_daftar'] ?: date('Y-m-d')
+                ]);
+
+                $_SESSION['success'] = "Data pasien berhasil ditambahkan dengan No. RM: $no_rkm_medis";
+            } elseif ($_POST['action'] === 'delete') {
+                // Hapus data pasien
+                $query = "DELETE FROM pasien WHERE no_rkm_medis = :no_rkm_medis";
+                $stmt = $conn_db2->prepare($query);
+                $stmt->execute([
+                    'no_rkm_medis' => $_POST['no_rkm_medis']
+                ]);
+
+                $_SESSION['success'] = "Data pasien berhasil dihapus";
             }
         }
     } catch (PDOException $e) {
@@ -185,6 +238,9 @@ ob_start();
                     </button>
                 </div>
             </form>
+            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalAddPasien">
+                <i class="bi bi-plus-circle"></i> Tambah Pasien
+            </button>
         </div>
     </div>
 
@@ -240,10 +296,17 @@ ob_start();
                                     <td><?php echo htmlspecialchars($p['alamat']); ?></td>
                                     <td><?php echo htmlspecialchars($p['no_tlp']); ?></td>
                                     <td>
-                                        <button type="button" class="btn btn-sm btn-warning edit-pasien"
-                                            data-pasien='<?php echo htmlspecialchars(json_encode($p)); ?>'>
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
+                                        <div class="btn-group">
+                                            <button type="button" class="btn btn-sm btn-warning edit-pasien"
+                                                data-pasien='<?php echo htmlspecialchars(json_encode($p)); ?>'>
+                                                <i class="bi bi-pencil"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-danger delete-pasien"
+                                                data-no-rm="<?php echo htmlspecialchars($p['no_rkm_medis']); ?>"
+                                                data-nama="<?php echo htmlspecialchars($p['nm_pasien']); ?>">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
@@ -388,6 +451,133 @@ ob_start();
     </div>
 </div>
 
+<!-- Modal Tambah Pasien -->
+<div class="modal fade" id="modalAddPasien" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Tambah Data Pasien Baru</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="" method="POST">
+                <input type="hidden" name="action" value="add">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Nama Pasien</label>
+                                <input type="text" name="nama_pasien" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">NIK</label>
+                                <input type="text" name="no_ktp" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Jenis Kelamin</label>
+                                <select name="jenis_kelamin" class="form-select" required>
+                                    <option value="">Pilih Jenis Kelamin</option>
+                                    <option value="L">Laki-laki</option>
+                                    <option value="P">Perempuan</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Tanggal Lahir</label>
+                                <input type="date" name="tgl_lahir" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Nama Ibu</label>
+                                <input type="text" name="nm_ibu" class="form-control">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Nama Keluarga</label>
+                                <input type="text" name="namakeluarga" class="form-control">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Alamat</label>
+                                <textarea name="alamat" class="form-control" rows="3"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Kecamatan</label>
+                                <select name="kd_kec" class="form-select">
+                                    <option value="">Pilih Kecamatan</option>
+                                    <?php foreach ($kecamatan as $k): ?>
+                                        <option value="<?php echo $k['kd_kec']; ?>"><?php echo $k['nm_kec']; ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Kelurahan</label>
+                                <select name="kd_kel" class="form-select">
+                                    <option value="">Pilih Kelurahan</option>
+                                    <?php foreach ($kelurahan as $k): ?>
+                                        <option value="<?php echo $k['kd_kel']; ?>"><?php echo $k['nm_kel']; ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Kabupaten</label>
+                                <select name="kd_kab" class="form-select">
+                                    <option value="">Pilih Kabupaten</option>
+                                    <?php foreach ($kabupaten as $k): ?>
+                                        <option value="<?php echo $k['kd_kab']; ?>"><?php echo $k['nm_kab']; ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Cara Bayar</label>
+                                <select name="kd_pj" class="form-select">
+                                    <option value="">Pilih Cara Bayar</option>
+                                    <?php foreach ($cara_bayar as $cb): ?>
+                                        <option value="<?php echo $cb['kd_pj']; ?>"><?php echo $cb['nm_pj']; ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Pekerjaan</label>
+                                <input type="text" name="pekerjaan" class="form-control">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Nomor Telepon</label>
+                                <input type="text" name="no_tlp" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-success">Simpan Data</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Konfirmasi Hapus -->
+<div class="modal fade" id="modalDeletePasien" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Konfirmasi Hapus</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Apakah Anda yakin ingin menghapus data pasien <strong id="delete-nama-pasien"></strong>?</p>
+                <p class="text-danger">Tindakan ini tidak dapat dibatalkan!</p>
+            </div>
+            <div class="modal-footer">
+                <form action="" method="POST">
+                    <input type="hidden" name="action" value="delete">
+                    <input type="hidden" name="no_rkm_medis" id="delete_no_rkm_medis">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-danger">Hapus Data</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 <?php
 $content = ob_get_clean();
 
@@ -426,6 +616,19 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('edit_tgl_daftar').value = pasien.tgl_daftar;
             
             new bootstrap.Modal(document.getElementById('modalEditPasien')).show();
+        });
+    });
+    
+    // Hapus pasien
+    document.querySelectorAll('.delete-pasien').forEach(function(button) {
+        button.addEventListener('click', function() {
+            var noRm = this.getAttribute('data-no-rm');
+            var nama = this.getAttribute('data-nama');
+            
+            document.getElementById('delete_no_rkm_medis').value = noRm;
+            document.getElementById('delete-nama-pasien').textContent = nama;
+            
+            new bootstrap.Modal(document.getElementById('modalDeletePasien')).show();
         });
     });
 });

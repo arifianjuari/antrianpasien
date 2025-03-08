@@ -34,16 +34,16 @@
                         </div>
 
                         <div class="form-group row">
-                            <label class="col-sm-2 col-form-label">Nama Pasien <span class="text-danger">*</span></label>
+                            <label class="col-sm-2 col-form-label">NIK</label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" name="nm_pasien" value="<?= $pasien['nm_pasien'] ?>" required>
+                                <input type="text" class="form-control" name="no_ktp" value="<?= $pasien['no_ktp'] ?>">
                             </div>
                         </div>
 
                         <div class="form-group row">
-                            <label class="col-sm-2 col-form-label">No. KTP</label>
+                            <label class="col-sm-2 col-form-label">Nama Pasien <span class="text-danger">*</span></label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" name="no_ktp" value="<?= $pasien['no_ktp'] ?>">
+                                <input type="text" class="form-control" name="nm_pasien" value="<?= $pasien['nm_pasien'] ?>" required>
                             </div>
                         </div>
 
@@ -58,16 +58,29 @@
                         </div>
 
                         <div class="form-group row">
-                            <label class="col-sm-2 col-form-label">Tempat Lahir</label>
+                            <label class="col-sm-2 col-form-label">Status Menikah</label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" name="tmp_lahir" value="<?= $pasien['tmp_lahir'] ?>">
+                                <select class="form-control" name="stts_nikah">
+                                    <option value="">-- Pilih Status Menikah --</option>
+                                    <option value="BELUM MENIKAH" <?= isset($pasien['stts_nikah']) && $pasien['stts_nikah'] == 'BELUM MENIKAH' ? 'selected' : '' ?>>Belum Menikah</option>
+                                    <option value="MENIKAH" <?= isset($pasien['stts_nikah']) && $pasien['stts_nikah'] == 'MENIKAH' ? 'selected' : '' ?>>Menikah</option>
+                                    <option value="JANDA" <?= isset($pasien['stts_nikah']) && $pasien['stts_nikah'] == 'JANDA' ? 'selected' : '' ?>>Janda</option>
+                                    <option value="DUDA" <?= isset($pasien['stts_nikah']) && $pasien['stts_nikah'] == 'DUDA' ? 'selected' : '' ?>>Duda</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label class="col-sm-2 col-form-label">No. Telepon</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" name="no_tlp" value="<?= $pasien['no_tlp'] ?>">
                             </div>
                         </div>
 
                         <div class="form-group row">
                             <label class="col-sm-2 col-form-label">Tanggal Lahir <span class="text-danger">*</span></label>
                             <div class="col-sm-10">
-                                <input type="date" class="form-control" name="tgl_lahir" value="<?= $pasien['tgl_lahir'] ?>" required>
+                                <input type="date" class="form-control" id="tgl_lahir" name="tgl_lahir" value="<?= $pasien['tgl_lahir'] ?>" required>
                             </div>
                         </div>
 
@@ -79,9 +92,22 @@
                         </div>
 
                         <div class="form-group row">
+                            <label class="col-sm-2 col-form-label">Kecamatan</label>
+                            <div class="col-sm-10">
+                                <select class="form-control" name="kd_kec">
+                                    <option value="">-- Pilih Kecamatan --</option>
+                                    <?php foreach ($kecamatan as $kec): ?>
+                                        <option value="<?= $kec['kd_kec'] ?>" <?= $pasien['kd_kec'] == $kec['kd_kec'] ? 'selected' : '' ?>><?= $kec['nm_kec'] ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
                             <label class="col-sm-2 col-form-label">Pekerjaan</label>
                             <div class="col-sm-10">
                                 <select class="form-control" name="pekerjaan">
+                                    <option value="">-- Pilih Pekerjaan --</option>
                                     <option value="Tidak Bekerja" <?= $pasien['pekerjaan'] == 'Tidak Bekerja' ? 'selected' : '' ?>>Tidak Bekerja</option>
                                     <option value="Ibu Rumah Tangga" <?= $pasien['pekerjaan'] == 'Ibu Rumah Tangga' ? 'selected' : '' ?>>Ibu Rumah Tangga</option>
                                     <option value="Guru/Dosen" <?= $pasien['pekerjaan'] == 'Guru/Dosen' ? 'selected' : '' ?>>Guru/Dosen</option>
@@ -100,106 +126,14 @@
                         </div>
 
                         <div class="form-group row">
-                            <label class="col-sm-2 col-form-label">No. Telepon</label>
+                            <label class="col-sm-2 col-form-label">Catatan Pasien</label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" name="no_tlp" value="<?= $pasien['no_tlp'] ?>">
+                                <textarea class="form-control" name="catatan_pasien" rows="3" maxlength="500" placeholder="Masukkan catatan khusus untuk pasien ini (opsional)"><?= $pasien['catatan_pasien'] ?? '' ?></textarea>
                             </div>
                         </div>
 
-                        <div class="form-group row">
-                            <label class="col-sm-2 col-form-label">Status Pernikahan</label>
-                            <div class="col-sm-10">
-                                <select class="form-control" name="stts_nikah">
-                                    <option value="BELUM MENIKAH" <?= $pasien['stts_nikah'] == 'BELUM MENIKAH' ? 'selected' : '' ?>>Belum Menikah</option>
-                                    <option value="MENIKAH" <?= $pasien['stts_nikah'] == 'MENIKAH' ? 'selected' : '' ?>>Menikah</option>
-                                    <option value="JANDA" <?= $pasien['stts_nikah'] == 'JANDA' ? 'selected' : '' ?>>Janda</option>
-                                    <option value="DUDA" <?= $pasien['stts_nikah'] == 'DUDA' ? 'selected' : '' ?>>Duda</option>
-                                    <option value="JOMBLO" <?= $pasien['stts_nikah'] == 'JOMBLO' ? 'selected' : '' ?>>Jomblo</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="form-group row">
-                            <label class="col-sm-2 col-form-label">Agama</label>
-                            <div class="col-sm-10">
-                                <select class="form-control" name="agama">
-                                    <option value="ISLAM" <?= $pasien['agama'] == 'ISLAM' ? 'selected' : '' ?>>Islam</option>
-                                    <option value="KRISTEN" <?= $pasien['agama'] == 'KRISTEN' ? 'selected' : '' ?>>Kristen</option>
-                                    <option value="KATOLIK" <?= $pasien['agama'] == 'KATOLIK' ? 'selected' : '' ?>>Katolik</option>
-                                    <option value="HINDU" <?= $pasien['agama'] == 'HINDU' ? 'selected' : '' ?>>Hindu</option>
-                                    <option value="BUDHA" <?= $pasien['agama'] == 'BUDHA' ? 'selected' : '' ?>>Budha</option>
-                                    <option value="KONGHUCU" <?= $pasien['agama'] == 'KONGHUCU' ? 'selected' : '' ?>>Konghucu</option>
-                                    <option value="LAINNYA" <?= $pasien['agama'] == 'LAINNYA' ? 'selected' : '' ?>>Lainnya</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="form-group row">
-                            <label class="col-sm-2 col-form-label">Golongan Darah</label>
-                            <div class="col-sm-10">
-                                <select class="form-control" name="gol_darah">
-                                    <option value="A" <?= $pasien['gol_darah'] == 'A' ? 'selected' : '' ?>>A</option>
-                                    <option value="B" <?= $pasien['gol_darah'] == 'B' ? 'selected' : '' ?>>B</option>
-                                    <option value="O" <?= $pasien['gol_darah'] == 'O' ? 'selected' : '' ?>>O</option>
-                                    <option value="AB" <?= $pasien['gol_darah'] == 'AB' ? 'selected' : '' ?>>AB</option>
-                                    <option value="-" <?= $pasien['gol_darah'] == '-' ? 'selected' : '' ?>>-</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="form-group row">
-                            <label class="col-sm-2 col-form-label">Pendidikan</label>
-                            <div class="col-sm-10">
-                                <select class="form-control" name="pnd">
-                                    <option value="TS" <?= $pasien['pnd'] == 'TS' ? 'selected' : '' ?>>TS</option>
-                                    <option value="SD" <?= $pasien['pnd'] == 'SD' ? 'selected' : '' ?>>SD</option>
-                                    <option value="SMP" <?= $pasien['pnd'] == 'SMP' ? 'selected' : '' ?>>SMP</option>
-                                    <option value="SMA" <?= $pasien['pnd'] == 'SMA' ? 'selected' : '' ?>>SMA</option>
-                                    <option value="Diploma" <?= $pasien['pnd'] == 'Diploma' ? 'selected' : '' ?>>Diploma</option>
-                                    <option value="Sarjana" <?= $pasien['pnd'] == 'Sarjana' ? 'selected' : '' ?>>Sarjana</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="form-group row">
-                            <label class="col-sm-2 col-form-label">Cara Bayar</label>
-                            <div class="col-sm-10">
-                                <select class="form-control" name="kd_pj">
-                                    <?php foreach ($cara_bayar as $cb): ?>
-                                        <option value="<?= $cb['kd_pj'] ?>" <?= $pasien['kd_pj'] == $cb['kd_pj'] ? 'selected' : '' ?>><?= $cb['nm_pj'] ?></option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="form-group row">
-                            <label class="col-sm-2 col-form-label">Kecamatan</label>
-                            <div class="col-sm-10">
-                                <select class="form-control" name="kd_kec">
-                                    <?php foreach ($kecamatan as $kec): ?>
-                                        <option value="<?= $kec['kd_kec'] ?>" <?= $pasien['kd_kec'] == $kec['kd_kec'] ? 'selected' : '' ?>><?= $kec['nm_kec'] ?></option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="form-group row">
-                            <label class="col-sm-2 col-form-label">Kabupaten</label>
-                            <div class="col-sm-10">
-                                <select class="form-control" name="kd_kab">
-                                    <?php foreach ($kabupaten as $kab): ?>
-                                        <option value="<?= $kab['kd_kab'] ?>" <?= $pasien['kd_kab'] == $kab['kd_kab'] ? 'selected' : '' ?>><?= $kab['nm_kab'] ?></option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="form-group row">
-                            <label class="col-sm-2 col-form-label">Tanggal Pendaftaran</label>
-                            <div class="col-sm-10">
-                                <input type="date" class="form-control" name="tgl_daftar" value="<?= $pasien['tgl_daftar'] ?>" max="<?= date('Y-m-d') ?>">
-                            </div>
-                        </div>
+                        <!-- Hidden field untuk umur -->
+                        <input type="hidden" name="umur" id="umur" value="<?= $pasien['umur'] ?>">
 
                         <div class="form-group row">
                             <div class="col-sm-10 offset-sm-2">
@@ -227,6 +161,29 @@
 
             // Log data yang akan dikirim untuk debugging
             console.log('Form akan mengirim data:', new FormData(this));
+        });
+
+        // Fungsi untuk menghitung umur berdasarkan tanggal lahir
+        function hitungUmur(tanggalLahir) {
+            const today = new Date();
+            const birthDate = new Date(tanggalLahir);
+            let umurTahun = today.getFullYear() - birthDate.getFullYear();
+            const m = today.getMonth() - birthDate.getMonth();
+
+            if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+                umurTahun--;
+            }
+
+            return umurTahun + " Th";
+        }
+
+        // Event listener untuk tanggal lahir
+        document.getElementById('tgl_lahir').addEventListener('change', function() {
+            const tanggalLahir = this.value;
+            if (tanggalLahir) {
+                const umur = hitungUmur(tanggalLahir);
+                document.getElementById('umur').value = umur;
+            }
         });
     });
 </script>

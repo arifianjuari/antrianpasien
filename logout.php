@@ -20,5 +20,5 @@ session_start();
 $_SESSION['success_message'] = "Anda telah berhasil keluar dari sistem.";
 
 // Redirect ke home.php
-header("Location: home.php");
+header("Location: pendaftaran/form_pendaftaran_pasien.php");
 exit;

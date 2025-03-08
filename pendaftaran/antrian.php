@@ -57,7 +57,7 @@ try {
             tempat_praktek tp ON p.ID_Tempat_Praktek = tp.ID_Tempat_Praktek
         JOIN 
             dokter d ON p.ID_Dokter = d.ID_Dokter
-        WHERE 1=1
+        WHERE p.Status_Pendaftaran NOT IN ('Dibatalkan', 'Selesai')
     ";
 
     $params = [];
@@ -101,113 +101,11 @@ try {
     $antrian = [];
 }
 
-// Cek status pendaftaran berdasarkan ID
-$cek_status_result = null;
-$id_pendaftaran = isset($_POST['id_pendaftaran']) ? trim($_POST['id_pendaftaran']) : '';
-
-if (!empty($id_pendaftaran)) {
-    try {
-        $query = "
-            SELECT 
-                p.*,
-                tp.Nama_Tempat,
-                d.Nama_Dokter,
-                d.Spesialisasi,
-                CASE
-                    WHEN p.ID_Jadwal LIKE 'JR%' THEN 
-                        (SELECT CONCAT(Jam_Mulai, ' - ', Jam_Selesai, ' (', Jenis_Layanan, ')') 
-                         FROM jadwal_rutin 
-                         WHERE ID_Jadwal_Rutin = p.ID_Jadwal)
-                    ELSE 
-                        (SELECT CONCAT(Jam_Mulai, ' - ', Jam_Selesai, ' (', Jenis_Layanan, ')') 
-                         FROM jadwal_praktek 
-                         WHERE ID_Jadwal_Praktek = p.ID_Jadwal)
-                END AS Jadwal
-            FROM 
-                pendaftaran p
-            LEFT JOIN 
-                tempat_praktek tp ON p.ID_Tempat_Praktek = tp.ID_Tempat_Praktek
-            LEFT JOIN 
-                dokter d ON p.ID_Dokter = d.ID_Dokter
-            WHERE 
-                p.ID_Pendaftaran = :id_pendaftaran
-        ";
-
-        $stmt = $conn->prepare($query);
-        $stmt->bindParam(':id_pendaftaran', $id_pendaftaran);
-        $stmt->execute();
-        $cek_status_result = $stmt->fetch(PDO::FETCH_ASSOC);
-    } catch (PDOException $e) {
-        error_log("Database Error: " . $e->getMessage());
-        $error_message = "Terjadi kesalahan saat memeriksa status pendaftaran.";
-    }
-}
-
 // Start output buffering
 ob_start();
 ?>
 
 <div class="container py-4">
-    <div class="row mb-4">
-        <div class="col-md-12">
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0">Cek Status Pendaftaran</h5>
-                </div>
-                <div class="card-body">
-                    <form method="POST" action="" class="row g-3">
-                        <div class="col-md-8">
-                            <label for="id_pendaftaran" class="form-label">ID Pendaftaran</label>
-                            <input type="text" class="form-control" id="id_pendaftaran" name="id_pendaftaran" placeholder="Masukkan ID Pendaftaran (contoh: REG-20240501-0001)" required>
-                        </div>
-                        <div class="col-md-4 d-flex align-items-end">
-                            <button type="submit" class="btn btn-primary w-100">Cek Status</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <?php if ($cek_status_result): ?>
-        <div class="row mb-4">
-            <div class="col-md-12">
-                <div class="card shadow border-0">
-                    <div class="card-header bg-info text-white">
-                        <h5 class="mb-0">Hasil Pencarian</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <h6 class="border-bottom pb-2 mb-3">Informasi Pasien</h6>
-                                <p><strong>ID Pendaftaran:</strong> <?php echo htmlspecialchars($cek_status_result['ID_Pendaftaran']); ?></p>
-                                <p><strong>Nama:</strong> <?php echo htmlspecialchars($cek_status_result['nm_pasien']); ?></p>
-                                <p><strong>Tanggal Lahir:</strong> <?php echo date('d-m-Y', strtotime($cek_status_result['tgl_lahir'])); ?></p>
-                                <p><strong>Jenis Kelamin:</strong> <?php echo htmlspecialchars($cek_status_result['jk']); ?></p>
-                                <p><strong>No. Telepon:</strong> <?php echo htmlspecialchars($cek_status_result['no_tlp']); ?></p>
-                            </div>
-                            <div class="col-md-6">
-                                <h6 class="border-bottom pb-2 mb-3">Informasi Kunjungan</h6>
-                                <p><strong>Tempat Praktek:</strong> <?php echo htmlspecialchars($cek_status_result['Nama_Tempat']); ?></p>
-                                <p><strong>Dokter:</strong> <?php echo htmlspecialchars($cek_status_result['Nama_Dokter']); ?> (<?php echo htmlspecialchars($cek_status_result['Spesialisasi']); ?>)</p>
-                                <p><strong>Tanggal Kunjungan:</strong> <?php echo date('d-m-Y', strtotime($cek_status_result['Tanggal_Kunjungan'])); ?></p>
-                                <p><strong>Jadwal:</strong> <?php echo htmlspecialchars($cek_status_result['Jadwal']); ?></p>
-                                <p>
-                                    <strong>Status:</strong>
-                                    <span class="badge <?php
-                                                        echo ($cek_status_result['Status_Pendaftaran'] == 'Menunggu Konfirmasi') ? 'bg-warning' : (($cek_status_result['Status_Pendaftaran'] == 'Dikonfirmasi') ? 'bg-success' : (($cek_status_result['Status_Pendaftaran'] == 'Dibatalkan') ? 'bg-danger' : 'bg-secondary'));
-                                                        ?>">
-                                        <?php echo htmlspecialchars($cek_status_result['Status_Pendaftaran']); ?>
-                                    </span>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    <?php endif; ?>
-
     <div class="row mb-4">
         <div class="col-md-12">
             <div class="card shadow">
@@ -321,6 +219,53 @@ ob_start();
                 filterForm.submit();
             });
         });
+
+        // Auto refresh halaman setiap 1 menit (60000 milidetik)
+        const refreshInterval = 60000; // 1 menit
+
+        // Tampilkan pesan notifikasi refresh
+        function showRefreshNotification() {
+            const notification = document.createElement('div');
+            notification.className = 'position-fixed bottom-0 end-0 p-3';
+            notification.style.zIndex = '5';
+            notification.innerHTML = `
+                <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="toast-header bg-info text-white">
+                        <strong class="me-auto">Informasi</strong>
+                        <small>Baru saja</small>
+                        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                    <div class="toast-body">
+                        Halaman diperbarui secara otomatis.
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(notification);
+
+            // Hapus notifikasi setelah 3 detik
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Set interval untuk refresh otomatis
+        setInterval(function() {
+            // Simpan posisi scroll saat ini
+            const scrollPosition = window.scrollY;
+
+            // Simpan posisi scroll di sessionStorage
+            sessionStorage.setItem('scrollPosition', scrollPosition);
+
+            // Refresh halaman
+            location.reload();
+        }, refreshInterval);
+
+        // Kembalikan posisi scroll setelah refresh
+        const savedScrollPosition = sessionStorage.getItem('scrollPosition');
+        if (savedScrollPosition) {
+            window.scrollTo(0, parseInt(savedScrollPosition));
+            showRefreshNotification();
+        }
     });
 </script>
 

@@ -15,8 +15,22 @@ if (session_status() === PHP_SESSION_NONE) {
         <div class="card-body">
             <?php if (isset($_SESSION['error'])): ?>
                 <div class="alert alert-danger">
-                    <?= $_SESSION['error'] ?>
+                    <i class="fas fa-exclamation-circle"></i> <strong>Error:</strong> <?= $_SESSION['error'] ?>
                     <?php unset($_SESSION['error']) ?>
+                </div>
+            <?php endif; ?>
+
+            <?php if (isset($_SESSION['warning'])): ?>
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle"></i> <strong>Peringatan:</strong> <?= $_SESSION['warning'] ?>
+                    <?php unset($_SESSION['warning']) ?>
+                </div>
+            <?php endif; ?>
+
+            <?php if (isset($_SESSION['success'])): ?>
+                <div class="alert alert-success">
+                    <i class="fas fa-check-circle"></i> <strong>Sukses:</strong> <?= $_SESSION['success'] ?>
+                    <?php unset($_SESSION['success']) ?>
                 </div>
             <?php endif; ?>
 
@@ -47,7 +61,7 @@ if (session_status() === PHP_SESSION_NONE) {
                 </div>
             </div>
 
-            <form action="index.php?module=rekam_medis&action=simpan_pemeriksaan" method="post">
+            <form action="index.php?module=rekam_medis&action=simpan_pemeriksaan" method="post" id="formTambahKunjungan">
                 <input type="hidden" name="no_rkm_medis" value="<?= $pasien['no_rkm_medis'] ?>">
                 <input type="hidden" name="no_rawat" value="<?= $no_rawat ?>">
                 <input type="hidden" name="tgl_registrasi" value="<?= date('Y-m-d') ?>">
@@ -65,10 +79,22 @@ if (session_status() === PHP_SESSION_NONE) {
                 </div>
 
                 <div class="form-group mt-4">
-                    <button type="submit" class="btn btn-primary">Simpan Kunjungan</button>
-                    <a href="index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=<?= $pasien['no_rkm_medis'] ?>" class="btn btn-secondary">Batal</a>
+                    <button type="submit" class="btn btn-primary" id="btnSimpan">
+                        <i class="fas fa-save"></i> Simpan Kunjungan
+                    </button>
+                    <a href="index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=<?= $pasien['no_rkm_medis'] ?>" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> Batal
+                    </a>
                 </div>
             </form>
         </div>
     </div>
 </div>
+
+<script>
+    document.getElementById('formTambahKunjungan').addEventListener('submit', function(e) {
+        // Disable tombol submit untuk mencegah klik ganda
+        document.getElementById('btnSimpan').disabled = true;
+        document.getElementById('btnSimpan').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
+    });
+</script>

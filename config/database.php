@@ -8,14 +8,16 @@ if (file_exists(__DIR__ . '/timezone.php')) {
     require_once __DIR__ . '/timezone.php';
 }
 
+// Impor konfigurasi base URL
+if (file_exists(__DIR__ . '/config.php')) {
+    require_once __DIR__ . '/config.php';
+}
+
 // Database untuk aplikasi antrian pasien
 $db2_host = 'auth-db1151.hstgr.io';
 $db2_username = 'u609399718_admin_klinik';
 $db2_password = 'Juari@2591';
 $db2_database = 'u609399718_klinik_obgin';
-
-// Base URL configuration
-$base_url = 'http://localhost/antrian%20pasien';
 
 // Pastikan koneksi hanya dibuat sekali
 if (!isset($GLOBALS['conn'])) {
