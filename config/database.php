@@ -15,9 +15,9 @@ if (file_exists(__DIR__ . '/config.php')) {
 
 // Database untuk aplikasi antrian pasien
 $db2_host = 'auth-db1151.hstgr.io';
-$db2_username = 'u609399718_admin_klinik';
-$db2_password = 'Juari@2591';
-$db2_database = 'u609399718_klinik_obgin';
+$db2_username = 'u609399718_adminpraktek';
+$db2_password = 'Obgin@12345';
+$db2_database = 'u609399718_praktekobgin';
 
 // Pastikan koneksi hanya dibuat sekali
 if (!isset($GLOBALS['conn'])) {

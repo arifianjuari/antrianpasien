@@ -17,9 +17,9 @@ file_put_contents($log_file, "PDF generation started at " . date('Y-m-d H:i:s') 
 
 // Konfigurasi database
 $db_host = 'auth-db1151.hstgr.io';
-$db_username = 'u609399718_admin_klinik';
-$db_password = 'Juari@2591';
-$db_name = 'u609399718_klinik_obgin';
+$db_username = 'u609399718_adminpraktek';
+$db_password = 'Obgin@12345';
+$db_database = 'u609399718_praktekobgin';
 
 // Koneksi database
 try {

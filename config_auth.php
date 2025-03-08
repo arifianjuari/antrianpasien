@@ -1,9 +1,9 @@
 <?php
 // Database untuk aplikasi antrian pasien - db2
 $db2_host = 'auth-db1151.hstgr.io';
-$db2_username = 'u609399718_admin_klinik';
-$db2_password = 'Juari@2591';
-$db2_database = 'u609399718_klinik_obgin';
+$db2_username = 'u609399718_adminpraktek';
+$db2_password = 'Obgin@12345';
+$db2_database = 'u609399718_praktekobgin';
 
 // Include konfigurasi base URL dari file config/config.php
 require_once __DIR__ . '/config/config.php';
