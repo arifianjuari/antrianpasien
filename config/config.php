@@ -1,17 +1,13 @@
 <?php
-// Definisikan base URL
-// Untuk pengembangan lokal
-// gantikan ini jika beralih ke xampp lokal
-// ini tes saja sori
-// $base_url = 'http://localhost/antrian%20pasien';
+// Definisikan base URL dengan cara yang lebih aman
+$protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https://' : 'http://';
+$host = $_SERVER['HTTP_HOST'];
 
-// Untuk server produksi (uncomment dan sesuaikan saat deploy ke hosting)
-$base_url = 'https://www.praktekobgin.com'; // Ganti dengan domain Anda yang sebenarnya
-
-// Atau gunakan cara dinamis yang lebih aman (opsional)
-// $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https://' : 'http://';
-// $host = $_SERVER['HTTP_HOST'];
-// $base_url = $protocol . $host; // Tidak perlu menambahkan '/antrian%20pasien' di public_html
+if ($host === 'localhost' || strpos($host, 'localhost:') === 0) {
+    $base_url = $protocol . $host . '/antrian%20pasien';
+} else {
+    $base_url = $protocol . $host;
+}
 
 // Pastikan tidak ada trailing slash di akhir URL
 $base_url = rtrim($base_url, '/');

@@ -1,4 +1,7 @@
 <?php
+// Include error handler
+require_once 'error_handler.php';
+
 // Enable error reporting for debugging
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
@@ -20,7 +23,7 @@ error_log("Checking database connection in index.php");
 // Cek koneksi database
 if (!isset($conn) || !($conn instanceof PDO)) {
     error_log("Database connection not available in index.php");
-    die("Koneksi database tidak tersedia. Silakan hubungi administrator.");
+    throw new Exception("Koneksi database tidak tersedia. Silakan hubungi administrator.");
 }
 
 try {
@@ -32,7 +35,7 @@ try {
     error_log("Database connection test successful in index.php");
 } catch (PDOException $e) {
     error_log("Database test failed in index.php: " . $e->getMessage());
-    die("Koneksi database bermasalah: " . $e->getMessage());
+    throw new Exception("Koneksi database bermasalah: " . $e->getMessage());
 }
 
 require_once 'config/config.php';
