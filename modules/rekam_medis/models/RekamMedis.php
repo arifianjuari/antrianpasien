@@ -921,6 +921,7 @@ class RekamMedis
 
             // Format nomor dengan padding 3 digit
             $no_reg = str_pad($next_num, 3, '0', STR_PAD_LEFT);
+            error_log("Initial no_reg generated: " . $no_reg);
 
             // Periksa apakah nomor registrasi sudah ada
             $check_stmt = $this->pdo->prepare("
@@ -930,20 +931,34 @@ class RekamMedis
             ");
             $check_stmt->execute([$tanggal, $no_reg]);
             $check_result = $check_stmt->fetch(PDO::FETCH_ASSOC);
+            error_log("Check result for no_reg " . $no_reg . ": " . $check_result['count']);
 
             // Jika nomor registrasi sudah ada, increment lagi sampai menemukan yang unik
-            while ($check_result['count'] > 0) {
+            $max_attempts = 100; // Batasi jumlah percobaan untuk menghindari infinite loop
+            $attempt = 0;
+
+            while ($check_result['count'] > 0 && $attempt < $max_attempts) {
+                $attempt++;
                 $next_num++;
                 $no_reg = str_pad($next_num, 3, '0', STR_PAD_LEFT);
+                error_log("Trying alternative no_reg (attempt " . $attempt . "): " . $no_reg);
                 $check_stmt->execute([$tanggal, $no_reg]);
                 $check_result = $check_stmt->fetch(PDO::FETCH_ASSOC);
+                error_log("Check result for no_reg " . $no_reg . ": " . $check_result['count']);
             }
 
-            error_log("Generated no_reg: " . $no_reg);
+            if ($attempt >= $max_attempts) {
+                error_log("WARNING: Reached maximum attempts to generate unique no_reg");
+                // Tambahkan timestamp untuk memastikan keunikan
+                $no_reg = $no_reg . date('His');
+                error_log("Using timestamp-based no_reg: " . $no_reg);
+            }
 
+            error_log("Final generated no_reg: " . $no_reg);
             return $no_reg;
         } catch (PDOException $e) {
             error_log("Error generating no_reg: " . $e->getMessage());
+            error_log("Stack trace: " . $e->getTraceAsString());
             throw new Exception("Gagal generate nomor registrasi");
         }
     }
@@ -976,6 +991,23 @@ class RekamMedis
                 error_log("No rawat baru: " . $data['no_rawat']);
             }
 
+            // Cek apakah kombinasi tanggal dan no_reg sudah ada
+            $check_reg_stmt = $this->pdo->prepare("
+                SELECT COUNT(*) as count
+                FROM reg_periksa 
+                WHERE tgl_registrasi = ? AND no_reg = ?
+            ");
+            $check_reg_stmt->execute([$data['tgl_registrasi'], $no_reg]);
+            $check_reg_result = $check_reg_stmt->fetch(PDO::FETCH_ASSOC);
+
+            if ($check_reg_result['count'] > 0) {
+                error_log("Kombinasi tgl_registrasi dan no_reg sudah ada: " . $data['tgl_registrasi'] . " - " . $no_reg);
+                // Generate no_reg baru dengan menambahkan timestamp
+                $timestamp = date('His');
+                $no_reg = $no_reg . $timestamp;
+                error_log("No reg baru dengan timestamp: " . $no_reg);
+            }
+
             $stmt = $this->pdo->prepare("
                 INSERT INTO reg_periksa (
                     no_reg, no_rawat, no_rkm_medis, tgl_registrasi, 
@@ -1000,8 +1032,27 @@ class RekamMedis
             $result = $stmt->execute($params);
 
             if (!$result) {
-                error_log("Error executing query: " . print_r($stmt->errorInfo(), true));
-                return false;
+                $error_info = $stmt->errorInfo();
+                error_log("Error executing query: " . print_r($error_info, true));
+
+                // Jika error adalah duplicate entry, coba dengan no_reg yang berbeda
+                if ($error_info[0] == '23000' && strpos($error_info[2], 'Duplicate entry') !== false) {
+                    error_log("Mencoba lagi dengan no_reg yang berbeda karena duplikasi");
+
+                    // Generate no_reg baru dengan timestamp
+                    $no_reg = date('His');
+                    $params[':no_reg'] = $no_reg;
+
+                    error_log("Mencoba dengan no_reg baru: " . $no_reg);
+                    $result = $stmt->execute($params);
+
+                    if (!$result) {
+                        error_log("Masih gagal dengan no_reg baru: " . print_r($stmt->errorInfo(), true));
+                        return false;
+                    }
+                } else {
+                    return false;
+                }
             }
 
             error_log("Pemeriksaan berhasil disimpan");

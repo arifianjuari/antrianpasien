@@ -85,6 +85,9 @@ if ($module == 'rekam_medis') {
             case 'simpan_pasien':
                 $rekamMedisController->simpanPasien();
                 break;
+            case 'cek_nik_pasien':
+                $rekamMedisController->cekNikPasien();
+                break;
             case 'detailPasien':
                 $rekamMedisController->detailPasien($_GET['no_rkm_medis']);
                 break;
@@ -96,6 +99,9 @@ if ($module == 'rekam_medis') {
                 break;
             case 'updatePasien':
                 $rekamMedisController->updatePasien();
+                break;
+            case 'hapusPasien':
+                $rekamMedisController->hapusPasien();
                 break;
             case 'tambah_pemeriksaan':
                 error_log("Routing to tambah_pemeriksaan");
@@ -206,13 +212,19 @@ if ($module == 'rekam_medis') {
                 error_log("Routing to generate_pdf");
                 $rekamMedisController->generate_pdf();
                 break;
+            case 'generate_status_obstetri_pdf':
+                error_log("Routing to generate_status_obstetri_pdf");
+                $rekamMedisController->generate_status_obstetri_pdf();
+                break;
             default:
                 $rekamMedisController->index();
                 break;
         }
     } catch (Exception $e) {
-        error_log("Error in controller execution: " . $e->getMessage());
-        die("Terjadi kesalahan: " . $e->getMessage());
+        error_log("Error in routing: " . $e->getMessage());
+        $_SESSION['error'] = $e->getMessage();
+        header('Location: index.php?module=rekam_medis&action=data_pasien');
+        exit;
     }
 } else {
     // Jika modul tidak ditemukan, redirect ke home

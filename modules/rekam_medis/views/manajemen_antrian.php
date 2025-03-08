@@ -19,6 +19,11 @@ if (!isset($conn) || !($conn instanceof PDO)) {
     require_once $root_dir . '/config/database.php';
 }
 
+// Include base URL configuration if not already included
+if (!isset($base_url)) {
+    require_once $root_dir . '/config/config.php';
+}
+
 // Log status koneksi
 error_log("Checking database connection in manajemen_antrian.php");
 
@@ -64,6 +69,7 @@ try {
             p.ID_Pendaftaran,
             pas.no_rkm_medis,
             p.nm_pasien as Nama_Pasien,
+            p.Keluhan,
             p.Status_Pendaftaran,
             p.Waktu_Pendaftaran,
             jr.Hari,
@@ -71,7 +77,8 @@ try {
             jr.Jam_Selesai,
             jr.Jenis_Layanan,
             tp.Nama_Tempat,
-            d.Nama_Dokter
+            d.Nama_Dokter,
+            pas.no_tlp
         FROM 
             pendaftaran p
         JOIN pasien pas ON p.no_ktp = pas.no_ktp
@@ -361,6 +368,9 @@ try {
                             </form>
                         </div>
                         <div class="col-md-4 text-end">
+                            <a href="<?php echo $base_url; ?>/pendaftaran/form_pendaftaran_pasien.php" class="btn btn-primary btn-icon me-2" data-bs-toggle="tooltip" title="Tambah Pendaftaran Baru">
+                                <i class="bi bi-plus-circle"></i>
+                            </a>
                             <button type="button" class="btn btn-success btn-icon" onclick="refreshPage()" data-bs-toggle="tooltip" title="Refresh Data">
                                 <i class="bi bi-arrow-clockwise"></i>
                             </button>
@@ -381,6 +391,7 @@ try {
                                         <th>No. RM</th>
                                         <th>Waktu Daftar</th>
                                         <th>Nama Pasien</th>
+                                        <th>Keluhan</th>
                                         <th>Status</th>
                                         <th>Aksi</th>
                                     </tr>
@@ -392,6 +403,7 @@ try {
                                             <td><?= htmlspecialchars($a['no_rkm_medis']) ?></td>
                                             <td><?= date('d/m/Y H:i', strtotime($a['Waktu_Pendaftaran'])) ?></td>
                                             <td><?= htmlspecialchars($a['Nama_Pasien']) ?></td>
+                                            <td><?= !empty($a['Keluhan']) ? htmlspecialchars($a['Keluhan']) : '-' ?></td>
                                             <td>
                                                 <span class="badge <?= getStatusBadgeClass($a['Status_Pendaftaran']) ?>">
                                                     <?= htmlspecialchars($a['Status_Pendaftaran']) ?>
@@ -443,6 +455,37 @@ try {
                                                         data-bs-toggle="tooltip" title="Lihat Detail">
                                                         <i class="bi bi-eye"></i>
                                                     </button>
+
+                                                    <?php if (!empty($a['no_tlp'])): ?>
+                                                        <?php
+                                                        // Bersihkan nomor telepon dari karakter non-numerik
+                                                        $no_tlp_clean = preg_replace('/[^0-9]/', '', $a['no_tlp']);
+
+                                                        // Pastikan format nomor telepon benar (awali dengan 62)
+                                                        if (substr($no_tlp_clean, 0, 1) == '0') {
+                                                            $no_tlp_clean = '62' . substr($no_tlp_clean, 1);
+                                                        } elseif (substr($no_tlp_clean, 0, 2) != '62') {
+                                                            $no_tlp_clean = '62' . $no_tlp_clean;
+                                                        }
+
+                                                        // Buat pesan untuk WhatsApp
+                                                        $pesan = "Halo " . $a['Nama_Pasien'] . ", ";
+                                                        $pesan .= "pendaftaran Anda dengan ID " . $a['ID_Pendaftaran'] . " ";
+                                                        $pesan .= "pada tanggal " . date('d/m/Y H:i', strtotime($a['Waktu_Pendaftaran'])) . " ";
+                                                        $pesan .= "saat ini berstatus " . $a['Status_Pendaftaran'] . ".";
+
+                                                        // Encode pesan untuk URL
+                                                        $pesan_encoded = urlencode($pesan);
+
+                                                        // Buat URL WhatsApp
+                                                        $whatsapp_url = "https://wa.me/" . $no_tlp_clean . "?text=" . $pesan_encoded;
+                                                        ?>
+                                                        <a href="<?= $whatsapp_url ?>" target="_blank"
+                                                            class="btn btn-sm btn-success btn-icon"
+                                                            data-bs-toggle="tooltip" title="Hubungi via WhatsApp">
+                                                            <i class="bi bi-whatsapp"></i>
+                                                        </a>
+                                                    <?php endif; ?>
                                                 </div>
                                             </td>
                                         </tr>

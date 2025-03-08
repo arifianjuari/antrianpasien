@@ -154,11 +154,14 @@ error_log("Data pasien: " . json_encode($pasien));
                     <div class="card-header">
                         <h3 class="card-title">Detail Rekam Medis Pasien</h3>
                         <div class="card-tools">
+                            <a href="javascript:history.back()" class="btn btn-default btn-sm">
+                                <i class="fas fa-arrow-left"></i> Kembali
+                            </a>
                             <a href="index.php?module=rekam_medis&action=generate_pdf&no_rkm_medis=<?= $pasien['no_rkm_medis'] ?>" class="btn btn-danger btn-sm" target="_blank">
                                 <i class="fas fa-file-pdf"></i> Download Resume PDF
                             </a>
-                            <a href="index.php?module=rekam_medis" class="btn btn-default btn-sm">
-                                <i class="fas fa-arrow-left"></i> Kembali
+                            <a href="index.php?module=rekam_medis&action=generate_status_obstetri_pdf&no_rkm_medis=<?= $pasien['no_rkm_medis'] ?>" class="btn btn-danger btn-sm" target="_blank">
+                                <i class="fas fa-file-pdf"></i> Download Status Obstetri
                             </a>
                         </div>
                     </div>
@@ -241,7 +244,7 @@ error_log("Data pasien: " . json_encode($pasien));
                                             <div class="card-body p-0">
                                                 <table class="table table-sm table-hover" style="font-size: 0.85rem;">
                                                     <tr>
-                                                        <th width="140" class="text-muted px-3">No. Rekam Medis</th>
+                                                        <th width="140" class="text-muted px-3">No.RM</th>
                                                         <td class="px-3"><?= $pasien['no_rkm_medis'] ?></td>
                                                     </tr>
                                                     <tr>
@@ -255,10 +258,6 @@ error_log("Data pasien: " . json_encode($pasien));
                                                     <tr>
                                                         <th class="text-muted px-3">Jenis Kelamin</th>
                                                         <td class="px-3"><?= $pasien['jk'] == 'L' ? 'Laki-laki' : 'Perempuan' ?></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th class="text-muted px-3">Tempat Lahir</th>
-                                                        <td class="px-3"><?= $pasien['tmp_lahir'] ?></td>
                                                     </tr>
                                                     <tr>
                                                         <th class="text-muted px-3">Tanggal Lahir</th>
@@ -301,21 +300,6 @@ error_log("Data pasien: " . json_encode($pasien));
                                                         </td>
                                                     </tr>
                                                     <tr>
-                                                        <th class="text-muted px-3">Kabupaten</th>
-                                                        <td class="px-3">
-                                                            <?php
-                                                            $nama_kabupaten = '-';
-                                                            foreach ($kabupaten as $kab) {
-                                                                if ($kab['kd_kab'] == $pasien['kd_kab']) {
-                                                                    $nama_kabupaten = $kab['nm_kab'];
-                                                                    break;
-                                                                }
-                                                            }
-                                                            echo $nama_kabupaten;
-                                                            ?>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
                                                         <th class="text-muted px-3">No. Telepon</th>
                                                         <td class="px-3"><?= $pasien['no_tlp'] ?></td>
                                                     </tr>
@@ -325,59 +309,15 @@ error_log("Data pasien: " . json_encode($pasien));
                                                     </tr>
                                                     <tr>
                                                         <th class="text-muted px-3">Pekerjaan</th>
-                                                        <td class="px-3"><?= $pasien['pekerjaan'] ?? '-' ?></td>
+                                                        <td class="px-3"><?= $pasien['pekerjaan'] ?></td>
                                                     </tr>
                                                     <tr>
                                                         <th class="text-muted px-3">Status Nikah</th>
                                                         <td class="px-3"><?= $pasien['stts_nikah'] ?? '-' ?></td>
                                                     </tr>
                                                     <tr>
-                                                        <th class="text-muted px-3">Agama</th>
-                                                        <td class="px-3"><?= $pasien['agama'] ?? '-' ?></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th class="text-muted px-3">Golongan Darah</th>
-                                                        <td class="px-3"><?= $pasien['gol_darah'] ?? '-' ?></td>
-                                                    </tr>
-                                                </table>
-                                            </div>
-                                        </div>
-
-                                        <!-- Informasi Registrasi -->
-                                        <div class="card mt-3">
-                                            <div class="card-header bg-light">
-                                                <h6 class="card-title mb-0" style="font-size: 0.9rem;">Informasi Registrasi</h6>
-                                            </div>
-                                            <div class="card-body p-0">
-                                                <table class="table table-sm table-hover" style="font-size: 0.85rem;">
-                                                    <tr>
-                                                        <th width="140" class="text-muted px-3">Cara Bayar</th>
-                                                        <td class="px-3">
-                                                            <?php
-                                                            $cara_bayar = '';
-                                                            switch ($pasien['kd_pj']) {
-                                                                case 'UMU':
-                                                                    $cara_bayar = 'Umum';
-                                                                    break;
-                                                                case 'BPJ':
-                                                                    $cara_bayar = 'BPJS';
-                                                                    break;
-                                                                case 'ASR':
-                                                                    $cara_bayar = 'Asuransi';
-                                                                    break;
-                                                                case 'KOR':
-                                                                    $cara_bayar = 'Korporasi';
-                                                                    break;
-                                                                default:
-                                                                    $cara_bayar = $pasien['kd_pj'];
-                                                            }
-                                                            echo $cara_bayar;
-                                                            ?>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th class="text-muted px-3">Tgl Pendaftaran</th>
-                                                        <td class="px-3"><?= date('d-m-Y', strtotime($pasien['tgl_daftar'])) ?></td>
+                                                        <th class="text-muted px-3">Catatan Pasien</th>
+                                                        <td class="px-3"><?= $pasien['catatan_pasien'] ?? '-' ?></td>
                                                     </tr>
                                                 </table>
                                             </div>

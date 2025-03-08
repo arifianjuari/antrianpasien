@@ -16,26 +16,39 @@ class RekamMedisController
 
     public function __construct($pdo)
     {
-        if (!isset($pdo) || !($pdo instanceof PDO)) {
-            error_log("Invalid PDO connection passed to RekamMedisController");
-            throw new Exception("Koneksi database tidak valid");
-        }
-
         try {
+            // Jika koneksi tidak valid, buat koneksi baru
+            if (!isset($pdo) || !($pdo instanceof PDO)) {
+                $db2_host = 'auth-db1151.hstgr.io';
+                $db2_username = 'u609399718_admin_klinik';
+                $db2_password = 'Juari@2591';
+                $db2_database = 'u609399718_klinik_obgin';
+
+                $pdo = new PDO(
+                    "mysql:host=$db2_host;dbname=$db2_database;charset=utf8mb4",
+                    $db2_username,
+                    $db2_password,
+                    [
+                        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                        PDO::ATTR_EMULATE_PREPARES => false
+                    ]
+                );
+            }
+
             // Test koneksi
             $test = $pdo->query("SELECT 1");
             if (!$test) {
                 throw new PDOException("Koneksi database tidak dapat melakukan query");
             }
-            error_log("Database connection test successful in RekamMedisController");
+
+            $this->pdo = $pdo;
+            $this->rekamMedisModel = new RekamMedis($pdo);
+            $this->tindakanMedisModel = new TindakanMedis($pdo);
         } catch (PDOException $e) {
-            error_log("Database test failed in RekamMedisController: " . $e->getMessage());
+            error_log("Database Error in RekamMedisController constructor: " . $e->getMessage());
             throw new Exception("Koneksi database bermasalah: " . $e->getMessage());
         }
-
-        $this->pdo = $pdo;
-        $this->rekamMedisModel = new RekamMedis($pdo);
-        $this->tindakanMedisModel = new TindakanMedis($pdo);
     }
 
     public function index()
@@ -149,6 +162,92 @@ class RekamMedisController
         exit;
     }
 
+    public function hapusPasien()
+    {
+        error_log("=== Mulai proses hapusPasien ===");
+
+        $no_rkm_medis = $_POST['no_rkm_medis'] ?? '';
+        error_log("No RM yang akan dihapus: " . $no_rkm_medis);
+
+        if (empty($no_rkm_medis)) {
+            $_SESSION['error'] = 'Parameter ID pasien tidak ditemukan';
+            error_log("Error: Parameter ID pasien kosong");
+            header('Location: index.php?module=rekam_medis&action=data_pasien');
+            exit;
+        }
+
+        try {
+            // Buat koneksi langsung ke database
+            $db2_host = 'auth-db1151.hstgr.io';
+            $db2_username = 'u609399718_admin_klinik';
+            $db2_password = 'Juari@2591';
+            $db2_database = 'u609399718_klinik_obgin';
+
+            $pdo = new PDO(
+                "mysql:host=$db2_host;dbname=$db2_database;charset=utf8mb4",
+                $db2_username,
+                $db2_password,
+                [
+                    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                    PDO::ATTR_EMULATE_PREPARES => false
+                ]
+            );
+
+            error_log("Koneksi database berhasil dibuat");
+
+            // Cek apakah data pasien ada
+            $check_exist_query = "SELECT COUNT(*) FROM pasien WHERE no_rkm_medis = :no_rkm_medis";
+            $check_exist_stmt = $pdo->prepare($check_exist_query);
+            $check_exist_stmt->bindParam(':no_rkm_medis', $no_rkm_medis, PDO::PARAM_STR);
+            $check_exist_stmt->execute();
+            $exists = $check_exist_stmt->fetchColumn();
+
+            if ($exists == 0) {
+                error_log("Data pasien tidak ditemukan di database");
+                $_SESSION['error'] = 'Data pasien tidak ditemukan';
+                header('Location: index.php?module=rekam_medis&action=data_pasien');
+                exit;
+            }
+
+            error_log("Data pasien ditemukan, melanjutkan proses");
+
+            // Hapus data pasien
+            $delete_query = "DELETE FROM pasien WHERE no_rkm_medis = :no_rkm_medis";
+            error_log("Query hapus: " . $delete_query);
+            $delete_stmt = $pdo->prepare($delete_query);
+            $delete_stmt->bindParam(':no_rkm_medis', $no_rkm_medis, PDO::PARAM_STR);
+            $result = $delete_stmt->execute();
+            error_log("Hasil eksekusi query hapus: " . ($result ? "Berhasil" : "Gagal"));
+
+            if ($result) {
+                $rows_affected = $delete_stmt->rowCount();
+                error_log("Jumlah baris yang dihapus: " . $rows_affected);
+
+                if ($rows_affected > 0) {
+                    error_log("Data berhasil dihapus");
+                    $_SESSION['success'] = 'Data pasien berhasil dihapus';
+                } else {
+                    error_log("Tidak ada baris yang dihapus");
+                    $_SESSION['error'] = 'Tidak ada data pasien yang dihapus';
+                }
+            } else {
+                $errorInfo = $delete_stmt->errorInfo();
+                error_log("Query gagal: " . print_r($errorInfo, true));
+                $_SESSION['error'] = 'Gagal menghapus data pasien. Error: ' . $errorInfo[2];
+            }
+        } catch (PDOException $e) {
+            error_log("Database Error in hapusPasien: " . $e->getMessage());
+            error_log("Stack trace: " . $e->getTraceAsString());
+            $_SESSION['error'] = 'Gagal menghapus data pasien: ' . $e->getMessage();
+        }
+
+        error_log("=== Selesai proses hapusPasien ===");
+        error_log("Redirect ke: index.php?module=rekam_medis&action=data_pasien");
+        header('Location: index.php?module=rekam_medis&action=data_pasien');
+        exit;
+    }
+
     public function tambahPasien()
     {
         // Data wilayah statis
@@ -189,67 +288,75 @@ class RekamMedisController
     public function simpanPasien()
     {
         // Ambil data dari form
-        $nama_pasien = $_POST['nama_pasien'] ?? '';
-        $jenis_kelamin = $_POST['jenis_kelamin'] ?? '';
+        $nm_pasien = $_POST['nm_pasien'] ?? '';
+        $jk = $_POST['jk'] ?? '';
         $tgl_lahir = $_POST['tgl_lahir'] ?? '';
         $alamat = $_POST['alamat'] ?? '';
         $pekerjaan = $_POST['pekerjaan'] ?? '';
         $no_tlp = $_POST['no_tlp'] ?? '';
         $no_ktp = $_POST['no_ktp'] ?? '';
         $kd_kec = $_POST['kd_kec'] ?? '';
-        $nm_ibu = $_POST['nm_ibu'] ?? '';
-        $namakeluarga = $_POST['namakeluarga'] ?? '';
-        $kd_pj = $_POST['kd_pj'] ?? '';
-        $kd_kel = $_POST['kd_kel'] ?? '';
-        $kd_kab = $_POST['kd_kab'] ?? '';
+        $umur = $_POST['umur'] ?? '';
+        $tgl_daftar = $_POST['tgl_daftar'] ?? date('Y-m-d H:i:s');
+        $catatan_pasien = $_POST['catatan_pasien'] ?? '';
 
         // Validasi data
-        if (empty($nama_pasien) || empty($jenis_kelamin) || empty($tgl_lahir)) {
+        if (empty($nm_pasien) || empty($jk) || empty($tgl_lahir)) {
             $_SESSION['error'] = 'Data pasien tidak lengkap';
             header('Location: index.php?module=rekam_medis&action=tambah_pasien');
             exit;
         }
 
+        // Cek apakah NIK sudah ada
+        if (!empty($no_ktp)) {
+            $stmt = $this->pdo->prepare("SELECT COUNT(*) FROM pasien WHERE no_ktp = ?");
+            $stmt->execute([$no_ktp]);
+            $count = $stmt->fetchColumn();
+
+            if ($count > 0) {
+                $_SESSION['error'] = 'NIK sudah terdaftar dalam database';
+                header('Location: index.php?module=rekam_medis&action=tambah_pasien');
+                exit;
+            }
+        }
+
         try {
-            // Generate nomor rekam medis
-            $stmt = $this->pdo->prepare("SELECT MAX(CAST(no_rkm_medis AS UNSIGNED)) as max_id FROM pasien");
+            // Generate nomor rekam medis dengan format RM-YYYYMMDD-XXX
+            $tanggal_sekarang = date('Ymd');
+
+            // Cari nomor urut terakhir dari semua nomor rekam medis
+            $stmt = $this->pdo->prepare("SELECT MAX(CAST(SUBSTRING_INDEX(no_rkm_medis, '-', -1) AS UNSIGNED)) as max_id FROM pasien");
             $stmt->execute();
             $result = $stmt->fetch();
-            $next_id = (int)$result['max_id'] + 1;
-            $no_rkm_medis = str_pad($next_id, 6, '0', STR_PAD_LEFT);
 
-            // Hitung umur
-            $umur = date_diff(date_create($tgl_lahir), date_create('today'))->y;
-            $tgl_daftar = date('Y-m-d');
+            // Jika belum ada nomor rekam medis, mulai dari 001
+            // Jika sudah ada, increment nomor terakhir
+            $next_id = (empty($result['max_id']) || $result['max_id'] === null) ? 1 : (int)$result['max_id'] + 1;
+            $no_rkm_medis = "RM-" . $tanggal_sekarang . "-" . str_pad($next_id, 3, '0', STR_PAD_LEFT);
 
             // Simpan data pasien
             $stmt = $this->pdo->prepare("
                 INSERT INTO pasien (
                     no_rkm_medis, nm_pasien, jk, tgl_lahir, alamat, pekerjaan, 
-                    no_tlp, umur, kd_kec, nm_ibu, namakeluarga, kd_pj, 
-                    kd_kel, kd_kab, tgl_daftar, no_ktp
+                    no_tlp, umur, kd_kec, tgl_daftar, no_ktp, catatan_pasien
                 ) VALUES (
-                    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+                    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
                 )
             ");
 
             $stmt->execute([
                 $no_rkm_medis,
-                $nama_pasien,
-                $jenis_kelamin,
+                $nm_pasien,
+                $jk,
                 $tgl_lahir,
                 $alamat,
                 $pekerjaan,
                 $no_tlp,
                 $umur,
                 $kd_kec,
-                $nm_ibu,
-                $namakeluarga,
-                $kd_pj,
-                $kd_kel,
-                $kd_kab,
                 $tgl_daftar,
-                $no_ktp
+                $no_ktp,
+                $catatan_pasien
             ]);
 
             $_SESSION['success'] = 'Data pasien berhasil ditambahkan';
@@ -257,6 +364,45 @@ class RekamMedisController
         } catch (PDOException $e) {
             $_SESSION['error'] = 'Gagal menambahkan data pasien: ' . $e->getMessage();
             header('Location: index.php?module=rekam_medis&action=tambah_pasien');
+        }
+        exit;
+    }
+
+    public function cekNikPasien()
+    {
+        // Pastikan request adalah AJAX
+        if (!isset($_SERVER['HTTP_X_REQUESTED_WITH']) || strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) != 'xmlhttprequest') {
+            http_response_code(403);
+            echo json_encode(['error' => 'Akses ditolak']);
+            exit;
+        }
+
+        // Ambil NIK dari request
+        $nik = $_POST['nik'] ?? '';
+
+        if (empty($nik)) {
+            echo json_encode(['status' => 'empty']);
+            exit;
+        }
+
+        try {
+            // Cek apakah NIK sudah ada di database
+            $stmt = $this->pdo->prepare("SELECT no_rkm_medis, nm_pasien FROM pasien WHERE no_ktp = ?");
+            $stmt->execute([$nik]);
+            $result = $stmt->fetch();
+
+            if ($result) {
+                // NIK sudah ada
+                echo json_encode([
+                    'status' => 'exists',
+                    'message' => 'NIK sudah terdaftar dengan nomor RM: ' . $result['no_rkm_medis'] . ' atas nama ' . $result['nm_pasien']
+                ]);
+            } else {
+                // NIK belum ada
+                echo json_encode(['status' => 'not_exists']);
+            }
+        } catch (PDOException $e) {
+            echo json_encode(['error' => 'Terjadi kesalahan: ' . $e->getMessage()]);
         }
         exit;
     }
@@ -274,9 +420,12 @@ class RekamMedisController
 
         // Hitung umur berdasarkan tanggal lahir
         $tgl_lahir = $_POST['tgl_lahir'] ?? '';
-        $umur = '';
-        if (!empty($tgl_lahir)) {
-            $umur = date_diff(date_create($tgl_lahir), date_create('today'))->y;
+        $umur = $_POST['umur'] ?? '';
+        if (!empty($tgl_lahir) && empty($umur)) {
+            $birthDate = new DateTime($tgl_lahir);
+            $today = new DateTime();
+            $diff = $today->diff($birthDate);
+            $umur = $diff->y . " Th";
         }
 
         // Data pasien yang akan diupdate
@@ -286,24 +435,12 @@ class RekamMedisController
             'tgl_lahir' => $tgl_lahir,
             'umur' => $umur,
             'alamat' => $_POST['alamat'] ?? '',
-            'kd_kel' => $_POST['kd_kel'] ?? '',
             'kd_kec' => $_POST['kd_kec'] ?? '',
-            'kd_kab' => $_POST['kd_kab'] ?? '',
             'no_tlp' => $_POST['no_tlp'] ?? '',
             'pekerjaan' => $_POST['pekerjaan'] ?? '',
-            'agama' => $_POST['agama'] ?? '',
-            'stts_nikah' => $_POST['stts_nikah'] ?? '',
-            'kd_pj' => $_POST['kd_pj'] ?? '',
-            'no_peserta' => $_POST['no_peserta'] ?? '',
-            'tmp_lahir' => $_POST['tmp_lahir'] ?? '',
-            'email' => $_POST['email'] ?? '',
-            'keluarga' => $_POST['keluarga'] ?? '',
-            'namakeluarga' => $_POST['namakeluarga'] ?? '',
-            'nm_ibu' => $_POST['nm_ibu'] ?? '',
             'no_ktp' => $_POST['no_ktp'] ?? '',
-            'gol_darah' => $_POST['gol_darah'] ?? '',
-            'pnd' => $_POST['pnd'] ?? '',
-            'tgl_daftar' => $_POST['tgl_daftar'] ?? ''
+            'stts_nikah' => $_POST['stts_nikah'] ?? '',
+            'catatan_pasien' => $_POST['catatan_pasien'] ?? ''
         ];
 
         try {
@@ -1096,10 +1233,28 @@ class RekamMedisController
                 header("Location: index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=" . $_POST['no_rkm_medis']);
                 exit;
             } else {
-                throw new Exception("Gagal menyimpan data kunjungan");
+                // Coba cek apakah data sudah ada
+                $check_stmt = $this->pdo->prepare("
+                    SELECT COUNT(*) as count 
+                    FROM reg_periksa 
+                    WHERE no_rawat = ? OR (tgl_registrasi = ? AND no_rkm_medis = ?)
+                ");
+                $check_stmt->execute([$data['no_rawat'], $data['tgl_registrasi'], $data['no_rkm_medis']]);
+                $check_result = $check_stmt->fetch(PDO::FETCH_ASSOC);
+
+                if ($check_result['count'] > 0) {
+                    // Data sudah ada, mungkin duplikasi
+                    error_log("Data kunjungan sudah ada di database");
+                    $_SESSION['warning'] = "Data kunjungan sudah ada di database. Silakan periksa daftar kunjungan pasien.";
+                    header("Location: index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=" . $_POST['no_rkm_medis']);
+                    exit;
+                } else {
+                    throw new Exception("Gagal menyimpan data kunjungan. Silakan coba lagi.");
+                }
             }
         } catch (Exception $e) {
             error_log("Error in simpan_pemeriksaan: " . $e->getMessage());
+            error_log("Stack trace: " . $e->getTraceAsString());
             $_SESSION['error'] = $e->getMessage();
             header("Location: index.php?module=rekam_medis&action=tambah_pemeriksaan&no_rkm_medis=" . $_POST['no_rkm_medis']);
             exit;
@@ -2239,6 +2394,46 @@ class RekamMedisController
             die("Error: " . $e->getMessage());
         } catch (Exception $e) {
             error_log("General error in generate_pdf: " . $e->getMessage());
+            die("Error: " . $e->getMessage());
+        }
+    }
+
+    public function generate_status_obstetri_pdf()
+    {
+        if (!isset($_GET['no_rkm_medis'])) {
+            die("Nomor rekam medis tidak ditemukan");
+        }
+
+        $no_rkm_medis = $_GET['no_rkm_medis'];
+
+        try {
+            // Query untuk mendapatkan data pasien
+            $query_pasien = "SELECT * FROM pasien WHERE no_rkm_medis = :no_rkm_medis";
+            $stmt_pasien = $this->pdo->prepare($query_pasien);
+            $stmt_pasien->execute([':no_rkm_medis' => $no_rkm_medis]);
+            $pasien = $stmt_pasien->fetch(PDO::FETCH_ASSOC);
+
+            if (!$pasien) {
+                die("Data pasien tidak ditemukan");
+            }
+
+            // Query untuk status obstetri
+            $query_obstetri = "SELECT * FROM status_obstetri WHERE no_rkm_medis = :no_rkm_medis ORDER BY tanggal_tp_penyesuaian DESC LIMIT 1";
+            $stmt_obstetri = $this->pdo->prepare($query_obstetri);
+            $stmt_obstetri->execute([':no_rkm_medis' => $no_rkm_medis]);
+            $obstetri = $stmt_obstetri->fetch(PDO::FETCH_ASSOC);
+
+            if (!$obstetri) {
+                die("Data status obstetri tidak ditemukan");
+            }
+
+            // Generate PDF
+            require_once('modules/rekam_medis/generate_status_obstetri_pdf.php');
+        } catch (PDOException $e) {
+            error_log("Database error in generate_status_obstetri_pdf: " . $e->getMessage());
+            die("Error: " . $e->getMessage());
+        } catch (Exception $e) {
+            error_log("General error in generate_status_obstetri_pdf: " . $e->getMessage());
             die("Error: " . $e->getMessage());
         }
     }

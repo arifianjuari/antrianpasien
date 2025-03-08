@@ -25,7 +25,7 @@ if (!isset($_SESSION['user_id']) && isset($_COOKIE['remember_token']) && isset($
 
             // Regenerate remember me token for security
             setRememberMeCookie($user['id'], generateRememberToken());
-            header('Location: dashboard.php');
+            header('Location: ' . $base_url . '/pendaftaran/form_pendaftaran_pasien.php');
             exit();
         }
     }
@@ -33,7 +33,7 @@ if (!isset($_SESSION['user_id']) && isset($_COOKIE['remember_token']) && isset($
 
 // Jika sudah login, redirect ke halaman utama
 if (isset($_SESSION['user_id'])) {
-    header('Location: index.php');
+    header('Location: ' . $base_url . '/pendaftaran/form_pendaftaran_pasien.php');
     exit;
 }
 
@@ -71,7 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             // Log successful login
                             logActivity($user['id'], 'Login', 'Login berhasil');
 
-                            header('Location: index.php');
+                            header('Location: ' . $base_url . '/pendaftaran/form_pendaftaran_pasien.php');
                             exit();
                         } else {
                             $error = 'Silakan verifikasi email Anda terlebih dahulu';

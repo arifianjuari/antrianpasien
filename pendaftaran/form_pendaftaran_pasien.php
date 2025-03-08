@@ -125,11 +125,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             // Jika pasien belum ada, simpan ke tabel pasien
             if (!$pasien_exists) {
-                // Tambahkan nilai default untuk kolom yang diperlukan
-                $no_rkm_medis = 'RM-' . date('Ymd') . '-' . substr($no_ktp, -4);
+                // Generate nomor RM dengan format RM-YYYYMMDD-nnn
+                $stmt = $conn->prepare("SELECT MAX(CAST(SUBSTRING_INDEX(no_rkm_medis, '-', -1) AS UNSIGNED)) as last_num FROM pasien WHERE no_rkm_medis LIKE ?");
+                $prefix = 'RM-' . date('Ymd') . '-%';
+                $stmt->execute([$prefix]);
+                $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+                $next_num = 1;
+                if ($result && $result['last_num']) {
+                    $next_num = $result['last_num'] + 1;
+                }
+
+                $no_rkm_medis = 'RM-' . date('Ymd') . '-' . str_pad($next_num, 3, '0', STR_PAD_LEFT);
+
                 $nm_ibu = '-';
                 $umur = date_diff(date_create($tanggal_lahir), date_create('today'))->y;
-                $tgl_daftar = date('Y-m-d');
+                $tgl_daftar = date('Y-m-d H:i:s');
                 $namakeluarga = '-';
                 $kd_pj = 'UMU'; // Umum
                 $kd_kel = 0;
@@ -139,8 +150,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 $query = "INSERT INTO pasien (
                     no_rkm_medis, nm_pasien, no_ktp, jk, tgl_lahir, nm_ibu, 
-                    alamat, pekerjaan, no_tlp, umur, kd_kec, namakeluarga, kd_pj, kd_kel, kd_kab
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                    alamat, pekerjaan, no_tlp, umur, kd_kec, namakeluarga, kd_pj, kd_kel, kd_kab, tgl_daftar
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
                 $stmt = $conn->prepare($query);
                 $stmt->execute([
@@ -158,7 +169,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $namakeluarga,
                     $kd_pj,
                     $kd_kel,
-                    $kd_kab
+                    $kd_kab,
+                    $tgl_daftar
                 ]);
 
                 error_log("Data pasien baru berhasil disimpan");
@@ -413,8 +425,24 @@ ob_start();
                                     <div class="invalid-feedback">Wilayah harus dipilih</div>
                                 </div>
                                 <div class="mb-3">
-                                    <label for="pekerjaan" class="form-label">Pekerjaan</label>
-                                    <input type="text" class="form-control" id="pekerjaan" name="pekerjaan">
+                                    <label for="pekerjaan" class="form-label">Pekerjaan <span class="text-danger">*</span></label>
+                                    <select class="form-select" id="pekerjaan" name="pekerjaan" required>
+                                        <option value="">Pilih Pekerjaan</option>
+                                        <option value="Tidak Bekerja">Tidak Bekerja</option>
+                                        <option value="Ibu Rumah Tangga">Ibu Rumah Tangga</option>
+                                        <option value="Guru/Dosen">Guru/Dosen</option>
+                                        <option value="PNS">PNS</option>
+                                        <option value="TNI/Polri">TNI/Polri</option>
+                                        <option value="Pegawai Swasta">Pegawai Swasta</option>
+                                        <option value="Wiraswasta/Pengusaha">Wiraswasta/Pengusaha</option>
+                                        <option value="Tenaga Kesehatan">Tenaga Kesehatan</option>
+                                        <option value="Petani/Nelayan">Petani/Nelayan</option>
+                                        <option value="Buruh">Buruh</option>
+                                        <option value="Pelajar/Mahasiswa">Pelajar/Mahasiswa</option>
+                                        <option value="Pensiunan">Pensiunan</option>
+                                        <option value="Lainnya">Lainnya</option>
+                                    </select>
+                                    <div class="invalid-feedback">Pekerjaan harus dipilih</div>
                                 </div>
                             </div>
                         </div>
