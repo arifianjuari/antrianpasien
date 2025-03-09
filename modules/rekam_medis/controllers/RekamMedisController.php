@@ -13,18 +13,20 @@ class RekamMedisController
     private $rekamMedisModel;
     private $tindakanMedisModel;
     private $pdo;
+    private $conn;
 
-    public function __construct($pdo)
+    public function __construct($conn)
     {
+        $this->conn = $conn;
         try {
             // Jika koneksi tidak valid, buat koneksi baru
-            if (!isset($pdo) || !($pdo instanceof PDO)) {
+            if (!isset($conn) || !($conn instanceof PDO)) {
                 $db2_host = 'auth-db1151.hstgr.io';
                 $db2_username = 'u609399718_adminpraktek';
                 $db2_password = 'Obgin@12345';
                 $db2_database = 'u609399718_praktekobgin';
 
-                $pdo = new PDO(
+                $conn = new PDO(
                     "mysql:host=$db2_host;dbname=$db2_database;charset=utf8mb4",
                     $db2_username,
                     $db2_password,
@@ -37,14 +39,14 @@ class RekamMedisController
             }
 
             // Test koneksi
-            $test = $pdo->query("SELECT 1");
+            $test = $conn->query("SELECT 1");
             if (!$test) {
                 throw new PDOException("Koneksi database tidak dapat melakukan query");
             }
 
-            $this->pdo = $pdo;
-            $this->rekamMedisModel = new RekamMedis($pdo);
-            $this->tindakanMedisModel = new TindakanMedis($pdo);
+            $this->pdo = $conn;
+            $this->rekamMedisModel = new RekamMedis($conn);
+            $this->tindakanMedisModel = new TindakanMedis($conn);
         } catch (PDOException $e) {
             error_log("Database Error in RekamMedisController constructor: " . $e->getMessage());
             throw new Exception("Koneksi database bermasalah: " . $e->getMessage());
@@ -2446,6 +2448,73 @@ class RekamMedisController
         } catch (Exception $e) {
             error_log("General error in generate_status_obstetri_pdf: " . $e->getMessage());
             die("Error: " . $e->getMessage());
+        }
+    }
+
+    public function daftarAtensi()
+    {
+        try {
+            // Pastikan koneksi database tersedia
+            if (!$this->pdo) {
+                error_log("Database connection not available in daftarAtensi");
+                throw new Exception("Koneksi database tidak tersedia");
+            }
+
+            // Query untuk mengambil data atensi
+            $query = "SELECT 
+                        pmrk.no_rawat,
+                        pmrk.tanggal,
+                        pmrk.tanggal_kontrol,
+                        pmrk.atensi,
+                        pmrk.diagnosis,
+                        pmrk.tata as keterangan,
+                        p.nm_pasien as nama_pasien,
+                        rp.no_rkm_medis
+                    FROM penilaian_medis_ralan_kandungan pmrk
+                    JOIN reg_periksa rp ON pmrk.no_rawat = rp.no_rawat
+                    JOIN pasien p ON rp.no_rkm_medis = p.no_rkm_medis
+                    WHERE pmrk.tanggal_kontrol IS NOT NULL 
+                    AND pmrk.tanggal_kontrol != '0000-00-00'
+                    AND pmrk.tanggal_kontrol != ''
+                    ORDER BY pmrk.tanggal_kontrol DESC";
+
+            // Log query untuk debugging
+            error_log("Executing query in daftarAtensi: " . $query);
+
+            $stmt = $this->pdo->prepare($query);
+
+            if (!$stmt) {
+                error_log("Failed to prepare statement: " . print_r($this->pdo->errorInfo(), true));
+                throw new Exception("Gagal mempersiapkan query");
+            }
+
+            $stmt->execute();
+
+            if ($stmt->errorCode() !== '00000') {
+                error_log("Error executing statement: " . print_r($stmt->errorInfo(), true));
+                throw new Exception("Gagal menjalankan query");
+            }
+
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            if ($result === false) {
+                error_log("Error fetching results: " . print_r($stmt->errorInfo(), true));
+                throw new Exception("Gagal mengambil data hasil query");
+            }
+
+            // Set page title
+            $page_title = "Daftar Atensi Pasien";
+
+            // Include the view
+            include __DIR__ . '/../views/daftar_atensi.php';
+        } catch (PDOException $e) {
+            error_log("Database error in daftarAtensi: " . $e->getMessage());
+            error_log("Stack trace: " . $e->getTraceAsString());
+            throw new Exception("Terjadi kesalahan pada database: " . $e->getMessage());
+        } catch (Exception $e) {
+            error_log("General error in daftarAtensi: " . $e->getMessage());
+            error_log("Stack trace: " . $e->getTraceAsString());
+            throw new Exception("Terjadi kesalahan: " . $e->getMessage());
         }
     }
 }

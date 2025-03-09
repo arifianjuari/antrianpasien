@@ -73,6 +73,29 @@ ob_start();
     </div>
 </div>
 
+<div class="row">
+    <div class="col-md-8">
+        <!-- Konten dashboard utama -->
+        <!-- Widget dummy telah dihapus -->
+    </div>
+    <div class="col-md-4">
+        <!-- Widget Pengumuman -->
+        <?php
+        // Base URL untuk widget
+        if (!isset($base_url)) {
+            $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https://' : 'http://';
+            $host = $_SERVER['HTTP_HOST'];
+            $base_url = $protocol . $host;
+        }
+
+        // Include widget pengumuman
+        include_once 'widgets/pengumuman_widget.php';
+        ?>
+
+        <!-- Widget Jadwal Hari Ini dummy telah dihapus -->
+    </div>
+</div>
+
 <?php
 $content = ob_get_clean();
 

@@ -229,9 +229,14 @@ error_log("Data pasien: " . json_encode($pasien));
                             <!-- Tab Identitas -->
                             <div class="tab-pane fade collapse" id="identitas" role="tabpanel">
                                 <div class="mb-3 d-flex justify-content-end">
-                                    <a href="index.php?module=rekam_medis&action=editPasien&id=<?= $pasien['no_rkm_medis'] ?>" class="btn btn-warning btn-sm">
+                                    <a href="index.php?module=rekam_medis&action=editPasien&id=<?= $pasien['no_rkm_medis'] ?>" class="btn btn-warning btn-sm me-2">
                                         <i class="fas fa-edit"></i> Edit Data Pasien
                                     </a>
+                                    <?php if (!empty($pasien['no_tlp'])): ?>
+                                        <a href="https://wa.me/62<?= preg_replace('/[^0-9]/', '', $pasien['no_tlp']) ?>" target="_blank" class="btn btn-success btn-sm">
+                                            <i class="fab fa-whatsapp"></i> Kirim WhatsApp
+                                        </a>
+                                    <?php endif; ?>
                                 </div>
 
                                 <div class="row">
@@ -302,10 +307,6 @@ error_log("Data pasien: " . json_encode($pasien));
                                                     <tr>
                                                         <th class="text-muted px-3">No. Telepon</th>
                                                         <td class="px-3"><?= $pasien['no_tlp'] ?></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th class="text-muted px-3">Pendidikan</th>
-                                                        <td class="px-3"><?= $pasien['pnd'] ?? '-' ?></td>
                                                     </tr>
                                                     <tr>
                                                         <th class="text-muted px-3">Pekerjaan</th>
