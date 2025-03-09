@@ -287,6 +287,17 @@ if (!defined('BASE_PATH')) {
                                             <label>Tatalaksana</label>
                                             <textarea name="tata" class="form-control" rows="2" required></textarea>
                                         </div>
+                                        <div class="mb-3">
+                                            <label>Tanggal Kontrol</label>
+                                            <input type="date" name="tanggal_kontrol" class="form-control">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label>Atensi</label>
+                                            <select name="atensi" class="form-select">
+                                                <option value="0">Tidak</option>
+                                                <option value="1">Ya</option>
+                                            </select>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

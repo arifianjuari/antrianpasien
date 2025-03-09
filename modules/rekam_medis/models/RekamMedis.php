@@ -734,13 +734,15 @@ class RekamMedis
                         gcs, td, nadi, rr, suhu, spo, bb, tb,
                         kepala, mata, gigi, tht, thoraks,
                         abdomen, genital, ekstremitas, kulit, ket_fisik,
-                        ultra, lab, diagnosis, tata
+                        ultra, lab, diagnosis, tata,
+                        tanggal_kontrol, atensi
                     ) VALUES (
                         :no_rawat, NOW(), :keluhan_utama, :rps, :rpd, :alergi,
                         :gcs, :td, :nadi, :rr, :suhu, :spo, :bb, :tb,
                         :kepala, :mata, :gigi, :tht, :thoraks,
                         :abdomen, :genital, :ekstremitas, :kulit, :ket_fisik,
-                        :ultra, :lab, :diagnosis, :tata
+                        :ultra, :lab, :diagnosis, :tata,
+                        :tanggal_kontrol, :atensi
                     )
                 ");
             } else {
@@ -772,7 +774,9 @@ class RekamMedis
                         ultra = :ultra,
                         lab = :lab,
                         diagnosis = :diagnosis,
-                        tata = :tata
+                        tata = :tata,
+                        tanggal_kontrol = :tanggal_kontrol,
+                        atensi = :atensi
                     WHERE no_rawat = :no_rawat
                 ");
             }
@@ -804,7 +808,9 @@ class RekamMedis
                 ':ultra' => $data['ultra'],
                 ':lab' => $data['lab'],
                 ':diagnosis' => $data['diagnosis'],
-                ':tata' => $data['tata']
+                ':tata' => $data['tata'],
+                ':tanggal_kontrol' => $data['tanggal_kontrol'],
+                ':atensi' => $data['atensi']
             ];
 
             $result = $stmt->execute($params);

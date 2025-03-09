@@ -16,13 +16,16 @@ function clean_url($url)
 
 <div id="sidebar" class="sidebar bg-white border-end">
     <div class="d-flex flex-column flex-shrink-0 py-3">
-        <?php if ($is_admin): ?>
-            <div class="d-flex justify-content-end px-3 mb-2">
-                <button id="toggleSidebar" class="btn btn-sm btn-light border">
+        <div class="d-flex justify-content-between px-3 mb-2">
+            <?php if ($is_admin): ?>
+                <button id="toggleSidebar" class="btn btn-sm btn-light border d-none d-lg-block">
                     <i class="bi bi-chevron-left"></i>
                 </button>
-            </div>
-        <?php endif; ?>
+            <?php endif; ?>
+            <button id="toggleMobileSidebar" class="btn btn-sm btn-light border d-lg-none">
+                <i class="bi bi-list"></i>
+            </button>
+        </div>
         <ul class="nav nav-pills flex-column mb-auto px-2">
             <?php if ($is_admin): ?>
                 <!-- Menu untuk Admin -->
@@ -196,6 +199,15 @@ function clean_url($url)
 </div>
 
 <style>
+    body {
+        overflow-x: hidden;
+        transition: padding-left 0.3s ease;
+    }
+
+    body.sidebar-open {
+        overflow: hidden;
+    }
+
     .sidebar {
         width: 280px;
         min-height: 100vh;
@@ -311,20 +323,76 @@ function clean_url($url)
 
     /* Mobile Responsive */
     @media (max-width: 991.98px) {
-        .sidebar {
-            width: 100%;
-            height: auto;
-            min-height: auto;
-            position: relative;
-            margin-bottom: 1rem;
+        body {
+            padding-left: 0 !important;
         }
 
-        .sidebar.minimized {
+        .sidebar {
+            width: 280px;
+            /* Tetap 280px lebar di mobile, tapi akan di-collapse */
+            height: 100vh;
+            min-height: 100vh;
+            position: fixed;
+            margin-bottom: 0;
+            transform: translateX(0);
+            transition: transform 0.3s ease;
+            overflow-y: auto;
+            max-height: 100vh;
+            top: 0;
+            left: 0;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar.mobile-collapsed {
+            transform: translateX(-100%);
+        }
+
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1040;
+            display: none;
+            transition: opacity 0.3s ease;
+            opacity: 0;
+        }
+
+        .sidebar-overlay.show {
+            display: block;
+            opacity: 1;
         }
 
         .main-content {
             margin-left: 0 !important;
+            width: 100%;
+            transition: margin-left 0.3s ease;
+        }
+
+        /* Mobile toggle button that stays fixed */
+        .mobile-toggle-container {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            z-index: 1030;
+            display: none;
+            transition: all 0.3s ease;
+        }
+
+        .mobile-toggle-container.show {
+            display: block;
+        }
+
+        .mobile-toggle-container .btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         }
 
         .nav-link {
@@ -449,14 +517,86 @@ function clean_url($url)
     document.addEventListener('DOMContentLoaded', function() {
         const sidebar = document.getElementById('sidebar');
         const toggleBtn = document.getElementById('toggleSidebar');
+        const toggleMobileBtn = document.getElementById('toggleMobileSidebar');
         const isMobile = window.innerWidth < 992;
 
-        // Toggle sidebar
+        // Fungsi untuk menambahkan class pada body saat sidebar terbuka
+        function updateBodyClass() {
+            if (sidebar.classList.contains('mobile-collapsed')) {
+                document.body.classList.remove('sidebar-open');
+            } else {
+                document.body.classList.add('sidebar-open');
+            }
+        }
+
+        // Create overlay for mobile
+        const overlay = document.createElement('div');
+        overlay.className = 'sidebar-overlay';
+        document.body.appendChild(overlay);
+
+        // Create mobile toggle button container
+        const mobileToggleContainer = document.createElement('div');
+        mobileToggleContainer.className = 'mobile-toggle-container';
+        const mobileToggleBtn = document.createElement('button');
+        mobileToggleBtn.className = 'btn btn-primary';
+        mobileToggleBtn.innerHTML = '<i class="bi bi-list"></i>';
+        mobileToggleContainer.appendChild(mobileToggleBtn);
+        document.body.appendChild(mobileToggleContainer);
+
+        // Auto collapse on mobile
+        if (isMobile) {
+            sidebar.classList.add('mobile-collapsed');
+            mobileToggleContainer.classList.add('show');
+            updateBodyClass();
+        }
+
+        // Toggle sidebar on desktop
         if (toggleBtn) {
             toggleBtn.addEventListener('click', function() {
                 if (!isMobile) {
                     sidebar.classList.toggle('minimized');
                 }
+            });
+        }
+
+        // Toggle sidebar on mobile
+        if (toggleMobileBtn) {
+            toggleMobileBtn.addEventListener('click', function() {
+                if (isMobile) {
+                    sidebar.classList.toggle('mobile-collapsed');
+                    overlay.classList.toggle('show');
+                    mobileToggleContainer.classList.toggle('show');
+                    updateBodyClass();
+                }
+            });
+        }
+
+        // Mobile toggle button in fixed position
+        mobileToggleBtn.addEventListener('click', function() {
+            sidebar.classList.toggle('mobile-collapsed');
+            overlay.classList.toggle('show');
+            mobileToggleContainer.classList.toggle('show');
+            updateBodyClass();
+        });
+
+        // Close sidebar when clicking overlay
+        overlay.addEventListener('click', function() {
+            sidebar.classList.add('mobile-collapsed');
+            overlay.classList.remove('show');
+            mobileToggleContainer.classList.add('show');
+            updateBodyClass();
+        });
+
+        // Close sidebar when clicking a menu item on mobile
+        if (isMobile) {
+            const menuLinks = sidebar.querySelectorAll('a.nav-link:not(.submenu-toggle)');
+            menuLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    sidebar.classList.add('mobile-collapsed');
+                    overlay.classList.remove('show');
+                    mobileToggleContainer.classList.add('show');
+                    updateBodyClass();
+                });
             });
         }
 
@@ -507,8 +647,18 @@ function clean_url($url)
         // Handle window resize
         window.addEventListener('resize', function() {
             const newIsMobile = window.innerWidth < 992;
+
+            // Hanya reload jika berubah dari mobile ke desktop atau sebaliknya
             if (newIsMobile !== isMobile) {
                 location.reload();
+            }
+
+            // Jika dalam mode mobile dan sidebar terbuka, tutup sidebar
+            if (newIsMobile && !sidebar.classList.contains('mobile-collapsed')) {
+                sidebar.classList.add('mobile-collapsed');
+                overlay.classList.remove('show');
+                mobileToggleContainer.classList.add('show');
+                updateBodyClass();
             }
         });
     });

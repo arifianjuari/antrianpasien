@@ -7,7 +7,6 @@ $page_title = "Daftar Antrian Pasien";
 $is_logged_in = isset($_SESSION['user_id']);
 
 // Filter tanggal
-$tanggal = isset($_GET['tanggal']) ? $_GET['tanggal'] : date('Y-m-d');
 $id_tempat_praktek = isset($_GET['tempat']) ? $_GET['tempat'] : '';
 $id_dokter = isset($_GET['dokter']) ? $_GET['dokter'] : '';
 $hari = isset($_GET['hari']) ? $_GET['hari'] : '';
@@ -69,11 +68,6 @@ try {
 
     $params = [];
 
-    if (!empty($_GET['tanggal'])) {
-        $query .= " AND DATE(p.Waktu_Pendaftaran) = :tanggal";
-        $params[':tanggal'] = $_GET['tanggal'];
-    }
-
     if (!empty($_GET['hari'])) {
         $query .= " AND jr.Hari = :hari";
         $params[':hari'] = $_GET['hari'];
@@ -130,11 +124,7 @@ ob_start();
                 <div class="collapse" id="filterSection">
                     <div class="card-body bg-light">
                         <form id="filterForm" method="GET" class="row g-3">
-                            <div class="col-md-3">
-                                <label for="tanggal" class="form-label">Tanggal Pendaftaran</label>
-                                <input type="date" class="form-select" id="tanggal" name="tanggal" value="<?= htmlspecialchars($tanggal) ?>">
-                            </div>
-                            <div class="col-md-3">
+                            <div class="col-md-4">
                                 <label for="hari" class="form-label">Hari</label>
                                 <select class="form-select" id="hari" name="hari">
                                     <option value="">Semua Hari</option>
@@ -147,7 +137,7 @@ ob_start();
                                     ?>
                                 </select>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-4">
                                 <label for="tempat" class="form-label">Tempat Praktek</label>
                                 <select class="form-select" id="tempat" name="tempat">
                                     <option value="">Semua Tempat</option>
@@ -159,7 +149,7 @@ ob_start();
                                     <?php endforeach; ?>
                                 </select>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-4">
                                 <label for="dokter" class="form-label">Dokter</label>
                                 <select class="form-select" id="dokter" name="dokter">
                                     <option value="">Semua Dokter</option>
