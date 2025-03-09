@@ -669,88 +669,105 @@ ob_start();
         const jadwalSelect = document.getElementById('id_jadwal');
 
         function loadJadwal() {
-            const tempat = tempatSelect.value;
-            const dokter = dokterSelect.value;
+            var tempat = tempatSelect.value;
+            var dokter = dokterSelect.value;
+
+            // Reset jadwal dropdown
+            jadwalSelect.innerHTML = '<option value="">Pilih Jadwal</option>';
 
             if (tempat && dokter) {
+                // Tampilkan loading
                 jadwalSelect.innerHTML = '<option value="">Memuat jadwal...</option>';
 
-                // Tambahkan timestamp untuk mencegah caching
-                const timestamp = new Date().getTime();
+                // Buat URL dengan timestamp untuk mencegah caching
+                var timestamp = new Date().getTime();
+                var url = '../get_jadwal.php?tempat=' + encodeURIComponent(tempat) +
+                    '&dokter=' + encodeURIComponent(dokter) +
+                    '&_=' + timestamp;
 
-                // Gunakan path yang benar ke get_jadwal.php
-                const url = `get_jadwal.php?tempat=${tempat}&dokter=${dokter}&_=${timestamp}`;
+                // Log untuk debugging
+                console.log('Memuat jadwal dari: ' + url);
 
-                console.log(`Fetching jadwal from: ${url}`);
+                // Gunakan XMLHttpRequest (kompatibel dengan browser lama)
+                var xhr = new XMLHttpRequest();
 
-                fetch(url, {
-                        method: 'GET',
-                        headers: {
-                            'Accept': 'application/json'
-                        },
-                        cache: 'no-store'
-                    })
-                    .then(response => {
-                        console.log('Response status:', response.status);
-                        console.log('Response headers:',
-                            Array.from(response.headers.entries())
-                            .map(([key, value]) => `${key}: ${value}`)
-                            .join(', ')
-                        );
+                // Setup request
+                xhr.open('GET', url, true);
+                xhr.setRequestHeader('Accept', 'application/json');
 
-                        // Periksa status response terlebih dahulu
-                        if (!response.ok) {
-                            throw new Error(`HTTP error! Status: ${response.status}`);
+                // Handler untuk response
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState === 4) { // Request selesai
+                        console.log('Status response: ' + xhr.status);
+
+                        if (xhr.status === 200) { // Sukses
+                            try {
+                                // Parse JSON response
+                                var data = JSON.parse(xhr.responseText);
+                                console.log('Data jadwal diterima:', data);
+
+                                // Reset dropdown
+                                jadwalSelect.innerHTML = '<option value="">Pilih Jadwal</option>';
+
+                                // Cek error
+                                if (data.error) {
+                                    console.error('Error server:', data.error);
+                                    jadwalSelect.innerHTML = '<option value="">Error: ' + data.error + '</option>';
+                                    return;
+                                }
+
+                                // Cek apakah data adalah array
+                                if (!Array.isArray(data)) {
+                                    console.error('Data bukan array:', data);
+                                    jadwalSelect.innerHTML = '<option value="">Format data tidak valid</option>';
+                                    return;
+                                }
+
+                                // Cek apakah data kosong
+                                if (data.length === 0) {
+                                    jadwalSelect.innerHTML = '<option value="">Tidak ada jadwal tersedia</option>';
+                                    return;
+                                }
+
+                                // Tambahkan opsi untuk setiap jadwal
+                                for (var i = 0; i < data.length; i++) {
+                                    var jadwal = data[i];
+                                    var option = document.createElement('option');
+                                    option.value = jadwal.ID_Jadwal_Rutin;
+
+                                    // Format teks jadwal
+                                    var jadwalText = jadwal.Hari + ' - ' +
+                                        jadwal.Jam_Mulai + '-' +
+                                        jadwal.Jam_Selesai + ' (' +
+                                        jadwal.Jenis_Layanan + ')';
+
+                                    option.textContent = jadwalText;
+                                    jadwalSelect.appendChild(option);
+                                }
+                            } catch (e) {
+                                // Error parsing JSON
+                                console.error('Error parsing JSON:', e);
+                                console.error('Response text:', xhr.responseText.substring(0, 200) + '...');
+                                jadwalSelect.innerHTML = '<option value="">Error: Format respons tidak valid</option>';
+                            }
+                        } else {
+                            // HTTP error
+                            console.error('HTTP error:', xhr.status);
+                            jadwalSelect.innerHTML = '<option value="">Error: Gagal memuat jadwal (HTTP ' + xhr.status + ')</option>';
                         }
+                    }
+                };
 
-                        // Periksa content-type
-                        const contentType = response.headers.get('content-type');
-                        console.log('Content-Type:', contentType);
+                // Handler untuk network error
+                xhr.onerror = function() {
+                    console.error('Network error');
+                    jadwalSelect.innerHTML = '<option value="">Error: Koneksi jaringan gagal</option>';
+                };
 
-                        if (!contentType || !contentType.includes('application/json')) {
-                            // Coba ambil teks respons untuk debugging
-                            return response.text().then(text => {
-                                console.error('Response is not JSON:', text.substring(0, 200) + '...');
-                                throw new Error(`Respons bukan JSON valid (${contentType})`);
-                            });
-                        }
-
-                        return response.json();
-                    })
-                    .then(data => {
-                        console.log('Jadwal data received:', data);
-                        jadwalSelect.innerHTML = '<option value="">Pilih Jadwal</option>';
-
-                        if (data.error) {
-                            console.error('Server error:', data.error);
-                            jadwalSelect.innerHTML = `<option value="">Error: ${data.error}</option>`;
-                            return;
-                        }
-
-                        if (!Array.isArray(data)) {
-                            console.error('Data is not an array:', data);
-                            jadwalSelect.innerHTML = '<option value="">Format data tidak valid</option>';
-                            return;
-                        }
-
-                        if (data.length === 0) {
-                            jadwalSelect.innerHTML = '<option value="">Tidak ada jadwal tersedia</option>';
-                            return;
-                        }
-
-                        data.forEach(jadwal => {
-                            const option = document.createElement('option');
-                            option.value = jadwal.ID_Jadwal_Rutin;
-                            const jadwalText = `${jadwal.Hari} - ${jadwal.Jam_Mulai}-${jadwal.Jam_Selesai} (${jadwal.Jenis_Layanan})`;
-                            option.textContent = jadwalText;
-                            jadwalSelect.appendChild(option);
-                        });
-                    })
-                    .catch(error => {
-                        console.error('Error loading jadwal:', error);
-                        jadwalSelect.innerHTML = `<option value="">Error memuat jadwal: ${error.message}</option>`;
-                    });
+                // Kirim request
+                xhr.send();
             } else {
+                // Tidak ada tempat atau dokter yang dipilih
                 jadwalSelect.innerHTML = '<option value="">Pilih tempat praktek dan dokter terlebih dahulu</option>';
             }
         }
