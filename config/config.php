@@ -11,3 +11,9 @@ if ($host === 'localhost' || strpos($host, 'localhost:') === 0) {
 
 // Pastikan tidak ada trailing slash di akhir URL
 $base_url = rtrim($base_url, '/');
+
+// Definisikan konstanta untuk base URL
+define('BASE_URL', $base_url);
+
+// Debug information
+error_log("Base URL: " . $base_url);

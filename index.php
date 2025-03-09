@@ -16,61 +16,47 @@ if (session_status() === PHP_SESSION_NONE) {
 
 // Include database configuration
 require_once 'config/database.php';
-
-// Log database connection status
-error_log("Checking database connection in index.php");
-
-// Cek koneksi database
-if (!isset($conn) || !($conn instanceof PDO)) {
-    error_log("Database connection not available in index.php");
-    throw new Exception("Koneksi database tidak tersedia. Silakan hubungi administrator.");
-}
-
-try {
-    // Test koneksi
-    $test = $conn->query("SELECT 1");
-    if (!$test) {
-        throw new PDOException("Koneksi database tidak dapat melakukan query");
-    }
-    error_log("Database connection test successful in index.php");
-} catch (PDOException $e) {
-    error_log("Database test failed in index.php: " . $e->getMessage());
-    throw new Exception("Koneksi database bermasalah: " . $e->getMessage());
-}
-
 require_once 'config/config.php';
+
+// Log request information
+error_log("Request URI: " . $_SERVER['REQUEST_URI']);
+error_log("Query String: " . $_SERVER['QUERY_STRING']);
 
 // Cek apakah user sudah login
 if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php");
+    header("Location: " . BASE_URL . "/login.php");
     exit;
 }
 
 // Load controller
 require_once 'modules/rekam_medis/controllers/RekamMedisController.php';
 
-// Inisialisasi controller dengan koneksi database
-$rekamMedisController = new RekamMedisController($conn);
+try {
+    // Inisialisasi controller dengan koneksi database
+    $rekamMedisController = new RekamMedisController($conn);
 
-// Ambil modul dari parameter GET
-$module = isset($_GET['module']) ? $_GET['module'] : '';
-$action = isset($_GET['action']) ? $_GET['action'] : '';
+    // Ambil modul dari parameter GET
+    $module = isset($_GET['module']) ? $_GET['module'] : '';
+    $action = isset($_GET['action']) ? $_GET['action'] : '';
 
-// Jika tidak ada action yang ditentukan untuk modul rekam_medis, arahkan ke data_pasien
-if ($module == 'rekam_medis' && empty($action)) {
-    header('Location: index.php?module=rekam_medis&action=data_pasien');
-    exit;
-}
+    // Log routing information
+    error_log("Module: " . $module);
+    error_log("Action: " . $action);
 
-// Start output buffering
-ob_start();
+    // Jika tidak ada action yang ditentukan untuk modul rekam_medis, arahkan ke data_pasien
+    if ($module == 'rekam_medis' && empty($action)) {
+        header('Location: ' . BASE_URL . '/index.php?module=rekam_medis&action=data_pasien');
+        exit;
+    }
 
-// Routing untuk modul rekam medis
-if ($module == 'rekam_medis') {
-    // Set page title
-    $page_title = "Rekam Medis";
+    // Start output buffering
+    ob_start();
 
-    try {
+    // Routing untuk modul rekam medis
+    if ($module == 'rekam_medis') {
+        // Set page title
+        $page_title = "Rekam Medis";
+
         // Routing berdasarkan action
         switch ($action) {
             case 'manajemen_antrian':
@@ -129,12 +115,6 @@ if ($module == 'rekam_medis') {
                 break;
             case 'simpan_penilaian_medis_ralan_kandungan':
                 $rekamMedisController->simpan_penilaian_medis_ralan_kandungan();
-                break;
-            case 'edit_pemeriksaan':
-                $rekamMedisController->edit_pemeriksaan();
-                break;
-            case 'update_pemeriksaan':
-                $rekamMedisController->update_pemeriksaan();
                 break;
             case 'tambah_tindakan_medis':
                 $rekamMedisController->tambahTindakanMedis();
@@ -220,18 +200,23 @@ if ($module == 'rekam_medis') {
                 $rekamMedisController->generate_status_obstetri_pdf();
                 break;
             default:
-                $rekamMedisController->index();
+                if (empty($action)) {
+                    $rekamMedisController->index();
+                } else {
+                    error_log("Invalid action requested: " . $action);
+                    throw new Exception("Halaman tidak ditemukan");
+                }
                 break;
         }
-    } catch (Exception $e) {
-        error_log("Error in routing: " . $e->getMessage());
-        $_SESSION['error'] = $e->getMessage();
-        header('Location: index.php?module=rekam_medis&action=data_pasien');
+    } else {
+        // Jika modul tidak ditemukan, redirect ke home
+        header("Location: " . BASE_URL . "/home.php");
         exit;
     }
-} else {
-    // Jika modul tidak ditemukan, redirect ke home
-    header("Location: home.php");
+} catch (Exception $e) {
+    error_log("Error in routing: " . $e->getMessage());
+    $_SESSION['error'] = $e->getMessage();
+    header('Location: ' . BASE_URL . '/index.php?module=rekam_medis&action=data_pasien');
     exit;
 }
 
