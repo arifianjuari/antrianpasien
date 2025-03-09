@@ -2,15 +2,23 @@
 // File: get_jadwal.php
 // Deskripsi: API untuk mendapatkan jadwal praktek dokter berdasarkan tempat praktek, dokter, tanggal, dan hari
 
-header('Content-Type: application/json');
-require_once '../config/database.php';
+// Pastikan tidak ada output sebelum header
+ob_start();
 
-// Ambil parameter
-$id_tempat_praktek = isset($_GET['tempat']) ? $_GET['tempat'] : '';
-$id_dokter = isset($_GET['dokter']) ? $_GET['dokter'] : '';
-$hari = isset($_GET['hari']) ? $_GET['hari'] : '';
-
+// Tangkap semua error PHP
 try {
+    require_once '../config/database.php';
+
+    // Ambil parameter
+    $id_tempat_praktek = isset($_GET['tempat']) ? $_GET['tempat'] : '';
+    $id_dokter = isset($_GET['dokter']) ? $_GET['dokter'] : '';
+    $hari = isset($_GET['hari']) ? $_GET['hari'] : '';
+
+    // Validasi parameter
+    if (empty($id_tempat_praktek) || empty($id_dokter)) {
+        throw new Exception('Parameter tempat dan dokter diperlukan');
+    }
+
     $query = "
         SELECT 
             jr.ID_Jadwal_Rutin,
@@ -59,12 +67,41 @@ try {
         $j['Jam_Selesai'] = date('H:i', strtotime($j['Jam_Selesai']));
     }
 
-    // Debug: Log parameters dan hasil
-    error_log("Parameters - Tempat: $id_tempat_praktek, Dokter: $id_dokter");
-    error_log("Result: " . json_encode($jadwal));
+    // Bersihkan output buffer
+    ob_end_clean();
 
+    // Set header JSON
+    header('Content-Type: application/json');
+    header('Cache-Control: no-cache, must-revalidate');
+
+    // Kembalikan hasil
     echo json_encode($jadwal);
 } catch (PDOException $e) {
+    // Bersihkan output buffer
+    ob_end_clean();
+
+    // Set header JSON dan status code
+    header('Content-Type: application/json');
+    header('Cache-Control: no-cache, must-revalidate');
     http_response_code(500);
+
+    // Log error
+    error_log("Database Error in get_jadwal.php: " . $e->getMessage());
+
+    // Kembalikan pesan error
     echo json_encode(['error' => 'Database error: ' . $e->getMessage()]);
+} catch (Exception $e) {
+    // Bersihkan output buffer
+    ob_end_clean();
+
+    // Set header JSON dan status code
+    header('Content-Type: application/json');
+    header('Cache-Control: no-cache, must-revalidate');
+    http_response_code(400);
+
+    // Log error
+    error_log("Error in get_jadwal.php: " . $e->getMessage());
+
+    // Kembalikan pesan error
+    echo json_encode(['error' => $e->getMessage()]);
 }

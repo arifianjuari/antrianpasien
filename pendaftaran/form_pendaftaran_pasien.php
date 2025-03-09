@@ -675,11 +675,23 @@ ob_start();
             if (tempat && dokter) {
                 jadwalSelect.innerHTML = '<option value="">Memuat jadwal...</option>';
                 fetch(`get_jadwal.php?tempat=${tempat}&dokter=${dokter}`)
-                    .then(response => response.json())
+                    .then(response => {
+                        // Periksa status response terlebih dahulu
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! Status: ${response.status}`);
+                        }
+                        // Periksa content-type
+                        const contentType = response.headers.get('content-type');
+                        if (!contentType || !contentType.includes('application/json')) {
+                            throw new Error(`Respons bukan JSON valid (${contentType})`);
+                        }
+                        return response.json();
+                    })
                     .then(data => {
                         jadwalSelect.innerHTML = '<option value="">Pilih Jadwal</option>';
                         if (data.error) {
-                            console.error(data.error);
+                            console.error('Server error:', data.error);
+                            jadwalSelect.innerHTML = `<option value="">Error: ${data.error}</option>`;
                             return;
                         }
                         if (data.length === 0) {
@@ -695,11 +707,11 @@ ob_start();
                         });
                     })
                     .catch(error => {
-                        console.error('Error:', error);
-                        jadwalSelect.innerHTML = '<option value="">Error memuat jadwal</option>';
+                        console.error('Error loading jadwal:', error);
+                        jadwalSelect.innerHTML = `<option value="">Error memuat jadwal: ${error.message}</option>`;
                     });
             } else {
-                jadwalSelect.innerHTML = '<option value="">Pilih Tempat dan Dokter terlebih dahulu</option>';
+                jadwalSelect.innerHTML = '<option value="">Pilih tempat praktek dan dokter terlebih dahulu</option>';
             }
         }
 
