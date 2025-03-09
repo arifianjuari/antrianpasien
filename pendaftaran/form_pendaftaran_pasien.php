@@ -674,30 +674,69 @@ ob_start();
 
             if (tempat && dokter) {
                 jadwalSelect.innerHTML = '<option value="">Memuat jadwal...</option>';
-                fetch(`get_jadwal.php?tempat=${tempat}&dokter=${dokter}`)
+
+                // Tambahkan timestamp untuk mencegah caching
+                const timestamp = new Date().getTime();
+                const url = `get_jadwal.php?tempat=${tempat}&dokter=${dokter}&_=${timestamp}`;
+
+                console.log(`Fetching jadwal from: ${url}`);
+
+                fetch(url, {
+                        method: 'GET',
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        cache: 'no-store'
+                    })
                     .then(response => {
+                        console.log('Response status:', response.status);
+                        console.log('Response headers:',
+                            Array.from(response.headers.entries())
+                            .map(([key, value]) => `${key}: ${value}`)
+                            .join(', ')
+                        );
+
                         // Periksa status response terlebih dahulu
                         if (!response.ok) {
                             throw new Error(`HTTP error! Status: ${response.status}`);
                         }
+
                         // Periksa content-type
                         const contentType = response.headers.get('content-type');
+                        console.log('Content-Type:', contentType);
+
                         if (!contentType || !contentType.includes('application/json')) {
-                            throw new Error(`Respons bukan JSON valid (${contentType})`);
+                            // Coba ambil teks respons untuk debugging
+                            return response.text().then(text => {
+                                console.error('Response is not JSON:', text.substring(0, 200) + '...');
+                                throw new Error(`Respons bukan JSON valid (${contentType})`);
+                            });
                         }
+
                         return response.json();
                     })
                     .then(data => {
+                        console.log('Jadwal data received:', data);
                         jadwalSelect.innerHTML = '<option value="">Pilih Jadwal</option>';
+
                         if (data.error) {
                             console.error('Server error:', data.error);
                             jadwalSelect.innerHTML = `<option value="">Error: ${data.error}</option>`;
                             return;
                         }
+
+                        if (!Array.isArray(data)) {
+                            console.error('Data is not an array:', data);
+                            jadwalSelect.innerHTML = '<option value="">Format data tidak valid</option>';
+                            return;
+                        }
+
                         if (data.length === 0) {
                             jadwalSelect.innerHTML = '<option value="">Tidak ada jadwal tersedia</option>';
                             return;
                         }
+
                         data.forEach(jadwal => {
                             const option = document.createElement('option');
                             option.value = jadwal.ID_Jadwal_Rutin;
