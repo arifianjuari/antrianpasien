@@ -12,7 +12,7 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 // Log untuk debugging
-$log_file = __DIR__ . '/../../pdf_debug.log';
+$log_file = __DIR__ . '/../../logs/pdf_debug.log';
 file_put_contents($log_file, "PDF generation started at " . date('Y-m-d H:i:s') . "\n", FILE_APPEND);
 
 // Konfigurasi database
@@ -24,7 +24,7 @@ $db_database = 'u609399718_praktekobgin';
 // Koneksi database
 try {
     $pdo = new PDO(
-        "mysql:host=$db_host;dbname=$db_name;charset=utf8",
+        "mysql:host=$db_host;dbname=$db_database;charset=utf8",
         $db_username,
         $db_password,
         array(
@@ -58,10 +58,29 @@ class ResumePDF extends TCPDF
 // Log untuk debugging
 file_put_contents($log_file, "TCPDF class defined\n", FILE_APPEND);
 
-// Pastikan variabel yang diperlukan tersedia
+// Periksa apakah variabel $pasien tersedia, jika tidak, coba ambil dari parameter URL
 if (!isset($pasien)) {
-    file_put_contents($log_file, "Error: Data pasien tidak tersedia\n", FILE_APPEND);
-    die("Data pasien tidak tersedia");
+    file_put_contents($log_file, "Variabel pasien tidak tersedia, mencoba ambil dari parameter URL\n", FILE_APPEND);
+
+    if (isset($_GET['no_rkm_medis'])) {
+        $no_rkm_medis = $_GET['no_rkm_medis'];
+
+        // Query untuk mendapatkan data pasien
+        $query_pasien = "SELECT * FROM pasien WHERE no_rkm_medis = :no_rkm_medis";
+        $stmt_pasien = $pdo->prepare($query_pasien);
+        $stmt_pasien->execute([':no_rkm_medis' => $no_rkm_medis]);
+        $pasien = $stmt_pasien->fetch(PDO::FETCH_ASSOC);
+
+        if ($pasien) {
+            file_put_contents($log_file, "Data pasien berhasil diambil dari database: " . $pasien['no_rkm_medis'] . "\n", FILE_APPEND);
+        } else {
+            file_put_contents($log_file, "Data pasien tidak ditemukan di database\n", FILE_APPEND);
+            die("Data pasien tidak ditemukan");
+        }
+    } else {
+        file_put_contents($log_file, "Parameter no_rkm_medis tidak ditemukan di URL\n", FILE_APPEND);
+        die("Parameter no_rkm_medis tidak ditemukan");
+    }
 }
 
 file_put_contents($log_file, "Data pasien tersedia: " . $pasien['no_rkm_medis'] . "\n", FILE_APPEND);
@@ -70,7 +89,7 @@ try {
     // Debug: Tampilkan struktur tabel yang lebih detail
     $debug_query1 = "SELECT COLUMN_NAME, DATA_TYPE, COLUMN_COMMENT 
                     FROM INFORMATION_SCHEMA.COLUMNS 
-                    WHERE TABLE_SCHEMA = '$db_name' 
+                    WHERE TABLE_SCHEMA = '$db_database' 
                     AND TABLE_NAME = 'penilaian_medis_ralan_kandungan'";
     $debug_stmt1 = $pdo->query($debug_query1);
     $kolom_tabel1 = $debug_stmt1->fetchAll(PDO::FETCH_ASSOC);
@@ -78,7 +97,7 @@ try {
 
     $debug_query2 = "SELECT COLUMN_NAME, DATA_TYPE, COLUMN_COMMENT 
                     FROM INFORMATION_SCHEMA.COLUMNS 
-                    WHERE TABLE_SCHEMA = '$db_name' 
+                    WHERE TABLE_SCHEMA = '$db_database' 
                     AND TABLE_NAME = 'status_obstetri'";
     $debug_stmt2 = $pdo->query($debug_query2);
     $kolom_tabel2 = $debug_stmt2->fetchAll(PDO::FETCH_ASSOC);
@@ -112,14 +131,32 @@ try {
     file_put_contents($log_file, "Page added\n", FILE_APPEND);
 
     // Ambil data pemeriksaan terbaru dari tabel penilaian_medis_ralan_kandungan
+    // Periksa struktur tabel untuk menentukan query yang benar
+    $debug_query5 = "DESCRIBE penilaian_medis_ralan_kandungan";
+    $debug_stmt5 = $pdo->query($debug_query5);
+    $struktur_pemeriksaan = $debug_stmt5->fetchAll(PDO::FETCH_ASSOC);
+    file_put_contents($log_file, "Struktur tabel penilaian_medis_ralan_kandungan:\n" . print_r($struktur_pemeriksaan, true) . "\n", FILE_APPEND);
+
+    // Coba query dengan no_rawat
     $query_pemeriksaan = "SELECT pmrk.tanggal as tanggal, pmrk.ket_fisik, pmrk.lab, pmrk.ultra, pmrk.diagnosis, pmrk.tata 
                          FROM penilaian_medis_ralan_kandungan pmrk
                          JOIN reg_periksa rp ON pmrk.no_rawat = rp.no_rawat
-                         WHERE rp.no_rkm_medis = ? 
+                         WHERE rp.no_rkm_medis = :no_rkm_medis 
                          ORDER BY pmrk.tanggal DESC LIMIT 1";
     $stmt_pemeriksaan = $pdo->prepare($query_pemeriksaan);
-    $stmt_pemeriksaan->execute([$pasien['no_rkm_medis']]);
+    $stmt_pemeriksaan->execute([':no_rkm_medis' => $pasien['no_rkm_medis']]);
     $pemeriksaan = $stmt_pemeriksaan->fetch(PDO::FETCH_ASSOC);
+
+    // Jika tidak ada hasil, coba query alternatif
+    if (!$pemeriksaan) {
+        file_put_contents($log_file, "Query pemeriksaan pertama tidak menghasilkan data, mencoba query alternatif\n", FILE_APPEND);
+        $query_pemeriksaan_alt = "SELECT * FROM penilaian_medis_ralan_kandungan 
+                                 WHERE no_rawat = :no_rkm_medis 
+                                 ORDER BY tanggal DESC LIMIT 1";
+        $stmt_pemeriksaan_alt = $pdo->prepare($query_pemeriksaan_alt);
+        $stmt_pemeriksaan_alt->execute([':no_rkm_medis' => $pasien['no_rkm_medis']]);
+        $pemeriksaan = $stmt_pemeriksaan_alt->fetch(PDO::FETCH_ASSOC);
+    }
 
     // Debug: Tampilkan hasil query pemeriksaan
     file_put_contents($log_file, "Hasil query pemeriksaan:\n" . print_r($pemeriksaan, true) . "\n", FILE_APPEND);
@@ -127,10 +164,10 @@ try {
     // Ambil data obstetri terbaru dari tabel status_obstetri
     $query_obstetri = "SELECT tanggal_tp_penyesuaian, faktor_risiko_umum, faktor_risiko_obstetri, faktor_risiko_preeklampsia 
                       FROM status_obstetri 
-                      WHERE no_rkm_medis = ? 
+                      WHERE no_rkm_medis = :no_rkm_medis 
                       ORDER BY tanggal_tp_penyesuaian DESC LIMIT 1";
     $stmt_obstetri = $pdo->prepare($query_obstetri);
-    $stmt_obstetri->execute([$pasien['no_rkm_medis']]);
+    $stmt_obstetri->execute([':no_rkm_medis' => $pasien['no_rkm_medis']]);
     $obstetri = $stmt_obstetri->fetch(PDO::FETCH_ASSOC);
 
     // Debug: Tampilkan hasil query obstetri
