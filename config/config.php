@@ -5,6 +5,8 @@ $host = $_SERVER['HTTP_HOST'];
 
 if ($host === 'localhost' || strpos($host, 'localhost:') === 0) {
     $base_url = $protocol . $host . '/antrian%20pasien';
+} else if ($host === 'www.praktekobgin.com' || $host === 'praktekobgin.com') {
+    $base_url = $protocol . $host;
 } else {
     $base_url = $protocol . $host;
 }
