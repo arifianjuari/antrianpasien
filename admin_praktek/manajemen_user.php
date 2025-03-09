@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../includes/email_helper.php';
 
 // Cek apakah user sudah login dan memiliki role admin
 session_start();
@@ -18,11 +19,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
                 $role = $_POST['role'];
                 $email = $_POST['email'];
+                $verificationToken = bin2hex(random_bytes(32));
+                $expires = date('Y-m-d H:i:s', strtotime('+24 hours'));
 
                 try {
-                    $stmt = $conn->prepare("INSERT INTO users (username, password, role, email, status, email_verified, created_at) VALUES (?, ?, ?, ?, 'pending', 0, CURRENT_TIMESTAMP)");
-                    $stmt->execute([$username, $password, $role, $email]);
-                    $_SESSION['success'] = "User berhasil ditambahkan";
+                    $stmt = $conn->prepare("INSERT INTO users (username, email, password, role, status, email_verified, email_verification_token, email_verification_expires, created_at) 
+                                          VALUES (?, ?, ?, ?, 'pending', 0, ?, ?, CURRENT_TIMESTAMP)");
+                    $stmt->execute([$username, $email, $password, $role, $verificationToken, $expires]);
+
+                    // Kirim email verifikasi
+                    if (sendVerificationEmail($email, $username, $verificationToken)) {
+                        $_SESSION['success'] = "User berhasil ditambahkan dan email verifikasi telah dikirim";
+                    } else {
+                        $_SESSION['warning'] = "User berhasil ditambahkan tetapi gagal mengirim email verifikasi";
+                    }
                 } catch (PDOException $e) {
                     $_SESSION['error'] = "Gagal menambahkan user: " . $e->getMessage();
                 }
