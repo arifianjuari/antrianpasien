@@ -542,7 +542,20 @@ ob_start();
             infoAlert.className = 'alert alert-warning mb-3';
             infoAlert.innerHTML = '<strong>Sedang memproses:</strong> Mencari data pasien...';
 
-            fetch(`check_patient.php?nik=${nik}`)
+            // Gunakan URL lengkap dengan HTTPS
+            const baseUrl = window.location.protocol + '//' + window.location.host;
+            let apiUrl;
+
+            // Penanganan khusus untuk domain produksi
+            if (window.location.host === 'praktekobgin.com' || window.location.host === 'www.praktekobgin.com') {
+                apiUrl = `${baseUrl}/pendaftaran/check_patient.php?nik=${nik}`;
+            } else {
+                apiUrl = `${baseUrl}/antrian%20pasien/pendaftaran/check_patient.php?nik=${nik}`;
+            }
+
+            console.log('Mengakses URL:', apiUrl);
+
+            fetch(apiUrl)
                 .then(response => {
                     // Periksa apakah respons OK (status 200-299)
                     if (!response.ok) {
@@ -608,6 +621,14 @@ ob_start();
 
                     // Log error lebih detail untuk debugging
                     console.log('Detail error:', error.message);
+
+                    // Tampilkan informasi URL yang diakses untuk debugging
+                    console.log('URL yang diakses:', apiUrl);
+
+                    // Aktifkan semua field untuk memungkinkan input manual
+                    allFormFields.forEach(field => {
+                        field.disabled = false;
+                    });
                 });
         }
 
