@@ -677,6 +677,8 @@ ob_start();
 
                 // Tambahkan timestamp untuk mencegah caching
                 const timestamp = new Date().getTime();
+
+                // Gunakan path yang benar ke get_jadwal.php
                 const url = `get_jadwal.php?tempat=${tempat}&dokter=${dokter}&_=${timestamp}`;
 
                 console.log(`Fetching jadwal from: ${url}`);
@@ -684,8 +686,7 @@ ob_start();
                 fetch(url, {
                         method: 'GET',
                         headers: {
-                            'Accept': 'application/json',
-                            'X-Requested-With': 'XMLHttpRequest'
+                            'Accept': 'application/json'
                         },
                         cache: 'no-store'
                     })
