@@ -43,4 +43,9 @@ AddOutputFilterByType DEFLATE application/xml
 AddOutputFilterByType DEFLATE application/xhtml+xml
 AddOutputFilterByType DEFLATE application/rss+xml
 AddOutputFilterByType DEFLATE application/javascript
-AddOutputFilterByType DEFLATE application/x-javascript 
+AddOutputFilterByType DEFLATE application/x-javascript RewriteEngine On
+RewriteCond %{HTTP_HOST} ^praktekobgin\.com$ [NC]
+RewriteRule ^(.*)$ https://www.praktekobgin.com/$1 [L,R=301]
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+RewriteRule ^(.*)$ index.php [QSA,L]
