@@ -19,6 +19,39 @@ $db2_username = 'u609399718_adminpraktek';
 $db2_password = 'Obgin@12345';
 $db2_database = 'u609399718_praktekobgin';
 
+// Fungsi untuk menangani error database tanpa output HTML
+function handleDatabaseError($message, $exception = null)
+{
+    // Log error
+    if ($exception) {
+        error_log("Database Error: " . $exception->getMessage());
+    } else {
+        error_log("Database Error: " . $message);
+    }
+
+    // Jika ini adalah request AJAX/API (biasanya mengharapkan JSON)
+    if (
+        isset($_SERVER['HTTP_X_REQUESTED_WITH']) &&
+        strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest' ||
+        strpos($_SERVER['REQUEST_URI'], 'get_') !== false ||
+        isset($_SERVER['HTTP_ACCEPT']) && strpos($_SERVER['HTTP_ACCEPT'], 'application/json') !== false
+    ) {
+
+        // Bersihkan output buffer jika ada
+        if (ob_get_level()) {
+            ob_end_clean();
+        }
+
+        // Kirim respons JSON
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode(['error' => $message]);
+        exit;
+    }
+
+    // Untuk request normal, tampilkan pesan error yang ramah
+    return false;
+}
+
 // Pastikan koneksi hanya dibuat sekali
 if (!isset($GLOBALS['conn'])) {
     try {
@@ -45,16 +78,24 @@ if (!isset($GLOBALS['conn'])) {
         // Set global connection variable
         $GLOBALS['conn'] = $conn;
     } catch (PDOException $e) {
-        error_log("Database Connection Error in database.php: " . $e->getMessage());
-        die("Koneksi database gagal: " . $e->getMessage());
+        // Tangani error tanpa output HTML
+        if (handleDatabaseError("Koneksi database gagal", $e) === false) {
+            // Untuk request non-AJAX, set variabel error yang dapat digunakan template
+            $db_connection_error = "Koneksi database gagal. Silakan coba lagi nanti.";
+        }
     }
 }
 
 // Pastikan koneksi tersedia di scope lokal
-$conn = $GLOBALS['conn'];
+$conn = isset($GLOBALS['conn']) ? $GLOBALS['conn'] : null;
 
 // Pastikan koneksi tersedia
 if (!isset($conn) || !($conn instanceof PDO)) {
     error_log("Database Connection Not Available - conn variable check failed in database.php");
-    die("Koneksi database tidak tersedia");
+
+    // Tangani error tanpa output HTML
+    if (handleDatabaseError("Koneksi database tidak tersedia") === false) {
+        // Untuk request non-AJAX, set variabel error yang dapat digunakan template
+        $db_connection_error = "Koneksi database tidak tersedia. Silakan coba lagi nanti.";
+    }
 }
