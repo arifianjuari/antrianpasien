@@ -1,5 +1,17 @@
 <?php
-session_start();
+// Periksa apakah session sudah dimulai dengan cara yang kompatibel dengan berbagai versi PHP
+if (function_exists('session_status')) {
+    // PHP 5.4.0 atau lebih baru
+    if (session_status() !== PHP_SESSION_ACTIVE) {
+        session_start();
+    }
+} else {
+    // PHP versi lama
+    if (!headers_sent()) {
+        @session_start();
+    }
+}
+
 // Impor konfigurasi zona waktu
 require_once '../config/timezone.php';
 require_once '../config/database.php';
@@ -18,7 +30,7 @@ try {
     $tempat_praktek = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
     error_log("Database Error: " . $e->getMessage());
-    $tempat_praktek = [];
+    $tempat_praktek = array();
 }
 
 // Ambil data dokter
@@ -321,6 +333,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             // Set pesan sukses
             $success = true;
+
+            // Simpan pesan sukses dalam session
+            if (!isset($_SESSION)) {
+                if (function_exists('session_status')) {
+                    if (session_status() !== PHP_SESSION_ACTIVE) {
+                        session_start();
+                    }
+                } else {
+                    if (!headers_sent()) {
+                        @session_start();
+                    }
+                }
+            }
+
             if ($pasien_exists) {
                 $_SESSION['success_message'] = "Pendaftaran berhasil dilakukan dengan ID: " . $id_pendaftaran . ". Data pasien telah diperbarui.";
             } else {

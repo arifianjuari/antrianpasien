@@ -9,9 +9,17 @@ ini_set('display_errors', 1);
 // Define base path
 define('BASE_PATH', __DIR__);
 
-// Start session if not already started
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
+// Start session if not already started - kompatibel dengan berbagai versi PHP
+if (function_exists('session_status')) {
+    // PHP 5.4.0 atau lebih baru
+    if (session_status() !== PHP_SESSION_ACTIVE) {
+        session_start();
+    }
+} else {
+    // PHP versi lama
+    if (!headers_sent()) {
+        @session_start();
+    }
 }
 
 // Include database configuration
