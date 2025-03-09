@@ -543,7 +543,20 @@ ob_start();
             infoAlert.innerHTML = '<strong>Sedang memproses:</strong> Mencari data pasien...';
 
             fetch(`check_patient.php?nik=${nik}`)
-                .then(response => response.json())
+                .then(response => {
+                    // Periksa apakah respons OK (status 200-299)
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+
+                    // Periksa content-type untuk memastikan respons adalah JSON
+                    const contentType = response.headers.get('content-type');
+                    if (!contentType || !contentType.includes('application/json')) {
+                        throw new Error(`Respons bukan JSON: ${contentType}`);
+                    }
+
+                    return response.json();
+                })
                 .then(data => {
                     if (data.found) {
                         // Isi form dengan data pasien
@@ -592,6 +605,9 @@ ob_start();
                     // Update pesan informasi jika terjadi error
                     infoAlert.className = 'alert alert-danger mb-3';
                     infoAlert.innerHTML = '<strong>Error:</strong> Terjadi kesalahan saat mencari data pasien. Silakan coba lagi.';
+
+                    // Log error lebih detail untuk debugging
+                    console.log('Detail error:', error.message);
                 });
         }
 
