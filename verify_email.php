@@ -1,88 +1,77 @@
 <?php
-require_once 'config_auth.php';
-require_once 'config/config.php';
+require_once __DIR__ . '/config/config.php';
+require_once __DIR__ . '/config/database.php';
 
-$error = '';
-$success = '';
+if (!isset($_GET['token'])) {
+    die('Token verifikasi tidak valid.');
+}
 
-if (isset($_GET['token'])) {
-    $token = $_GET['token'];
-    $token_hash = hash('sha256', $token);
+$token = $_GET['token'];
 
-    try {
-        // Find user with matching token that hasn't expired
-        $stmt = $auth_conn->prepare("SELECT id FROM users WHERE email_verification_token = ? AND email_verification_expires > NOW() AND email_verified = 0");
-        $stmt->execute([$token_hash]);
-        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+try {
+    // Cek token dan update status email_verified
+    $stmt = $conn->prepare("UPDATE users 
+                           SET email_verified = 1, 
+                               status = 'active', 
+                               email_verification_token = NULL,
+                               email_verification_expires = NULL,
+                               updated_at = CURRENT_TIMESTAMP 
+                           WHERE email_verification_token = ? 
+                           AND email_verified = 0 
+                           AND email_verification_expires > CURRENT_TIMESTAMP");
+    $stmt->execute([$token]);
 
-        if ($user) {
-            // Update user as verified
-            $stmt = $auth_conn->prepare("UPDATE users SET email_verified = 1, email_verification_token = NULL, email_verification_expires = NULL WHERE id = ?");
-            $stmt->execute([$user['id']]);
+    if ($stmt->rowCount() > 0) {
+        $message = "Email Anda berhasil diverifikasi! Sekarang Anda dapat login ke sistem.";
+        $type = "success";
+    } else {
+        // Cek apakah token sudah kadaluarsa
+        $stmt = $conn->prepare("SELECT email_verification_expires 
+                              FROM users 
+                              WHERE email_verification_token = ?");
+        $stmt->execute([$token]);
+        $result = $stmt->fetch();
 
-            // Log verification
-            require_once 'security_helpers.php';
-            logActivity($user['id'], 'email_verified', 'Email berhasil diverifikasi');
-
-            $success = 'Email berhasil diverifikasi! Sekarang Anda dapat login.';
+        if ($result && strtotime($result['email_verification_expires']) < time()) {
+            $message = "Token verifikasi sudah kadaluarsa. Silakan hubungi admin untuk mendapatkan token baru.";
         } else {
-            $error = 'Token verifikasi tidak valid atau sudah kadaluarsa.';
+            $message = "Token verifikasi tidak valid atau sudah digunakan.";
         }
-    } catch (PDOException $e) {
-        $error = 'Terjadi kesalahan. Silakan coba lagi nanti.';
-        error_log("Email verification error: " . $e->getMessage());
+        $type = "danger";
     }
-} else {
-    $error = 'Token verifikasi tidak ditemukan.';
+} catch (PDOException $e) {
+    $message = "Terjadi kesalahan saat memverifikasi email.";
+    $type = "danger";
+    error_log("Email verification error: " . $e->getMessage());
 }
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verifikasi Email - Sistem Antrian Pasien</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            background-color: #f5f5f5;
-        }
-
-        .verification-container {
-            max-width: 400px;
-            padding: 15px;
-            margin: auto;
-            margin-top: 100px;
-            text-align: center;
-        }
-    </style>
+    <title>Verifikasi Email</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
 <body>
-    <div class="container">
-        <div class="verification-container">
-            <h2 class="mb-4">Verifikasi Email</h2>
-            <?php if ($error): ?>
-                <div class="alert alert-danger">
-                    <?php echo htmlspecialchars($error); ?>
-                    <div class="mt-3">
-                        <a href="<?= $base_url ?>/login.php" class="btn btn-primary">Kembali ke Login</a>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h3 class="card-title mb-4">Verifikasi Email</h3>
+                        <div class="alert alert-<?= $type ?>" role="alert">
+                            <?= $message ?>
+                        </div>
+                        <a href="<?= $base_url ?>/login.php" class="btn btn-primary">Kembali ke Halaman Login</a>
                     </div>
                 </div>
-            <?php endif; ?>
-            <?php if ($success): ?>
-                <div class="alert alert-success">
-                    <?php echo htmlspecialchars($success); ?>
-                    <div class="mt-3">
-                        <a href="<?= $base_url ?>/login.php" class="btn btn-primary">Login Sekarang</a>
-                    </div>
-                </div>
-            <?php endif; ?>
+            </div>
         </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>
