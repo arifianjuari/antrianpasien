@@ -293,7 +293,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         ID_Jadwal,
                         Status_Pendaftaran,
                         Waktu_Pendaftaran
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Menunggu Konfirmasi', NOW())";
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Menunggu Konfirmasi', ?)";
+
+            // Buat timestamp dengan zona waktu Asia/Jakarta
+            $waktu_pendaftaran = date('Y-m-d H:i:s');
+            error_log("Waktu pendaftaran: " . $waktu_pendaftaran);
 
             error_log("Query pendaftaran: " . $query);
             error_log("Parameter: " . json_encode([
@@ -307,7 +311,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $keluhan,
                 $id_tempat_praktek,
                 $id_dokter,
-                $id_jadwal
+                $id_jadwal,
+                $waktu_pendaftaran
             ]));
 
             $stmt = $conn->prepare($query);
@@ -322,7 +327,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $keluhan,
                 $id_tempat_praktek,
                 $id_dokter,
-                $id_jadwal
+                $id_jadwal,
+                $waktu_pendaftaran
             ]);
 
             error_log("Data pendaftaran berhasil disimpan");

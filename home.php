@@ -129,8 +129,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         :id_dokter,
                         :id_jadwal,
                         'Menunggu Konfirmasi',
-                        NOW()
+                        :waktu_pendaftaran
                     )";
+
+            // Buat timestamp dengan zona waktu Asia/Jakarta
+            $waktu_pendaftaran = date('Y-m-d H:i:s');
 
             $stmt = $conn->prepare($query);
             $stmt->bindParam(':id_pendaftaran', $id_pendaftaran);
@@ -143,6 +146,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->bindParam(':id_tempat_praktek', $id_tempat_praktek);
             $stmt->bindParam(':id_dokter', $id_dokter);
             $stmt->bindParam(':id_jadwal', $id_jadwal);
+            $stmt->bindParam(':waktu_pendaftaran', $waktu_pendaftaran);
             $stmt->execute();
 
             // Set pesan sukses
