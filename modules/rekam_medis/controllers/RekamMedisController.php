@@ -1219,10 +1219,17 @@ class RekamMedisController
     {
         try {
             error_log("Starting simpan_pemeriksaan");
+            error_log("POST data: " . print_r($_POST, true));
 
             // Validasi input
             if (!isset($_POST['no_rkm_medis']) || !isset($_POST['status_bayar'])) {
                 throw new Exception("Data yang diperlukan tidak lengkap");
+            }
+
+            // Pastikan no_reg tidak kosong
+            if (empty($_POST['no_reg'])) {
+                $_POST['no_reg'] = date('Ymd-His');
+                error_log("No_reg kosong, generate baru: " . $_POST['no_reg']);
             }
 
             // Siapkan data untuk disimpan
@@ -1231,6 +1238,7 @@ class RekamMedisController
                 'no_rkm_medis' => $_POST['no_rkm_medis'],
                 'tgl_registrasi' => $_POST['tgl_registrasi'],
                 'jam_reg' => $_POST['jam_reg'],
+                'no_reg' => $_POST['no_reg'],
                 'status_bayar' => $_POST['status_bayar']
             ];
 
@@ -1244,24 +1252,7 @@ class RekamMedisController
                 header("Location: index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=" . $_POST['no_rkm_medis']);
                 exit;
             } else {
-                // Coba cek apakah data sudah ada
-                $check_stmt = $this->pdo->prepare("
-                    SELECT COUNT(*) as count 
-                    FROM reg_periksa 
-                    WHERE no_rawat = ? OR (tgl_registrasi = ? AND no_rkm_medis = ?)
-                ");
-                $check_stmt->execute([$data['no_rawat'], $data['tgl_registrasi'], $data['no_rkm_medis']]);
-                $check_result = $check_stmt->fetch(PDO::FETCH_ASSOC);
-
-                if ($check_result['count'] > 0) {
-                    // Data sudah ada, mungkin duplikasi
-                    error_log("Data kunjungan sudah ada di database");
-                    $_SESSION['warning'] = "Data kunjungan sudah ada di database. Silakan periksa daftar kunjungan pasien.";
-                    header("Location: index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=" . $_POST['no_rkm_medis']);
-                    exit;
-                } else {
-                    throw new Exception("Gagal menyimpan data kunjungan. Silakan coba lagi.");
-                }
+                throw new Exception("Gagal menyimpan data kunjungan. Silakan coba lagi.");
             }
         } catch (Exception $e) {
             error_log("Error in simpan_pemeriksaan: " . $e->getMessage());

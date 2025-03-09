@@ -2,6 +2,10 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+
+// Generate no_reg dengan format YYYYMMDD-HHMMSS
+$no_reg = date('Ymd-His');
+error_log("Form tambah pemeriksaan - no_reg yang digenerate: " . $no_reg);
 ?>
 
 <div class="container-fluid">
@@ -57,6 +61,10 @@ if (session_status() === PHP_SESSION_NONE) {
                             <th>No. Rawat</th>
                             <td><?= $no_rawat ?></td>
                         </tr>
+                        <tr>
+                            <th>No. Registrasi</th>
+                            <td><?= $no_reg ?></td>
+                        </tr>
                     </table>
                 </div>
             </div>
@@ -66,6 +74,7 @@ if (session_status() === PHP_SESSION_NONE) {
                 <input type="hidden" name="no_rawat" value="<?= $no_rawat ?>">
                 <input type="hidden" name="tgl_registrasi" value="<?= date('Y-m-d') ?>">
                 <input type="hidden" name="jam_reg" value="<?= date('H:i:s') ?>">
+                <input type="hidden" name="no_reg" value="<?= $no_reg ?>">
 
                 <div class="form-group row">
                     <label for="status_bayar" class="col-sm-2 col-form-label">Status Bayar</label>
