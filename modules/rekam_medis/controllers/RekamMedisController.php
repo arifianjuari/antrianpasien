@@ -869,6 +869,9 @@ class RekamMedisController
                     inspeksi,
                     inspekulo,
                     diagnosis,
+                    tata,
+                    tanggal_kontrol,
+                    atensi
                     tata
                 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ");
@@ -901,7 +904,9 @@ class RekamMedisController
                 $_POST['inspeksi'] ?? '',
                 $_POST['inspekulo'] ?? '',
                 $_POST['diagnosis'] ?? '',
-                $_POST['tata'] ?? ''
+                $_POST['tata'] ?? '',
+                $_POST['tanggal_kontrol'] ?? null,
+                $_POST['atensi'] ?? '0'
             ]);
 
             $_SESSION['success'] = 'Penilaian medis berhasil disimpan';
@@ -1161,7 +1166,9 @@ class RekamMedisController
                 'ultra' => $_POST['ultra'] ?? '',
                 'lab' => $_POST['lab'] ?? '',
                 'diagnosis' => $_POST['diagnosis'] ?? '',
-                'tata' => $_POST['tata'] ?? ''
+                'tata' => $_POST['tata'] ?? '',
+                'tanggal_kontrol' => $_POST['tanggal_kontrol'] ?? null,
+                'atensi' => $_POST['atensi'] ?? '0'
             ];
 
             error_log("Data yang akan disimpan: " . print_r($data, true));
@@ -1451,7 +1458,9 @@ class RekamMedisController
                 'ultra' => $_POST['ultra'],
                 'lab' => $_POST['lab'],
                 'diagnosis' => $_POST['diagnosis'],
-                'tata' => $_POST['tata']
+                'tata' => $_POST['tata'],
+                'tanggal_kontrol' => $_POST['tanggal_kontrol'] ?? null,
+                'atensi' => $_POST['atensi'] ?? '0'
             ];
 
             // Log data yang akan diupdate
