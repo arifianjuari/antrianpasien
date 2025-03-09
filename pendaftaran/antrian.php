@@ -102,6 +102,25 @@ try {
     }
     $stmt->execute();
     $antrian = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Format waktu dan kelompokkan antrian berdasarkan hari, tempat, dan dokter
+    $antrian_by_day_place = [];
+    foreach ($antrian as &$a) {
+        $a['Jam_Mulai_Format'] = date('H:i', strtotime($a['Jam_Mulai']));
+        $a['Jam_Selesai_Format'] = date('H:i', strtotime($a['Jam_Selesai']));
+        $a['Waktu_Daftar_Format'] = date('d/m/Y H:i', strtotime($a['Waktu_Pendaftaran']));
+
+        $key = $a['Hari'] . '_' . $a['Nama_Tempat'] . '_' . $a['Nama_Dokter'];
+        if (!isset($antrian_by_day_place[$key])) {
+            $antrian_by_day_place[$key] = [
+                'hari' => $a['Hari'],
+                'tempat' => $a['Nama_Tempat'],
+                'dokter' => $a['Nama_Dokter'],
+                'antrian' => []
+            ];
+        }
+        $antrian_by_day_place[$key]['antrian'][] = $a;
+    }
 } catch (PDOException $e) {
     error_log("Error: " . $e->getMessage());
     $antrian = [];
@@ -114,23 +133,23 @@ ob_start();
 <div class="container py-4">
     <div class="row mb-4">
         <div class="col-md-12">
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">Daftar Antrian Pasien</h5>
-                    <button class="btn btn-sm btn-light" type="button" data-bs-toggle="collapse" data-bs-target="#filterSection">
-                        <i class="bi bi-funnel"></i> Filter
+            <div class="card shadow border-0 rounded-4">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center rounded-top-4">
+                    <h5 class="mb-0"><i class="fas fa-list-ol me-2"></i>Daftar Antrian Pasien</h5>
+                    <button class="btn btn-sm btn-light rounded-pill" type="button" data-bs-toggle="collapse" data-bs-target="#filterSection">
+                        <i class="fas fa-filter me-1"></i> Filter
                     </button>
                 </div>
                 <div class="collapse" id="filterSection">
-                    <div class="card-body bg-light">
+                    <div class="card-body bg-light border-bottom border-primary">
                         <form id="filterForm" method="GET" class="row g-3">
                             <div class="col-md-4">
-                                <label for="hari" class="form-label">Hari</label>
-                                <select class="form-select" id="hari" name="hari">
+                                <label for="hari" class="form-label fw-bold"><i class="fas fa-calendar-day me-1"></i>Hari</label>
+                                <select class="form-select rounded-pill" id="hari" name="hari">
                                     <option value="">Semua Hari</option>
                                     <?php
-                                    $hari = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
-                                    foreach ($hari as $h) {
+                                    $hari_list = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
+                                    foreach ($hari_list as $h) {
                                         $selected = (isset($_GET['hari']) && $_GET['hari'] == $h) ? 'selected' : '';
                                         echo "<option value=\"$h\" $selected>$h</option>";
                                     }
@@ -138,8 +157,8 @@ ob_start();
                                 </select>
                             </div>
                             <div class="col-md-4">
-                                <label for="tempat" class="form-label">Tempat Praktek</label>
-                                <select class="form-select" id="tempat" name="tempat">
+                                <label for="tempat" class="form-label fw-bold"><i class="fas fa-hospital me-1"></i>Tempat Praktek</label>
+                                <select class="form-select rounded-pill" id="tempat" name="tempat">
                                     <option value="">Semua Tempat</option>
                                     <?php foreach ($tempat_praktek as $tp): ?>
                                         <option value="<?= htmlspecialchars($tp['ID_Tempat_Praktek']) ?>"
@@ -150,8 +169,8 @@ ob_start();
                                 </select>
                             </div>
                             <div class="col-md-4">
-                                <label for="dokter" class="form-label">Dokter</label>
-                                <select class="form-select" id="dokter" name="dokter">
+                                <label for="dokter" class="form-label fw-bold"><i class="fas fa-user-md me-1"></i>Dokter</label>
+                                <select class="form-select rounded-pill" id="dokter" name="dokter">
                                     <option value="">Semua Dokter</option>
                                     <?php foreach ($dokter as $d): ?>
                                         <option value="<?= htmlspecialchars($d['ID_Dokter']) ?>"
@@ -161,58 +180,95 @@ ob_start();
                                     <?php endforeach; ?>
                                 </select>
                             </div>
-                            <div class="col-12 text-end">
-                                <button type="submit" class="btn btn-primary">Terapkan Filter</button>
-                            </div>
                         </form>
                     </div>
                 </div>
                 <div class="card-body">
                     <?php if (!empty($error_message)): ?>
-                        <div class="alert alert-danger">
-                            <?php echo htmlspecialchars($error_message); ?>
+                        <div class="alert alert-danger rounded-4">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-exclamation-circle fa-2x me-3"></i>
+                                <div><?php echo htmlspecialchars($error_message); ?></div>
+                            </div>
                         </div>
                     <?php elseif (empty($antrian)): ?>
-                        <div class="alert alert-info">
-                            Tidak ada data antrian untuk filter yang dipilih.
+                        <div class="alert alert-info rounded-4">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-info-circle fa-2x me-3"></i>
+                                <div>Tidak ada data antrian untuk filter yang dipilih.</div>
+                            </div>
                         </div>
                     <?php else: ?>
-                        <div class="alert alert-info">
-                            <i class="bi bi-info-circle"></i> Nomor antrian dihitung berdasarkan hari dan waktu pendaftaran. Pasien yang mendaftar lebih awal untuk hari yang sama akan mendapatkan nomor antrian yang lebih kecil.
+                        <div class="alert alert-info rounded-4 mb-4">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-info-circle fa-2x me-3"></i>
+                                <div>Nomor antrian dihitung berdasarkan hari dan waktu pendaftaran. Pasien yang mendaftar lebih awal untuk hari yang sama akan mendapatkan nomor antrian yang lebih kecil.</div>
+                            </div>
                         </div>
-                        <div class="table-responsive">
-                            <table class="table table-striped table-hover">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>No. Antrian</th>
-                                        <th>ID Pendaftaran</th>
-                                        <th>Nama Pasien</th>
-                                        <th>Hari</th>
-                                        <th>Jadwal</th>
-                                        <th>Tempat Praktek</th>
-                                        <th>Dokter</th>
-                                        <th>Jenis Layanan</th>
-                                        <th>Waktu Daftar</th>
-                                        <th>Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php foreach ($antrian as $a): ?>
-                                        <tr>
-                                            <td><span class="badge bg-primary"><?= htmlspecialchars($a['Nomor_Urut']) ?></span></td>
-                                            <td><?= htmlspecialchars($a['ID_Pendaftaran']) ?></td>
-                                            <td><?= htmlspecialchars($a['nm_pasien']) ?></td>
-                                            <td><?= htmlspecialchars($a['Hari']) ?></td>
-                                            <td><?= htmlspecialchars($a['Jam_Mulai']) ?> - <?= htmlspecialchars($a['Jam_Selesai']) ?></td>
-                                            <td><?= htmlspecialchars($a['Nama_Tempat']) ?></td>
-                                            <td><?= htmlspecialchars($a['Nama_Dokter']) ?></td>
-                                            <td><?= htmlspecialchars($a['Jenis_Layanan']) ?></td>
-                                            <td><?= date('d/m/Y H:i', strtotime($a['Waktu_Pendaftaran'])) ?></td>
-                                            <td><?= htmlspecialchars($a['Status_Pendaftaran']) ?></td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                </tbody>
-                            </table>
+
+                        <!-- Tampilan Antrian Minimalis -->
+                        <div class="row">
+                            <?php foreach ($antrian_by_day_place as $group): ?>
+                                <div class="col-md-12 mb-4">
+                                    <div class="card border-0 shadow-sm rounded-4">
+                                        <div class="card-header bg-light d-flex justify-content-between align-items-center py-3">
+                                            <h6 class="mb-0 fw-bold">
+                                                <i class="fas fa-calendar-day me-2 text-primary"></i><?= htmlspecialchars($group['hari']) ?>
+                                                <span class="mx-2">|</span>
+                                                <i class="fas fa-hospital me-2 text-primary"></i><?= htmlspecialchars($group['tempat']) ?>
+                                                <span class="mx-2">|</span>
+                                                <i class="fas fa-user-md me-2 text-primary"></i><?= htmlspecialchars($group['dokter']) ?>
+                                            </h6>
+                                            <span class="badge bg-primary rounded-pill"><?= count($group['antrian']) ?> Antrian</span>
+                                        </div>
+                                        <div class="card-body p-0">
+                                            <div class="table-responsive">
+                                                <table class="table table-hover mb-0">
+                                                    <thead class="table-light">
+                                                        <tr>
+                                                            <th class="text-center">No</th>
+                                                            <th>Pasien</th>
+                                                            <th>Jadwal</th>
+                                                            <th>Layanan</th>
+                                                            <th>Status</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <?php foreach ($group['antrian'] as $a): ?>
+                                                            <tr>
+                                                                <td class="text-center">
+                                                                    <div class="antrian-number"><?= htmlspecialchars($a['Nomor_Urut']) ?></div>
+                                                                </td>
+                                                                <td>
+                                                                    <div class="fw-bold"><?= htmlspecialchars($a['nm_pasien']) ?></div>
+                                                                    <div class="small text-muted">
+                                                                        <i class="far fa-clock me-1"></i><?= $a['Waktu_Daftar_Format'] ?>
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    <span class="badge bg-light text-dark">
+                                                                        <i class="far fa-clock me-1"></i><?= $a['Jam_Mulai_Format'] ?> - <?= $a['Jam_Selesai_Format'] ?>
+                                                                    </span>
+                                                                </td>
+                                                                <td>
+                                                                    <span class="badge <?= strpos($a['Jenis_Layanan'], 'BPJS') !== false ? 'bg-success' : 'bg-primary' ?> rounded-pill">
+                                                                        <?= htmlspecialchars($a['Jenis_Layanan']) ?>
+                                                                    </span>
+                                                                </td>
+                                                                <td>
+                                                                    <span class="badge bg-<?= $a['Status_Pendaftaran'] == 'Menunggu' ? 'warning' : ($a['Status_Pendaftaran'] == 'Dalam Proses' ? 'info' : 'secondary') ?> rounded-pill">
+                                                                        <?= htmlspecialchars($a['Status_Pendaftaran']) ?>
+                                                                    </span>
+                                                                </td>
+                                                            </tr>
+                                                        <?php endforeach; ?>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
                         </div>
                     <?php endif; ?>
                 </div>
@@ -224,8 +280,8 @@ ob_start();
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Auto-submit form when filter changes
-        const filterForm = document.querySelector('#filterSection form');
-        const filterInputs = filterForm.querySelectorAll('input, select');
+        const filterForm = document.querySelector('#filterForm');
+        const filterInputs = filterForm.querySelectorAll('select');
 
         filterInputs.forEach(input => {
             input.addEventListener('change', function() {
@@ -244,6 +300,7 @@ ob_start();
             notification.innerHTML = `
                 <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
                     <div class="toast-header bg-info text-white">
+                        <i class="fas fa-sync-alt me-2"></i>
                         <strong class="me-auto">Informasi</strong>
                         <small>Baru saja</small>
                         <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
@@ -288,23 +345,51 @@ $content = ob_get_clean();
 // Additional CSS
 $additional_css = "
     .card {
-        border-radius: 10px;
+        border-radius: 15px;
         overflow: hidden;
+        transition: all 0.3s ease;
+    }
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
     }
     .card-header {
         background-color: #0d6efd;
     }
     .border-bottom {
         border-bottom: 2px solid #dee2e6 !important;
-        margin-bottom: 1rem;
     }
-    .badge.bg-primary {
-        font-size: 1rem;
-        padding: 0.5rem 0.8rem;
+    .border-primary {
+        border-color: #0d6efd !important;
+    }
+    .antrian-number {
+        background-color: #0d6efd;
+        color: white;
+        font-weight: bold;
+        font-size: 1.2rem;
+        width: 40px;
+        height: 40px;
         border-radius: 50%;
-        min-width: 2.5rem;
-        display: inline-block;
-        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+    }
+    .rounded-4 {
+        border-radius: 0.75rem !important;
+    }
+    .rounded-top-4 {
+        border-top-left-radius: 0.75rem !important;
+        border-top-right-radius: 0.75rem !important;
+    }
+    .table > :not(caption) > * > * {
+        padding: 1rem 0.75rem;
+    }
+    .badge {
+        font-weight: 500;
+    }
+    .rounded-pill {
+        border-radius: 50rem !important;
     }
 ";
 

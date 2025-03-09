@@ -90,6 +90,13 @@ function clean_url($url)
                                 <span class="menu-text">Data Pasien</span>
                             </a>
                         </li>
+                        <li>
+                            <a href="<?php echo clean_url($base_url); ?>/index.php?module=rekam_medis&action=daftar_atensi"
+                                class="nav-link <?php echo (isset($_GET['module']) && $_GET['module'] == 'rekam_medis' && isset($_GET['action']) && $_GET['action'] == 'daftar_atensi') ? 'active' : 'text-dark'; ?>">
+                                <i class="bi bi-exclamation-circle"></i>
+                                <span class="menu-text">Daftar Atensi</span>
+                            </a>
+                        </li>
                     </ul>
                 </li>
 
@@ -172,6 +179,14 @@ function clean_url($url)
                         </a>
                     </li>
                 </ul>
+            </li>
+
+            <!-- Menu Pengumuman - Selalu Tampil -->
+            <li class="nav-item mb-1">
+                <a href="<?php echo $base_url; ?>/pengumuman.php" class="nav-link <?php echo $current_page == 'pengumuman.php' ? 'active' : 'text-dark'; ?>">
+                    <i class="bi bi-megaphone"></i>
+                    <span class="menu-text">Pengumuman</span>
+                </a>
             </li>
         </ul>
         <hr class="mx-3 my-2">

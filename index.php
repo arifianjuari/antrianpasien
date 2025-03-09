@@ -85,6 +85,9 @@ try {
             case 'data_pasien':
                 $rekamMedisController->dataPasien();
                 break;
+            case 'daftar_atensi':
+                $rekamMedisController->daftarAtensi();
+                break;
             case 'cari_pasien':
                 $rekamMedisController->cariPasien();
                 break;

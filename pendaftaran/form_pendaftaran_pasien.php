@@ -17,6 +17,17 @@ require_once '../config/timezone.php';
 require_once '../config/database.php';
 $page_title = "Form Pendaftaran Pasien";
 
+// Kredensial database untuk widget pengumuman (MySQLi)
+$db_host = 'auth-db1151.hstgr.io';
+$db_username = 'u609399718_adminpraktek';
+$db_password = 'Obgin@12345';
+$db_database = 'u609399718_praktekobgin';
+
+// Base URL
+$protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https://' : 'http://';
+$host = $_SERVER['HTTP_HOST'];
+$base_url = $protocol . $host;
+
 // Ambil parameter dari URL jika ada
 $id_tempat_praktek = isset($_GET['tempat']) ? $_GET['tempat'] : '';
 $id_dokter = isset($_GET['dokter']) ? $_GET['dokter'] : '';
@@ -384,6 +395,43 @@ ob_start();
                     <h4 class="mb-0">Form Pendaftaran Pasien</h4>
                 </div>
                 <div class="card-body">
+                    <!-- Widget Pengumuman -->
+                    <?php
+                    // Buat koneksi MySQLi untuk widget pengumuman
+                    $conn_mysqli = new mysqli($db_host, $db_username, $db_password, $db_database);
+
+                    // Cek koneksi database
+                    if (!$conn_mysqli->connect_error) {
+                        // Simpan path asli
+                        $original_dir = dirname(__FILE__);
+
+                        // Pindah ke direktori root untuk include widget
+                        chdir(dirname($original_dir));
+
+                        // Set base_url yang benar
+                        $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https://' : 'http://';
+                        $host = $_SERVER['HTTP_HOST'];
+                        if ($host === 'localhost' || strpos($host, 'localhost:') === 0) {
+                            $base_url = $protocol . $host . '/antrian%20pasien';
+                        } else if ($host === 'www.praktekobgin.com' || $host === 'praktekobgin.com') {
+                            $base_url = 'https://' . $host;
+                        } else {
+                            $base_url = $protocol . $host;
+                        }
+                        $base_url = rtrim($base_url, '/');
+
+                        // Gunakan koneksi MySQLi untuk widget pengumuman
+                        $conn = $conn_mysqli;
+                        include_once 'widgets/pengumuman_widget.php';
+
+                        // Kembalikan ke direktori asli
+                        chdir($original_dir);
+
+                        // Tutup koneksi MySQLi
+                        $conn_mysqli->close();
+                    }
+                    ?>
+
                     <?php if (!empty($errors)): ?>
                         <div class="alert alert-danger">
                             <h5><i class="fas fa-exclamation-triangle"></i> Terjadi Kesalahan</h5>
@@ -832,7 +880,52 @@ $additional_css = "
         border-bottom: 2px solid #dee2e6 !important;
         margin-bottom: 1rem;
     }
+    
+    /* CSS untuk widget pengumuman */
+    .card-body .card {
+        border-radius: 0;
+        box-shadow: none !important;
+    }
+    .pengumuman-preview {
+        font-size: 0.9rem;
+        color: #555;
+    }
+    .border-end:last-child {
+        border-right: none !important;
+    }
+    @media (max-width: 767.98px) {
+        .border-end {
+            border-right: none !important;
+            border-bottom: 1px solid #dee2e6;
+        }
+    }
 ";
+
+// Additional JavaScript for pengumuman widget
+$additional_scripts = '
+<script>
+    $(document).ready(function() {
+        // Tampilkan detail pengumuman pada modal
+        $(".view-pengumuman").click(function() {
+            const judul = $(this).data("judul");
+            const isi = $(this).data("isi");
+            const mulai = $(this).data("mulai");
+            const berakhir = $(this).data("berakhir");
+            const penulis = $(this).data("penulis");
+            
+            let tanggalText = mulai;
+            if (berakhir !== "-") {
+                tanggalText += " s/d " + berakhir;
+            }
+            
+            $("#modal-judul").text(judul);
+            $("#modal-isi").html(isi);
+            $("#modal-tanggal").text(tanggalText);
+            $("#modal-penulis").text(penulis);
+        });
+    });
+</script>
+';
 
 // Include template
 include_once '../template/layout.php';

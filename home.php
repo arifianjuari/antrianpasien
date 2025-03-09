@@ -43,6 +43,13 @@ try {
     $dokter = [];
 }
 
+// Konversi koneksi PDO ke MySQLi untuk widget pengumuman
+$pdo_conn = $conn; // Simpan koneksi PDO
+$conn_mysqli = new mysqli($host, $username, $password, $database);
+if ($conn_mysqli->connect_error) {
+    error_log("MySQLi Connection Error: " . $conn_mysqli->connect_error);
+}
+
 // Proses form jika disubmit
 $errors = [];
 $success = false;
@@ -164,12 +171,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 
-<div class="container-fluid py-4">
+<div class="container mt-4">
     <div class="row">
-        <div class="col-12">
-            <div class="card shadow">
+        <div class="col-md-8">
+            <!-- Konten utama -->
+            <div class="card shadow-sm mb-4">
                 <div class="card-header bg-primary text-white">
-                    <h4 class="mb-0">Form Pendaftaran Pasien</h4>
+                    <h5 class="mb-0">Form Pendaftaran Pasien</h5>
                 </div>
                 <div class="card-body">
                     <?php if (!empty($errors)): ?>
@@ -275,6 +283,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <button type="submit" class="btn btn-primary">Daftar</button>
                         </div>
                     </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <!-- Sidebar dengan widget -->
+            <?php
+            // Base URL untuk widget
+            if (!isset($base_url)) {
+                $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https://' : 'http://';
+                $host = $_SERVER['HTTP_HOST'];
+                $base_url = $protocol . $host;
+            }
+
+            // Include widget pengumuman
+            include_once 'widgets/pengumuman_widget.php';
+            ?>
+
+            <!-- Widget Jadwal Praktek -->
+            <div class="card mb-4 border-0 shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="bi bi-calendar-check"></i> Jadwal Praktek</h5>
+                </div>
+                <div class="card-body">
+                    <p>Lihat jadwal praktek dokter terbaru.</p>
+                    <a href="<?php echo $base_url; ?>/pendaftaran/jadwal.php" class="btn btn-outline-success w-100">
+                        <i class="bi bi-calendar2-week"></i> Lihat Jadwal
+                    </a>
+                </div>
+            </div>
+
+            <!-- Widget Bantuan -->
+            <div class="card mb-4 border-0 shadow-sm">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="bi bi-question-circle"></i> Bantuan</h5>
+                </div>
+                <div class="card-body">
+                    <p>Butuh bantuan untuk pendaftaran?</p>
+                    <p>Hubungi kami di:</p>
+                    <ul class="list-unstyled">
+                        <li><i class="bi bi-telephone"></i> (021) 123-4567</li>
+                        <li><i class="bi bi-envelope"></i> info@klinik.com</li>
+                    </ul>
                 </div>
             </div>
         </div>
