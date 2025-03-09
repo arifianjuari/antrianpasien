@@ -9,7 +9,12 @@ function sendJsonResponse($data)
     // Pastikan tidak ada output sebelumnya
     if (ob_get_length()) ob_clean();
 
-    // Set header dengan benar
+    // Set header CORS
+    header('Access-Control-Allow-Origin: *');
+    header('Access-Control-Allow-Methods: GET, POST');
+    header('Access-Control-Allow-Headers: Content-Type');
+
+    // Set header Content-Type
     header('Content-Type: application/json');
     echo json_encode($data);
     exit;
