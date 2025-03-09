@@ -542,23 +542,8 @@ ob_start();
             infoAlert.className = 'alert alert-warning mb-3';
             infoAlert.innerHTML = '<strong>Sedang memproses:</strong> Mencari data pasien...';
 
-            // Log untuk debugging
-            console.log('Mencari pasien dengan NIK:', nik);
-            console.log('URL API:', `check_patient.php?nik=${nik}`);
-
-            fetch(`check_patient.php?nik=${nik}`, {
-                    method: 'GET',
-                    headers: {
-                        'Accept': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest'
-                    },
-                    cache: 'no-store'
-                })
+            fetch(`check_patient.php?nik=${nik}`)
                 .then(response => {
-                    // Log respons untuk debugging
-                    console.log('Status respons:', response.status);
-                    console.log('Headers respons:', [...response.headers.entries()]);
-
                     // Periksa apakah respons OK (status 200-299)
                     if (!response.ok) {
                         throw new Error(`HTTP error! Status: ${response.status}`);
@@ -566,21 +551,13 @@ ob_start();
 
                     // Periksa content-type untuk memastikan respons adalah JSON
                     const contentType = response.headers.get('content-type');
-                    console.log('Content-Type:', contentType);
-
                     if (!contentType || !contentType.includes('application/json')) {
-                        // Jika bukan JSON, coba ambil teks respons untuk debugging
-                        return response.text().then(text => {
-                            console.log('Respons bukan JSON:', text);
-                            throw new Error(`Respons bukan JSON: ${contentType}`);
-                        });
+                        throw new Error(`Respons bukan JSON: ${contentType}`);
                     }
 
                     return response.json();
                 })
                 .then(data => {
-                    console.log('Data respons:', data);
-
                     if (data.found) {
                         // Isi form dengan data pasien
                         formFields.nama_pasien.value = data.patient.nm_pasien;
@@ -631,11 +608,6 @@ ob_start();
 
                     // Log error lebih detail untuk debugging
                     console.log('Detail error:', error.message);
-
-                    // Aktifkan semua field untuk pasien baru meskipun terjadi error
-                    allFormFields.forEach(field => {
-                        field.disabled = false;
-                    });
                 });
         }
 
