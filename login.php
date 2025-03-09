@@ -1,6 +1,19 @@
 <?php
 require_once 'error_display.php';
-session_start();
+
+// Periksa apakah session sudah dimulai dengan cara yang kompatibel dengan berbagai versi PHP
+if (function_exists('session_status')) {
+    // PHP 5.4.0 atau lebih baru
+    if (session_status() !== PHP_SESSION_ACTIVE) {
+        session_start();
+    }
+} else {
+    // PHP versi lama
+    if (!headers_sent()) {
+        @session_start();
+    }
+}
+
 require_once 'config/koneksi.php';
 require_once 'security_helpers.php';
 require_once 'config/config.php';

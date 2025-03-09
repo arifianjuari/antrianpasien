@@ -354,7 +354,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             // Redirect ke halaman sukses
-            header("Location: pendaftaran_sukses.php?id=" . $id_pendaftaran);
+            header("Location: pendaftaran_sukses.php?id=" . urlencode($id_pendaftaran));
             exit;
         } catch (PDOException $e) {
             // Rollback transaction
