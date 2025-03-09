@@ -1,5 +1,17 @@
 <?php
-session_start();
+// Periksa apakah session sudah dimulai dengan cara yang kompatibel dengan berbagai versi PHP
+if (function_exists('session_status')) {
+    // PHP 5.4.0 atau lebih baru
+    if (session_status() !== PHP_SESSION_ACTIVE) {
+        session_start();
+    }
+} else {
+    // PHP versi lama
+    if (!headers_sent()) {
+        @session_start();
+    }
+}
+
 // Impor konfigurasi zona waktu
 require_once '../config/timezone.php';
 require_once '../config/database.php';
