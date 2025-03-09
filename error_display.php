@@ -4,7 +4,7 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 // Fungsi untuk menangani error
-function customErrorHandler($errno, $errstr, $errfile, $errline)
+function displayErrorHandler($errno, $errstr, $errfile, $errline)
 {
     // Ubah lokasi file log ke direktori tmp yang biasanya dapat diakses
     $log_dir = sys_get_temp_dir();
@@ -45,4 +45,4 @@ function customErrorHandler($errno, $errstr, $errfile, $errline)
 }
 
 // Set custom error handler
-set_error_handler("customErrorHandler");
+set_error_handler("displayErrorHandler");
