@@ -975,9 +975,15 @@ class RekamMedis
             error_log("=== MULAI PROSES TAMBAH PEMERIKSAAN ===");
             error_log("Data yang diterima: " . print_r($data, true));
 
-            // Generate no_reg
-            $no_reg = $this->generateNoReg($data['tgl_registrasi']);
-            error_log("No Registrasi yang digenerate: " . $no_reg);
+            // Pastikan no_reg tidak null
+            if (empty($data['no_reg'])) {
+                // Generate no_reg baru jika null
+                $no_reg = date('Ymd-His');
+                error_log("No Registrasi kosong, generate baru: " . $no_reg);
+            } else {
+                $no_reg = $data['no_reg'];
+                error_log("No Registrasi yang digunakan: " . $no_reg);
+            }
 
             // Cek apakah kombinasi no_rawat sudah ada
             $check_stmt = $this->pdo->prepare("
@@ -990,46 +996,39 @@ class RekamMedis
 
             if ($check_result['count'] > 0) {
                 error_log("No rawat sudah ada: " . $data['no_rawat']);
-                // Generate no_rawat baru dengan menambahkan timestamp
-                $timestamp = date('His');
-                $parts = explode('.', $data['no_rawat']);
-                $data['no_rawat'] = $parts[0] . '.' . $timestamp;
-                error_log("No rawat baru: " . $data['no_rawat']);
+                throw new Exception("Nomor rawat sudah ada dalam database");
             }
 
-            // Cek apakah kombinasi tanggal dan no_reg sudah ada
-            $check_reg_stmt = $this->pdo->prepare("
-                SELECT COUNT(*) as count
-                FROM reg_periksa 
-                WHERE tgl_registrasi = ? AND no_reg = ?
-            ");
-            $check_reg_stmt->execute([$data['tgl_registrasi'], $no_reg]);
-            $check_reg_result = $check_reg_stmt->fetch(PDO::FETCH_ASSOC);
+            // Debug info
+            error_log("No Reg sebelum insert: " . $no_reg);
+            error_log("Tipe data no_reg: " . gettype($no_reg));
+            error_log("Panjang no_reg: " . strlen($no_reg));
 
-            if ($check_reg_result['count'] > 0) {
-                error_log("Kombinasi tgl_registrasi dan no_reg sudah ada: " . $data['tgl_registrasi'] . " - " . $no_reg);
-                // Generate no_reg baru dengan menambahkan timestamp
-                $timestamp = date('His');
-                $no_reg = $no_reg . $timestamp;
-                error_log("No reg baru dengan timestamp: " . $no_reg);
-            }
-
+            // Insert data ke reg_periksa sesuai struktur tabel yang ada
             $stmt = $this->pdo->prepare("
                 INSERT INTO reg_periksa (
-                    no_reg, no_rawat, no_rkm_medis, tgl_registrasi, 
-                    jam_reg, status_bayar
+                    no_reg,
+                    no_rawat,
+                    tgl_registrasi,
+                    jam_reg,
+                    no_rkm_medis,
+                    status_bayar
                 ) VALUES (
-                    :no_reg, :no_rawat, :no_rkm_medis, :tgl_registrasi,
-                    :jam_reg, :status_bayar
+                    :no_reg,
+                    :no_rawat,
+                    :tgl_registrasi,
+                    :jam_reg,
+                    :no_rkm_medis,
+                    :status_bayar
                 )
             ");
 
             $params = [
                 ':no_reg' => $no_reg,
                 ':no_rawat' => $data['no_rawat'],
-                ':no_rkm_medis' => $data['no_rkm_medis'],
                 ':tgl_registrasi' => $data['tgl_registrasi'],
                 ':jam_reg' => $data['jam_reg'],
+                ':no_rkm_medis' => $data['no_rkm_medis'],
                 ':status_bayar' => $data['status_bayar']
             ];
 
@@ -1040,33 +1039,15 @@ class RekamMedis
             if (!$result) {
                 $error_info = $stmt->errorInfo();
                 error_log("Error executing query: " . print_r($error_info, true));
-
-                // Jika error adalah duplicate entry, coba dengan no_reg yang berbeda
-                if ($error_info[0] == '23000' && strpos($error_info[2], 'Duplicate entry') !== false) {
-                    error_log("Mencoba lagi dengan no_reg yang berbeda karena duplikasi");
-
-                    // Generate no_reg baru dengan timestamp
-                    $no_reg = date('His');
-                    $params[':no_reg'] = $no_reg;
-
-                    error_log("Mencoba dengan no_reg baru: " . $no_reg);
-                    $result = $stmt->execute($params);
-
-                    if (!$result) {
-                        error_log("Masih gagal dengan no_reg baru: " . print_r($stmt->errorInfo(), true));
-                        return false;
-                    }
-                } else {
-                    return false;
-                }
+                throw new Exception("Gagal menyimpan data: " . $error_info[2]);
             }
 
             error_log("Pemeriksaan berhasil disimpan");
             return true;
-        } catch (PDOException $e) {
+        } catch (Exception $e) {
             error_log("Error adding pemeriksaan: " . $e->getMessage());
             error_log("Stack trace: " . $e->getTraceAsString());
-            return false;
+            throw $e;
         }
     }
 
