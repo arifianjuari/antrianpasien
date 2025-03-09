@@ -20,12 +20,12 @@ require_once 'config/config.php';
 
 // Log request information
 error_log("Request URI: " . $_SERVER['REQUEST_URI']);
-error_log("Query String: " . $_SERVER['QUERY_STRING']);
+error_log("Query String: " . ($_SERVER['QUERY_STRING'] ?? ''));
 
-// Cek apakah user sudah login
-if (!isset($_SESSION['user_id'])) {
-    header("Location: " . BASE_URL . "/login.php");
-    exit;
+// Cek koneksi database
+if (!isset($conn) || !($conn instanceof PDO)) {
+    error_log("Database connection not available in index.php");
+    die("Koneksi database tidak tersedia. Silakan hubungi administrator.");
 }
 
 // Load controller
@@ -42,6 +42,18 @@ try {
     // Log routing information
     error_log("Module: " . $module);
     error_log("Action: " . $action);
+
+    // Cek apakah user sudah login
+    if (!isset($_SESSION['user_id'])) {
+        // Redirect ke login page jika mencoba mengakses halaman yang memerlukan login
+        if (!empty($module) || !empty($action)) {
+            header("Location: " . BASE_URL . "/login.php");
+            exit;
+        }
+        // Jika mengakses root, tampilkan halaman login
+        include 'login.php';
+        exit;
+    }
 
     // Jika tidak ada action yang ditentukan untuk modul rekam_medis, arahkan ke data_pasien
     if ($module == 'rekam_medis' && empty($action)) {
