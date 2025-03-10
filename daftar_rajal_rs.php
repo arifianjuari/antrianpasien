@@ -16,7 +16,8 @@ try {
             reg.no_reg,
             poli.nm_poli,
             dokter.nm_dokter,
-            reg.stts as status
+            reg.stts as status,
+            pasien.no_tlp as no_telepon
             FROM reg_periksa as reg
             INNER JOIN pasien ON reg.no_rkm_medis = pasien.no_rkm_medis
             INNER JOIN poliklinik as poli ON reg.kd_poli = poli.kd_poli
@@ -116,6 +117,7 @@ ob_start();
                     <th>No. Antrian</th>
                     <th>Nama Pasien</th>
                     <th>Usia</th>
+                    <th>No. Telepon</th>
                     <th>Poliklinik</th>
                     <th>Dokter</th>
                     <th>Status</th>
@@ -130,6 +132,31 @@ ob_start();
                             <td><?php echo htmlspecialchars($patient['no_reg']); ?></td>
                             <td><?php echo htmlspecialchars($patient['nama']); ?></td>
                             <td><?php echo htmlspecialchars($patient['usia']); ?> th</td>
+                            <td>
+                                <?php if (!empty($patient['no_telepon'])): ?>
+                                    <?php
+                                    // Bersihkan nomor telepon dari karakter non-numerik
+                                    $clean_number = preg_replace('/[^0-9]/', '', $patient['no_telepon']);
+
+                                    // Pastikan format nomor telepon benar untuk WhatsApp
+                                    if (substr($clean_number, 0, 1) == '0') {
+                                        $clean_number = '62' . substr($clean_number, 1);
+                                    } elseif (substr($clean_number, 0, 2) != '62') {
+                                        $clean_number = '62' . $clean_number;
+                                    }
+
+                                    $whatsapp_url = "https://wa.me/{$clean_number}";
+                                    ?>
+                                    <div class="d-flex align-items-center">
+                                        <span class="me-2"><?php echo htmlspecialchars($patient['no_telepon']); ?></span>
+                                        <a href="#" onclick="return openWhatsApp('<?php echo $clean_number; ?>')" class="btn btn-whatsapp btn-sm" title="Chat WhatsApp">
+                                            <i class="bi bi-whatsapp"></i>
+                                        </a>
+                                    </div>
+                                <?php else: ?>
+                                    <span class="text-muted">-</span>
+                                <?php endif; ?>
+                            </td>
                             <td><?php echo htmlspecialchars($patient['nm_poli']); ?></td>
                             <td><?php echo htmlspecialchars($patient['nm_dokter']); ?></td>
                             <td>
@@ -148,7 +175,7 @@ ob_start();
                     <?php endforeach; ?>
                 <?php else: ?>
                     <tr>
-                        <td colspan="8" class="text-center">Tidak ada data pasien</td>
+                        <td colspan="9" class="text-center">Tidak ada data pasien</td>
                     </tr>
                 <?php endif; ?>
             </tbody>
@@ -172,10 +199,28 @@ $additional_css = "
     .form-check-label {
         cursor: pointer;
     }
+    .btn-whatsapp {
+        background-color: #25D366;
+        border-color: #25D366;
+        color: white;
+    }
+    .btn-whatsapp:hover {
+        background-color: #128C7E;
+        border-color: #128C7E;
+        color: white;
+    }
 ";
 
 // Additional JavaScript if needed
-$additional_js = "";
+$additional_js = "
+    // Fungsi untuk membuka WhatsApp dengan pesan default
+    function openWhatsApp(number) {
+        const defaultMessage = 'Halo, ini dari RS. Kami ingin menginformasikan mengenai jadwal kunjungan Anda.';
+        const encodedMessage = encodeURIComponent(defaultMessage);
+        window.open('https://wa.me/' + number + '?text=' + encodedMessage, '_blank');
+        return false;
+    }
+";
 
 // Pastikan menggunakan path yang benar untuk template
 $template_path = __DIR__ . '/template/layout.php';
