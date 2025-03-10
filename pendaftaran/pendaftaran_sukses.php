@@ -283,6 +283,51 @@ ob_start();
 <?php
 $content = ob_get_clean();
 
+// Buat teks WhatsApp dengan data pendaftaran
+$whatsapp_text = "Halo Admin, saya telah melakukan pendaftaran dengan detail berikut:\n\n";
+$whatsapp_text .= "ID Pendaftaran: " . $pendaftaran['ID_Pendaftaran'] . "\n";
+$whatsapp_text .= "Nama: " . $pendaftaran['nm_pasien'] . "\n";
+if (!empty($pendaftaran['no_ktp'])) {
+    $whatsapp_text .= "NIK: " . $pendaftaran['no_ktp'] . "\n";
+}
+$whatsapp_text .= "Tanggal Lahir: " . date('d-m-Y', strtotime($pendaftaran['tgl_lahir'])) . "\n";
+$whatsapp_text .= "Jenis Kelamin: " . $pendaftaran['jk'] . "\n";
+$whatsapp_text .= "No. Telepon: " . $pendaftaran['no_tlp'] . "\n";
+if (!empty($pendaftaran['alamat'])) {
+    $whatsapp_text .= "Alamat: " . $pendaftaran['alamat'] . "\n";
+}
+$whatsapp_text .= "\nInformasi Kunjungan:\n";
+$whatsapp_text .= "Tempat Praktek: " . $pendaftaran['Nama_Tempat'] . "\n";
+$whatsapp_text .= "Dokter: " . $pendaftaran['Nama_Dokter'] . "\n";
+if (isset($pendaftaran['hari']) && !empty($pendaftaran['hari'])) {
+    $whatsapp_text .= "Hari: " . $pendaftaran['hari'] . "\n";
+}
+$whatsapp_text .= "Tanggal Daftar: " . date('d-m-Y', strtotime($pendaftaran['Waktu_Pendaftaran'])) . "\n";
+if ($jadwal) {
+    $whatsapp_text .= "Waktu Praktek: " . date('H:i', strtotime($jadwal['Jam_Mulai'])) . " - " . date('H:i', strtotime($jadwal['Jam_Selesai'])) . "\n";
+    $whatsapp_text .= "Jenis Layanan: " . $jadwal['Jenis_Layanan'] . "\n";
+}
+if (!empty($pendaftaran['Keluhan'])) {
+    $whatsapp_text .= "\nKeluhan: " . $pendaftaran['Keluhan'] . "\n";
+}
+$whatsapp_text .= "\nMohon konfirmasi pendaftaran saya. Terima kasih.";
+
+// Encode teks untuk URL
+$whatsapp_text_encoded = urlencode($whatsapp_text);
+
+// Tambahkan floating WhatsApp icon
+$whatsapp_html = '
+<div class="floating-whatsapp">
+    <a href="https://wa.me/6285190086842?text=' . $whatsapp_text_encoded . '" target="_blank">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+    <span class="tooltip-text">Hubungi Admin via WhatsApp</span>
+</div>
+';
+
+// Gabungkan konten dengan floating WhatsApp icon
+$content .= $whatsapp_html;
+
 // Additional CSS
 $additional_css = "
     .card {
@@ -298,6 +343,50 @@ $additional_css = "
     }
     .fw-bold {
         font-weight: 600;
+    }
+    
+    /* Floating WhatsApp Icon */
+    .floating-whatsapp {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 1000;
+    }
+    .floating-whatsapp a {
+        display: block;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background-color: #25D366;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 30px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+    .floating-whatsapp a:hover {
+        transform: scale(1.1);
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+    }
+    .floating-whatsapp .tooltip-text {
+        position: absolute;
+        right: 70px;
+        background-color: #333;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 5px;
+        font-size: 14px;
+        visibility: hidden;
+        opacity: 0;
+        transition: all 0.3s ease;
+        white-space: nowrap;
+    }
+    .floating-whatsapp:hover .tooltip-text {
+        visibility: visible;
+        opacity: 1;
     }
 ";
 
