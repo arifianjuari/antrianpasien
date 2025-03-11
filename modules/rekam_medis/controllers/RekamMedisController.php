@@ -7,11 +7,15 @@ require_once 'config/database.php';
 require_once 'modules/rekam_medis/models/RekamMedis.php';
 require_once 'modules/rekam_medis/models/TindakanMedis.php';
 require_once 'modules/rekam_medis/models/StatusGinekologi.php';
+require_once 'modules/rekam_medis/models/TemplateTatalaksana.php';
+require_once 'modules/rekam_medis/models/TemplateUsg.php';
 
 class RekamMedisController
 {
     private $rekamMedisModel;
     private $tindakanMedisModel;
+    private $templateTatalaksanaModel;
+    private $templateUsgModel;
     private $pdo;
     private $conn;
 
@@ -47,6 +51,8 @@ class RekamMedisController
             $this->pdo = $conn;
             $this->rekamMedisModel = new RekamMedis($conn);
             $this->tindakanMedisModel = new TindakanMedis($conn);
+            $this->templateTatalaksanaModel = new TemplateTatalaksana($conn);
+            $this->templateUsgModel = new TemplateUsg($conn);
         } catch (PDOException $e) {
             error_log("Database Error in RekamMedisController constructor: " . $e->getMessage());
             throw new Exception("Koneksi database bermasalah: " . $e->getMessage());
@@ -2506,6 +2512,525 @@ class RekamMedisController
             error_log("General error in daftarAtensi: " . $e->getMessage());
             error_log("Stack trace: " . $e->getTraceAsString());
             throw new Exception("Terjadi kesalahan: " . $e->getMessage());
+        }
+    }
+
+    /**
+     * Menangani permintaan untuk template tatalaksana
+     */
+    public function get_template_tatalaksana()
+    {
+        // Default response
+        $response = [
+            'status' => 'error',
+            'message' => 'Permintaan tidak valid',
+            'data' => null
+        ];
+
+        // Cek jenis request
+        if (isset($_GET['action'])) {
+            $action = $_GET['action'];
+
+            try {
+                switch ($action) {
+                    case 'get_kategori':
+                        // Ambil semua kategori
+                        $kategori = $this->templateTatalaksanaModel->getAllKategori();
+                        $response = [
+                            'status' => 'success',
+                            'message' => 'Berhasil mengambil data kategori',
+                            'data' => $kategori
+                        ];
+                        break;
+
+                    case 'get_template_by_kategori':
+                        // Validasi parameter
+                        if (!isset($_GET['kategori']) || empty($_GET['kategori'])) {
+                            $response['message'] = 'Parameter kategori diperlukan';
+                            break;
+                        }
+
+                        // Ambil template berdasarkan kategori
+                        $templates = $this->templateTatalaksanaModel->getTemplateByKategori($_GET['kategori']);
+                        $response = [
+                            'status' => 'success',
+                            'message' => 'Berhasil mengambil data template',
+                            'data' => $templates
+                        ];
+                        break;
+
+                    case 'get_template_by_id':
+                        // Validasi parameter
+                        if (!isset($_GET['id']) || empty($_GET['id'])) {
+                            $response['message'] = 'Parameter ID diperlukan';
+                            break;
+                        }
+
+                        // Ambil template berdasarkan ID
+                        $template = $this->templateTatalaksanaModel->getTemplateById($_GET['id']);
+                        if ($template) {
+                            $response = [
+                                'status' => 'success',
+                                'message' => 'Berhasil mengambil data template',
+                                'data' => $template
+                            ];
+                        } else {
+                            $response['message'] = 'Template tidak ditemukan';
+                        }
+                        break;
+
+                    case 'get_all_template':
+                        // Ambil semua template
+                        $templates = $this->templateTatalaksanaModel->getAllTemplate();
+                        $response = [
+                            'status' => 'success',
+                            'message' => 'Berhasil mengambil semua data template',
+                            'data' => $templates
+                        ];
+                        break;
+
+                    default:
+                        $response['message'] = 'Action tidak dikenali';
+                        break;
+                }
+            } catch (Exception $e) {
+                $response['message'] = 'Terjadi kesalahan: ' . $e->getMessage();
+            }
+        }
+
+        // Kirim response dalam format JSON
+        header('Content-Type: application/json');
+        echo json_encode($response);
+        exit;
+    }
+
+    /**
+     * Menampilkan halaman manajemen template tatalaksana
+     */
+    public function template_tatalaksana()
+    {
+        try {
+            // Ambil semua kategori
+            $kategori = $this->templateTatalaksanaModel->getAllKategori();
+
+            // Filter berdasarkan kategori jika ada
+            if (isset($_GET['kategori']) && !empty($_GET['kategori'])) {
+                $templates = $this->templateTatalaksanaModel->getTemplateByKategori($_GET['kategori']);
+                $filter_kategori = $_GET['kategori']; // Untuk menandai kategori yang dipilih di dropdown
+            }
+            // Filter berdasarkan pencarian jika ada
+            else if (isset($_GET['search']) && !empty($_GET['search'])) {
+                $templates = $this->templateTatalaksanaModel->searchTemplate($_GET['search']);
+                $search_keyword = $_GET['search']; // Untuk menampilkan keyword di input search
+            }
+            // Jika tidak ada filter, ambil semua template
+            else {
+                $templates = $this->templateTatalaksanaModel->getAllTemplate();
+            }
+
+            // Pesan sukses atau error
+            $success_message = '';
+            $error_message = '';
+
+            if (isset($_GET['success'])) {
+                switch ($_GET['success']) {
+                    case '1':
+                        $success_message = 'Template berhasil ditambahkan';
+                        break;
+                    case '2':
+                        $success_message = 'Template berhasil diperbarui';
+                        break;
+                    case '3':
+                        $success_message = 'Template berhasil dihapus';
+                        break;
+                }
+            }
+
+            if (isset($_GET['error'])) {
+                $error_message = urldecode($_GET['error']);
+            }
+
+            // Tampilkan view
+            include 'modules/rekam_medis/views/template_tatalaksana.php';
+        } catch (Exception $e) {
+            echo "Terjadi kesalahan: " . $e->getMessage();
+        }
+    }
+
+    /**
+     * Menyimpan template tatalaksana baru
+     */
+    public function simpan_template_tatalaksana()
+    {
+        try {
+            // Validasi input
+            if (!isset($_POST['nama_template_tx']) || empty($_POST['nama_template_tx'])) {
+                throw new Exception("Nama template harus diisi");
+            }
+
+            if (!isset($_POST['isi_template_tx']) || empty($_POST['isi_template_tx'])) {
+                throw new Exception("Isi template harus diisi");
+            }
+
+            if (!isset($_POST['kategori_tx']) || empty($_POST['kategori_tx'])) {
+                throw new Exception("Kategori harus dipilih");
+            }
+
+            // Siapkan data
+            $data = [
+                'nama_template_tx' => $_POST['nama_template_tx'],
+                'isi_template_tx' => $_POST['isi_template_tx'],
+                'kategori_tx' => $_POST['kategori_tx'],
+                'status' => $_POST['status'],
+                'tags' => isset($_POST['tags']) ? $_POST['tags'] : null
+            ];
+
+            // Simpan template
+            $result = $this->templateTatalaksanaModel->saveTemplate($data);
+
+            if ($result) {
+                // Redirect ke halaman template dengan pesan sukses
+                header("Location: index.php?module=rekam_medis&action=template_tatalaksana&success=1");
+                exit;
+            } else {
+                throw new Exception("Gagal menyimpan template");
+            }
+        } catch (Exception $e) {
+            // Redirect dengan pesan error
+            header("Location: index.php?module=rekam_medis&action=template_tatalaksana&error=" . urlencode($e->getMessage()));
+            exit;
+        }
+    }
+
+    /**
+     * Mengupdate template tatalaksana
+     */
+    public function update_template_tatalaksana()
+    {
+        try {
+            // Validasi input
+            if (!isset($_POST['id_template']) || empty($_POST['id_template'])) {
+                throw new Exception("ID template tidak valid");
+            }
+
+            if (!isset($_POST['nama_template_tx']) || empty($_POST['nama_template_tx'])) {
+                throw new Exception("Nama template harus diisi");
+            }
+
+            if (!isset($_POST['isi_template_tx']) || empty($_POST['isi_template_tx'])) {
+                throw new Exception("Isi template harus diisi");
+            }
+
+            if (!isset($_POST['kategori_tx']) || empty($_POST['kategori_tx'])) {
+                throw new Exception("Kategori harus dipilih");
+            }
+
+            // Siapkan data
+            $data = [
+                'id_template_tx' => $_POST['id_template'],
+                'nama_template_tx' => $_POST['nama_template_tx'],
+                'isi_template_tx' => $_POST['isi_template_tx'],
+                'kategori_tx' => $_POST['kategori_tx'],
+                'status' => $_POST['status'],
+                'tags' => isset($_POST['tags']) ? $_POST['tags'] : null
+            ];
+
+            // Update template
+            $result = $this->templateTatalaksanaModel->updateTemplate($data);
+
+            if ($result) {
+                // Redirect ke halaman template dengan pesan sukses
+                header("Location: index.php?module=rekam_medis&action=template_tatalaksana&success=2");
+                exit;
+            } else {
+                throw new Exception("Gagal mengupdate template");
+            }
+        } catch (Exception $e) {
+            // Redirect dengan pesan error
+            header("Location: index.php?module=rekam_medis&action=template_tatalaksana&error=" . urlencode($e->getMessage()));
+            exit;
+        }
+    }
+
+    /**
+     * Menghapus template tatalaksana
+     */
+    public function hapus_template_tatalaksana()
+    {
+        try {
+            // Validasi input
+            if (!isset($_POST['id_template']) || empty($_POST['id_template'])) {
+                throw new Exception("ID template tidak valid");
+            }
+
+            // Hapus template
+            $result = $this->templateTatalaksanaModel->deleteTemplate($_POST['id_template']);
+
+            if ($result) {
+                // Redirect ke halaman template dengan pesan sukses
+                header("Location: index.php?module=rekam_medis&action=template_tatalaksana&success=3");
+                exit;
+            } else {
+                throw new Exception("Gagal menghapus template");
+            }
+        } catch (Exception $e) {
+            // Redirect dengan pesan error
+            header("Location: index.php?module=rekam_medis&action=template_tatalaksana&error=" . urlencode($e->getMessage()));
+            exit;
+        }
+    }
+
+    /**
+     * Menampilkan form edit template tatalaksana
+     */
+    public function edit_template_form()
+    {
+        try {
+            // Validasi input
+            if (!isset($_POST['id_template']) || empty($_POST['id_template'])) {
+                throw new Exception("ID template tidak valid");
+            }
+
+            // Ambil data template berdasarkan ID
+            $template = $this->templateTatalaksanaModel->getTemplateById($_POST['id_template']);
+
+            if (!$template) {
+                throw new Exception("Template tidak ditemukan");
+            }
+
+            // Ambil semua kategori
+            $kategori = $this->templateTatalaksanaModel->getAllKategori();
+
+            // Tampilkan view form edit
+            include 'modules/rekam_medis/views/form_edit_template.php';
+        } catch (Exception $e) {
+            // Redirect dengan pesan error
+            header("Location: index.php?module=rekam_medis&action=template_tatalaksana&error=" . urlencode($e->getMessage()));
+            exit;
+        }
+    }
+
+    /**
+     * Menangani permintaan untuk template USG
+     */
+    public function get_template_usg()
+    {
+        try {
+            // Validasi request
+            if (!isset($_GET['action']) || $_GET['action'] !== 'get_template_usg') {
+                throw new Exception("Invalid request");
+            }
+
+            // Set header untuk JSON response
+            header('Content-Type: application/json');
+
+            // Jika ada parameter kategori, ambil template berdasarkan kategori
+            if (isset($_GET['kategori']) && !empty($_GET['kategori'])) {
+                $kategori = $_GET['kategori'];
+                $templates = $this->templateUsgModel->getTemplateByKategori($kategori);
+                echo json_encode(['status' => 'success', 'data' => $templates]);
+                return;
+            }
+
+            // Jika ada parameter id, ambil template berdasarkan id
+            if (isset($_GET['id']) && !empty($_GET['id'])) {
+                $id = $_GET['id'];
+                $template = $this->templateUsgModel->getTemplateById($id);
+                if (!$template) {
+                    echo json_encode(['status' => 'error', 'message' => 'Template tidak ditemukan']);
+                    return;
+                }
+                echo json_encode(['status' => 'success', 'data' => $template]);
+                return;
+            }
+
+            // Default: ambil semua template
+            $templates = $this->templateUsgModel->getAllTemplate();
+            echo json_encode(['status' => 'success', 'data' => $templates]);
+        } catch (Exception $e) {
+            error_log("Error in get_template_usg: " . $e->getMessage());
+            echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+        }
+    }
+
+    /**
+     * Menampilkan halaman manajemen template USG
+     */
+    public function template_usg()
+    {
+        try {
+            // Ambil semua kategori
+            $kategori = $this->templateUsgModel->getAllKategori();
+
+            // Filter berdasarkan kategori jika ada
+            if (isset($_GET['kategori']) && !empty($_GET['kategori'])) {
+                $templates = $this->templateUsgModel->getTemplateByKategori($_GET['kategori']);
+            }
+            // Pencarian jika ada
+            elseif (isset($_GET['search']) && !empty($_GET['search'])) {
+                $templates = $this->templateUsgModel->searchTemplate($_GET['search']);
+            }
+            // Default: ambil semua template
+            else {
+                $templates = $this->templateUsgModel->getAllTemplate();
+            }
+
+            // Tampilkan view
+            include 'modules/rekam_medis/views/template_usg.php';
+        } catch (Exception $e) {
+            error_log("Error in template_usg: " . $e->getMessage());
+            echo "Error: " . $e->getMessage();
+        }
+    }
+
+    /**
+     * Menyimpan template USG baru
+     */
+    public function simpan_template_usg()
+    {
+        try {
+            // Validasi request
+            if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+                throw new Exception("Invalid request method");
+            }
+
+            // Validasi data
+            if (
+                empty($_POST['nama_template_usg']) ||
+                empty($_POST['isi_template_usg']) ||
+                empty($_POST['kategori_usg'])
+            ) {
+                throw new Exception("Data template tidak lengkap");
+            }
+
+            // Siapkan data
+            $data = [
+                'nama_template_usg' => $_POST['nama_template_usg'],
+                'isi_template_usg' => $_POST['isi_template_usg'],
+                'kategori_usg' => $_POST['kategori_usg'],
+                'status' => $_POST['status'] ?? 'active',
+                'tags' => $_POST['tags'] ?? null
+            ];
+
+            // Simpan template
+            $result = $this->templateUsgModel->saveTemplate($data);
+
+            if ($result) {
+                // Redirect ke halaman template dengan pesan sukses
+                header("Location: index.php?module=rekam_medis&action=template_usg&success=1");
+                exit;
+            } else {
+                throw new Exception("Gagal menyimpan template");
+            }
+        } catch (Exception $e) {
+            error_log("Error in simpan_template_usg: " . $e->getMessage());
+            header("Location: index.php?module=rekam_medis&action=template_usg&error=" . urlencode($e->getMessage()));
+            exit;
+        }
+    }
+
+    /**
+     * Mengupdate template USG
+     */
+    public function update_template_usg()
+    {
+        try {
+            // Validasi request
+            if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+                throw new Exception("Invalid request method");
+            }
+
+            // Validasi data
+            if (
+                empty($_POST['id_template_usg']) ||
+                empty($_POST['nama_template_usg']) ||
+                empty($_POST['isi_template_usg']) ||
+                empty($_POST['kategori_usg'])
+            ) {
+                throw new Exception("Data template tidak lengkap");
+            }
+
+            // Siapkan data
+            $data = [
+                'id_template_usg' => $_POST['id_template_usg'],
+                'nama_template_usg' => $_POST['nama_template_usg'],
+                'isi_template_usg' => $_POST['isi_template_usg'],
+                'kategori_usg' => $_POST['kategori_usg'],
+                'status' => $_POST['status'] ?? 'active',
+                'tags' => $_POST['tags'] ?? null
+            ];
+
+            // Update template
+            $result = $this->templateUsgModel->updateTemplate($data);
+
+            if ($result) {
+                // Redirect ke halaman template dengan pesan sukses
+                header("Location: index.php?module=rekam_medis&action=template_usg&success=2");
+                exit;
+            } else {
+                throw new Exception("Gagal mengupdate template");
+            }
+        } catch (Exception $e) {
+            error_log("Error in update_template_usg: " . $e->getMessage());
+            header("Location: index.php?module=rekam_medis&action=template_usg&error=" . urlencode($e->getMessage()));
+            exit;
+        }
+    }
+
+    /**
+     * Menghapus template USG
+     */
+    public function hapus_template_usg()
+    {
+        try {
+            // Validasi request
+            if ($_SERVER['REQUEST_METHOD'] !== 'POST' || empty($_POST['id_template'])) {
+                throw new Exception("Invalid request");
+            }
+
+            // Hapus template
+            $result = $this->templateUsgModel->deleteTemplate($_POST['id_template']);
+
+            if ($result) {
+                // Redirect ke halaman template dengan pesan sukses
+                header("Location: index.php?module=rekam_medis&action=template_usg&success=3");
+                exit;
+            } else {
+                throw new Exception("Gagal menghapus template");
+            }
+        } catch (Exception $e) {
+            error_log("Error in hapus_template_usg: " . $e->getMessage());
+            header("Location: index.php?module=rekam_medis&action=template_usg&error=" . urlencode($e->getMessage()));
+            exit;
+        }
+    }
+
+    /**
+     * Menampilkan form edit template USG
+     */
+    public function edit_template_usg_form()
+    {
+        try {
+            // Validasi request
+            if ($_SERVER['REQUEST_METHOD'] !== 'POST' || empty($_POST['id_template'])) {
+                throw new Exception("Invalid request");
+            }
+
+            // Ambil data template
+            $template = $this->templateUsgModel->getTemplateById($_POST['id_template']);
+            if (!$template) {
+                throw new Exception("Template tidak ditemukan");
+            }
+
+            // Ambil kategori
+            $kategori = $this->templateUsgModel->getAllKategori();
+
+            // Tampilkan form edit
+            include 'modules/rekam_medis/views/form_edit_template_usg.php';
+        } catch (Exception $e) {
+            error_log("Error in edit_template_usg_form: " . $e->getMessage());
+            header("Location: index.php?module=rekam_medis&action=template_usg&error=" . urlencode($e->getMessage()));
+            exit;
         }
     }
 }

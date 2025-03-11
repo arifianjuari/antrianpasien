@@ -110,20 +110,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 $_SESSION['success'] = "Jadwal rutin berhasil diperbarui";
             } elseif ($_POST['action'] === 'hapus') {
-                // Cek apakah jadwal rutin digunakan di jadwal praktek
-                $check_query = "SELECT COUNT(*) FROM jadwal_praktek WHERE ID_Jadwal_Rutin = :id";
-                $check_stmt = $conn_db2->prepare($check_query);
-                $check_stmt->execute(['id' => $_POST['id_jadwal']]);
+                // Hapus langsung tanpa pengecekan karena kolom ID_Jadwal_Rutin tidak ada di tabel jadwal_praktek
+                $query = "DELETE FROM jadwal_rutin WHERE ID_Jadwal_Rutin = :id";
+                $stmt = $conn_db2->prepare($query);
+                $stmt->execute(['id' => $_POST['id_jadwal']]);
 
-                if ($check_stmt->fetchColumn() > 0) {
-                    $_SESSION['error'] = "Jadwal rutin tidak dapat dihapus karena masih digunakan dalam jadwal praktek";
-                } else {
-                    $query = "DELETE FROM jadwal_rutin WHERE ID_Jadwal_Rutin = :id";
-                    $stmt = $conn_db2->prepare($query);
-                    $stmt->execute(['id' => $_POST['id_jadwal']]);
-
-                    $_SESSION['success'] = "Jadwal rutin berhasil dihapus";
-                }
+                $_SESSION['success'] = "Jadwal rutin berhasil dihapus";
             } elseif ($_POST['action'] === 'toggle_status') {
                 $query = "UPDATE jadwal_rutin SET 
                             Status_Aktif = :status,

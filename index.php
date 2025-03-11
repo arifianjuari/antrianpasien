@@ -88,6 +88,42 @@ try {
             case 'daftar_atensi':
                 $rekamMedisController->daftarAtensi();
                 break;
+            case 'template_tatalaksana':
+                $rekamMedisController->template_tatalaksana();
+                break;
+            case 'simpan_template_tatalaksana':
+                $rekamMedisController->simpan_template_tatalaksana();
+                break;
+            case 'edit_template_form':
+                $rekamMedisController->edit_template_form();
+                break;
+            case 'update_template_tatalaksana':
+                $rekamMedisController->update_template_tatalaksana();
+                break;
+            case 'hapus_template_tatalaksana':
+                $rekamMedisController->hapus_template_tatalaksana();
+                break;
+            case 'get_template_tatalaksana':
+                $rekamMedisController->get_template_tatalaksana();
+                break;
+            case 'template_usg':
+                $rekamMedisController->template_usg();
+                break;
+            case 'simpan_template_usg':
+                $rekamMedisController->simpan_template_usg();
+                break;
+            case 'edit_template_usg_form':
+                $rekamMedisController->edit_template_usg_form();
+                break;
+            case 'update_template_usg':
+                $rekamMedisController->update_template_usg();
+                break;
+            case 'hapus_template_usg':
+                $rekamMedisController->hapus_template_usg();
+                break;
+            case 'get_template_usg':
+                $rekamMedisController->get_template_usg();
+                break;
             case 'cari_pasien':
                 $rekamMedisController->cariPasien();
                 break;

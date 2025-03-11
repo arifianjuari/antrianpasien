@@ -170,11 +170,27 @@ if (!defined('BASE_PATH')) {
                                     <div class="card-body">
                                         <div class="mb-3">
                                             <label>Ultrasonografi</label>
-                                            <textarea name="ultra" class="form-control" rows="2" required></textarea>
+                                            <div class="row">
+                                                <div class="col-md-8">
+                                                    <textarea name="ultra" id="ultrasonografi" class="form-control" rows="8"></textarea>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="card border">
+                                                        <div class="card-header py-1 bg-light">
+                                                            <h6 class="mb-0 small">Template USG</h6>
+                                                        </div>
+                                                        <div class="card-body p-2">
+                                                            <button type="button" class="btn btn-sm btn-info w-100" data-bs-toggle="modal" data-bs-target="#modalDaftarTemplateUsg">
+                                                                <i class="fas fa-list"></i> Lihat Template
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                         <div class="mb-3">
                                             <label>Laboratorium</label>
-                                            <textarea name="lab" class="form-control" rows="2" required></textarea>
+                                            <textarea name="lab" class="form-control" rows="2"></textarea>
                                         </div>
                                     </div>
                                 </div>
@@ -268,7 +284,7 @@ if (!defined('BASE_PATH')) {
                                         </div>
                                         <div class="mb-3">
                                             <label>Keterangan Pemeriksaan Fisik</label>
-                                            <textarea name="ket_fisik" class="form-control" rows="2"></textarea>
+                                            <textarea name="ket_fisik" class="form-control" rows="2">saat ini dalam batas normal</textarea>
                                         </div>
                                     </div>
                                 </div>
@@ -281,11 +297,27 @@ if (!defined('BASE_PATH')) {
                                     <div class="card-body">
                                         <div class="mb-3">
                                             <label>Diagnosis</label>
-                                            <textarea name="diagnosis" class="form-control" rows="2" required></textarea>
+                                            <textarea name="diagnosis" class="form-control" rows="2"></textarea>
                                         </div>
                                         <div class="mb-3">
                                             <label>Tatalaksana</label>
-                                            <textarea name="tata" class="form-control" rows="2" required></textarea>
+                                            <div class="row">
+                                                <div class="col-md-8">
+                                                    <textarea name="tata" id="tatalaksana" class="form-control" rows="4"></textarea>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="card border">
+                                                        <div class="card-header py-1 bg-light">
+                                                            <h6 class="mb-0 small">Template Tatalaksana</h6>
+                                                        </div>
+                                                        <div class="card-body p-2">
+                                                            <button type="button" class="btn btn-sm btn-info w-100" data-bs-toggle="modal" data-bs-target="#modalDaftarTemplate">
+                                                                <i class="fas fa-list"></i> Lihat Template
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                         <div class="mb-3">
                                             <label>Tanggal Kontrol</label>
@@ -317,3 +349,203 @@ if (!defined('BASE_PATH')) {
         </div>
     </div>
 </div>
+
+<!-- Modal Daftar Template Tatalaksana -->
+<div class="modal fade" id="modalDaftarTemplate" tabindex="-1" aria-labelledby="modalDaftarTemplateLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalDaftarTemplateLabel">Daftar Template Tatalaksana</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Filter Kategori -->
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <form method="get" class="d-flex">
+                            <input type="hidden" name="module" value="rekam_medis">
+                            <input type="hidden" name="action" value="form_penilaian_medis_ralan_kandungan">
+                            <input type="hidden" name="no_rawat" value="<?= $data['no_rawat'] ?>">
+                            <select name="kategori" class="form-select me-2" onchange="this.form.submit()">
+                                <option value="">Semua Kategori</option>
+                                <option value="fetomaternal" <?= isset($_GET['kategori']) && $_GET['kategori'] == 'fetomaternal' ? 'selected' : '' ?>>Fetomaternal</option>
+                                <option value="ginekologi umum" <?= isset($_GET['kategori']) && $_GET['kategori'] == 'ginekologi umum' ? 'selected' : '' ?>>Ginekologi Umum</option>
+                                <option value="onkogin" <?= isset($_GET['kategori']) && $_GET['kategori'] == 'onkogin' ? 'selected' : '' ?>>Onkogin</option>
+                                <option value="fertilitas" <?= isset($_GET['kategori']) && $_GET['kategori'] == 'fertilitas' ? 'selected' : '' ?>>Fertilitas</option>
+                                <option value="uroginekologi" <?= isset($_GET['kategori']) && $_GET['kategori'] == 'uroginekologi' ? 'selected' : '' ?>>Uroginekologi</option>
+                            </select>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Tabel Template -->
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th width="5%">No</th>
+                                <th width="20%">Nama Template</th>
+                                <th width="40%">Isi Template</th>
+                                <th width="15%">Kategori</th>
+                                <th width="10%">Tags</th>
+                                <th width="10%">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php
+                            // Koneksi ke database
+                            $conn = new mysqli('auth-db1151.hstgr.io', 'u609399718_adminpraktek', 'Obgin@12345', 'u609399718_praktekobgin');
+
+                            if ($conn->connect_error) {
+                                die("Koneksi gagal: " . $conn->connect_error);
+                            }
+
+                            // Query untuk mengambil data template
+                            $where = "";
+                            if (isset($_GET['kategori']) && !empty($_GET['kategori'])) {
+                                $kategori = $conn->real_escape_string($_GET['kategori']);
+                                $where = "WHERE kategori_tx = '$kategori' AND status = 'active'";
+                            } else {
+                                $where = "WHERE status = 'active'";
+                            }
+
+                            $sql = "SELECT * FROM template_tatalaksana $where ORDER BY kategori_tx ASC, nama_template_tx ASC";
+                            $result = $conn->query($sql);
+
+                            if ($result->num_rows > 0) {
+                                $no = 1;
+                                while ($row = $result->fetch_assoc()) {
+                                    echo "<tr>";
+                                    echo "<td>" . $no++ . "</td>";
+                                    echo "<td>" . htmlspecialchars($row['nama_template_tx']) . "</td>";
+                                    echo "<td><div style='max-height: 100px; overflow-y: auto;'>" . nl2br(htmlspecialchars($row['isi_template_tx'])) . "</div></td>";
+                                    echo "<td>" . htmlspecialchars($row['kategori_tx']) . "</td>";
+                                    echo "<td>" . htmlspecialchars($row['tags'] ?? '-') . "</td>";
+                                    echo "<td>
+                                            <button type='button' class='btn btn-sm btn-primary mb-1 w-100' onclick='gunakanTemplate(" . json_encode($row['isi_template_tx']) . ")'>
+                                                <i class='fas fa-copy'></i> Gunakan
+                                            </button>
+                                          </td>";
+                                    echo "</tr>";
+                                }
+                            } else {
+                                echo "<tr><td colspan='6' class='text-center'>Tidak ada data template</td></tr>";
+                            }
+
+                            $conn->close();
+                            ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Daftar Template USG -->
+<div class="modal fade" id="modalDaftarTemplateUsg" tabindex="-1" aria-labelledby="modalDaftarTemplateUsgLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalDaftarTemplateUsgLabel">Daftar Template USG</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Filter Kategori -->
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <form method="get" class="d-flex">
+                            <input type="hidden" name="module" value="rekam_medis">
+                            <input type="hidden" name="action" value="form_penilaian_medis_ralan_kandungan">
+                            <input type="hidden" name="no_rawat" value="<?= $data['no_rawat'] ?>">
+                            <select name="kategori_usg" class="form-select me-2" onchange="this.form.submit()">
+                                <option value="">Semua Kategori</option>
+                                <option value="obstetri" <?= isset($_GET['kategori_usg']) && $_GET['kategori_usg'] == 'obstetri' ? 'selected' : '' ?>>Obstetri</option>
+                                <option value="ginekologi" <?= isset($_GET['kategori_usg']) && $_GET['kategori_usg'] == 'ginekologi' ? 'selected' : '' ?>>Ginekologi</option>
+                            </select>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Tabel Template -->
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th width="5%">No</th>
+                                <th width="20%">Nama Template</th>
+                                <th width="40%">Isi Template</th>
+                                <th width="15%">Kategori</th>
+                                <th width="10%">Tags</th>
+                                <th width="10%">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php
+                            // Koneksi ke database
+                            global $conn;
+
+                            // Filter berdasarkan kategori
+                            $where = "";
+                            if (isset($_GET['kategori_usg']) && !empty($_GET['kategori_usg'])) {
+                                $kategori = $conn->quote($_GET['kategori_usg']);
+                                $where = "WHERE kategori_usg = $kategori AND status = 'active'";
+                            } else {
+                                $where = "WHERE status = 'active'";
+                            }
+
+                            // Query untuk mendapatkan template
+                            $sql = "SELECT * FROM template_usg $where ORDER BY kategori_usg ASC, nama_template_usg ASC";
+                            $stmt = $conn->query($sql);
+
+                            if ($stmt->rowCount() > 0) {
+                                $no = 1;
+                                while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                                    echo "<tr>";
+                                    echo "<td>" . $no++ . "</td>";
+                                    echo "<td>" . htmlspecialchars($row['nama_template_usg']) . "</td>";
+                                    echo "<td><div style='max-height: 100px; overflow-y: auto;'>" . nl2br(htmlspecialchars($row['isi_template_usg'])) . "</div></td>";
+                                    echo "<td>" . ucwords($row['kategori_usg']) . "</td>";
+                                    echo "<td>" . htmlspecialchars($row['tags'] ?? '-') . "</td>";
+                                    echo "<td><button type='button' class='btn btn-sm btn-success w-100' onclick='gunakanTemplateUsg(" . json_encode($row['isi_template_usg']) . ")'><i class='fas fa-check'></i> Gunakan</button></td>";
+                                    echo "</tr>";
+                                }
+                            } else {
+                                echo "<tr><td colspan='6' class='text-center'>Tidak ada template tersedia</td></tr>";
+                            }
+                            ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function gunakanTemplate(isi) {
+        const currentValue = document.getElementById('tatalaksana').value;
+        if (currentValue && currentValue.trim() !== '') {
+            document.getElementById('tatalaksana').value = currentValue + '\n\n' + isi;
+        } else {
+            document.getElementById('tatalaksana').value = isi;
+        }
+        $('#modalDaftarTemplate').modal('hide');
+    }
+
+    function gunakanTemplateUsg(isi) {
+        const currentValue = document.getElementById('ultrasonografi').value;
+        if (currentValue && currentValue.trim() !== '') {
+            document.getElementById('ultrasonografi').value = currentValue + '\n\n' + isi;
+        } else {
+            document.getElementById('ultrasonografi').value = isi;
+        }
+        $('#modalDaftarTemplateUsg').modal('hide');
+    }
+</script>

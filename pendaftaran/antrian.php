@@ -228,6 +228,7 @@ ob_start();
                                                         <tr>
                                                             <th class="text-center">No</th>
                                                             <th>Pasien</th>
+                                                            <th>Waktu Daftar</th>
                                                             <th>Jadwal</th>
                                                             <th>Layanan</th>
                                                             <th>Status</th>
@@ -241,7 +242,9 @@ ob_start();
                                                                 </td>
                                                                 <td>
                                                                     <div class="fw-bold"><?= htmlspecialchars($a['nm_pasien']) ?></div>
-                                                                    <div class="small text-muted">
+                                                                </td>
+                                                                <td>
+                                                                    <div class="small">
                                                                         <i class="far fa-clock me-1"></i><?= $a['Waktu_Daftar_Format'] ?>
                                                                     </div>
                                                                 </td>

@@ -97,6 +97,20 @@ function clean_url($url)
                                 <span class="menu-text">Daftar Atensi</span>
                             </a>
                         </li>
+                        <li>
+                            <a href="<?php echo clean_url($base_url); ?>/index.php?module=rekam_medis&action=template_tatalaksana"
+                                class="nav-link <?php echo (isset($_GET['module']) && $_GET['module'] == 'rekam_medis' && isset($_GET['action']) && $_GET['action'] == 'template_tatalaksana') ? 'active' : 'text-dark'; ?>">
+                                <i class="bi bi-file-text"></i>
+                                <span class="menu-text">Template Tatalaksana</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="<?php echo clean_url($base_url); ?>/index.php?module=rekam_medis&action=template_usg"
+                                class="nav-link <?php echo (isset($_GET['module']) && $_GET['module'] == 'rekam_medis' && isset($_GET['action']) && $_GET['action'] == 'template_usg') ? 'active' : 'text-dark'; ?>">
+                                <i class="bi bi-image"></i>
+                                <span class="menu-text">Template USG</span>
+                            </a>
+                        </li>
                     </ul>
                 </li>
 

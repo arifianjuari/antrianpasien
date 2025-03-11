@@ -193,7 +193,7 @@ try {
 
     // Hasil USG
     $pdf->SetFont('helvetica', '', 6);
-    $pdf->Cell(20, 2, 'Hasil USG ', 0, 0, 'L');
+    $pdf->Cell(0, 2, 'Hasil USG', 0, 1, 'L');
     $pdf->SetFont('helvetica', '', 8);
     $pdf->MultiCell(0, 2, !empty($pemeriksaan['ultra']) ? $pemeriksaan['ultra'] : '-', 0, 'L');
 
