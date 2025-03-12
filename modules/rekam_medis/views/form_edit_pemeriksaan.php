@@ -287,7 +287,23 @@ if (!isset($pemeriksaan) || !$pemeriksaan) {
                             <div class="card-body">
                                 <div class="mb-3">
                                     <label>Diagnosis</label>
-                                    <textarea name="diagnosis" class="form-control" rows="2"><?= isset($pemeriksaan['diagnosis']) ? $pemeriksaan['diagnosis'] : '' ?></textarea>
+                                    <div class="row">
+                                        <div class="col-md-8">
+                                            <textarea name="diagnosis" id="diagnosis" class="form-control" rows="2"><?= isset($pemeriksaan['diagnosis']) ? $pemeriksaan['diagnosis'] : '' ?></textarea>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="card border">
+                                                <div class="card-header py-1 bg-light">
+                                                    <h6 class="mb-0 small">Riwayat Diagnosis</h6>
+                                                </div>
+                                                <div class="card-body p-2">
+                                                    <button type="button" class="btn btn-sm btn-info w-100" data-bs-toggle="modal" data-bs-target="#modalRiwayatDiagnosis">
+                                                        <i class="fas fa-history"></i> Lihat Riwayat
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <div class="mb-3">
@@ -510,6 +526,77 @@ if (!isset($pemeriksaan) || !$pemeriksaan) {
     </div>
 </div>
 
+<!-- Modal Riwayat Diagnosis -->
+<div class="modal fade" id="modalRiwayatDiagnosis" tabindex="-1" aria-labelledby="modalRiwayatDiagnosisLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalRiwayatDiagnosisLabel">Riwayat Diagnosis Pasien</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th width="5%">No</th>
+                                <th width="15%">Tanggal</th>
+                                <th width="65%">Diagnosis</th>
+                                <th width="15%">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php
+                            // Ambil no_rkm_medis dari data pasien
+                            $no_rkm_medis = $pasien['no_rkm_medis'];
+
+                            // Koneksi ke database
+                            global $conn;
+
+                            // Query untuk mendapatkan riwayat diagnosis
+                            $sql = "SELECT 
+                                    pmrk.tanggal, 
+                                    pmrk.diagnosis 
+                                FROM penilaian_medis_ralan_kandungan pmrk
+                                JOIN reg_periksa rp ON pmrk.no_rawat = rp.no_rawat
+                                WHERE rp.no_rkm_medis = :no_rkm_medis 
+                                AND pmrk.diagnosis IS NOT NULL 
+                                AND pmrk.diagnosis != ''
+                                ORDER BY pmrk.tanggal DESC";
+
+                            $stmt = $conn->prepare($sql);
+                            $stmt->bindParam(':no_rkm_medis', $no_rkm_medis, PDO::PARAM_STR);
+                            $stmt->execute();
+
+                            if ($stmt->rowCount() > 0) {
+                                $no = 1;
+                                while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                                    echo "<tr>";
+                                    echo "<td>" . $no++ . "</td>";
+                                    echo "<td>" . date('d-m-Y', strtotime($row['tanggal'])) . "</td>";
+                                    echo "<td><div style='max-height: 100px; overflow-y: auto;'>" . nl2br(htmlspecialchars($row['diagnosis'])) . "</div></td>";
+                                    echo "<td>
+                                            <button type='button' class='btn btn-sm btn-primary w-100' onclick='gunakanDiagnosis(" . json_encode($row['diagnosis']) . ")'>
+                                                <i class='fas fa-copy'></i> Gunakan
+                                            </button>
+                                          </td>";
+                                    echo "</tr>";
+                                }
+                            } else {
+                                echo "<tr><td colspan='4' class='text-center'>Tidak ada riwayat diagnosis</td></tr>";
+                            }
+                            ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     function gunakanTemplate(isi) {
         const currentValue = document.getElementById('tatalaksana').value;
@@ -529,5 +616,10 @@ if (!isset($pemeriksaan) || !$pemeriksaan) {
             document.getElementById('ultrasonografi').value = isi;
         }
         $('#modalDaftarTemplateUsg').modal('hide');
+    }
+
+    function gunakanDiagnosis(isi) {
+        document.getElementById('diagnosis').value = isi;
+        $('#modalRiwayatDiagnosis').modal('hide');
     }
 </script>
