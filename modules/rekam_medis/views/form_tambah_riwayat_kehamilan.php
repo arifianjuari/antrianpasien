@@ -61,8 +61,8 @@ ob_start();
                         <!-- Fields for all status except "Sedang Hamil" -->
                         <div id="persalinanFields" style="display: none;">
                             <div class="mb-3">
-                                <label for="tanggal_persalinan" class="form-label">Tanggal Persalinan</label>
-                                <input type="date" class="form-control" id="tanggal_persalinan" name="tanggal_persalinan">
+                                <label for="tahun_persalinan" class="form-label">Tahun Persalinan</label>
+                                <input type="number" class="form-control" id="tahun_persalinan" name="tahun_persalinan" min="1900" max="<?= date('Y') ?>" placeholder="Masukkan tahun persalinan">
                             </div>
 
                             <div class="mb-3">
@@ -124,8 +124,8 @@ ob_start();
                             </div>
 
                             <div class="mb-3">
-                                <label for="berat_badan_lahir" class="form-label">Berat Badan Lahir (kg)</label>
-                                <input type="number" class="form-control" id="berat_badan_lahir" name="berat_badan_lahir" step="0.01" min="0" max="99.99" placeholder="Masukkan berat badan lahir dalam kilogram">
+                                <label for="berat_badan_lahir" class="form-label">Berat Badan Lahir (gram)</label>
+                                <input type="number" class="form-control" id="berat_badan_lahir" name="berat_badan_lahir" step="1" min="0" placeholder="Masukkan berat badan lahir dalam gram">
                             </div>
 
                             <div class="mb-3">

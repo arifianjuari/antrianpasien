@@ -2035,7 +2035,7 @@ class RekamMedisController
             'jenis_persalinan' => isset($_POST['jenis_persalinan']) ? $_POST['jenis_persalinan'] : null,
             'tempat_persalinan' => isset($_POST['tempat_persalinan']) ? $_POST['tempat_persalinan'] : null,
             'penolong_persalinan' => isset($_POST['penolong_persalinan']) ? $_POST['penolong_persalinan'] : null,
-            'tanggal_persalinan' => isset($_POST['tanggal_persalinan']) && !empty($_POST['tanggal_persalinan']) ? $_POST['tanggal_persalinan'] : null,
+            'tahun_persalinan' => isset($_POST['tahun_persalinan']) && !empty($_POST['tahun_persalinan']) ? $_POST['tahun_persalinan'] : null,
             'jenis_kelamin_anak' => isset($_POST['jenis_kelamin_anak']) ? $_POST['jenis_kelamin_anak'] : null,
             'berat_badan_lahir' => isset($_POST['berat_badan_lahir']) && !empty($_POST['berat_badan_lahir']) ? $_POST['berat_badan_lahir'] : null,
             'kondisi_lahir' => isset($_POST['kondisi_lahir']) ? $_POST['kondisi_lahir'] : null,
@@ -2094,7 +2094,7 @@ class RekamMedisController
             'jenis_persalinan' => isset($_POST['jenis_persalinan']) ? $_POST['jenis_persalinan'] : null,
             'tempat_persalinan' => isset($_POST['tempat_persalinan']) ? $_POST['tempat_persalinan'] : null,
             'penolong_persalinan' => isset($_POST['penolong_persalinan']) ? $_POST['penolong_persalinan'] : null,
-            'tanggal_persalinan' => isset($_POST['tanggal_persalinan']) && !empty($_POST['tanggal_persalinan']) ? $_POST['tanggal_persalinan'] : null,
+            'tahun_persalinan' => isset($_POST['tahun_persalinan']) && !empty($_POST['tahun_persalinan']) ? $_POST['tahun_persalinan'] : null,
             'jenis_kelamin_anak' => isset($_POST['jenis_kelamin_anak']) ? $_POST['jenis_kelamin_anak'] : null,
             'berat_badan_lahir' => isset($_POST['berat_badan_lahir']) && !empty($_POST['berat_badan_lahir']) ? $_POST['berat_badan_lahir'] : null,
             'kondisi_lahir' => isset($_POST['kondisi_lahir']) ? $_POST['kondisi_lahir'] : null,
@@ -3033,6 +3033,63 @@ class RekamMedisController
         } catch (Exception $e) {
             error_log("Error in edit_template_usg_form: " . $e->getMessage());
             header("Location: index.php?module=rekam_medis&action=template_usg&error=" . urlencode($e->getMessage()));
+            exit;
+        }
+    }
+
+    public function hapus_status_ginekologi()
+    {
+        // Pastikan parameter id tersedia
+        if (!isset($_GET['id']) || empty($_GET['id'])) {
+            $_SESSION['error'] = "Parameter ID tidak ditemukan";
+            header("Location: index.php?module=rekam_medis");
+            exit;
+        }
+
+        $id_status_ginekologi = $_GET['id'];
+
+        try {
+            // Koneksi ke database
+            $db2_host = 'auth-db1151.hstgr.io';
+            $db2_username = 'u609399718_adminpraktek';
+            $db2_password = 'Obgin@12345';
+            $db2_database = 'u609399718_praktekobgin';
+
+            $koneksi = new mysqli($db2_host, $db2_username, $db2_password, $db2_database);
+
+            if ($koneksi->connect_error) {
+                throw new Exception("Koneksi database gagal: " . $koneksi->connect_error);
+            }
+
+            // Ambil no_rkm_medis sebelum menghapus data
+            $query = "SELECT no_rkm_medis FROM status_ginekologi WHERE id_status_ginekologi = ?";
+            $stmt = $koneksi->prepare($query);
+            $stmt->bind_param("s", $id_status_ginekologi);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $data = $result->fetch_assoc();
+            $no_rkm_medis = $data['no_rkm_medis'];
+
+            // Hapus data status ginekologi
+            $query = "DELETE FROM status_ginekologi WHERE id_status_ginekologi = ?";
+            $stmt = $koneksi->prepare($query);
+            $stmt->bind_param("s", $id_status_ginekologi);
+
+            if ($stmt->execute()) {
+                $_SESSION['success'] = "Data status ginekologi berhasil dihapus";
+            } else {
+                throw new Exception("Gagal menghapus data: " . $stmt->error);
+            }
+
+            $stmt->close();
+            $koneksi->close();
+
+            // Redirect ke halaman detail pasien
+            header("Location: index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=" . $no_rkm_medis);
+            exit;
+        } catch (Exception $e) {
+            $_SESSION['error'] = $e->getMessage();
+            header("Location: index.php?module=rekam_medis");
             exit;
         }
     }

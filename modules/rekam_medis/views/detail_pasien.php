@@ -416,7 +416,7 @@ error_log("Data pasien: " . json_encode($pasien));
                                                 <th>Jenis</th>
                                                 <th>Tempat</th>
                                                 <th>Penolong</th>
-                                                <th>Tanggal</th>
+                                                <th>Tahun</th>
                                                 <th>Jenis Kelamin</th>
                                                 <th>BB</th>
                                                 <th>Kondisi</th>
@@ -432,7 +432,7 @@ error_log("Data pasien: " . json_encode($pasien));
                                                         <td><?= $rk['jenis_persalinan'] ?? '-' ?></td>
                                                         <td><?= $rk['tempat_persalinan'] ?? '-' ?></td>
                                                         <td><?= $rk['penolong_persalinan'] ?? '-' ?></td>
-                                                        <td><?= !empty($rk['tanggal_persalinan']) ? date('d-m-Y', strtotime($rk['tanggal_persalinan'])) : '-' ?></td>
+                                                        <td><?= $rk['tahun_persalinan'] ?? '-' ?></td>
                                                         <td><?= $rk['jenis_kelamin_anak'] ?? '-' ?></td>
                                                         <td><?= $rk['berat_badan_lahir'] ?? '-' ?></td>
                                                         <td><?= $rk['kondisi_lahir'] ?? '-' ?></td>

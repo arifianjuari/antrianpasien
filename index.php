@@ -250,6 +250,39 @@ try {
             case 'update_status_ginekologi':
                 $rekamMedisController->update_status_ginekologi();
                 break;
+            case 'hapus_status_ginekologi':
+                $rekamMedisController->hapus_status_ginekologi();
+                break;
+            case 'tambah_riwayat_kehamilan':
+                $rekamMedisController->tambah_riwayat_kehamilan();
+                break;
+            case 'simpan_riwayat_kehamilan':
+                $rekamMedisController->simpan_riwayat_kehamilan();
+                break;
+            case 'edit_riwayat_kehamilan':
+                $rekamMedisController->edit_riwayat_kehamilan();
+                break;
+            case 'update_riwayat_kehamilan':
+                $rekamMedisController->update_riwayat_kehamilan();
+                break;
+            case 'hapus_riwayat_kehamilan':
+                $rekamMedisController->hapus_riwayat_kehamilan();
+                break;
+            case 'tambah_status_ginekologi':
+                $rekamMedisController->tambah_status_ginekologi();
+                break;
+            case 'simpan_status_ginekologi':
+                $rekamMedisController->simpan_status_ginekologi();
+                break;
+            case 'edit_status_ginekologi':
+                $rekamMedisController->edit_status_ginekologi();
+                break;
+            case 'update_status_ginekologi':
+                $rekamMedisController->update_status_ginekologi();
+                break;
+            case 'hapus_status_ginekologi':
+                $rekamMedisController->hapus_status_ginekologi();
+                break;
             case 'generate_pdf':
                 error_log("Routing to generate_pdf");
                 $rekamMedisController->generate_pdf();

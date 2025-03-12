@@ -117,8 +117,8 @@ ob_start();
                         <!-- Fields for all status except "Sedang Hamil" -->
                         <div id="persalinanFields" style="display: <?= $riwayatKehamilan['status_kehamilan'] != 'Sedang Hamil' ? 'block' : 'none' ?>;">
                             <div class="mb-3">
-                                <label for="tanggal_persalinan" class="form-label">Tanggal Persalinan</label>
-                                <input type="date" class="form-control" id="tanggal_persalinan" name="tanggal_persalinan" value="<?= $riwayatKehamilan['tanggal_persalinan'] ?>">
+                                <label for="tahun_persalinan" class="form-label">Tahun Persalinan</label>
+                                <input type="number" class="form-control" id="tahun_persalinan" name="tahun_persalinan" min="1900" max="<?= date('Y') ?>" value="<?= $riwayatKehamilan['tahun_persalinan'] ?>" placeholder="Masukkan tahun persalinan">
                             </div>
 
                             <div class="mb-3">
@@ -169,7 +169,7 @@ ob_start();
 
                             <div class="mb-3">
                                 <label for="berat_badan_lahir" class="form-label">Berat Badan Lahir (gram)</label>
-                                <input type="number" class="form-control" id="berat_badan_lahir" name="berat_badan_lahir" value="<?= $riwayatKehamilan['berat_badan_lahir'] ?>">
+                                <input type="number" class="form-control" id="berat_badan_lahir" name="berat_badan_lahir" step="1" min="0" value="<?= $riwayatKehamilan['berat_badan_lahir'] ?>" placeholder="Masukkan berat badan lahir dalam gram">
                             </div>
 
                             <div class="mb-3">
