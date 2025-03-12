@@ -163,6 +163,12 @@ function clean_url($url)
                                 <span>Manajemen Antrian</span>
                             </a>
                         </li>
+                        <li>
+                            <a href="<?php echo $base_url; ?>/admin_praktek/data_rujukan.php" class="nav-link <?php echo $current_page == 'data_rujukan.php' ? 'active' : 'text-dark'; ?>">
+                                <i class="bi bi-file-earmark-medical"></i>
+                                <span class="menu-text">Data Rujukan</span>
+                            </a>
+                        </li>
                     </ul>
                 </li>
             <?php endif; ?>

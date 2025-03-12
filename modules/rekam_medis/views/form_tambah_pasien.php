@@ -28,6 +28,7 @@
                             <div class="col-md-6">
                                 <label for="nama_pasien" class="form-label">Nama Pasien <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" id="nama_pasien" name="nm_pasien" maxlength="40" required>
+                                <small class="form-text text-muted">Nama akan otomatis diubah menjadi huruf kapital</small>
                             </div>
                         </div>
 
@@ -152,6 +153,12 @@
         const nikFeedback = document.getElementById('nik-feedback');
         const submitButton = document.querySelector('button[type="submit"]');
 
+        // Mengubah nama pasien menjadi huruf kapital
+        const namaPasienInput = document.getElementById('nama_pasien');
+        namaPasienInput.addEventListener('input', function() {
+            this.value = this.value.toUpperCase();
+        });
+
         let typingTimer;
         const doneTypingInterval = 1000; // 1 detik
 
@@ -166,6 +173,11 @@
             if (this.value.length > 0) {
                 typingTimer = setTimeout(cekNik, doneTypingInterval);
             }
+        });
+
+        // Pastikan nama pasien dalam huruf kapital saat form disubmit
+        document.querySelector('form').addEventListener('submit', function(e) {
+            namaPasienInput.value = namaPasienInput.value.toUpperCase();
         });
 
         function cekNik() {

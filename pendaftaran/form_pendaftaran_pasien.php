@@ -159,7 +159,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $next_num = $result['last_num'] + 1;
                 }
 
-                $no_rkm_medis = 'RM-' . date('Ymd') . '-' . str_pad($next_num, 3, '0', STR_PAD_LEFT);
+                $no_rkm_medis = 'RM-' . date('Ymd') . '-' . $next_num;
 
                 $nm_ibu = '-';
                 $umur = date_diff(date_create($tanggal_lahir), date_create('today'))->y;
@@ -460,6 +460,7 @@ ob_start();
                                     <label for="nama_pasien" class="form-label">Nama Lengkap <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control" id="nama_pasien" name="nama_pasien" required>
                                     <div class="invalid-feedback">Nama lengkap harus diisi</div>
+                                    <small class="form-text text-muted">Nama akan otomatis diubah menjadi huruf kapital</small>
                                 </div>
                                 <div class="mb-3">
                                     <label for="tanggal_lahir" class="form-label">Tanggal Lahir <span class="text-danger">*</span></label>
@@ -616,6 +617,17 @@ ob_start();
         infoAlert.innerHTML = '<strong>Petunjuk:</strong> Masukkan NIK (16 digit) terlebih dahulu untuk melanjutkan pendaftaran.';
         formContainer.insertBefore(infoAlert, formContainer.firstChild);
 
+        // Fungsi untuk mengubah nama menjadi huruf kapital
+        const namaPasienInput = document.getElementById('nama_pasien');
+        namaPasienInput.addEventListener('input', function() {
+            this.value = this.value.toUpperCase();
+        });
+
+        // Pastikan nama pasien dalam huruf kapital saat form disubmit
+        document.getElementById('formPendaftaran').addEventListener('submit', function(e) {
+            namaPasienInput.value = namaPasienInput.value.toUpperCase();
+        });
+
         // Fungsi untuk mencari data pasien berdasarkan NIK
         function searchPatient(nik) {
             // Tampilkan loading indicator
@@ -653,7 +665,7 @@ ob_start();
                 .then(data => {
                     if (data.found) {
                         // Isi form dengan data pasien
-                        formFields.nama_pasien.value = data.patient.nm_pasien;
+                        formFields.nama_pasien.value = data.patient.nm_pasien.toUpperCase();
                         formFields.tanggal_lahir.value = data.patient.tgl_lahir;
                         if (data.patient.jk === 'L') {
                             formFields.gender_male.checked = true;

@@ -438,12 +438,6 @@ try {
                                                         </button>
                                                     <?php endif; ?>
 
-                                                    <button type="button" class="btn btn-sm btn-info btn-icon"
-                                                        onclick="viewDetail('<?= $a['ID_Pendaftaran'] ?>')"
-                                                        data-bs-toggle="tooltip" title="Lihat Detail">
-                                                        <i class="bi bi-eye"></i>
-                                                    </button>
-
                                                     <?php if (!empty($a['no_tlp'])): ?>
                                                         <?php
                                                         // Bersihkan nomor telepon dari karakter non-numerik

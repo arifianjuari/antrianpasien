@@ -45,8 +45,8 @@ file_put_contents($log_file, "Data pasien tersedia: " . $pasien['no_rkm_medis'] 
 file_put_contents($log_file, "Data obstetri tersedia\n", FILE_APPEND);
 
 try {
-    // Buat instance PDF dengan ukuran khusus (100x52 mm)
-    $pdf = new StatusObstetriPDF('L', 'mm', array(52, 100));
+    // Buat instance PDF dengan ukuran khusus (100x60 mm)
+    $pdf = new StatusObstetriPDF('L', 'mm', array(60, 100));
     file_put_contents($log_file, "PDF instance created\n", FILE_APPEND);
 
     // Set margin minimal
@@ -58,21 +58,21 @@ try {
     file_put_contents($log_file, "Page added\n", FILE_APPEND);
 
     // Nama dan Usia dan GPA
-    $pdf->SetFont('helvetica', 'B', 12);
+    $pdf->SetFont('helvetica', 'B', 14);
     $pdf->Cell(0, 2, $pasien['nm_pasien'] . ' / ' . $pasien['umur'] . ' th' . ' / ' . 'G' . $obstetri['gravida'] . ' P' . $obstetri['paritas'] . ' A' . $obstetri['abortus'], 0, 1, 'L');
     $pdf->Ln(2); // Menambahkan space setelah cell ini (2 mm)
 
 
     // HPL/TP
-    $pdf->SetFont('helvetica', '', 6);
-    $pdf->Cell(15, 2, 'HPL/TP ', 0, 0, 'L');
     $pdf->SetFont('helvetica', '', 8);
+    $pdf->Cell(20, 2, 'HPL/TP ', 0, 0, 'L');
+    $pdf->SetFont('helvetica', '', 10);
     $pdf->Cell(0, 2, !empty($obstetri['tanggal_tp_penyesuaian']) ? date('d-m-Y', strtotime($obstetri['tanggal_tp_penyesuaian'])) : '-', 0, 1, 'L');
 
     // Faktor Risiko
-    $pdf->SetFont('helvetica', '', 6);
-    $pdf->Cell(15, 2, 'Faktor Risiko ', 0, 0, 'L');
     $pdf->SetFont('helvetica', '', 8);
+    $pdf->Cell(20, 2, 'Faktor Risiko ', 0, 0, 'L');
+    $pdf->SetFont('helvetica', '', 10);
     $risiko = array();
     if (!empty($obstetri['faktor_risiko_umum'])) $risiko[] = 'Umum: ' . $obstetri['faktor_risiko_umum'];
     if (!empty($obstetri['faktor_risiko_obstetri'])) $risiko[] = 'Obstetri: ' . $obstetri['faktor_risiko_obstetri'];
@@ -82,9 +82,9 @@ try {
     $pdf->MultiCell(0, 4, implode(PHP_EOL, $risiko), 0, 'L');
 
     // Catatan
-    $pdf->SetFont('helvetica', '', 6);
-    $pdf->Cell(15, 2, 'Catatan ', 0, 0, 'L');
     $pdf->SetFont('helvetica', '', 8);
+    $pdf->Cell(20, 2, 'Catatan ', 0, 0, 'L');
+    $pdf->SetFont('helvetica', '', 10);
     $pdf->MultiCell(0, 2, !empty($obstetri['hasil_faktor_risiko']) ? $obstetri['hasil_faktor_risiko'] : '-', 0, 'L');
 
     file_put_contents($log_file, "All data added to PDF\n", FILE_APPEND);

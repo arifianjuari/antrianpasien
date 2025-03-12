@@ -342,7 +342,7 @@ class RekamMedisController
             // Jika belum ada nomor rekam medis, mulai dari 001
             // Jika sudah ada, increment nomor terakhir
             $next_id = (empty($result['max_id']) || $result['max_id'] === null) ? 1 : (int)$result['max_id'] + 1;
-            $no_rkm_medis = "RM-" . $tanggal_sekarang . "-" . str_pad($next_id, 3, '0', STR_PAD_LEFT);
+            $no_rkm_medis = "RM-" . $tanggal_sekarang . "-" . $next_id;
 
             // Simpan data pasien
             $stmt = $this->pdo->prepare("

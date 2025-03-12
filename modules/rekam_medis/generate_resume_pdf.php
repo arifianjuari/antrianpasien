@@ -118,8 +118,8 @@ try {
     $struktur_obstetri = $debug_stmt4->fetchAll(PDO::FETCH_ASSOC);
     file_put_contents($log_file, "Struktur tabel status_obstetri:\n" . print_r($struktur_obstetri, true) . "\n", FILE_APPEND);
 
-    // Buat instance PDF dengan ukuran khusus (100x52 mm)
-    $pdf = new ResumePDF('L', 'mm', array(52, 100));
+    // Buat instance PDF dengan ukuran khusus (100x60 mm)
+    $pdf = new ResumePDF('L', 'mm', array(60, 100));
     file_put_contents($log_file, "PDF instance created\n", FILE_APPEND);
 
     // Set margin minimal
@@ -138,7 +138,8 @@ try {
     file_put_contents($log_file, "Struktur tabel penilaian_medis_ralan_kandungan:\n" . print_r($struktur_pemeriksaan, true) . "\n", FILE_APPEND);
 
     // Coba query dengan no_rawat
-    $query_pemeriksaan = "SELECT pmrk.tanggal as tanggal, pmrk.ket_fisik, pmrk.lab, pmrk.ultra, pmrk.diagnosis, pmrk.tata 
+    $query_pemeriksaan = "SELECT pmrk.tanggal as tanggal, pmrk.ket_fisik, pmrk.lab, pmrk.ultra, pmrk.diagnosis, pmrk.tata,
+                         pmrk.td, pmrk.bb 
                          FROM penilaian_medis_ralan_kandungan pmrk
                          JOIN reg_periksa rp ON pmrk.no_rawat = rp.no_rawat
                          WHERE rp.no_rkm_medis = :no_rkm_medis 
@@ -179,23 +180,39 @@ try {
     $pdf->SetFont('helvetica', '', 8);
     $pdf->Cell(0, 2, !empty($pemeriksaan['tanggal']) ? date('d-m-Y', strtotime($pemeriksaan['tanggal'])) : '-', 0, 1, 'L');
 
-    // Fisik Umum
+    // Pemeriksaan fisik
     $pdf->SetFont('helvetica', '', 6);
-    $pdf->Cell(20, 2, 'Fisik Umum ', 0, 0, 'L');
+    $pdf->Cell(20, 2, 'Pemeriksaan fisik ', 0, 0, 'L');
     $pdf->SetFont('helvetica', '', 8);
-    $pdf->MultiCell(0, 2, !empty($pemeriksaan['ket_fisik']) ? $pemeriksaan['ket_fisik'] : '-', 0, 'L');
 
-    // Lab Penting
-    $pdf->SetFont('helvetica', '', 6);
-    $pdf->Cell(20, 2, 'Lab Penting ', 0, 0, 'L');
-    $pdf->SetFont('helvetica', '', 8);
-    $pdf->MultiCell(0, 2, !empty($pemeriksaan['lab']) ? $pemeriksaan['lab'] : '-', 0, 'L');
+    // Gabungkan data TD, BB, dan ket_fisik
+    $pemeriksaan_fisik = '';
+    if (!empty($pemeriksaan['td'])) {
+        $pemeriksaan_fisik .= 'TD ' . $pemeriksaan['td'] . ', ';
+    }
+    if (!empty($pemeriksaan['bb'])) {
+        $pemeriksaan_fisik .= 'BB ' . $pemeriksaan['bb'] . ', ';
+    }
+    if (!empty($pemeriksaan['ket_fisik'])) {
+        $pemeriksaan_fisik .= $pemeriksaan['ket_fisik'];
+    }
 
-    // Hasil USG
+    // Jika tidak ada data, tampilkan tanda strip
+    if (empty($pemeriksaan_fisik)) {
+        $pemeriksaan_fisik = '-';
+    }
+
+    $pdf->MultiCell(0, 2, $pemeriksaan_fisik, 0, 'L');
+
+    // Hasil USG - Memastikan label sejajar dengan label lainnya
     $pdf->SetFont('helvetica', '', 6);
-    $pdf->Cell(0, 2, 'Hasil USG', 0, 1, 'L');
+    $pdf->Cell(20, 2, 'Hasil USG ', 0, 1, 'L');
     $pdf->SetFont('helvetica', '', 8);
+    $pdf->Cell(2, 2, '', 0, 0, 'L');
     $pdf->MultiCell(0, 2, !empty($pemeriksaan['ultra']) ? $pemeriksaan['ultra'] : '-', 0, 'L');
+
+    // Tambahkan spasi 0,5 baris
+    $pdf->Ln(1);
 
     // Diagnosis
     $pdf->SetFont('helvetica', '', 6);
