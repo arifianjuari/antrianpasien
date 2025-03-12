@@ -72,7 +72,8 @@ $status_filter = isset($_GET['status_atensi']) ? $_GET['status_atensi'] : '';
                                 $no = 1;
                                 foreach ($result as $row) :
                                     // Skip jika tidak sesuai filter
-                                    if ($status_filter !== '' && $row['atensi'] != $status_filter) continue;
+                                    if ($status_filter === '1' && $row['atensi'] != '1') continue;
+                                    if ($status_filter === '0' && !($row['atensi'] == '0' || ($row['atensi'] === NULL && !empty($row['tanggal_kontrol']) && $row['tanggal_kontrol'] != '0000-00-00'))) continue;
 
                                     $tanggal_periksa = date('d-m-Y', strtotime($row['tanggal']));
                                     $tanggal_kontrol = $row['tanggal_kontrol'] ? date('d-m-Y', strtotime($row['tanggal_kontrol'])) : '-';
@@ -86,8 +87,12 @@ $status_filter = isset($_GET['status_atensi']) ? $_GET['status_atensi'] : '';
                                         <td>
                                             <?php if ($row['atensi'] == 1): ?>
                                                 <span class="badge bg-danger">Waspada</span>
-                                            <?php else: ?>
+                                            <?php elseif ($row['atensi'] == 0): ?>
                                                 <span class="badge bg-info">Jadwal Kontrol</span>
+                                            <?php elseif ($row['atensi'] === NULL && !empty($row['tanggal_kontrol']) && $row['tanggal_kontrol'] != '0000-00-00'): ?>
+                                                <span class="badge bg-info">Jadwal Kontrol</span>
+                                            <?php else: ?>
+                                                <span class="badge bg-secondary">Tidak Ada</span>
                                             <?php endif; ?>
                                         </td>
                                         <td><?= htmlspecialchars($row['diagnosis'] ?? '-') ?></td>

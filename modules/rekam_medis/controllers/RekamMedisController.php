@@ -2470,9 +2470,12 @@ class RekamMedisController
                     FROM penilaian_medis_ralan_kandungan pmrk
                     JOIN reg_periksa rp ON pmrk.no_rawat = rp.no_rawat
                     JOIN pasien p ON rp.no_rkm_medis = p.no_rkm_medis
-                    WHERE pmrk.tanggal_kontrol IS NOT NULL 
-                    AND pmrk.tanggal_kontrol != '0000-00-00'
-                    AND pmrk.tanggal_kontrol != ''
+                    WHERE (
+                        (pmrk.tanggal_kontrol IS NOT NULL 
+                        AND pmrk.tanggal_kontrol != '0000-00-00'
+                        AND pmrk.tanggal_kontrol != '')
+                        OR pmrk.atensi = '1'
+                    )
                     ORDER BY pmrk.tanggal_kontrol DESC";
 
             // Log query untuk debugging

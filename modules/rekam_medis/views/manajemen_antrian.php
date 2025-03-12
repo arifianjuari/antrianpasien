@@ -387,32 +387,20 @@ try {
                             <table class="table table-striped table-hover">
                                 <thead class="table-light">
                                     <tr>
-                                        <th>No. Antrian</th>
-                                        <th>No. RM</th>
-                                        <th>Waktu Daftar</th>
+                                        <th>Aksi</th>
                                         <th>Nama Pasien</th>
+                                        <th>Waktu Daftar</th>
                                         <th>Keluhan</th>
                                         <th>Status</th>
-                                        <th>Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <?php foreach ($antrian as $a): ?>
                                         <tr>
-                                            <td><?= htmlspecialchars($a['ID_Pendaftaran']) ?></td>
-                                            <td><?= htmlspecialchars($a['no_rkm_medis']) ?></td>
-                                            <td><?= date('d/m/Y H:i', strtotime($a['Waktu_Pendaftaran'])) ?></td>
-                                            <td><?= htmlspecialchars($a['Nama_Pasien']) ?></td>
-                                            <td><?= !empty($a['Keluhan']) ? htmlspecialchars($a['Keluhan']) : '-' ?></td>
-                                            <td>
-                                                <span class="badge <?= getStatusBadgeClass($a['Status_Pendaftaran']) ?>">
-                                                    <?= htmlspecialchars($a['Status_Pendaftaran']) ?>
-                                                </span>
-                                            </td>
                                             <td>
                                                 <div class="btn-group" role="group">
                                                     <!-- Tombol untuk melihat rekam medis -->
-                                                    <a href="index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=<?= $a['no_rkm_medis'] ?>"
+                                                    <a href="index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=<?= $a['no_rkm_medis'] ?>&source=antrian"
                                                         class="btn btn-primary btn-sm btn-icon" data-bs-toggle="tooltip"
                                                         title="Lihat Rekam Medis">
                                                         <i class="bi bi-journal-medical"></i>
@@ -487,6 +475,14 @@ try {
                                                         </a>
                                                     <?php endif; ?>
                                                 </div>
+                                            </td>
+                                            <td><?= htmlspecialchars($a['Nama_Pasien']) ?></td>
+                                            <td><?= date('d/m/Y H:i', strtotime($a['Waktu_Pendaftaran'])) ?></td>
+                                            <td><?= !empty($a['Keluhan']) ? htmlspecialchars($a['Keluhan']) : '-' ?></td>
+                                            <td>
+                                                <span class="badge <?= getStatusBadgeClass($a['Status_Pendaftaran']) ?>">
+                                                    <?= htmlspecialchars($a['Status_Pendaftaran']) ?>
+                                                </span>
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>

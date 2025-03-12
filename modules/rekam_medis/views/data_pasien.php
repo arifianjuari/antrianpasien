@@ -71,7 +71,7 @@
                                     <td><?= htmlspecialchars($p['no_tlp'] ?? '-') ?></td>
                                     <td>
                                         <div class="d-flex gap-1">
-                                            <a href="index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=<?= $p['no_rkm_medis'] ?>" class="btn btn-primary btn-sm" data-bs-toggle="tooltip" title="Lihat Rekam Medis">
+                                            <a href="index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=<?= $p['no_rkm_medis'] ?>&source=data_pasien" class="btn btn-primary btn-sm" data-bs-toggle="tooltip" title="Lihat Rekam Medis">
                                                 <i class="fas fa-file-medical"></i>
                                             </a>
                                             <button type="button" class="btn btn-danger btn-sm hapus-pasien"
