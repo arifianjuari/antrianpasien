@@ -53,6 +53,7 @@ try {
             jr.Jam_Selesai,
             jr.Jenis_Layanan,
             tp.Nama_Tempat,
+            tp.ID_Tempat_Praktek,
             d.Nama_Dokter
         FROM 
             pendaftaran p
@@ -76,39 +77,16 @@ try {
         $query .= " AND (p.nm_pasien LIKE :search OR p.ID_Pendaftaran LIKE :search)";
     }
 
-    // Tambahkan pengurutan
-    switch ($sort_by) {
-        case 'waktu_asc':
-            $query .= " ORDER BY p.Waktu_Pendaftaran ASC";
-            break;
-        case 'nama_asc':
-            $query .= " ORDER BY p.nm_pasien ASC";
-            break;
-        case 'nama_desc':
-            $query .= " ORDER BY p.nm_pasien DESC";
-            break;
-        case 'status_asc':
-            $query .= " ORDER BY p.Status_Pendaftaran ASC";
-            break;
-        case 'status_desc':
-            $query .= " ORDER BY p.Status_Pendaftaran DESC";
-            break;
-        case 'hari_asc':
-            $query .= " ORDER BY CASE jr.Hari 
-                        WHEN 'Senin' THEN 1 
-                        WHEN 'Selasa' THEN 2 
-                        WHEN 'Rabu' THEN 3 
-                        WHEN 'Kamis' THEN 4 
-                        WHEN 'Jumat' THEN 5 
-                        WHEN 'Sabtu' THEN 6 
-                        WHEN 'Minggu' THEN 7 
-                        ELSE 8 END ASC, jr.Jam_Mulai ASC";
-            break;
-        case 'waktu_desc':
-        default:
-            $query .= " ORDER BY p.Waktu_Pendaftaran DESC";
-            break;
-    }
+    // Tambahkan pengurutan berdasarkan hari dan tempat praktek
+    $query .= " ORDER BY CASE jr.Hari 
+                WHEN 'Senin' THEN 1 
+                WHEN 'Selasa' THEN 2 
+                WHEN 'Rabu' THEN 3 
+                WHEN 'Kamis' THEN 4 
+                WHEN 'Jumat' THEN 5 
+                WHEN 'Sabtu' THEN 6 
+                WHEN 'Minggu' THEN 7 
+                ELSE 8 END, tp.Nama_Tempat, jr.Jam_Mulai ASC";
 
     $stmt = $conn->prepare($query);
 
@@ -126,6 +104,20 @@ try {
     $stmt->execute();
     $antrian = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+    // Kelompokkan antrian berdasarkan hari dan tempat
+    $antrian_grouped = [];
+    foreach ($antrian as $a) {
+        $hari = $a['Hari'];
+        $tempat = $a['Nama_Tempat'];
+        if (!isset($antrian_grouped[$hari])) {
+            $antrian_grouped[$hari] = [];
+        }
+        if (!isset($antrian_grouped[$hari][$tempat])) {
+            $antrian_grouped[$hari][$tempat] = [];
+        }
+        $antrian_grouped[$hari][$tempat][] = $a;
+    }
+
     // Debug
     if (empty($antrian)) {
         error_log("Query tidak mengembalikan data: " . $query);
@@ -133,6 +125,7 @@ try {
 } catch (PDOException $e) {
     error_log("Database Error: " . $e->getMessage());
     $antrian = [];
+    $antrian_grouped = [];
 }
 
 // Hitung jumlah antrian berdasarkan status
@@ -295,94 +288,114 @@ try {
                         </div>
                     </div>
 
-                    <?php if (empty($antrian)): ?>
+                    <?php if (empty($antrian_grouped)): ?>
                         <div class="alert alert-info">
                             <i class="bi bi-info-circle me-2"></i>
                             Tidak ada data antrian saat ini.
                         </div>
                     <?php else: ?>
-                        <div class="table-responsive">
-                            <table class="table table-striped table-hover">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>No. Antrian</th>
-                                        <th>Waktu Daftar</th>
-                                        <th>Nama Pasien</th>
-                                        <th>Hari Praktek</th>
-                                        <th>Jam Praktek</th>
-                                        <th>Tempat</th>
-                                        <th>Dokter</th>
-                                        <th>Status</th>
-                                        <th>Aksi</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php foreach ($antrian as $a): ?>
-                                        <tr>
-                                            <td><?= htmlspecialchars($a['ID_Pendaftaran']) ?></td>
-                                            <td><?= date('d/m/Y H:i', strtotime($a['Waktu_Pendaftaran'])) ?></td>
-                                            <td><?= htmlspecialchars($a['Nama_Pasien']) ?></td>
-                                            <td><?= htmlspecialchars($a['Hari']) ?></td>
-                                            <td><?= htmlspecialchars($a['Jam_Mulai']) ?> - <?= htmlspecialchars($a['Jam_Selesai']) ?></td>
-                                            <td><?= htmlspecialchars($a['Nama_Tempat']) ?></td>
-                                            <td><?= htmlspecialchars($a['Nama_Dokter']) ?></td>
-                                            <td>
-                                                <span class="badge <?= getStatusBadgeClass($a['Status_Pendaftaran']) ?>">
-                                                    <?= htmlspecialchars($a['Status_Pendaftaran']) ?>
-                                                </span>
-                                            </td>
-                                            <td>
-                                                <div class="btn-group" role="group">
-                                                    <?php if ($a['Status_Pendaftaran'] !== 'Menunggu Konfirmasi'): ?>
-                                                        <button type="button" class="btn btn-sm btn-outline-warning"
-                                                            onclick="updateStatusDirect('<?= $a['ID_Pendaftaran'] ?>', 'Menunggu Konfirmasi')"
-                                                            data-bs-toggle="tooltip" title="Ubah ke Menunggu Konfirmasi">
-                                                            <i class="bi bi-hourglass"></i>
-                                                        </button>
-                                                    <?php endif; ?>
+                        <?php foreach ($antrian_grouped as $hari => $tempat_list): ?>
+                            <div class="card mb-4">
+                                <div class="card-header bg-primary text-white">
+                                    <h5 class="mb-0">
+                                        <i class="bi bi-calendar-day me-2"></i>
+                                        <?= htmlspecialchars($hari) ?>
+                                    </h5>
+                                </div>
+                                <?php foreach ($tempat_list as $tempat => $antrian_list): ?>
+                                    <div class="card-body border-bottom">
+                                        <h6 class="text-muted mb-3">
+                                            <i class="bi bi-hospital me-2"></i>
+                                            <?= htmlspecialchars($tempat) ?>
+                                        </h6>
+                                        <div class="table-responsive">
+                                            <table class="table table-striped table-hover">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th>No. Antrian</th>
+                                                        <th>Waktu Daftar</th>
+                                                        <th>Nama Pasien</th>
+                                                        <th>Jam Praktek</th>
+                                                        <th>Dokter</th>
+                                                        <th>Status</th>
+                                                        <th>Aksi</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <?php foreach ($antrian_list as $a): ?>
+                                                        <tr>
+                                                            <td><?= htmlspecialchars($a['ID_Pendaftaran']) ?></td>
+                                                            <td><?= date('d/m/Y H:i', strtotime($a['Waktu_Pendaftaran'])) ?></td>
+                                                            <td><?= htmlspecialchars($a['Nama_Pasien']) ?></td>
+                                                            <td><?= htmlspecialchars($a['Jam_Mulai']) ?> - <?= htmlspecialchars($a['Jam_Selesai']) ?></td>
+                                                            <td><?= htmlspecialchars($a['Nama_Dokter']) ?></td>
+                                                            <td>
+                                                                <span class="badge <?= getStatusBadgeClass($a['Status_Pendaftaran']) ?>">
+                                                                    <?= htmlspecialchars($a['Status_Pendaftaran']) ?>
+                                                                </span>
+                                                            </td>
+                                                            <td>
+                                                                <div class="btn-group" role="group">
+                                                                    <?php if ($a['Status_Pendaftaran'] !== 'Menunggu Konfirmasi'): ?>
+                                                                        <button type="button" class="btn btn-sm btn-outline-warning"
+                                                                            onclick="updateStatusDirect('<?= $a['ID_Pendaftaran'] ?>', 'Menunggu Konfirmasi')"
+                                                                            data-bs-toggle="tooltip" title="Ubah ke Menunggu Konfirmasi">
+                                                                            <i class="bi bi-hourglass"></i>
+                                                                        </button>
+                                                                    <?php endif; ?>
 
-                                                    <?php if ($a['Status_Pendaftaran'] !== 'Dikonfirmasi'): ?>
-                                                        <button type="button" class="btn btn-sm btn-outline-success"
-                                                            onclick="updateStatusDirect('<?= $a['ID_Pendaftaran'] ?>', 'Dikonfirmasi')"
-                                                            data-bs-toggle="tooltip" title="Konfirmasi Pendaftaran">
-                                                            <i class="bi bi-check-circle"></i>
-                                                        </button>
-                                                    <?php endif; ?>
+                                                                    <?php if ($a['Status_Pendaftaran'] !== 'Dikonfirmasi'): ?>
+                                                                        <button type="button" class="btn btn-sm btn-outline-success"
+                                                                            onclick="updateStatusDirect('<?= $a['ID_Pendaftaran'] ?>', 'Dikonfirmasi')"
+                                                                            data-bs-toggle="tooltip" title="Konfirmasi Pendaftaran">
+                                                                            <i class="bi bi-check-circle"></i>
+                                                                        </button>
+                                                                    <?php endif; ?>
 
-                                                    <?php if ($a['Status_Pendaftaran'] !== 'Selesai'): ?>
-                                                        <button type="button" class="btn btn-sm btn-outline-info"
-                                                            onclick="updateStatusDirect('<?= $a['ID_Pendaftaran'] ?>', 'Selesai')"
-                                                            data-bs-toggle="tooltip" title="Tandai Selesai">
-                                                            <i class="bi bi-flag"></i>
-                                                        </button>
-                                                    <?php endif; ?>
+                                                                    <?php if ($a['Status_Pendaftaran'] !== 'Selesai'): ?>
+                                                                        <button type="button" class="btn btn-sm btn-outline-info"
+                                                                            onclick="updateStatusDirect('<?= $a['ID_Pendaftaran'] ?>', 'Selesai')"
+                                                                            data-bs-toggle="tooltip" title="Tandai Selesai">
+                                                                            <i class="bi bi-flag"></i>
+                                                                        </button>
+                                                                    <?php endif; ?>
 
-                                                    <?php if ($a['Status_Pendaftaran'] !== 'Dibatalkan'): ?>
-                                                        <button type="button" class="btn btn-sm btn-outline-danger"
-                                                            onclick="updateStatusDirect('<?= $a['ID_Pendaftaran'] ?>', 'Dibatalkan')"
-                                                            data-bs-toggle="tooltip" title="Batalkan Pendaftaran">
-                                                            <i class="bi bi-x-circle"></i>
-                                                        </button>
-                                                    <?php endif; ?>
+                                                                    <?php if ($a['Status_Pendaftaran'] !== 'Dibatalkan'): ?>
+                                                                        <button type="button" class="btn btn-sm btn-outline-danger"
+                                                                            onclick="updateStatusDirect('<?= $a['ID_Pendaftaran'] ?>', 'Dibatalkan')"
+                                                                            data-bs-toggle="tooltip" title="Batalkan Pendaftaran">
+                                                                            <i class="bi bi-x-circle"></i>
+                                                                        </button>
+                                                                    <?php endif; ?>
 
-                                                    <button type="button" class="btn btn-sm btn-info"
-                                                        onclick="viewDetail('<?= $a['ID_Pendaftaran'] ?>')"
-                                                        data-bs-toggle="tooltip" title="Lihat Detail">
-                                                        <i class="bi bi-eye"></i>
-                                                    </button>
+                                                                    <button type="button" class="btn btn-sm btn-info"
+                                                                        onclick="viewDetail('<?= $a['ID_Pendaftaran'] ?>')"
+                                                                        data-bs-toggle="tooltip" title="Lihat Detail">
+                                                                        <i class="bi bi-eye"></i>
+                                                                    </button>
 
-                                                    <button type="button" class="btn btn-sm btn-primary"
-                                                        onclick="editPendaftaran('<?= $a['ID_Pendaftaran'] ?>')"
-                                                        data-bs-toggle="tooltip" title="Edit Pendaftaran">
-                                                        <i class="bi bi-pencil"></i>
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                </tbody>
-                            </table>
-                        </div>
+                                                                    <button type="button" class="btn btn-sm btn-primary"
+                                                                        onclick="editPendaftaran('<?= $a['ID_Pendaftaran'] ?>')"
+                                                                        data-bs-toggle="tooltip" title="Edit Pendaftaran">
+                                                                        <i class="bi bi-pencil"></i>
+                                                                    </button>
+
+                                                                    <button type="button" class="btn btn-sm btn-danger"
+                                                                        onclick="deletePendaftaran('<?= $a['ID_Pendaftaran'] ?>')"
+                                                                        data-bs-toggle="tooltip" title="Hapus Pendaftaran">
+                                                                        <i class="bi bi-trash"></i>
+                                                                    </button>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    <?php endforeach; ?>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                        <?php endforeach; ?>
                     <?php endif; ?>
                 </div>
             </div>
@@ -573,6 +586,31 @@ try {
                     </div>
                 `;
             });
+    }
+
+    function deletePendaftaran(id) {
+        if (confirm('Apakah Anda yakin ingin menghapus data pendaftaran ini? Tindakan ini tidak dapat dibatalkan.')) {
+            const formData = new FormData();
+            formData.append('id_pendaftaran', id);
+
+            fetch('delete_pendaftaran.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Data pendaftaran berhasil dihapus');
+                        location.reload();
+                    } else {
+                        alert('Gagal menghapus data: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Terjadi kesalahan saat menghapus data');
+                });
+        }
     }
 
     // Handle form submission

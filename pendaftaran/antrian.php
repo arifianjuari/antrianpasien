@@ -280,6 +280,14 @@ ob_start();
     </div>
 </div>
 
+<!-- Tambahkan floating WhatsApp button -->
+<div class="floating-whatsapp">
+    <a href="https://wa.me/6285190086842?text=Halo%20Admin%2C%20saya%20ingin%20bertanya%20tentang%20antrian%20pasien." target="_blank">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+    <span class="tooltip-text">Hubungi Admin via WhatsApp</span>
+</div>
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Auto-submit form when filter changes
@@ -393,6 +401,50 @@ $additional_css = "
     }
     .rounded-pill {
         border-radius: 50rem !important;
+    }
+
+    /* Floating WhatsApp Icon */
+    .floating-whatsapp {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 1000;
+    }
+    .floating-whatsapp a {
+        display: block;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background-color: #25D366;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 30px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+    .floating-whatsapp a:hover {
+        transform: scale(1.1);
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+    }
+    .floating-whatsapp .tooltip-text {
+        position: absolute;
+        right: 70px;
+        background-color: #333;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 5px;
+        font-size: 14px;
+        visibility: hidden;
+        opacity: 0;
+        transition: all 0.3s ease;
+        white-space: nowrap;
+    }
+    .floating-whatsapp:hover .tooltip-text {
+        visibility: visible;
+        opacity: 1;
     }
 ";
 

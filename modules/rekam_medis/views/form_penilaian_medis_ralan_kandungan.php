@@ -22,6 +22,27 @@ if (!defined('BASE_PATH')) {
     .table {
         font-size: 0.875rem;
     }
+
+    /* CSS untuk fitur template */
+    .card .small {
+        font-size: 0.75rem !important;
+    }
+
+    .modal-title {
+        font-size: 0.95rem;
+    }
+
+    .modal .table {
+        font-size: 0.8rem;
+    }
+
+    .modal label {
+        font-size: 0.8rem;
+    }
+
+    .btn-sm {
+        font-size: 0.75rem;
+    }
 </style>
 
 <div class="container-fluid">

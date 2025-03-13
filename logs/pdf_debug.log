@@ -1,0 +1,2853 @@
+PDF generation started at 2025-03-13 08:29:46
+Database connection established
+TCPDF class defined
+Data pasien tersedia: RM-20250302-000
+Detail kolom penilaian_medis_ralan_kandungan:
+Array
+(
+    [0] => Array
+        (
+            [COLUMN_NAME] => no_rawat
+            [DATA_TYPE] => varchar
+            [COLUMN_COMMENT] => 
+        )
+
+    [1] => Array
+        (
+            [COLUMN_NAME] => tanggal
+            [DATA_TYPE] => datetime
+            [COLUMN_COMMENT] => 
+        )
+
+    [2] => Array
+        (
+            [COLUMN_NAME] => anamnesis
+            [DATA_TYPE] => enum
+            [COLUMN_COMMENT] => 
+        )
+
+    [3] => Array
+        (
+            [COLUMN_NAME] => hubungan
+            [DATA_TYPE] => varchar
+            [COLUMN_COMMENT] => 
+        )
+
+    [4] => Array
+        (
+            [COLUMN_NAME] => keluhan_utama
+            [DATA_TYPE] => varchar
+            [COLUMN_COMMENT] => 
+        )
+
+    [5] => Array
+        (
+            [COLUMN_NAME] => rps
+            [DATA_TYPE] => varchar
+            [COLUMN_COMMENT] => 
+        )
+
+    [6] => Array
+        (
+            [COLUMN_NAME] => rpd
+            [DATA_TYPE] => varchar
+            [COLUMN_COMMENT] => 
+        )
+
+    [7] => Array
+        (
+            [COLUMN_NAME] => rpk
+            [DATA_TYPE] => varchar
+            [COLUMN_COMMENT] => 
+        )
+
+    [8] => Array
+        (
+            [COLUMN_NAME] => rpo
+            [DATA_TYPE] => varchar
+            [COLUMN_COMMENT] => 
+        )
+
+    [9] => Array
+        (
+            [COLUMN_NAME] => alergi
+            [DATA_TYPE] => varchar
+            [COLUMN_COMMENT] => 
+        )
+
+    [10] => Array
+        (
+            [COLUMN_NAME] => keadaan
+            [DATA_TYPE] => enum
+            [COLUMN_COMMENT] => 
+        )
+
+    [11] => Array
+        (
+            [COLUMN_NAME] => gcs
+            [DATA_TYPE] => varchar
+            [COLUMN_COMMENT] => 
+        )
+
+    [12] => Array
+        (
+            [COLUMN_NAME] => kesadaran
+            [DATA_TYPE] => enum
+            [COLUMN_COMMENT] => 
+        )
+
+    [13] => Array
+        (
+            [COLUMN_NAME] => td
+            [DATA_TYPE] => varchar
+            [COLUMN_COMMENT] => 
+        )
+
+    [14] => Array
+        (
+            [COLUMN_NAME] => nadi
+            [DATA_TYPE] => varchar
+            [COLUMN_COMMENT] => 
+        )
+
+    [15] => Array
+        (
+            [COLUMN_NAME] => rr
+            [DATA_TYPE] => varchar
+            [COLUMN_COMMENT] => 
+        )
+
+    [16] => Array
+        (
+            [COLUMN_NAME] => suhu
+            [DATA_TYPE] => varchar
+            [COLUMN_COMMENT] => 
+        )
+
+    [17] => Array
+        (
+            [COLUMN_NAME] => spo
+            [DATA_TYPE] => varchar
+            [COLUMN_COMMENT] => 
+        )
+
+    [18] => Array
+        (
+            [COLUMN_NAME] => bb
+            [DATA_TYPE] => varchar
+            [COLUMN_COMMENT] => 
+        )
+
+    [19] => Array
+        (
+            [COLUMN_NAME] => tb
+            [DATA_TYPE] => varchar
+            [COLUMN_COMMENT] => 
+        )
+
+    [20] => Array
+        (
+            [COLUMN_NAME] => kepala
+            [DATA_TYPE] => enum
+            [COLUMN_COMMENT] => 
+        )
+
+    [21] => Array
+        (
+            [COLUMN_NAME] => mata
+            [DATA_TYPE] => enum
+            [COLUMN_COMMENT] => 
+        )
+
+    [22] => Array
+        (
+            [COLUMN_NAME] => gigi
+            [DATA_TYPE] => enum
+            [COLUMN_COMMENT] => 
+        )
+
+    [23] => Array
+        (
+            [COLUMN_NAME] => tht
+            [DATA_TYPE] => enum
+            [COLUMN_COMMENT] => 
+        )
+
+    [24] => Array
+        (
+            [COLUMN_NAME] => thoraks
+            [DATA_TYPE] => enum
+            [COLUMN_COMMENT] => 
+        )
+
+    [25] => Array
+        (
+            [COLUMN_NAME] => abdomen
+            [DATA_TYPE] => enum
+            [COLUMN_COMMENT] => 
+        )
+
+    [26] => Array
+        (
+            [COLUMN_NAME] => genital
+            [DATA_TYPE] => enum
+            [COLUMN_COMMENT] => 
+        )
+
+    [27] => Array
+        (
+            [COLUMN_NAME] => ekstremitas
+            [DATA_TYPE] => enum
+            [COLUMN_COMMENT] => 
+        )
+
+    [28] => Array
+        (
+            [COLUMN_NAME] => kulit
+            [DATA_TYPE] => enum
+            [COLUMN_COMMENT] => 
+        )
+
+    [29] => Array
+        (
+            [COLUMN_NAME] => ket_fisik
+            [DATA_TYPE] => text
+            [COLUMN_COMMENT] => 
+        )
+
+    [30] => Array
+        (
+            [COLUMN_NAME] => ultra
+            [DATA_TYPE] => text
+            [COLUMN_COMMENT] => 
+        )
+
+    [31] => Array
+        (
+            [COLUMN_NAME] => lab
+            [DATA_TYPE] => text
+            [COLUMN_COMMENT] => 
+        )
+
+    [32] => Array
+        (
+            [COLUMN_NAME] => diagnosis
+            [DATA_TYPE] => varchar
+            [COLUMN_COMMENT] => 
+        )
+
+    [33] => Array
+        (
+            [COLUMN_NAME] => tata
+            [DATA_TYPE] => text
+            [COLUMN_COMMENT] => 
+        )
+
+    [34] => Array
+        (
+            [COLUMN_NAME] => tanggal_kontrol
+            [DATA_TYPE] => date
+            [COLUMN_COMMENT] => 
+        )
+
+    [35] => Array
+        (
+            [COLUMN_NAME] => atensi
+            [DATA_TYPE] => tinyint
+            [COLUMN_COMMENT] => 
+        )
+
+)
+
+Detail kolom status_obstetri:
+Array
+(
+    [0] => Array
+        (
+            [COLUMN_NAME] => id_status_obstetri
+            [DATA_TYPE] => char
+            [COLUMN_COMMENT] => 
+        )
+
+    [1] => Array
+        (
+            [COLUMN_NAME] => no_rkm_medis
+            [DATA_TYPE] => varchar
+            [COLUMN_COMMENT] => 
+        )
+
+    [2] => Array
+        (
+            [COLUMN_NAME] => gravida
+            [DATA_TYPE] => int
+            [COLUMN_COMMENT] => 
+        )
+
+    [3] => Array
+        (
+            [COLUMN_NAME] => paritas
+            [DATA_TYPE] => int
+            [COLUMN_COMMENT] => 
+        )
+
+    [4] => Array
+        (
+            [COLUMN_NAME] => abortus
+            [DATA_TYPE] => int
+            [COLUMN_COMMENT] => 
+        )
+
+    [5] => Array
+        (
+            [COLUMN_NAME] => tanggal_hpht
+            [DATA_TYPE] => date
+            [COLUMN_COMMENT] => 
+        )
+
+    [6] => Array
+        (
+            [COLUMN_NAME] => tanggal_tp
+            [DATA_TYPE] => date
+            [COLUMN_COMMENT] => 
+        )
+
+    [7] => Array
+        (
+            [COLUMN_NAME] => tanggal_tp_penyesuaian
+            [DATA_TYPE] => date
+            [COLUMN_COMMENT] => TP setelah penyesuaian USG
+        )
+
+    [8] => Array
+        (
+            [COLUMN_NAME] => faktor_risiko_umum
+            [DATA_TYPE] => set
+            [COLUMN_COMMENT] => 
+        )
+
+    [9] => Array
+        (
+            [COLUMN_NAME] => faktor_risiko_obstetri
+            [DATA_TYPE] => set
+            [COLUMN_COMMENT] => 
+        )
+
+    [10] => Array
+        (
+            [COLUMN_NAME] => faktor_risiko_preeklampsia
+            [DATA_TYPE] => set
+            [COLUMN_COMMENT] => 
+        )
+
+    [11] => Array
+        (
+            [COLUMN_NAME] => hasil_faktor_risiko
+            [DATA_TYPE] => text
+            [COLUMN_COMMENT] => 
+        )
+
+    [12] => Array
+        (
+            [COLUMN_NAME] => created_at
+            [DATA_TYPE] => datetime
+            [COLUMN_COMMENT] => 
+        )
+
+    [13] => Array
+        (
+            [COLUMN_NAME] => updated_at
+            [DATA_TYPE] => datetime
+            [COLUMN_COMMENT] => Waktu terakhir data diperbarui
+        )
+
+)
+
+Contoh data penilaian_medis_ralan_kandungan:
+Array
+(
+    [no_rawat] => 20250310.002
+    [tanggal] => 2025-03-11 07:35:39
+    [anamnesis] => Autoanamnesis
+    [hubungan] => -
+    [keluhan_utama] => 1
+    [rps] => 
+    [rpd] => 
+    [rpk] => 
+    [rpo] => 
+    [alergi] => 
+    [keadaan] => Sehat
+    [gcs] => 456
+    [kesadaran] => Compos Mentis
+    [td] => 120/80
+    [nadi] => 90
+    [rr] => 16
+    [suhu] => 36.4
+    [spo] => 99
+    [bb] => 
+    [tb] => 
+    [kepala] => Normal
+    [mata] => Normal
+    [gigi] => Normal
+    [tht] => Normal
+    [thoraks] => Normal
+    [abdomen] => Normal
+    [genital] => Normal
+    [ekstremitas] => Normal
+    [kulit] => Normal
+    [ket_fisik] => saat ini dalam batas normal
+    [ultra] => Metode : Transabdominal 
+Kantung Kehamilan (GS): ada, Letak GS: intrauterin, Yolk Sac: terlihat 
+Janin: Terlihat, Denyut Jantung Janin: ada
+Crown-Rump Length (CRL) : (lihat hasil usg)
+Estimasi Usia Kehamilan: __ minggu , Taksiran Persalinan: _____
+    [lab] => 
+    [diagnosis] => G1P0
+    [tata] => Cek triple eliminasi
+Edukasi pola makan
+Asam folat 1x400 mcg
+
+    [tanggal_kontrol] => 0000-00-00
+    [atensi] => 0
+)
+
+Nilai no_rkm_medis yang digunakan: RM-20250302-000
+Struktur tabel status_obstetri:
+Array
+(
+    [0] => Array
+        (
+            [Field] => id_status_obstetri
+            [Type] => char(36)
+            [Null] => NO
+            [Key] => PRI
+            [Default] => 
+            [Extra] => 
+        )
+
+    [1] => Array
+        (
+            [Field] => no_rkm_medis
+            [Type] => varchar(15)
+            [Null] => NO
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [2] => Array
+        (
+            [Field] => gravida
+            [Type] => int(2)
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [3] => Array
+        (
+            [Field] => paritas
+            [Type] => int(2)
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [4] => Array
+        (
+            [Field] => abortus
+            [Type] => int(2)
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [5] => Array
+        (
+            [Field] => tanggal_hpht
+            [Type] => date
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [6] => Array
+        (
+            [Field] => tanggal_tp
+            [Type] => date
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [7] => Array
+        (
+            [Field] => tanggal_tp_penyesuaian
+            [Type] => date
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [8] => Array
+        (
+            [Field] => faktor_risiko_umum
+            [Type] => set('Terlalu muda hamil kurang dari 16 th','Terlalu lambat hamil 1 kawin lebih dari 4 th','Terlalu tua hamil 1 lebih dari 35 th','Terlalu cepat hamil lagi kurang dari 2 th','Terlalu lama hamil lagi lebih dari 10 th','Terlalu banyak anak lebih dari 3','Terlalu tua umur lebih dari 35 th')
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [9] => Array
+        (
+            [Field] => faktor_risiko_obstetri
+            [Type] => set('Terlalu pendek kurang dari 145 th','Pernah melahirkan dengan vakum','Pernah dilakukan plasenta manual','Riwayat operasi sesar','Kelainan letak sungsang atau lintang atau oblik')
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [10] => Array
+        (
+            [Field] => faktor_risiko_preeklampsia
+            [Type] => set('Riwayat keluarga preeklampsia','Anak pertama atau primigravida','Kehamilan kembar','Hamil ini setelah lebih dari 10 tahun','Usia lebih dari 35 tahun','Body Mass Index BMI lebih dari 30 atau obesitas','Mean Arterial Pressure lebih dari 90','Roll Over Test lebih dari 15 mmHg','Riwayat Hipertensi kehamilan sebelumnya','Kelainan ginjal','Diabetes','Penyakit autoimun')
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [11] => Array
+        (
+            [Field] => hasil_faktor_risiko
+            [Type] => text
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [12] => Array
+        (
+            [Field] => created_at
+            [Type] => datetime
+            [Null] => YES
+            [Key] => 
+            [Default] => current_timestamp()
+            [Extra] => 
+        )
+
+    [13] => Array
+        (
+            [Field] => updated_at
+            [Type] => datetime
+            [Null] => YES
+            [Key] => 
+            [Default] => current_timestamp()
+            [Extra] => on update current_timestamp()
+        )
+
+)
+
+PDF instance created
+Page added
+Struktur tabel penilaian_medis_ralan_kandungan:
+Array
+(
+    [0] => Array
+        (
+            [Field] => no_rawat
+            [Type] => varchar(17)
+            [Null] => NO
+            [Key] => PRI
+            [Default] => 
+            [Extra] => 
+        )
+
+    [1] => Array
+        (
+            [Field] => tanggal
+            [Type] => datetime
+            [Null] => NO
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [2] => Array
+        (
+            [Field] => anamnesis
+            [Type] => enum('Autoanamnesis','Alloanamnesis')
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [3] => Array
+        (
+            [Field] => hubungan
+            [Type] => varchar(100)
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [4] => Array
+        (
+            [Field] => keluhan_utama
+            [Type] => varchar(2000)
+            [Null] => NO
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [5] => Array
+        (
+            [Field] => rps
+            [Type] => varchar(2000)
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [6] => Array
+        (
+            [Field] => rpd
+            [Type] => varchar(1000)
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [7] => Array
+        (
+            [Field] => rpk
+            [Type] => varchar(1000)
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [8] => Array
+        (
+            [Field] => rpo
+            [Type] => varchar(1000)
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [9] => Array
+        (
+            [Field] => alergi
+            [Type] => varchar(100)
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [10] => Array
+        (
+            [Field] => keadaan
+            [Type] => enum('Sehat','Sakit Ringan','Sakit Sedang','Sakit Berat')
+            [Null] => NO
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [11] => Array
+        (
+            [Field] => gcs
+            [Type] => varchar(10)
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [12] => Array
+        (
+            [Field] => kesadaran
+            [Type] => enum('Compos Mentis','Apatis','Somnolen','Sopor','Koma')
+            [Null] => NO
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [13] => Array
+        (
+            [Field] => td
+            [Type] => varchar(8)
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [14] => Array
+        (
+            [Field] => nadi
+            [Type] => varchar(5)
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [15] => Array
+        (
+            [Field] => rr
+            [Type] => varchar(5)
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [16] => Array
+        (
+            [Field] => suhu
+            [Type] => varchar(5)
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [17] => Array
+        (
+            [Field] => spo
+            [Type] => varchar(5)
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [18] => Array
+        (
+            [Field] => bb
+            [Type] => varchar(5)
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [19] => Array
+        (
+            [Field] => tb
+            [Type] => varchar(5)
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [20] => Array
+        (
+            [Field] => kepala
+            [Type] => enum('Normal','Abnormal','Tidak Diperiksa')
+            [Null] => NO
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [21] => Array
+        (
+            [Field] => mata
+            [Type] => enum('Normal','Abnormal','Tidak Diperiksa')
+            [Null] => NO
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [22] => Array
+        (
+            [Field] => gigi
+            [Type] => enum('Normal','Abnormal','Tidak Diperiksa')
+            [Null] => NO
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [23] => Array
+        (
+            [Field] => tht
+            [Type] => enum('Normal','Abnormal','Tidak Diperiksa')
+            [Null] => NO
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [24] => Array
+        (
+            [Field] => thoraks
+            [Type] => enum('Normal','Abnormal','Tidak Diperiksa')
+            [Null] => NO
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [25] => Array
+        (
+            [Field] => abdomen
+            [Type] => enum('Normal','Abnormal','Tidak Diperiksa')
+            [Null] => NO
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [26] => Array
+        (
+            [Field] => genital
+            [Type] => enum('Normal','Abnormal','Tidak Diperiksa')
+            [Null] => NO
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [27] => Array
+        (
+            [Field] => ekstremitas
+            [Type] => enum('Normal','Abnormal','Tidak Diperiksa')
+            [Null] => NO
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [28] => Array
+        (
+            [Field] => kulit
+            [Type] => enum('Normal','Abnormal','Tidak Diperiksa')
+            [Null] => NO
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [29] => Array
+        (
+            [Field] => ket_fisik
+            [Type] => text
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [30] => Array
+        (
+            [Field] => ultra
+            [Type] => text
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [31] => Array
+        (
+            [Field] => lab
+            [Type] => text
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [32] => Array
+        (
+            [Field] => diagnosis
+            [Type] => varchar(500)
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [33] => Array
+        (
+            [Field] => tata
+            [Type] => text
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [34] => Array
+        (
+            [Field] => tanggal_kontrol
+            [Type] => date
+            [Null] => NO
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [35] => Array
+        (
+            [Field] => atensi
+            [Type] => tinyint(1)
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+)
+
+Hasil query pemeriksaan:
+Array
+(
+    [tanggal] => 2025-03-12 15:32:19
+    [ket_fisik] => saat ini dalam batas normal
+    [lab] => 
+    [ultra] => 
+    [diagnosis] => G1P0
+    [tata] => 
+    [td] => 120/80
+    [bb] => 
+)
+
+Hasil query obstetri:
+Array
+(
+    [tanggal_tp_penyesuaian] => 2025-03-22
+    [faktor_risiko_umum] => Terlalu muda hamil kurang dari 16 th
+    [faktor_risiko_obstetri] => Terlalu pendek kurang dari 145 th
+    [faktor_risiko_preeklampsia] => Riwayat keluarga preeklampsia
+)
+
+All data added to PDF
+Setting headers
+Outputting PDF
+PDF output complete
+PDF generation started at 2025-03-13 12:15:50
+Database connection established
+TCPDF class defined
+Data pasien tersedia: RM-20250302-000
+Detail kolom penilaian_medis_ralan_kandungan:
+Array
+(
+    [0] => Array
+        (
+            [COLUMN_NAME] => no_rawat
+            [DATA_TYPE] => varchar
+            [COLUMN_COMMENT] => 
+        )
+
+    [1] => Array
+        (
+            [COLUMN_NAME] => tanggal
+            [DATA_TYPE] => datetime
+            [COLUMN_COMMENT] => 
+        )
+
+    [2] => Array
+        (
+            [COLUMN_NAME] => anamnesis
+            [DATA_TYPE] => enum
+            [COLUMN_COMMENT] => 
+        )
+
+    [3] => Array
+        (
+            [COLUMN_NAME] => hubungan
+            [DATA_TYPE] => varchar
+            [COLUMN_COMMENT] => 
+        )
+
+    [4] => Array
+        (
+            [COLUMN_NAME] => keluhan_utama
+            [DATA_TYPE] => varchar
+            [COLUMN_COMMENT] => 
+        )
+
+    [5] => Array
+        (
+            [COLUMN_NAME] => rps
+            [DATA_TYPE] => varchar
+            [COLUMN_COMMENT] => 
+        )
+
+    [6] => Array
+        (
+            [COLUMN_NAME] => rpd
+            [DATA_TYPE] => varchar
+            [COLUMN_COMMENT] => 
+        )
+
+    [7] => Array
+        (
+            [COLUMN_NAME] => rpk
+            [DATA_TYPE] => varchar
+            [COLUMN_COMMENT] => 
+        )
+
+    [8] => Array
+        (
+            [COLUMN_NAME] => rpo
+            [DATA_TYPE] => varchar
+            [COLUMN_COMMENT] => 
+        )
+
+    [9] => Array
+        (
+            [COLUMN_NAME] => alergi
+            [DATA_TYPE] => varchar
+            [COLUMN_COMMENT] => 
+        )
+
+    [10] => Array
+        (
+            [COLUMN_NAME] => keadaan
+            [DATA_TYPE] => enum
+            [COLUMN_COMMENT] => 
+        )
+
+    [11] => Array
+        (
+            [COLUMN_NAME] => gcs
+            [DATA_TYPE] => varchar
+            [COLUMN_COMMENT] => 
+        )
+
+    [12] => Array
+        (
+            [COLUMN_NAME] => kesadaran
+            [DATA_TYPE] => enum
+            [COLUMN_COMMENT] => 
+        )
+
+    [13] => Array
+        (
+            [COLUMN_NAME] => td
+            [DATA_TYPE] => varchar
+            [COLUMN_COMMENT] => 
+        )
+
+    [14] => Array
+        (
+            [COLUMN_NAME] => nadi
+            [DATA_TYPE] => varchar
+            [COLUMN_COMMENT] => 
+        )
+
+    [15] => Array
+        (
+            [COLUMN_NAME] => rr
+            [DATA_TYPE] => varchar
+            [COLUMN_COMMENT] => 
+        )
+
+    [16] => Array
+        (
+            [COLUMN_NAME] => suhu
+            [DATA_TYPE] => varchar
+            [COLUMN_COMMENT] => 
+        )
+
+    [17] => Array
+        (
+            [COLUMN_NAME] => spo
+            [DATA_TYPE] => varchar
+            [COLUMN_COMMENT] => 
+        )
+
+    [18] => Array
+        (
+            [COLUMN_NAME] => bb
+            [DATA_TYPE] => varchar
+            [COLUMN_COMMENT] => 
+        )
+
+    [19] => Array
+        (
+            [COLUMN_NAME] => tb
+            [DATA_TYPE] => varchar
+            [COLUMN_COMMENT] => 
+        )
+
+    [20] => Array
+        (
+            [COLUMN_NAME] => kepala
+            [DATA_TYPE] => enum
+            [COLUMN_COMMENT] => 
+        )
+
+    [21] => Array
+        (
+            [COLUMN_NAME] => mata
+            [DATA_TYPE] => enum
+            [COLUMN_COMMENT] => 
+        )
+
+    [22] => Array
+        (
+            [COLUMN_NAME] => gigi
+            [DATA_TYPE] => enum
+            [COLUMN_COMMENT] => 
+        )
+
+    [23] => Array
+        (
+            [COLUMN_NAME] => tht
+            [DATA_TYPE] => enum
+            [COLUMN_COMMENT] => 
+        )
+
+    [24] => Array
+        (
+            [COLUMN_NAME] => thoraks
+            [DATA_TYPE] => enum
+            [COLUMN_COMMENT] => 
+        )
+
+    [25] => Array
+        (
+            [COLUMN_NAME] => abdomen
+            [DATA_TYPE] => enum
+            [COLUMN_COMMENT] => 
+        )
+
+    [26] => Array
+        (
+            [COLUMN_NAME] => genital
+            [DATA_TYPE] => enum
+            [COLUMN_COMMENT] => 
+        )
+
+    [27] => Array
+        (
+            [COLUMN_NAME] => ekstremitas
+            [DATA_TYPE] => enum
+            [COLUMN_COMMENT] => 
+        )
+
+    [28] => Array
+        (
+            [COLUMN_NAME] => kulit
+            [DATA_TYPE] => enum
+            [COLUMN_COMMENT] => 
+        )
+
+    [29] => Array
+        (
+            [COLUMN_NAME] => ket_fisik
+            [DATA_TYPE] => text
+            [COLUMN_COMMENT] => 
+        )
+
+    [30] => Array
+        (
+            [COLUMN_NAME] => ultra
+            [DATA_TYPE] => text
+            [COLUMN_COMMENT] => 
+        )
+
+    [31] => Array
+        (
+            [COLUMN_NAME] => lab
+            [DATA_TYPE] => text
+            [COLUMN_COMMENT] => 
+        )
+
+    [32] => Array
+        (
+            [COLUMN_NAME] => diagnosis
+            [DATA_TYPE] => varchar
+            [COLUMN_COMMENT] => 
+        )
+
+    [33] => Array
+        (
+            [COLUMN_NAME] => tata
+            [DATA_TYPE] => text
+            [COLUMN_COMMENT] => 
+        )
+
+    [34] => Array
+        (
+            [COLUMN_NAME] => tanggal_kontrol
+            [DATA_TYPE] => date
+            [COLUMN_COMMENT] => 
+        )
+
+    [35] => Array
+        (
+            [COLUMN_NAME] => atensi
+            [DATA_TYPE] => tinyint
+            [COLUMN_COMMENT] => 
+        )
+
+)
+
+Detail kolom status_obstetri:
+Array
+(
+    [0] => Array
+        (
+            [COLUMN_NAME] => id_status_obstetri
+            [DATA_TYPE] => char
+            [COLUMN_COMMENT] => 
+        )
+
+    [1] => Array
+        (
+            [COLUMN_NAME] => no_rkm_medis
+            [DATA_TYPE] => varchar
+            [COLUMN_COMMENT] => 
+        )
+
+    [2] => Array
+        (
+            [COLUMN_NAME] => gravida
+            [DATA_TYPE] => int
+            [COLUMN_COMMENT] => 
+        )
+
+    [3] => Array
+        (
+            [COLUMN_NAME] => paritas
+            [DATA_TYPE] => int
+            [COLUMN_COMMENT] => 
+        )
+
+    [4] => Array
+        (
+            [COLUMN_NAME] => abortus
+            [DATA_TYPE] => int
+            [COLUMN_COMMENT] => 
+        )
+
+    [5] => Array
+        (
+            [COLUMN_NAME] => tanggal_hpht
+            [DATA_TYPE] => date
+            [COLUMN_COMMENT] => 
+        )
+
+    [6] => Array
+        (
+            [COLUMN_NAME] => tanggal_tp
+            [DATA_TYPE] => date
+            [COLUMN_COMMENT] => 
+        )
+
+    [7] => Array
+        (
+            [COLUMN_NAME] => tanggal_tp_penyesuaian
+            [DATA_TYPE] => date
+            [COLUMN_COMMENT] => TP setelah penyesuaian USG
+        )
+
+    [8] => Array
+        (
+            [COLUMN_NAME] => faktor_risiko_umum
+            [DATA_TYPE] => set
+            [COLUMN_COMMENT] => 
+        )
+
+    [9] => Array
+        (
+            [COLUMN_NAME] => faktor_risiko_obstetri
+            [DATA_TYPE] => set
+            [COLUMN_COMMENT] => 
+        )
+
+    [10] => Array
+        (
+            [COLUMN_NAME] => faktor_risiko_preeklampsia
+            [DATA_TYPE] => set
+            [COLUMN_COMMENT] => 
+        )
+
+    [11] => Array
+        (
+            [COLUMN_NAME] => hasil_faktor_risiko
+            [DATA_TYPE] => text
+            [COLUMN_COMMENT] => 
+        )
+
+    [12] => Array
+        (
+            [COLUMN_NAME] => created_at
+            [DATA_TYPE] => datetime
+            [COLUMN_COMMENT] => 
+        )
+
+    [13] => Array
+        (
+            [COLUMN_NAME] => updated_at
+            [DATA_TYPE] => datetime
+            [COLUMN_COMMENT] => Waktu terakhir data diperbarui
+        )
+
+)
+
+Contoh data penilaian_medis_ralan_kandungan:
+Array
+(
+    [no_rawat] => 20250310.002
+    [tanggal] => 2025-03-11 07:35:39
+    [anamnesis] => Autoanamnesis
+    [hubungan] => -
+    [keluhan_utama] => 1
+    [rps] => 
+    [rpd] => 
+    [rpk] => 
+    [rpo] => 
+    [alergi] => 
+    [keadaan] => Sehat
+    [gcs] => 456
+    [kesadaran] => Compos Mentis
+    [td] => 120/80
+    [nadi] => 90
+    [rr] => 16
+    [suhu] => 36.4
+    [spo] => 99
+    [bb] => 
+    [tb] => 
+    [kepala] => Normal
+    [mata] => Normal
+    [gigi] => Normal
+    [tht] => Normal
+    [thoraks] => Normal
+    [abdomen] => Normal
+    [genital] => Normal
+    [ekstremitas] => Normal
+    [kulit] => Normal
+    [ket_fisik] => saat ini dalam batas normal
+    [ultra] => Metode : Transabdominal 
+Kantung Kehamilan (GS): ada, Letak GS: intrauterin, Yolk Sac: terlihat 
+Janin: Terlihat, Denyut Jantung Janin: ada
+Crown-Rump Length (CRL) : (lihat hasil usg)
+Estimasi Usia Kehamilan: __ minggu , Taksiran Persalinan: _____
+    [lab] => 
+    [diagnosis] => G1P0
+    [tata] => Cek triple eliminasi
+Edukasi pola makan
+Asam folat 1x400 mcg
+
+    [tanggal_kontrol] => 0000-00-00
+    [atensi] => 0
+)
+
+Nilai no_rkm_medis yang digunakan: RM-20250302-000
+Struktur tabel status_obstetri:
+Array
+(
+    [0] => Array
+        (
+            [Field] => id_status_obstetri
+            [Type] => char(36)
+            [Null] => NO
+            [Key] => PRI
+            [Default] => 
+            [Extra] => 
+        )
+
+    [1] => Array
+        (
+            [Field] => no_rkm_medis
+            [Type] => varchar(15)
+            [Null] => NO
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [2] => Array
+        (
+            [Field] => gravida
+            [Type] => int(2)
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [3] => Array
+        (
+            [Field] => paritas
+            [Type] => int(2)
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [4] => Array
+        (
+            [Field] => abortus
+            [Type] => int(2)
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [5] => Array
+        (
+            [Field] => tanggal_hpht
+            [Type] => date
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [6] => Array
+        (
+            [Field] => tanggal_tp
+            [Type] => date
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [7] => Array
+        (
+            [Field] => tanggal_tp_penyesuaian
+            [Type] => date
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [8] => Array
+        (
+            [Field] => faktor_risiko_umum
+            [Type] => set('Terlalu muda hamil kurang dari 16 th','Terlalu lambat hamil 1 kawin lebih dari 4 th','Terlalu tua hamil 1 lebih dari 35 th','Terlalu cepat hamil lagi kurang dari 2 th','Terlalu lama hamil lagi lebih dari 10 th','Terlalu banyak anak lebih dari 3','Terlalu tua umur lebih dari 35 th')
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [9] => Array
+        (
+            [Field] => faktor_risiko_obstetri
+            [Type] => set('Terlalu pendek kurang dari 145 th','Pernah melahirkan dengan vakum','Pernah dilakukan plasenta manual','Riwayat operasi sesar','Kelainan letak sungsang atau lintang atau oblik')
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [10] => Array
+        (
+            [Field] => faktor_risiko_preeklampsia
+            [Type] => set('Riwayat keluarga preeklampsia','Anak pertama atau primigravida','Kehamilan kembar','Hamil ini setelah lebih dari 10 tahun','Usia lebih dari 35 tahun','Body Mass Index BMI lebih dari 30 atau obesitas','Mean Arterial Pressure lebih dari 90','Roll Over Test lebih dari 15 mmHg','Riwayat Hipertensi kehamilan sebelumnya','Kelainan ginjal','Diabetes','Penyakit autoimun')
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [11] => Array
+        (
+            [Field] => hasil_faktor_risiko
+            [Type] => text
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [12] => Array
+        (
+            [Field] => created_at
+            [Type] => datetime
+            [Null] => YES
+            [Key] => 
+            [Default] => current_timestamp()
+            [Extra] => 
+        )
+
+    [13] => Array
+        (
+            [Field] => updated_at
+            [Type] => datetime
+            [Null] => YES
+            [Key] => 
+            [Default] => current_timestamp()
+            [Extra] => on update current_timestamp()
+        )
+
+)
+
+PDF instance created
+Page added
+Struktur tabel penilaian_medis_ralan_kandungan:
+Array
+(
+    [0] => Array
+        (
+            [Field] => no_rawat
+            [Type] => varchar(17)
+            [Null] => NO
+            [Key] => PRI
+            [Default] => 
+            [Extra] => 
+        )
+
+    [1] => Array
+        (
+            [Field] => tanggal
+            [Type] => datetime
+            [Null] => NO
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [2] => Array
+        (
+            [Field] => anamnesis
+            [Type] => enum('Autoanamnesis','Alloanamnesis')
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [3] => Array
+        (
+            [Field] => hubungan
+            [Type] => varchar(100)
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [4] => Array
+        (
+            [Field] => keluhan_utama
+            [Type] => varchar(2000)
+            [Null] => NO
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [5] => Array
+        (
+            [Field] => rps
+            [Type] => varchar(2000)
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [6] => Array
+        (
+            [Field] => rpd
+            [Type] => varchar(1000)
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [7] => Array
+        (
+            [Field] => rpk
+            [Type] => varchar(1000)
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [8] => Array
+        (
+            [Field] => rpo
+            [Type] => varchar(1000)
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [9] => Array
+        (
+            [Field] => alergi
+            [Type] => varchar(100)
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [10] => Array
+        (
+            [Field] => keadaan
+            [Type] => enum('Sehat','Sakit Ringan','Sakit Sedang','Sakit Berat')
+            [Null] => NO
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [11] => Array
+        (
+            [Field] => gcs
+            [Type] => varchar(10)
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [12] => Array
+        (
+            [Field] => kesadaran
+            [Type] => enum('Compos Mentis','Apatis','Somnolen','Sopor','Koma')
+            [Null] => NO
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [13] => Array
+        (
+            [Field] => td
+            [Type] => varchar(8)
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [14] => Array
+        (
+            [Field] => nadi
+            [Type] => varchar(5)
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [15] => Array
+        (
+            [Field] => rr
+            [Type] => varchar(5)
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [16] => Array
+        (
+            [Field] => suhu
+            [Type] => varchar(5)
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [17] => Array
+        (
+            [Field] => spo
+            [Type] => varchar(5)
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [18] => Array
+        (
+            [Field] => bb
+            [Type] => varchar(5)
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [19] => Array
+        (
+            [Field] => tb
+            [Type] => varchar(5)
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [20] => Array
+        (
+            [Field] => kepala
+            [Type] => enum('Normal','Abnormal','Tidak Diperiksa')
+            [Null] => NO
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [21] => Array
+        (
+            [Field] => mata
+            [Type] => enum('Normal','Abnormal','Tidak Diperiksa')
+            [Null] => NO
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [22] => Array
+        (
+            [Field] => gigi
+            [Type] => enum('Normal','Abnormal','Tidak Diperiksa')
+            [Null] => NO
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [23] => Array
+        (
+            [Field] => tht
+            [Type] => enum('Normal','Abnormal','Tidak Diperiksa')
+            [Null] => NO
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [24] => Array
+        (
+            [Field] => thoraks
+            [Type] => enum('Normal','Abnormal','Tidak Diperiksa')
+            [Null] => NO
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [25] => Array
+        (
+            [Field] => abdomen
+            [Type] => enum('Normal','Abnormal','Tidak Diperiksa')
+            [Null] => NO
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [26] => Array
+        (
+            [Field] => genital
+            [Type] => enum('Normal','Abnormal','Tidak Diperiksa')
+            [Null] => NO
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [27] => Array
+        (
+            [Field] => ekstremitas
+            [Type] => enum('Normal','Abnormal','Tidak Diperiksa')
+            [Null] => NO
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [28] => Array
+        (
+            [Field] => kulit
+            [Type] => enum('Normal','Abnormal','Tidak Diperiksa')
+            [Null] => NO
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [29] => Array
+        (
+            [Field] => ket_fisik
+            [Type] => text
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [30] => Array
+        (
+            [Field] => ultra
+            [Type] => text
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [31] => Array
+        (
+            [Field] => lab
+            [Type] => text
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [32] => Array
+        (
+            [Field] => diagnosis
+            [Type] => varchar(500)
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [33] => Array
+        (
+            [Field] => tata
+            [Type] => text
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [34] => Array
+        (
+            [Field] => tanggal_kontrol
+            [Type] => date
+            [Null] => NO
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [35] => Array
+        (
+            [Field] => atensi
+            [Type] => tinyint(1)
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+)
+
+Hasil query pemeriksaan:
+Array
+(
+    [tanggal] => 2025-03-12 15:32:19
+    [ket_fisik] => saat ini dalam batas normal
+    [lab] => 
+    [ultra] => 
+    [diagnosis] => G1P0
+    [tata] => 
+    [td] => 120/80
+    [bb] => 
+)
+
+Hasil query obstetri:
+Array
+(
+    [tanggal_tp_penyesuaian] => 2025-03-22
+    [faktor_risiko_umum] => Terlalu muda hamil kurang dari 16 th
+    [faktor_risiko_obstetri] => Terlalu pendek kurang dari 145 th
+    [faktor_risiko_preeklampsia] => Riwayat keluarga preeklampsia
+)
+
+All data added to PDF
+Setting headers
+Outputting PDF
+PDF output complete
+PDF generation started at 2025-03-13 12:16:00
+Database connection established
+TCPDF class defined
+Data pasien tersedia: RM-20250302-000
+Detail kolom penilaian_medis_ralan_kandungan:
+Array
+(
+    [0] => Array
+        (
+            [COLUMN_NAME] => no_rawat
+            [DATA_TYPE] => varchar
+            [COLUMN_COMMENT] => 
+        )
+
+    [1] => Array
+        (
+            [COLUMN_NAME] => tanggal
+            [DATA_TYPE] => datetime
+            [COLUMN_COMMENT] => 
+        )
+
+    [2] => Array
+        (
+            [COLUMN_NAME] => anamnesis
+            [DATA_TYPE] => enum
+            [COLUMN_COMMENT] => 
+        )
+
+    [3] => Array
+        (
+            [COLUMN_NAME] => hubungan
+            [DATA_TYPE] => varchar
+            [COLUMN_COMMENT] => 
+        )
+
+    [4] => Array
+        (
+            [COLUMN_NAME] => keluhan_utama
+            [DATA_TYPE] => varchar
+            [COLUMN_COMMENT] => 
+        )
+
+    [5] => Array
+        (
+            [COLUMN_NAME] => rps
+            [DATA_TYPE] => varchar
+            [COLUMN_COMMENT] => 
+        )
+
+    [6] => Array
+        (
+            [COLUMN_NAME] => rpd
+            [DATA_TYPE] => varchar
+            [COLUMN_COMMENT] => 
+        )
+
+    [7] => Array
+        (
+            [COLUMN_NAME] => rpk
+            [DATA_TYPE] => varchar
+            [COLUMN_COMMENT] => 
+        )
+
+    [8] => Array
+        (
+            [COLUMN_NAME] => rpo
+            [DATA_TYPE] => varchar
+            [COLUMN_COMMENT] => 
+        )
+
+    [9] => Array
+        (
+            [COLUMN_NAME] => alergi
+            [DATA_TYPE] => varchar
+            [COLUMN_COMMENT] => 
+        )
+
+    [10] => Array
+        (
+            [COLUMN_NAME] => keadaan
+            [DATA_TYPE] => enum
+            [COLUMN_COMMENT] => 
+        )
+
+    [11] => Array
+        (
+            [COLUMN_NAME] => gcs
+            [DATA_TYPE] => varchar
+            [COLUMN_COMMENT] => 
+        )
+
+    [12] => Array
+        (
+            [COLUMN_NAME] => kesadaran
+            [DATA_TYPE] => enum
+            [COLUMN_COMMENT] => 
+        )
+
+    [13] => Array
+        (
+            [COLUMN_NAME] => td
+            [DATA_TYPE] => varchar
+            [COLUMN_COMMENT] => 
+        )
+
+    [14] => Array
+        (
+            [COLUMN_NAME] => nadi
+            [DATA_TYPE] => varchar
+            [COLUMN_COMMENT] => 
+        )
+
+    [15] => Array
+        (
+            [COLUMN_NAME] => rr
+            [DATA_TYPE] => varchar
+            [COLUMN_COMMENT] => 
+        )
+
+    [16] => Array
+        (
+            [COLUMN_NAME] => suhu
+            [DATA_TYPE] => varchar
+            [COLUMN_COMMENT] => 
+        )
+
+    [17] => Array
+        (
+            [COLUMN_NAME] => spo
+            [DATA_TYPE] => varchar
+            [COLUMN_COMMENT] => 
+        )
+
+    [18] => Array
+        (
+            [COLUMN_NAME] => bb
+            [DATA_TYPE] => varchar
+            [COLUMN_COMMENT] => 
+        )
+
+    [19] => Array
+        (
+            [COLUMN_NAME] => tb
+            [DATA_TYPE] => varchar
+            [COLUMN_COMMENT] => 
+        )
+
+    [20] => Array
+        (
+            [COLUMN_NAME] => kepala
+            [DATA_TYPE] => enum
+            [COLUMN_COMMENT] => 
+        )
+
+    [21] => Array
+        (
+            [COLUMN_NAME] => mata
+            [DATA_TYPE] => enum
+            [COLUMN_COMMENT] => 
+        )
+
+    [22] => Array
+        (
+            [COLUMN_NAME] => gigi
+            [DATA_TYPE] => enum
+            [COLUMN_COMMENT] => 
+        )
+
+    [23] => Array
+        (
+            [COLUMN_NAME] => tht
+            [DATA_TYPE] => enum
+            [COLUMN_COMMENT] => 
+        )
+
+    [24] => Array
+        (
+            [COLUMN_NAME] => thoraks
+            [DATA_TYPE] => enum
+            [COLUMN_COMMENT] => 
+        )
+
+    [25] => Array
+        (
+            [COLUMN_NAME] => abdomen
+            [DATA_TYPE] => enum
+            [COLUMN_COMMENT] => 
+        )
+
+    [26] => Array
+        (
+            [COLUMN_NAME] => genital
+            [DATA_TYPE] => enum
+            [COLUMN_COMMENT] => 
+        )
+
+    [27] => Array
+        (
+            [COLUMN_NAME] => ekstremitas
+            [DATA_TYPE] => enum
+            [COLUMN_COMMENT] => 
+        )
+
+    [28] => Array
+        (
+            [COLUMN_NAME] => kulit
+            [DATA_TYPE] => enum
+            [COLUMN_COMMENT] => 
+        )
+
+    [29] => Array
+        (
+            [COLUMN_NAME] => ket_fisik
+            [DATA_TYPE] => text
+            [COLUMN_COMMENT] => 
+        )
+
+    [30] => Array
+        (
+            [COLUMN_NAME] => ultra
+            [DATA_TYPE] => text
+            [COLUMN_COMMENT] => 
+        )
+
+    [31] => Array
+        (
+            [COLUMN_NAME] => lab
+            [DATA_TYPE] => text
+            [COLUMN_COMMENT] => 
+        )
+
+    [32] => Array
+        (
+            [COLUMN_NAME] => diagnosis
+            [DATA_TYPE] => varchar
+            [COLUMN_COMMENT] => 
+        )
+
+    [33] => Array
+        (
+            [COLUMN_NAME] => tata
+            [DATA_TYPE] => text
+            [COLUMN_COMMENT] => 
+        )
+
+    [34] => Array
+        (
+            [COLUMN_NAME] => tanggal_kontrol
+            [DATA_TYPE] => date
+            [COLUMN_COMMENT] => 
+        )
+
+    [35] => Array
+        (
+            [COLUMN_NAME] => atensi
+            [DATA_TYPE] => tinyint
+            [COLUMN_COMMENT] => 
+        )
+
+)
+
+Detail kolom status_obstetri:
+Array
+(
+    [0] => Array
+        (
+            [COLUMN_NAME] => id_status_obstetri
+            [DATA_TYPE] => char
+            [COLUMN_COMMENT] => 
+        )
+
+    [1] => Array
+        (
+            [COLUMN_NAME] => no_rkm_medis
+            [DATA_TYPE] => varchar
+            [COLUMN_COMMENT] => 
+        )
+
+    [2] => Array
+        (
+            [COLUMN_NAME] => gravida
+            [DATA_TYPE] => int
+            [COLUMN_COMMENT] => 
+        )
+
+    [3] => Array
+        (
+            [COLUMN_NAME] => paritas
+            [DATA_TYPE] => int
+            [COLUMN_COMMENT] => 
+        )
+
+    [4] => Array
+        (
+            [COLUMN_NAME] => abortus
+            [DATA_TYPE] => int
+            [COLUMN_COMMENT] => 
+        )
+
+    [5] => Array
+        (
+            [COLUMN_NAME] => tanggal_hpht
+            [DATA_TYPE] => date
+            [COLUMN_COMMENT] => 
+        )
+
+    [6] => Array
+        (
+            [COLUMN_NAME] => tanggal_tp
+            [DATA_TYPE] => date
+            [COLUMN_COMMENT] => 
+        )
+
+    [7] => Array
+        (
+            [COLUMN_NAME] => tanggal_tp_penyesuaian
+            [DATA_TYPE] => date
+            [COLUMN_COMMENT] => TP setelah penyesuaian USG
+        )
+
+    [8] => Array
+        (
+            [COLUMN_NAME] => faktor_risiko_umum
+            [DATA_TYPE] => set
+            [COLUMN_COMMENT] => 
+        )
+
+    [9] => Array
+        (
+            [COLUMN_NAME] => faktor_risiko_obstetri
+            [DATA_TYPE] => set
+            [COLUMN_COMMENT] => 
+        )
+
+    [10] => Array
+        (
+            [COLUMN_NAME] => faktor_risiko_preeklampsia
+            [DATA_TYPE] => set
+            [COLUMN_COMMENT] => 
+        )
+
+    [11] => Array
+        (
+            [COLUMN_NAME] => hasil_faktor_risiko
+            [DATA_TYPE] => text
+            [COLUMN_COMMENT] => 
+        )
+
+    [12] => Array
+        (
+            [COLUMN_NAME] => created_at
+            [DATA_TYPE] => datetime
+            [COLUMN_COMMENT] => 
+        )
+
+    [13] => Array
+        (
+            [COLUMN_NAME] => updated_at
+            [DATA_TYPE] => datetime
+            [COLUMN_COMMENT] => Waktu terakhir data diperbarui
+        )
+
+)
+
+Contoh data penilaian_medis_ralan_kandungan:
+Array
+(
+    [no_rawat] => 20250310.002
+    [tanggal] => 2025-03-11 07:35:39
+    [anamnesis] => Autoanamnesis
+    [hubungan] => -
+    [keluhan_utama] => 1
+    [rps] => 
+    [rpd] => 
+    [rpk] => 
+    [rpo] => 
+    [alergi] => 
+    [keadaan] => Sehat
+    [gcs] => 456
+    [kesadaran] => Compos Mentis
+    [td] => 120/80
+    [nadi] => 90
+    [rr] => 16
+    [suhu] => 36.4
+    [spo] => 99
+    [bb] => 
+    [tb] => 
+    [kepala] => Normal
+    [mata] => Normal
+    [gigi] => Normal
+    [tht] => Normal
+    [thoraks] => Normal
+    [abdomen] => Normal
+    [genital] => Normal
+    [ekstremitas] => Normal
+    [kulit] => Normal
+    [ket_fisik] => saat ini dalam batas normal
+    [ultra] => Metode : Transabdominal 
+Kantung Kehamilan (GS): ada, Letak GS: intrauterin, Yolk Sac: terlihat 
+Janin: Terlihat, Denyut Jantung Janin: ada
+Crown-Rump Length (CRL) : (lihat hasil usg)
+Estimasi Usia Kehamilan: __ minggu , Taksiran Persalinan: _____
+    [lab] => 
+    [diagnosis] => G1P0
+    [tata] => Cek triple eliminasi
+Edukasi pola makan
+Asam folat 1x400 mcg
+
+    [tanggal_kontrol] => 0000-00-00
+    [atensi] => 0
+)
+
+Nilai no_rkm_medis yang digunakan: RM-20250302-000
+Struktur tabel status_obstetri:
+Array
+(
+    [0] => Array
+        (
+            [Field] => id_status_obstetri
+            [Type] => char(36)
+            [Null] => NO
+            [Key] => PRI
+            [Default] => 
+            [Extra] => 
+        )
+
+    [1] => Array
+        (
+            [Field] => no_rkm_medis
+            [Type] => varchar(15)
+            [Null] => NO
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [2] => Array
+        (
+            [Field] => gravida
+            [Type] => int(2)
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [3] => Array
+        (
+            [Field] => paritas
+            [Type] => int(2)
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [4] => Array
+        (
+            [Field] => abortus
+            [Type] => int(2)
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [5] => Array
+        (
+            [Field] => tanggal_hpht
+            [Type] => date
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [6] => Array
+        (
+            [Field] => tanggal_tp
+            [Type] => date
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [7] => Array
+        (
+            [Field] => tanggal_tp_penyesuaian
+            [Type] => date
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [8] => Array
+        (
+            [Field] => faktor_risiko_umum
+            [Type] => set('Terlalu muda hamil kurang dari 16 th','Terlalu lambat hamil 1 kawin lebih dari 4 th','Terlalu tua hamil 1 lebih dari 35 th','Terlalu cepat hamil lagi kurang dari 2 th','Terlalu lama hamil lagi lebih dari 10 th','Terlalu banyak anak lebih dari 3','Terlalu tua umur lebih dari 35 th')
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [9] => Array
+        (
+            [Field] => faktor_risiko_obstetri
+            [Type] => set('Terlalu pendek kurang dari 145 th','Pernah melahirkan dengan vakum','Pernah dilakukan plasenta manual','Riwayat operasi sesar','Kelainan letak sungsang atau lintang atau oblik')
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [10] => Array
+        (
+            [Field] => faktor_risiko_preeklampsia
+            [Type] => set('Riwayat keluarga preeklampsia','Anak pertama atau primigravida','Kehamilan kembar','Hamil ini setelah lebih dari 10 tahun','Usia lebih dari 35 tahun','Body Mass Index BMI lebih dari 30 atau obesitas','Mean Arterial Pressure lebih dari 90','Roll Over Test lebih dari 15 mmHg','Riwayat Hipertensi kehamilan sebelumnya','Kelainan ginjal','Diabetes','Penyakit autoimun')
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [11] => Array
+        (
+            [Field] => hasil_faktor_risiko
+            [Type] => text
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [12] => Array
+        (
+            [Field] => created_at
+            [Type] => datetime
+            [Null] => YES
+            [Key] => 
+            [Default] => current_timestamp()
+            [Extra] => 
+        )
+
+    [13] => Array
+        (
+            [Field] => updated_at
+            [Type] => datetime
+            [Null] => YES
+            [Key] => 
+            [Default] => current_timestamp()
+            [Extra] => on update current_timestamp()
+        )
+
+)
+
+PDF instance created
+Page added
+Struktur tabel penilaian_medis_ralan_kandungan:
+Array
+(
+    [0] => Array
+        (
+            [Field] => no_rawat
+            [Type] => varchar(17)
+            [Null] => NO
+            [Key] => PRI
+            [Default] => 
+            [Extra] => 
+        )
+
+    [1] => Array
+        (
+            [Field] => tanggal
+            [Type] => datetime
+            [Null] => NO
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [2] => Array
+        (
+            [Field] => anamnesis
+            [Type] => enum('Autoanamnesis','Alloanamnesis')
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [3] => Array
+        (
+            [Field] => hubungan
+            [Type] => varchar(100)
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [4] => Array
+        (
+            [Field] => keluhan_utama
+            [Type] => varchar(2000)
+            [Null] => NO
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [5] => Array
+        (
+            [Field] => rps
+            [Type] => varchar(2000)
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [6] => Array
+        (
+            [Field] => rpd
+            [Type] => varchar(1000)
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [7] => Array
+        (
+            [Field] => rpk
+            [Type] => varchar(1000)
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [8] => Array
+        (
+            [Field] => rpo
+            [Type] => varchar(1000)
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [9] => Array
+        (
+            [Field] => alergi
+            [Type] => varchar(100)
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [10] => Array
+        (
+            [Field] => keadaan
+            [Type] => enum('Sehat','Sakit Ringan','Sakit Sedang','Sakit Berat')
+            [Null] => NO
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [11] => Array
+        (
+            [Field] => gcs
+            [Type] => varchar(10)
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [12] => Array
+        (
+            [Field] => kesadaran
+            [Type] => enum('Compos Mentis','Apatis','Somnolen','Sopor','Koma')
+            [Null] => NO
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [13] => Array
+        (
+            [Field] => td
+            [Type] => varchar(8)
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [14] => Array
+        (
+            [Field] => nadi
+            [Type] => varchar(5)
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [15] => Array
+        (
+            [Field] => rr
+            [Type] => varchar(5)
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [16] => Array
+        (
+            [Field] => suhu
+            [Type] => varchar(5)
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [17] => Array
+        (
+            [Field] => spo
+            [Type] => varchar(5)
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [18] => Array
+        (
+            [Field] => bb
+            [Type] => varchar(5)
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [19] => Array
+        (
+            [Field] => tb
+            [Type] => varchar(5)
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [20] => Array
+        (
+            [Field] => kepala
+            [Type] => enum('Normal','Abnormal','Tidak Diperiksa')
+            [Null] => NO
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [21] => Array
+        (
+            [Field] => mata
+            [Type] => enum('Normal','Abnormal','Tidak Diperiksa')
+            [Null] => NO
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [22] => Array
+        (
+            [Field] => gigi
+            [Type] => enum('Normal','Abnormal','Tidak Diperiksa')
+            [Null] => NO
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [23] => Array
+        (
+            [Field] => tht
+            [Type] => enum('Normal','Abnormal','Tidak Diperiksa')
+            [Null] => NO
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [24] => Array
+        (
+            [Field] => thoraks
+            [Type] => enum('Normal','Abnormal','Tidak Diperiksa')
+            [Null] => NO
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [25] => Array
+        (
+            [Field] => abdomen
+            [Type] => enum('Normal','Abnormal','Tidak Diperiksa')
+            [Null] => NO
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [26] => Array
+        (
+            [Field] => genital
+            [Type] => enum('Normal','Abnormal','Tidak Diperiksa')
+            [Null] => NO
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [27] => Array
+        (
+            [Field] => ekstremitas
+            [Type] => enum('Normal','Abnormal','Tidak Diperiksa')
+            [Null] => NO
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [28] => Array
+        (
+            [Field] => kulit
+            [Type] => enum('Normal','Abnormal','Tidak Diperiksa')
+            [Null] => NO
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [29] => Array
+        (
+            [Field] => ket_fisik
+            [Type] => text
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [30] => Array
+        (
+            [Field] => ultra
+            [Type] => text
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [31] => Array
+        (
+            [Field] => lab
+            [Type] => text
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [32] => Array
+        (
+            [Field] => diagnosis
+            [Type] => varchar(500)
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [33] => Array
+        (
+            [Field] => tata
+            [Type] => text
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [34] => Array
+        (
+            [Field] => tanggal_kontrol
+            [Type] => date
+            [Null] => NO
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+    [35] => Array
+        (
+            [Field] => atensi
+            [Type] => tinyint(1)
+            [Null] => YES
+            [Key] => 
+            [Default] => 
+            [Extra] => 
+        )
+
+)
+
+Hasil query pemeriksaan:
+Array
+(
+    [tanggal] => 2025-03-12 15:32:19
+    [ket_fisik] => saat ini dalam batas normal
+    [lab] => 
+    [ultra] => 
+    [diagnosis] => G1P0
+    [tata] => 
+    [td] => 120/80
+    [bb] => 
+)
+
+Hasil query obstetri:
+Array
+(
+    [tanggal_tp_penyesuaian] => 2025-03-22
+    [faktor_risiko_umum] => Terlalu muda hamil kurang dari 16 th
+    [faktor_risiko_obstetri] => Terlalu pendek kurang dari 145 th
+    [faktor_risiko_preeklampsia] => Riwayat keluarga preeklampsia
+)
+
+All data added to PDF
+Setting headers
+Outputting PDF
+PDF output complete

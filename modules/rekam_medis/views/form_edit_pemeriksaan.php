@@ -12,6 +12,47 @@ if (!isset($pemeriksaan) || !$pemeriksaan) {
 }
 ?>
 
+<style>
+    /* CSS untuk mengatur ukuran font */
+    .form-control,
+    .form-select {
+        font-size: 0.875rem;
+    }
+
+    .card-title {
+        font-size: 1rem;
+    }
+
+    label {
+        font-size: 0.875rem;
+    }
+
+    .table {
+        font-size: 0.875rem;
+    }
+
+    /* CSS untuk fitur template */
+    .card .small {
+        font-size: 0.75rem !important;
+    }
+
+    .modal-title {
+        font-size: 0.95rem;
+    }
+
+    .modal .table {
+        font-size: 0.8rem;
+    }
+
+    .modal label {
+        font-size: 0.8rem;
+    }
+
+    .btn-sm {
+        font-size: 0.75rem;
+    }
+</style>
+
 <div class="container-fluid">
     <div class="card shadow mb-4">
         <div class="card-header py-3 d-flex justify-content-between align-items-center">

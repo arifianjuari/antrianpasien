@@ -140,12 +140,6 @@ function clean_url($url)
                             </a>
                         </li>
                         <li>
-                            <a href="<?php echo $base_url; ?>/admin_praktek/penjadwalan.php" class="nav-link <?php echo $current_page == 'penjadwalan.php' ? 'active' : 'text-dark'; ?>">
-                                <i class="bi bi-calendar-check"></i>
-                                <span class="menu-text">Penjadwalan</span>
-                            </a>
-                        </li>
-                        <li>
                             <a href="<?php echo $base_url; ?>/admin_praktek/pengumuman.php" class="nav-link text-dark">
                                 <i class="bi bi-megaphone"></i>
                                 <span class="menu-text">Pesan / Pengumuman</span>
@@ -167,6 +161,18 @@ function clean_url($url)
                             <a href="<?php echo $base_url; ?>/admin_praktek/data_rujukan.php" class="nav-link <?php echo $current_page == 'data_rujukan.php' ? 'active' : 'text-dark'; ?>">
                                 <i class="bi bi-file-earmark-medical"></i>
                                 <span class="menu-text">Data Rujukan</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="<?php echo $base_url; ?>/admin_praktek/manajemen_layanan.php" class="nav-link <?php echo $current_page == 'manajemen_layanan.php' ? 'active' : 'text-dark'; ?>">
+                                <i class="bi bi-gear-wide-connected"></i>
+                                <span class="menu-text">Manajemen Layanan</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="<?php echo $base_url; ?>/admin_praktek/manajemen_edukasi.php" class="nav-link <?php echo $current_page == 'manajemen_edukasi.php' ? 'active' : 'text-dark'; ?>">
+                                <i class="bi bi-journal-text"></i>
+                                <span class="menu-text">Manajemen Edukasi</span>
                             </a>
                         </li>
                     </ul>
@@ -206,6 +212,22 @@ function clean_url($url)
                 <a href="<?php echo $base_url; ?>/pengumuman.php" class="nav-link <?php echo $current_page == 'pengumuman.php' ? 'active' : 'text-dark'; ?>">
                     <i class="bi bi-megaphone"></i>
                     <span class="menu-text">Pengumuman</span>
+                </a>
+            </li>
+
+            <!-- Menu Layanan - Selalu Tampil -->
+            <li class="nav-item mb-1">
+                <a href="<?php echo clean_url($base_url); ?>/layanan.php" class="nav-link <?php echo $current_page == 'layanan.php' ? 'active' : 'text-dark'; ?>">
+                    <i class="bi bi-heart-pulse"></i>
+                    <span class="menu-text">Layanan</span>
+                </a>
+            </li>
+
+            <!-- Menu Edukasi - Selalu Tampil -->
+            <li class="nav-item mb-1">
+                <a href="<?php echo clean_url($base_url); ?>/edukasi.php" class="nav-link <?php echo $current_page == 'edukasi.php' ? 'active' : 'text-dark'; ?>">
+                    <i class="bi bi-journal-text"></i>
+                    <span class="menu-text">Edukasi</span>
                 </a>
             </li>
         </ul>

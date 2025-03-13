@@ -1,0 +1,829 @@
+[12-Mar-2025 17:13:40 Asia/Jakarta] Base URL: https://localhost/antrian%20pasien
+[12-Mar-2025 17:13:40 Asia/Jakarta] HTTP_HOST: localhost
+[12-Mar-2025 17:13:40 Asia/Jakarta] HTTPS: on
+[12-Mar-2025 17:13:40 Asia/Jakarta] Attempting to connect to database: auth-db1151.hstgr.io, u609399718_praktekobgin
+[12-Mar-2025 17:13:40 Asia/Jakarta] Database connection successful in database.php
+[12-Mar-2025 17:13:40 Asia/Jakarta] Request URI: /antrian%20pasien/index.php?module=rekam_medis&action=manajemen_antrian
+[12-Mar-2025 17:13:40 Asia/Jakarta] Query String: module=rekam_medis&action=manajemen_antrian
+[12-Mar-2025 17:13:41 Asia/Jakarta] Module: rekam_medis
+[12-Mar-2025 17:13:41 Asia/Jakarta] Action: manajemen_antrian
+[12-Mar-2025 17:13:41 Asia/Jakarta] Checking database connection in manajemen_antrian.php
+[12-Mar-2025 17:13:41 Asia/Jakarta] Database connection test successful in manajemen_antrian.php
+[12-Mar-2025 17:13:41 Asia/Jakarta] [2025-03-12 17:13:41] Error: [2] Undefined variable $base_url in /Applications/XAMPP/xamppfiles/htdocs/antrian pasien/modules/rekam_medis/views/manajemen_antrian.php on line 371
+
+[12-Mar-2025 17:13:41 Asia/Jakarta] Request Details: Array
+(
+    [REQUEST_URI] => /antrian%20pasien/index.php?module=rekam_medis&action=manajemen_antrian
+    [REQUEST_METHOD] => GET
+    [HTTP_HOST] => localhost
+    [HTTP_USER_AGENT] => Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36
+    [REMOTE_ADDR] => ::1
+    [HTTP_REFERER] => https://localhost/antrian%20pasien/pendaftaran/form_pendaftaran_pasien.php
+)
+
+[12-Mar-2025 17:13:43 Asia/Jakarta] Base URL: https://localhost/antrian%20pasien
+[12-Mar-2025 17:13:43 Asia/Jakarta] HTTP_HOST: localhost
+[12-Mar-2025 17:13:43 Asia/Jakarta] HTTPS: on
+[12-Mar-2025 17:13:43 Asia/Jakarta] Attempting to connect to database: auth-db1151.hstgr.io, u609399718_praktekobgin
+[12-Mar-2025 17:13:43 Asia/Jakarta] Database connection successful in database.php
+[12-Mar-2025 17:13:43 Asia/Jakarta] Request URI: /antrian%20pasien/index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=RM-20250302-000&source=antrian
+[12-Mar-2025 17:13:43 Asia/Jakarta] Query String: module=rekam_medis&action=detailPasien&no_rkm_medis=RM-20250302-000&source=antrian
+[12-Mar-2025 17:13:44 Asia/Jakarta] Module: rekam_medis
+[12-Mar-2025 17:13:44 Asia/Jakarta] Action: detailPasien
+[12-Mar-2025 17:13:44 Asia/Jakarta] detailPasien called for no_rkm_medis: RM-20250302-000
+[12-Mar-2025 17:13:44 Asia/Jakarta] Using database: auth-db1151.hstgr.io, u609399718_praktekobgin
+[12-Mar-2025 17:13:44 Asia/Jakarta] Model PDO connection: Connected
+[12-Mar-2025 17:13:44 Asia/Jakarta] Pasien ditemukan: {"no_rkm_medis":"RM-20250302-000","nm_pasien":"Arifian Juari","no_ktp":"1971041707840001","jk":"P","tmp_lahir":"Pangkalpinang","tgl_lahir":"1984-07-17","nm_ibu":"Susiana Tjia","alamat":"Perumahan Kusuma Pesanggrahan, Blok Welirang 15","gol_darah":"A","pekerjaan":"TNI\/Polri","stts_nikah":"MENIKAH","agama":"KATOLIK","tgl_daftar":"0000-00-00 00:00:00","no_tlp":"081334179767","umur":"40","pnd":"Sarjana","keluarga":"IBU","namakeluarga":"Juari","kd_pj":"BPJ","no_peserta":"","kd_kel":2,"kd_kec":1,"kd_kab":1,"pekerjaanpj":null,"alamatpj":null,"kelurahanpj":null,"kecamatanpj":null,"kabupatenpj":null,"perusahaan_pasien":null,"suku_bangsa":null,"bahasa_pasien":null,"cacat_fisik":null,"email":"","nip":null,"kd_prop":null,"propinsipj":null,"catatan_pasien":"pasiennya cerewet"}
+[12-Mar-2025 17:13:44 Asia/Jakarta] Starting getRiwayatPemeriksaan for no_rkm_medis: RM-20250302-000
+[12-Mar-2025 17:13:44 Asia/Jakarta] Executing query: SELECT 
+                    rp.no_rawat,
+                    rp.tgl_registrasi,
+                    rp.jam_reg,
+                    rp.no_rkm_medis,
+                    rp.status_bayar,
+                    pmrk.tanggal as tgl_pemeriksaan,
+                    COALESCE(pmrk.anamnesis, '') as anamnesis,
+                    COALESCE(pmrk.hubungan, '') as hubungan,
+                    COALESCE(pmrk.keluhan_utama, '') as keluhan_utama,
+                    COALESCE(pmrk.rps, '') as rps,
+                    COALESCE(pmrk.rpd, '') as rpd,
+                    COALESCE(pmrk.rpk, '') as rpk,
+                    COALESCE(pmrk.rpo, '') as rpo,
+                    COALESCE(pmrk.alergi, '') as alergi,
+                    COALESCE(pmrk.keadaan, '') as keadaan,
+                    COALESCE(pmrk.kesadaran, '') as kesadaran,
+                    COALESCE(pmrk.gcs, '') as gcs,
+                    COALESCE(pmrk.td, '') as td,
+                    COALESCE(pmrk.nadi, '') as nadi,
+                    COALESCE(pmrk.rr, '') as rr,
+                    COALESCE(pmrk.suhu, '') as suhu,
+                    COALESCE(pmrk.spo, '') as spo,
+                    COALESCE(pmrk.bb, '') as bb,
+                    COALESCE(pmrk.tb, '') as tb,
+                    COALESCE(pmrk.kepala, '') as kepala,
+                    COALESCE(pmrk.mata, '') as mata,
+                    COALESCE(pmrk.gigi, '') as gigi,
+                    COALESCE(pmrk.tht, '') as tht,
+                    COALESCE(pmrk.thoraks, '') as thoraks,
+                    COALESCE(pmrk.abdomen, '') as abdomen,
+                    COALESCE(pmrk.genital, '') as genital,
+                    COALESCE(pmrk.ekstremitas, '') as ekstremitas,
+                    COALESCE(pmrk.kulit, '') as kulit,
+                    COALESCE(pmrk.ket_fisik, '') as ket_fisik,
+                    COALESCE(pmrk.ultra, '') as ultra,
+                    COALESCE(pmrk.lab, '') as lab,
+                    COALESCE(pmrk.diagnosis, '') as diagnosis,
+                    COALESCE(pmrk.tata, '') as tata
+                FROM reg_periksa rp
+                LEFT JOIN penilaian_medis_ralan_kandungan pmrk ON rp.no_rawat = pmrk.no_rawat
+                WHERE rp.no_rkm_medis = ?
+                ORDER BY rp.tgl_registrasi DESC, rp.jam_reg DESC
+            
+[12-Mar-2025 17:13:44 Asia/Jakarta] With parameter: RM-20250302-000
+[12-Mar-2025 17:13:44 Asia/Jakarta] Found 7 records
+[12-Mar-2025 17:13:44 Asia/Jakarta] Sample record: {"no_rawat":"20250312.012","tgl_registrasi":"2025-03-12","jam_reg":"12:34:17","no_rkm_medis":"RM-20250302-000","status_bayar":"Belum Bayar","tgl_pemeriksaan":"2025-03-12 13:12:00","anamnesis":"Autoanamnesis","hubungan":"-","keluhan_utama":"tes","rps":"","rpd":"","rpk":"","rpo":"","alergi":"","keadaan":"Sehat","kesadaran":"Compos Mentis","gcs":"456","td":"120\/80","nadi":"90","rr":"16","suhu":"36.4","spo":"99","bb":"","tb":"","kepala":"Normal","mata":"Normal","gigi":"Normal","tht":"Normal","thoraks":"Normal","abdomen":"Normal","genital":"Normal","ekstremitas":"Normal","kulit":"Normal","ket_fisik":"saat ini dalam batas normal","ultra":"Gerakan janin : Normal, Gerakan pernapasan : terlihat, \r\nBiometri janin ~ lihat hasil USG, \r\nEstimasi berat janin : __ gram, Denyut Jantung Janin : ___ x\/m, \r\nPresentasi Janin : Kepala , Plasenta : Fundus, Lilitan Tali Pusat : -  \r\nKetuban : cukup, Doppler arteri umbilikalis - Arus Akhir Diastolik : Ada","lab":"","diagnosis":"Gravida + HEG","tata":"Cek triple eliminasi\r\nEdukasi pola makan\r\nAsam folat 1x400 mcg\r\n"}
+[12-Mar-2025 17:13:44 Asia/Jakarta] Debug - Found 5 penilaian medis records
+[12-Mar-2025 17:13:44 Asia/Jakarta] Debug - Sample penilaian medis: {"no_rawat":"20250310.002","tanggal":"2025-03-11 07:35:39","anamnesis":"Autoanamnesis","hubungan":"-","keluhan_utama":"1","rps":"","rpd":"","rpk":"","rpo":"","alergi":"","keadaan":"Sehat","gcs":"456","kesadaran":"Compos Mentis","td":"120\/80","nadi":"90","rr":"16","suhu":"36.4","spo":"99","bb":"","tb":"","kepala":"Normal","mata":"Normal","gigi":"Normal","tht":"Normal","thoraks":"Normal","abdomen":"Normal","genital":"Normal","ekstremitas":"Normal","kulit":"Normal","ket_fisik":"saat ini dalam batas normal","ultra":"Metode : Transabdominal \r\nKantung Kehamilan (GS): ada, Letak GS: intrauterin, Yolk Sac: terlihat \r\nJanin: Terlihat, Denyut Jantung Janin: ada\r\nCrown-Rump Length (CRL) : (lihat hasil usg)\r\nEstimasi Usia Kehamilan: __ minggu , Taksiran Persalinan: _____","lab":"","diagnosis":"G1P0","tata":"Cek triple eliminasi\r\nEdukasi pola makan\r\nAsam folat 1x400 mcg\r\n","tanggal_kontrol":"0000-00-00","atensi":0}
+[12-Mar-2025 17:13:44 Asia/Jakarta] Riwayat pemeriksaan count in controller: 7
+[12-Mar-2025 17:13:44 Asia/Jakarta] Error in getSkriningKehamilan: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'u609399718_praktekobgin.skrining_kehamilan' doesn't exist
+[12-Mar-2025 17:13:45 Asia/Jakarta] Mencoba menampilkan view detail_pasien.php
+[12-Mar-2025 17:13:45 Asia/Jakarta] File detail_pasien.php diakses
+[12-Mar-2025 17:13:45 Asia/Jakarta] Data pasien: {"no_rkm_medis":"RM-20250302-000","nm_pasien":"Arifian Juari","no_ktp":"1971041707840001","jk":"P","tmp_lahir":"Pangkalpinang","tgl_lahir":"1984-07-17","nm_ibu":"Susiana Tjia","alamat":"Perumahan Kusuma Pesanggrahan, Blok Welirang 15","gol_darah":"A","pekerjaan":"TNI\/Polri","stts_nikah":"MENIKAH","agama":"KATOLIK","tgl_daftar":"0000-00-00 00:00:00","no_tlp":"081334179767","umur":"40","pnd":"Sarjana","keluarga":"IBU","namakeluarga":"Juari","kd_pj":"BPJ","no_peserta":"","kd_kel":2,"kd_kec":1,"kd_kab":1,"pekerjaanpj":null,"alamatpj":null,"kelurahanpj":null,"kecamatanpj":null,"kabupatenpj":null,"perusahaan_pasien":null,"suku_bangsa":null,"bahasa_pasien":null,"cacat_fisik":null,"email":"","nip":null,"kd_prop":null,"propinsipj":null,"catatan_pasien":"pasiennya cerewet"}
+[12-Mar-2025 17:13:45 Asia/Jakarta] === Debug Riwayat Pemeriksaan ===
+[12-Mar-2025 17:13:45 Asia/Jakarta] Timestamp: 2025-03-12 17:13:45
+[12-Mar-2025 17:13:45 Asia/Jakarta] Jumlah data: 7
+[12-Mar-2025 17:13:45 Asia/Jakarta] Data pertama: {"no_rawat":"20250312.012","tgl_registrasi":"2025-03-12","jam_reg":"12:34:17","no_rkm_medis":"RM-20250302-000","status_bayar":"Belum Bayar","tgl_pemeriksaan":"2025-03-12 13:12:00","anamnesis":"Autoanamnesis","hubungan":"-","keluhan_utama":"tes","rps":"","rpd":"","rpk":"","rpo":"","alergi":"","keadaan":"Sehat","kesadaran":"Compos Mentis","gcs":"456","td":"120\/80","nadi":"90","rr":"16","suhu":"36.4","spo":"99","bb":"","tb":"","kepala":"Normal","mata":"Normal","gigi":"Normal","tht":"Normal","thoraks":"Normal","abdomen":"Normal","genital":"Normal","ekstremitas":"Normal","kulit":"Normal","ket_fisik":"saat ini dalam batas normal","ultra":"Gerakan janin : Normal, Gerakan pernapasan : terlihat, \r\nBiometri janin ~ lihat hasil USG, \r\nEstimasi berat janin : __ gram, Denyut Jantung Janin : ___ x\/m, \r\nPresentasi Janin : Kepala , Plasenta : Fundus, Lilitan Tali Pusat : -  \r\nKetuban : cukup, Doppler arteri umbilikalis - Arus Akhir Diastolik : Ada","lab":"","diagnosis":"Gravida + HEG","tata":"Cek triple eliminasi\r\nEdukasi pola makan\r\nAsam folat 1x400 mcg\r\n"}
+[12-Mar-2025 17:13:45 Asia/Jakarta] ================================
+[12-Mar-2025 17:13:45 Asia/Jakarta] ID status ginekologi: fb36ac68-5863-459a-b64d-0b9e9c07baae
+[12-Mar-2025 17:13:45 Asia/Jakarta] View detail_pasien.php berhasil ditampilkan
+[12-Mar-2025 17:13:48 Asia/Jakarta] Base URL: https://localhost/antrian%20pasien
+[12-Mar-2025 17:13:48 Asia/Jakarta] HTTP_HOST: localhost
+[12-Mar-2025 17:13:48 Asia/Jakarta] HTTPS: on
+[12-Mar-2025 17:13:48 Asia/Jakarta] Attempting to connect to database: auth-db1151.hstgr.io, u609399718_praktekobgin
+[12-Mar-2025 17:13:48 Asia/Jakarta] Database connection successful in database.php
+[12-Mar-2025 17:13:48 Asia/Jakarta] Request URI: /antrian%20pasien/index.php?module=rekam_medis&action=edit_pemeriksaan&id=20250312.012&source=antrian
+[12-Mar-2025 17:13:48 Asia/Jakarta] Query String: module=rekam_medis&action=edit_pemeriksaan&id=20250312.012&source=antrian
+[12-Mar-2025 17:13:49 Asia/Jakarta] Module: rekam_medis
+[12-Mar-2025 17:13:49 Asia/Jakarta] Action: edit_pemeriksaan
+[12-Mar-2025 17:13:49 Asia/Jakarta] Routing to edit_pemeriksaan with id: 20250312.012
+[12-Mar-2025 17:13:49 Asia/Jakarta] Starting edit_pemeriksaan function
+[12-Mar-2025 17:13:49 Asia/Jakarta] Processing edit_pemeriksaan for no_rawat: 20250312.012
+[12-Mar-2025 17:13:49 Asia/Jakarta] Found pemeriksaan and patient data, loading edit form
+[12-Mar-2025 17:36:48 Asia/Jakarta] Base URL: https://localhost/antrian%20pasien
+[12-Mar-2025 17:36:48 Asia/Jakarta] HTTP_HOST: localhost
+[12-Mar-2025 17:36:48 Asia/Jakarta] HTTPS: on
+[12-Mar-2025 17:36:48 Asia/Jakarta] Attempting to connect to database: auth-db1151.hstgr.io, u609399718_praktekobgin
+[12-Mar-2025 17:36:48 Asia/Jakarta] Database connection successful in database.php
+[12-Mar-2025 17:36:48 Asia/Jakarta] Request URI: /antrian%20pasien/index.php?module=rekam_medis&action=edit_pemeriksaan&id=20250312.012&source=antrian
+[12-Mar-2025 17:36:48 Asia/Jakarta] Query String: module=rekam_medis&action=edit_pemeriksaan&id=20250312.012&source=antrian
+[12-Mar-2025 17:36:48 Asia/Jakarta] Module: rekam_medis
+[12-Mar-2025 17:36:48 Asia/Jakarta] Action: edit_pemeriksaan
+[12-Mar-2025 17:36:48 Asia/Jakarta] Routing to edit_pemeriksaan with id: 20250312.012
+[12-Mar-2025 17:36:48 Asia/Jakarta] Starting edit_pemeriksaan function
+[12-Mar-2025 17:36:48 Asia/Jakarta] Processing edit_pemeriksaan for no_rawat: 20250312.012
+[12-Mar-2025 17:36:48 Asia/Jakarta] Found pemeriksaan and patient data, loading edit form
+[12-Mar-2025 17:36:53 Asia/Jakarta] Base URL: https://localhost/antrian%20pasien
+[12-Mar-2025 17:36:53 Asia/Jakarta] HTTP_HOST: localhost
+[12-Mar-2025 17:36:53 Asia/Jakarta] HTTPS: on
+[12-Mar-2025 17:36:53 Asia/Jakarta] Attempting to connect to database: auth-db1151.hstgr.io, u609399718_praktekobgin
+[12-Mar-2025 17:36:53 Asia/Jakarta] Database connection successful in database.php
+[12-Mar-2025 17:36:53 Asia/Jakarta] Request URI: /antrian%20pasien/index.php?module=rekam_medis&action=manajemen_antrian
+[12-Mar-2025 17:36:53 Asia/Jakarta] Query String: module=rekam_medis&action=manajemen_antrian
+[12-Mar-2025 17:36:53 Asia/Jakarta] Module: rekam_medis
+[12-Mar-2025 17:36:53 Asia/Jakarta] Action: manajemen_antrian
+[12-Mar-2025 17:36:53 Asia/Jakarta] Checking database connection in manajemen_antrian.php
+[12-Mar-2025 17:36:53 Asia/Jakarta] Database connection test successful in manajemen_antrian.php
+[12-Mar-2025 17:36:54 Asia/Jakarta] [2025-03-12 17:36:54] Error: [2] Undefined variable $base_url in /Applications/XAMPP/xamppfiles/htdocs/antrian pasien/modules/rekam_medis/views/manajemen_antrian.php on line 371
+
+[12-Mar-2025 17:36:54 Asia/Jakarta] Request Details: Array
+(
+    [REQUEST_URI] => /antrian%20pasien/index.php?module=rekam_medis&action=manajemen_antrian
+    [REQUEST_METHOD] => GET
+    [HTTP_HOST] => localhost
+    [HTTP_USER_AGENT] => Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36
+    [REMOTE_ADDR] => ::1
+    [HTTP_REFERER] => https://localhost/antrian%20pasien/index.php?module=rekam_medis&action=edit_pemeriksaan&id=20250312.012&source=antrian
+)
+
+[13-Mar-2025 08:29:31 Asia/Jakarta] Base URL: https://localhost/antrian%20pasien
+[13-Mar-2025 08:29:31 Asia/Jakarta] HTTP_HOST: localhost
+[13-Mar-2025 08:29:31 Asia/Jakarta] HTTPS: on
+[13-Mar-2025 08:29:31 Asia/Jakarta] Attempting to connect to database: auth-db1151.hstgr.io, u609399718_praktekobgin
+[13-Mar-2025 08:29:32 Asia/Jakarta] Database connection successful in database.php
+[13-Mar-2025 08:29:32 Asia/Jakarta] Request URI: /antrian%20pasien/index.php?module=rekam_medis&action=manajemen_antrian
+[13-Mar-2025 08:29:32 Asia/Jakarta] Query String: module=rekam_medis&action=manajemen_antrian
+[13-Mar-2025 08:29:32 Asia/Jakarta] Module: rekam_medis
+[13-Mar-2025 08:29:32 Asia/Jakarta] Action: manajemen_antrian
+[13-Mar-2025 08:29:32 Asia/Jakarta] Checking database connection in manajemen_antrian.php
+[13-Mar-2025 08:29:32 Asia/Jakarta] Database connection test successful in manajemen_antrian.php
+[13-Mar-2025 08:29:32 Asia/Jakarta] [2025-03-13 08:29:32] Error: [2] Undefined variable $base_url in /Applications/XAMPP/xamppfiles/htdocs/antrian pasien/modules/rekam_medis/views/manajemen_antrian.php on line 371
+
+[13-Mar-2025 08:29:32 Asia/Jakarta] Request Details: Array
+(
+    [REQUEST_URI] => /antrian%20pasien/index.php?module=rekam_medis&action=manajemen_antrian
+    [REQUEST_METHOD] => GET
+    [HTTP_HOST] => localhost
+    [HTTP_USER_AGENT] => Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36
+    [REMOTE_ADDR] => ::1
+    [HTTP_REFERER] => https://localhost/antrian%20pasien/edukasi.php
+)
+
+[13-Mar-2025 08:29:34 Asia/Jakarta] Base URL: https://localhost/antrian%20pasien
+[13-Mar-2025 08:29:34 Asia/Jakarta] HTTP_HOST: localhost
+[13-Mar-2025 08:29:34 Asia/Jakarta] HTTPS: on
+[13-Mar-2025 08:29:34 Asia/Jakarta] Attempting to connect to database: auth-db1151.hstgr.io, u609399718_praktekobgin
+[13-Mar-2025 08:29:34 Asia/Jakarta] Database connection successful in database.php
+[13-Mar-2025 08:29:34 Asia/Jakarta] Request URI: /antrian%20pasien/index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=RM-20250302-000&source=antrian
+[13-Mar-2025 08:29:34 Asia/Jakarta] Query String: module=rekam_medis&action=detailPasien&no_rkm_medis=RM-20250302-000&source=antrian
+[13-Mar-2025 08:29:35 Asia/Jakarta] Module: rekam_medis
+[13-Mar-2025 08:29:35 Asia/Jakarta] Action: detailPasien
+[13-Mar-2025 08:29:35 Asia/Jakarta] detailPasien called for no_rkm_medis: RM-20250302-000
+[13-Mar-2025 08:29:35 Asia/Jakarta] Using database: auth-db1151.hstgr.io, u609399718_praktekobgin
+[13-Mar-2025 08:29:35 Asia/Jakarta] Model PDO connection: Connected
+[13-Mar-2025 08:29:35 Asia/Jakarta] Pasien ditemukan: {"no_rkm_medis":"RM-20250302-000","nm_pasien":"ARIFIAN JUARI","no_ktp":"1971041707840001","jk":"P","tmp_lahir":"Pangkalpinang","tgl_lahir":"1984-07-17","nm_ibu":"Susiana Tjia","alamat":"Perumahan Kusuma Pesanggrahan, Blok Welirang 15","gol_darah":"A","pekerjaan":"TNI\/Polri","stts_nikah":"MENIKAH","agama":"KATOLIK","tgl_daftar":"0000-00-00 00:00:00","no_tlp":"081334179767","umur":"40","pnd":"Sarjana","keluarga":"IBU","namakeluarga":"Juari","kd_pj":"BPJ","no_peserta":"","kd_kel":2,"kd_kec":1,"kd_kab":1,"pekerjaanpj":null,"alamatpj":null,"kelurahanpj":null,"kecamatanpj":null,"kabupatenpj":null,"perusahaan_pasien":null,"suku_bangsa":null,"bahasa_pasien":null,"cacat_fisik":null,"email":"","nip":null,"kd_prop":null,"propinsipj":null,"catatan_pasien":"pasiennya cerewet"}
+[13-Mar-2025 08:29:35 Asia/Jakarta] Starting getRiwayatPemeriksaan for no_rkm_medis: RM-20250302-000
+[13-Mar-2025 08:29:35 Asia/Jakarta] Executing query: SELECT 
+                    rp.no_rawat,
+                    rp.tgl_registrasi,
+                    rp.jam_reg,
+                    rp.no_rkm_medis,
+                    rp.status_bayar,
+                    pmrk.tanggal as tgl_pemeriksaan,
+                    COALESCE(pmrk.anamnesis, '') as anamnesis,
+                    COALESCE(pmrk.hubungan, '') as hubungan,
+                    COALESCE(pmrk.keluhan_utama, '') as keluhan_utama,
+                    COALESCE(pmrk.rps, '') as rps,
+                    COALESCE(pmrk.rpd, '') as rpd,
+                    COALESCE(pmrk.rpk, '') as rpk,
+                    COALESCE(pmrk.rpo, '') as rpo,
+                    COALESCE(pmrk.alergi, '') as alergi,
+                    COALESCE(pmrk.keadaan, '') as keadaan,
+                    COALESCE(pmrk.kesadaran, '') as kesadaran,
+                    COALESCE(pmrk.gcs, '') as gcs,
+                    COALESCE(pmrk.td, '') as td,
+                    COALESCE(pmrk.nadi, '') as nadi,
+                    COALESCE(pmrk.rr, '') as rr,
+                    COALESCE(pmrk.suhu, '') as suhu,
+                    COALESCE(pmrk.spo, '') as spo,
+                    COALESCE(pmrk.bb, '') as bb,
+                    COALESCE(pmrk.tb, '') as tb,
+                    COALESCE(pmrk.kepala, '') as kepala,
+                    COALESCE(pmrk.mata, '') as mata,
+                    COALESCE(pmrk.gigi, '') as gigi,
+                    COALESCE(pmrk.tht, '') as tht,
+                    COALESCE(pmrk.thoraks, '') as thoraks,
+                    COALESCE(pmrk.abdomen, '') as abdomen,
+                    COALESCE(pmrk.genital, '') as genital,
+                    COALESCE(pmrk.ekstremitas, '') as ekstremitas,
+                    COALESCE(pmrk.kulit, '') as kulit,
+                    COALESCE(pmrk.ket_fisik, '') as ket_fisik,
+                    COALESCE(pmrk.ultra, '') as ultra,
+                    COALESCE(pmrk.lab, '') as lab,
+                    COALESCE(pmrk.diagnosis, '') as diagnosis,
+                    COALESCE(pmrk.tata, '') as tata
+                FROM reg_periksa rp
+                LEFT JOIN penilaian_medis_ralan_kandungan pmrk ON rp.no_rawat = pmrk.no_rawat
+                WHERE rp.no_rkm_medis = ?
+                ORDER BY rp.tgl_registrasi DESC, rp.jam_reg DESC
+            
+[13-Mar-2025 08:29:35 Asia/Jakarta] With parameter: RM-20250302-000
+[13-Mar-2025 08:29:35 Asia/Jakarta] Found 7 records
+[13-Mar-2025 08:29:35 Asia/Jakarta] Sample record: {"no_rawat":"20250312.012","tgl_registrasi":"2025-03-12","jam_reg":"12:34:17","no_rkm_medis":"RM-20250302-000","status_bayar":"Belum Bayar","tgl_pemeriksaan":"2025-03-12 13:12:00","anamnesis":"Autoanamnesis","hubungan":"-","keluhan_utama":"tes","rps":"","rpd":"","rpk":"","rpo":"","alergi":"","keadaan":"Sehat","kesadaran":"Compos Mentis","gcs":"456","td":"120\/80","nadi":"90","rr":"16","suhu":"36.4","spo":"99","bb":"","tb":"","kepala":"Normal","mata":"Normal","gigi":"Normal","tht":"Normal","thoraks":"Normal","abdomen":"Normal","genital":"Normal","ekstremitas":"Normal","kulit":"Normal","ket_fisik":"saat ini dalam batas normal","ultra":"Gerakan janin : Normal, Gerakan pernapasan : terlihat, \r\nBiometri janin ~ lihat hasil USG, \r\nEstimasi berat janin : __ gram, Denyut Jantung Janin : ___ x\/m, \r\nPresentasi Janin : Kepala , Plasenta : Fundus, Lilitan Tali Pusat : -  \r\nKetuban : cukup, Doppler arteri umbilikalis - Arus Akhir Diastolik : Ada","lab":"","diagnosis":"Gravida + HEG","tata":"Cek triple eliminasi\r\nEdukasi pola makan\r\nAsam folat 1x400 mcg\r\n"}
+[13-Mar-2025 08:29:35 Asia/Jakarta] Debug - Found 5 penilaian medis records
+[13-Mar-2025 08:29:35 Asia/Jakarta] Debug - Sample penilaian medis: {"no_rawat":"20250310.002","tanggal":"2025-03-11 07:35:39","anamnesis":"Autoanamnesis","hubungan":"-","keluhan_utama":"1","rps":"","rpd":"","rpk":"","rpo":"","alergi":"","keadaan":"Sehat","gcs":"456","kesadaran":"Compos Mentis","td":"120\/80","nadi":"90","rr":"16","suhu":"36.4","spo":"99","bb":"","tb":"","kepala":"Normal","mata":"Normal","gigi":"Normal","tht":"Normal","thoraks":"Normal","abdomen":"Normal","genital":"Normal","ekstremitas":"Normal","kulit":"Normal","ket_fisik":"saat ini dalam batas normal","ultra":"Metode : Transabdominal \r\nKantung Kehamilan (GS): ada, Letak GS: intrauterin, Yolk Sac: terlihat \r\nJanin: Terlihat, Denyut Jantung Janin: ada\r\nCrown-Rump Length (CRL) : (lihat hasil usg)\r\nEstimasi Usia Kehamilan: __ minggu , Taksiran Persalinan: _____","lab":"","diagnosis":"G1P0","tata":"Cek triple eliminasi\r\nEdukasi pola makan\r\nAsam folat 1x400 mcg\r\n","tanggal_kontrol":"0000-00-00","atensi":0}
+[13-Mar-2025 08:29:35 Asia/Jakarta] Riwayat pemeriksaan count in controller: 7
+[13-Mar-2025 08:29:35 Asia/Jakarta] Error in getSkriningKehamilan: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'u609399718_praktekobgin.skrining_kehamilan' doesn't exist
+[13-Mar-2025 08:29:36 Asia/Jakarta] Mencoba menampilkan view detail_pasien.php
+[13-Mar-2025 08:29:36 Asia/Jakarta] File detail_pasien.php diakses
+[13-Mar-2025 08:29:36 Asia/Jakarta] Data pasien: {"no_rkm_medis":"RM-20250302-000","nm_pasien":"ARIFIAN JUARI","no_ktp":"1971041707840001","jk":"P","tmp_lahir":"Pangkalpinang","tgl_lahir":"1984-07-17","nm_ibu":"Susiana Tjia","alamat":"Perumahan Kusuma Pesanggrahan, Blok Welirang 15","gol_darah":"A","pekerjaan":"TNI\/Polri","stts_nikah":"MENIKAH","agama":"KATOLIK","tgl_daftar":"0000-00-00 00:00:00","no_tlp":"081334179767","umur":"40","pnd":"Sarjana","keluarga":"IBU","namakeluarga":"Juari","kd_pj":"BPJ","no_peserta":"","kd_kel":2,"kd_kec":1,"kd_kab":1,"pekerjaanpj":null,"alamatpj":null,"kelurahanpj":null,"kecamatanpj":null,"kabupatenpj":null,"perusahaan_pasien":null,"suku_bangsa":null,"bahasa_pasien":null,"cacat_fisik":null,"email":"","nip":null,"kd_prop":null,"propinsipj":null,"catatan_pasien":"pasiennya cerewet"}
+[13-Mar-2025 08:29:36 Asia/Jakarta] === Debug Riwayat Pemeriksaan ===
+[13-Mar-2025 08:29:36 Asia/Jakarta] Timestamp: 2025-03-13 08:29:36
+[13-Mar-2025 08:29:36 Asia/Jakarta] Jumlah data: 7
+[13-Mar-2025 08:29:36 Asia/Jakarta] Data pertama: {"no_rawat":"20250312.012","tgl_registrasi":"2025-03-12","jam_reg":"12:34:17","no_rkm_medis":"RM-20250302-000","status_bayar":"Belum Bayar","tgl_pemeriksaan":"2025-03-12 13:12:00","anamnesis":"Autoanamnesis","hubungan":"-","keluhan_utama":"tes","rps":"","rpd":"","rpk":"","rpo":"","alergi":"","keadaan":"Sehat","kesadaran":"Compos Mentis","gcs":"456","td":"120\/80","nadi":"90","rr":"16","suhu":"36.4","spo":"99","bb":"","tb":"","kepala":"Normal","mata":"Normal","gigi":"Normal","tht":"Normal","thoraks":"Normal","abdomen":"Normal","genital":"Normal","ekstremitas":"Normal","kulit":"Normal","ket_fisik":"saat ini dalam batas normal","ultra":"Gerakan janin : Normal, Gerakan pernapasan : terlihat, \r\nBiometri janin ~ lihat hasil USG, \r\nEstimasi berat janin : __ gram, Denyut Jantung Janin : ___ x\/m, \r\nPresentasi Janin : Kepala , Plasenta : Fundus, Lilitan Tali Pusat : -  \r\nKetuban : cukup, Doppler arteri umbilikalis - Arus Akhir Diastolik : Ada","lab":"","diagnosis":"Gravida + HEG","tata":"Cek triple eliminasi\r\nEdukasi pola makan\r\nAsam folat 1x400 mcg\r\n"}
+[13-Mar-2025 08:29:36 Asia/Jakarta] ================================
+[13-Mar-2025 08:29:36 Asia/Jakarta] ID status ginekologi: fb36ac68-5863-459a-b64d-0b9e9c07baae
+[13-Mar-2025 08:29:36 Asia/Jakarta] View detail_pasien.php berhasil ditampilkan
+[13-Mar-2025 08:29:42 Asia/Jakarta] Base URL: https://localhost/antrian%20pasien
+[13-Mar-2025 08:29:42 Asia/Jakarta] HTTP_HOST: localhost
+[13-Mar-2025 08:29:42 Asia/Jakarta] HTTPS: on
+[13-Mar-2025 08:29:42 Asia/Jakarta] Attempting to connect to database: auth-db1151.hstgr.io, u609399718_praktekobgin
+[13-Mar-2025 08:29:42 Asia/Jakarta] Database connection successful in database.php
+[13-Mar-2025 08:29:42 Asia/Jakarta] Request URI: /antrian%20pasien/index.php?module=rekam_medis&action=generate_status_obstetri_pdf&no_rkm_medis=RM-20250302-000
+[13-Mar-2025 08:29:42 Asia/Jakarta] Query String: module=rekam_medis&action=generate_status_obstetri_pdf&no_rkm_medis=RM-20250302-000
+[13-Mar-2025 08:29:43 Asia/Jakarta] Module: rekam_medis
+[13-Mar-2025 08:29:43 Asia/Jakarta] Action: generate_status_obstetri_pdf
+[13-Mar-2025 08:29:43 Asia/Jakarta] Routing to generate_status_obstetri_pdf
+[13-Mar-2025 08:29:43 Asia/Jakarta] [2025-03-13 08:29:43] Error: [2] file_put_contents(/Applications/XAMPP/xamppfiles/htdocs/antrian pasien/modules/rekam_medis/../../pdf_debug.log): Failed to open stream: Permission denied in /Applications/XAMPP/xamppfiles/htdocs/antrian pasien/modules/rekam_medis/generate_status_obstetri_pdf.php on line 16
+
+[13-Mar-2025 08:29:43 Asia/Jakarta] Request Details: Array
+(
+    [REQUEST_URI] => /antrian%20pasien/index.php?module=rekam_medis&action=generate_status_obstetri_pdf&no_rkm_medis=RM-20250302-000
+    [REQUEST_METHOD] => GET
+    [HTTP_HOST] => localhost
+    [HTTP_USER_AGENT] => Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36
+    [REMOTE_ADDR] => ::1
+    [HTTP_REFERER] => https://localhost/antrian%20pasien/index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=RM-20250302-000&source=antrian
+)
+
+[13-Mar-2025 08:29:43 Asia/Jakarta] [2025-03-13 08:29:43] Error: [2] file_put_contents(/Applications/XAMPP/xamppfiles/htdocs/antrian pasien/modules/rekam_medis/../../pdf_debug.log): Failed to open stream: Permission denied in /Applications/XAMPP/xamppfiles/htdocs/antrian pasien/modules/rekam_medis/generate_status_obstetri_pdf.php on line 36
+
+[13-Mar-2025 08:29:43 Asia/Jakarta] Request Details: Array
+(
+    [REQUEST_URI] => /antrian%20pasien/index.php?module=rekam_medis&action=generate_status_obstetri_pdf&no_rkm_medis=RM-20250302-000
+    [REQUEST_METHOD] => GET
+    [HTTP_HOST] => localhost
+    [HTTP_USER_AGENT] => Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36
+    [REMOTE_ADDR] => ::1
+    [HTTP_REFERER] => https://localhost/antrian%20pasien/index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=RM-20250302-000&source=antrian
+)
+
+[13-Mar-2025 08:29:43 Asia/Jakarta] [2025-03-13 08:29:43] Error: [2] file_put_contents(/Applications/XAMPP/xamppfiles/htdocs/antrian pasien/modules/rekam_medis/../../pdf_debug.log): Failed to open stream: Permission denied in /Applications/XAMPP/xamppfiles/htdocs/antrian pasien/modules/rekam_medis/generate_status_obstetri_pdf.php on line 44
+
+[13-Mar-2025 08:29:43 Asia/Jakarta] Request Details: Array
+(
+    [REQUEST_URI] => /antrian%20pasien/index.php?module=rekam_medis&action=generate_status_obstetri_pdf&no_rkm_medis=RM-20250302-000
+    [REQUEST_METHOD] => GET
+    [HTTP_HOST] => localhost
+    [HTTP_USER_AGENT] => Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36
+    [REMOTE_ADDR] => ::1
+    [HTTP_REFERER] => https://localhost/antrian%20pasien/index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=RM-20250302-000&source=antrian
+)
+
+[13-Mar-2025 08:29:43 Asia/Jakarta] [2025-03-13 08:29:43] Error: [2] file_put_contents(/Applications/XAMPP/xamppfiles/htdocs/antrian pasien/modules/rekam_medis/../../pdf_debug.log): Failed to open stream: Permission denied in /Applications/XAMPP/xamppfiles/htdocs/antrian pasien/modules/rekam_medis/generate_status_obstetri_pdf.php on line 45
+
+[13-Mar-2025 08:29:43 Asia/Jakarta] Request Details: Array
+(
+    [REQUEST_URI] => /antrian%20pasien/index.php?module=rekam_medis&action=generate_status_obstetri_pdf&no_rkm_medis=RM-20250302-000
+    [REQUEST_METHOD] => GET
+    [HTTP_HOST] => localhost
+    [HTTP_USER_AGENT] => Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36
+    [REMOTE_ADDR] => ::1
+    [HTTP_REFERER] => https://localhost/antrian%20pasien/index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=RM-20250302-000&source=antrian
+)
+
+[13-Mar-2025 08:29:43 Asia/Jakarta] [2025-03-13 08:29:43] Error: [2] file_put_contents(/Applications/XAMPP/xamppfiles/htdocs/antrian pasien/modules/rekam_medis/../../pdf_debug.log): Failed to open stream: Permission denied in /Applications/XAMPP/xamppfiles/htdocs/antrian pasien/modules/rekam_medis/generate_status_obstetri_pdf.php on line 50
+
+[13-Mar-2025 08:29:43 Asia/Jakarta] Request Details: Array
+(
+    [REQUEST_URI] => /antrian%20pasien/index.php?module=rekam_medis&action=generate_status_obstetri_pdf&no_rkm_medis=RM-20250302-000
+    [REQUEST_METHOD] => GET
+    [HTTP_HOST] => localhost
+    [HTTP_USER_AGENT] => Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36
+    [REMOTE_ADDR] => ::1
+    [HTTP_REFERER] => https://localhost/antrian%20pasien/index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=RM-20250302-000&source=antrian
+)
+
+[13-Mar-2025 08:29:43 Asia/Jakarta] [2025-03-13 08:29:43] Error: [2] file_put_contents(/Applications/XAMPP/xamppfiles/htdocs/antrian pasien/modules/rekam_medis/../../pdf_debug.log): Failed to open stream: Permission denied in /Applications/XAMPP/xamppfiles/htdocs/antrian pasien/modules/rekam_medis/generate_status_obstetri_pdf.php on line 58
+
+[13-Mar-2025 08:29:43 Asia/Jakarta] Request Details: Array
+(
+    [REQUEST_URI] => /antrian%20pasien/index.php?module=rekam_medis&action=generate_status_obstetri_pdf&no_rkm_medis=RM-20250302-000
+    [REQUEST_METHOD] => GET
+    [HTTP_HOST] => localhost
+    [HTTP_USER_AGENT] => Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36
+    [REMOTE_ADDR] => ::1
+    [HTTP_REFERER] => https://localhost/antrian%20pasien/index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=RM-20250302-000&source=antrian
+)
+
+[13-Mar-2025 08:29:43 Asia/Jakarta] [2025-03-13 08:29:43] Error: [2] file_put_contents(/Applications/XAMPP/xamppfiles/htdocs/antrian pasien/modules/rekam_medis/../../pdf_debug.log): Failed to open stream: Permission denied in /Applications/XAMPP/xamppfiles/htdocs/antrian pasien/modules/rekam_medis/generate_status_obstetri_pdf.php on line 90
+
+[13-Mar-2025 08:29:43 Asia/Jakarta] Request Details: Array
+(
+    [REQUEST_URI] => /antrian%20pasien/index.php?module=rekam_medis&action=generate_status_obstetri_pdf&no_rkm_medis=RM-20250302-000
+    [REQUEST_METHOD] => GET
+    [HTTP_HOST] => localhost
+    [HTTP_USER_AGENT] => Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36
+    [REMOTE_ADDR] => ::1
+    [HTTP_REFERER] => https://localhost/antrian%20pasien/index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=RM-20250302-000&source=antrian
+)
+
+[13-Mar-2025 08:29:43 Asia/Jakarta] [2025-03-13 08:29:43] Error: [2] file_put_contents(/Applications/XAMPP/xamppfiles/htdocs/antrian pasien/modules/rekam_medis/../../pdf_debug.log): Failed to open stream: Permission denied in /Applications/XAMPP/xamppfiles/htdocs/antrian pasien/modules/rekam_medis/generate_status_obstetri_pdf.php on line 99
+
+[13-Mar-2025 08:29:43 Asia/Jakarta] Request Details: Array
+(
+    [REQUEST_URI] => /antrian%20pasien/index.php?module=rekam_medis&action=generate_status_obstetri_pdf&no_rkm_medis=RM-20250302-000
+    [REQUEST_METHOD] => GET
+    [HTTP_HOST] => localhost
+    [HTTP_USER_AGENT] => Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36
+    [REMOTE_ADDR] => ::1
+    [HTTP_REFERER] => https://localhost/antrian%20pasien/index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=RM-20250302-000&source=antrian
+)
+
+[13-Mar-2025 08:29:43 Asia/Jakarta] [2025-03-13 08:29:43] Error: [2] file_put_contents(/Applications/XAMPP/xamppfiles/htdocs/antrian pasien/modules/rekam_medis/../../pdf_debug.log): Failed to open stream: Permission denied in /Applications/XAMPP/xamppfiles/htdocs/antrian pasien/modules/rekam_medis/generate_status_obstetri_pdf.php on line 107
+
+[13-Mar-2025 08:29:43 Asia/Jakarta] Request Details: Array
+(
+    [REQUEST_URI] => /antrian%20pasien/index.php?module=rekam_medis&action=generate_status_obstetri_pdf&no_rkm_medis=RM-20250302-000
+    [REQUEST_METHOD] => GET
+    [HTTP_HOST] => localhost
+    [HTTP_USER_AGENT] => Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36
+    [REMOTE_ADDR] => ::1
+    [HTTP_REFERER] => https://localhost/antrian%20pasien/index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=RM-20250302-000&source=antrian
+)
+
+[13-Mar-2025 08:29:43 Asia/Jakarta] [2025-03-13 08:29:43] Error: [2] file_put_contents(/Applications/XAMPP/xamppfiles/htdocs/antrian pasien/modules/rekam_medis/../../pdf_debug.log): Failed to open stream: Permission denied in /Applications/XAMPP/xamppfiles/htdocs/antrian pasien/modules/rekam_medis/generate_status_obstetri_pdf.php on line 109
+
+[13-Mar-2025 08:29:43 Asia/Jakarta] Request Details: Array
+(
+    [REQUEST_URI] => /antrian%20pasien/index.php?module=rekam_medis&action=generate_status_obstetri_pdf&no_rkm_medis=RM-20250302-000
+    [REQUEST_METHOD] => GET
+    [HTTP_HOST] => localhost
+    [HTTP_USER_AGENT] => Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36
+    [REMOTE_ADDR] => ::1
+    [HTTP_REFERER] => https://localhost/antrian%20pasien/index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=RM-20250302-000&source=antrian
+)
+
+[13-Mar-2025 08:29:45 Asia/Jakarta] Base URL: https://localhost/antrian%20pasien
+[13-Mar-2025 08:29:45 Asia/Jakarta] HTTP_HOST: localhost
+[13-Mar-2025 08:29:45 Asia/Jakarta] HTTPS: on
+[13-Mar-2025 08:29:45 Asia/Jakarta] Attempting to connect to database: auth-db1151.hstgr.io, u609399718_praktekobgin
+[13-Mar-2025 08:29:45 Asia/Jakarta] Database connection successful in database.php
+[13-Mar-2025 08:29:45 Asia/Jakarta] Request URI: /antrian%20pasien/index.php?module=rekam_medis&action=generate_pdf&no_rkm_medis=RM-20250302-000
+[13-Mar-2025 08:29:45 Asia/Jakarta] Query String: module=rekam_medis&action=generate_pdf&no_rkm_medis=RM-20250302-000
+[13-Mar-2025 08:29:46 Asia/Jakarta] Module: rekam_medis
+[13-Mar-2025 08:29:46 Asia/Jakarta] Action: generate_pdf
+[13-Mar-2025 08:29:46 Asia/Jakarta] Routing to generate_pdf
+[13-Mar-2025 10:12:00 Asia/Jakarta] Base URL: https://localhost/antrian%20pasien
+[13-Mar-2025 10:12:00 Asia/Jakarta] HTTP_HOST: localhost
+[13-Mar-2025 10:12:00 Asia/Jakarta] HTTPS: on
+[13-Mar-2025 10:12:00 Asia/Jakarta] Attempting to connect to database: auth-db1151.hstgr.io, u609399718_praktekobgin
+[13-Mar-2025 10:12:00 Asia/Jakarta] Database connection successful in database.php
+[13-Mar-2025 10:12:00 Asia/Jakarta] Request URI: /antrian%20pasien/index.php?module=rekam_medis&action=manajemen_antrian
+[13-Mar-2025 10:12:00 Asia/Jakarta] Query String: module=rekam_medis&action=manajemen_antrian
+[13-Mar-2025 10:12:00 Asia/Jakarta] Module: rekam_medis
+[13-Mar-2025 10:12:00 Asia/Jakarta] Action: manajemen_antrian
+[13-Mar-2025 10:12:00 Asia/Jakarta] Checking database connection in manajemen_antrian.php
+[13-Mar-2025 10:12:00 Asia/Jakarta] Database connection test successful in manajemen_antrian.php
+[13-Mar-2025 10:12:01 Asia/Jakarta] [2025-03-13 10:12:01] Error: [2] Undefined variable $base_url in /Applications/XAMPP/xamppfiles/htdocs/antrian pasien/modules/rekam_medis/views/manajemen_antrian.php on line 371
+
+[13-Mar-2025 10:12:01 Asia/Jakarta] Request Details: Array
+(
+    [REQUEST_URI] => /antrian%20pasien/index.php?module=rekam_medis&action=manajemen_antrian
+    [REQUEST_METHOD] => GET
+    [HTTP_HOST] => localhost
+    [HTTP_USER_AGENT] => Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36
+    [REMOTE_ADDR] => ::1
+    [HTTP_REFERER] => https://localhost/antrian%20pasien/admin_praktek/manajemen_edukasi.php
+)
+
+[13-Mar-2025 10:12:02 Asia/Jakarta] Base URL: https://localhost/antrian%20pasien
+[13-Mar-2025 10:12:02 Asia/Jakarta] HTTP_HOST: localhost
+[13-Mar-2025 10:12:02 Asia/Jakarta] HTTPS: on
+[13-Mar-2025 10:12:02 Asia/Jakarta] Attempting to connect to database: auth-db1151.hstgr.io, u609399718_praktekobgin
+[13-Mar-2025 10:12:02 Asia/Jakarta] Database connection successful in database.php
+[13-Mar-2025 10:12:02 Asia/Jakarta] Request URI: /antrian%20pasien/index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=RM-20250302-000&source=antrian
+[13-Mar-2025 10:12:02 Asia/Jakarta] Query String: module=rekam_medis&action=detailPasien&no_rkm_medis=RM-20250302-000&source=antrian
+[13-Mar-2025 10:12:03 Asia/Jakarta] Module: rekam_medis
+[13-Mar-2025 10:12:03 Asia/Jakarta] Action: detailPasien
+[13-Mar-2025 10:12:03 Asia/Jakarta] detailPasien called for no_rkm_medis: RM-20250302-000
+[13-Mar-2025 10:12:03 Asia/Jakarta] Using database: auth-db1151.hstgr.io, u609399718_praktekobgin
+[13-Mar-2025 10:12:03 Asia/Jakarta] Model PDO connection: Connected
+[13-Mar-2025 10:12:03 Asia/Jakarta] Pasien ditemukan: {"no_rkm_medis":"RM-20250302-000","nm_pasien":"ARIFIAN JUARI","no_ktp":"1971041707840001","jk":"P","tmp_lahir":"Pangkalpinang","tgl_lahir":"1984-07-17","nm_ibu":"Susiana Tjia","alamat":"Perumahan Kusuma Pesanggrahan, Blok Welirang 15","gol_darah":"A","pekerjaan":"TNI\/Polri","stts_nikah":"MENIKAH","agama":"KATOLIK","tgl_daftar":"0000-00-00 00:00:00","no_tlp":"081334179767","umur":"40","pnd":"Sarjana","keluarga":"IBU","namakeluarga":"Juari","kd_pj":"BPJ","no_peserta":"","kd_kel":2,"kd_kec":1,"kd_kab":1,"pekerjaanpj":null,"alamatpj":null,"kelurahanpj":null,"kecamatanpj":null,"kabupatenpj":null,"perusahaan_pasien":null,"suku_bangsa":null,"bahasa_pasien":null,"cacat_fisik":null,"email":"","nip":null,"kd_prop":null,"propinsipj":null,"catatan_pasien":"pasiennya cerewet"}
+[13-Mar-2025 10:12:03 Asia/Jakarta] Starting getRiwayatPemeriksaan for no_rkm_medis: RM-20250302-000
+[13-Mar-2025 10:12:03 Asia/Jakarta] Executing query: SELECT 
+                    rp.no_rawat,
+                    rp.tgl_registrasi,
+                    rp.jam_reg,
+                    rp.no_rkm_medis,
+                    rp.status_bayar,
+                    pmrk.tanggal as tgl_pemeriksaan,
+                    COALESCE(pmrk.anamnesis, '') as anamnesis,
+                    COALESCE(pmrk.hubungan, '') as hubungan,
+                    COALESCE(pmrk.keluhan_utama, '') as keluhan_utama,
+                    COALESCE(pmrk.rps, '') as rps,
+                    COALESCE(pmrk.rpd, '') as rpd,
+                    COALESCE(pmrk.rpk, '') as rpk,
+                    COALESCE(pmrk.rpo, '') as rpo,
+                    COALESCE(pmrk.alergi, '') as alergi,
+                    COALESCE(pmrk.keadaan, '') as keadaan,
+                    COALESCE(pmrk.kesadaran, '') as kesadaran,
+                    COALESCE(pmrk.gcs, '') as gcs,
+                    COALESCE(pmrk.td, '') as td,
+                    COALESCE(pmrk.nadi, '') as nadi,
+                    COALESCE(pmrk.rr, '') as rr,
+                    COALESCE(pmrk.suhu, '') as suhu,
+                    COALESCE(pmrk.spo, '') as spo,
+                    COALESCE(pmrk.bb, '') as bb,
+                    COALESCE(pmrk.tb, '') as tb,
+                    COALESCE(pmrk.kepala, '') as kepala,
+                    COALESCE(pmrk.mata, '') as mata,
+                    COALESCE(pmrk.gigi, '') as gigi,
+                    COALESCE(pmrk.tht, '') as tht,
+                    COALESCE(pmrk.thoraks, '') as thoraks,
+                    COALESCE(pmrk.abdomen, '') as abdomen,
+                    COALESCE(pmrk.genital, '') as genital,
+                    COALESCE(pmrk.ekstremitas, '') as ekstremitas,
+                    COALESCE(pmrk.kulit, '') as kulit,
+                    COALESCE(pmrk.ket_fisik, '') as ket_fisik,
+                    COALESCE(pmrk.ultra, '') as ultra,
+                    COALESCE(pmrk.lab, '') as lab,
+                    COALESCE(pmrk.diagnosis, '') as diagnosis,
+                    COALESCE(pmrk.tata, '') as tata
+                FROM reg_periksa rp
+                LEFT JOIN penilaian_medis_ralan_kandungan pmrk ON rp.no_rawat = pmrk.no_rawat
+                WHERE rp.no_rkm_medis = ?
+                ORDER BY rp.tgl_registrasi DESC, rp.jam_reg DESC
+            
+[13-Mar-2025 10:12:03 Asia/Jakarta] With parameter: RM-20250302-000
+[13-Mar-2025 10:12:03 Asia/Jakarta] Found 7 records
+[13-Mar-2025 10:12:03 Asia/Jakarta] Sample record: {"no_rawat":"20250312.012","tgl_registrasi":"2025-03-12","jam_reg":"12:34:17","no_rkm_medis":"RM-20250302-000","status_bayar":"Belum Bayar","tgl_pemeriksaan":"2025-03-12 13:12:00","anamnesis":"Autoanamnesis","hubungan":"-","keluhan_utama":"tes","rps":"","rpd":"","rpk":"","rpo":"","alergi":"","keadaan":"Sehat","kesadaran":"Compos Mentis","gcs":"456","td":"120\/80","nadi":"90","rr":"16","suhu":"36.4","spo":"99","bb":"","tb":"","kepala":"Normal","mata":"Normal","gigi":"Normal","tht":"Normal","thoraks":"Normal","abdomen":"Normal","genital":"Normal","ekstremitas":"Normal","kulit":"Normal","ket_fisik":"saat ini dalam batas normal","ultra":"Gerakan janin : Normal, Gerakan pernapasan : terlihat, \r\nBiometri janin ~ lihat hasil USG, \r\nEstimasi berat janin : __ gram, Denyut Jantung Janin : ___ x\/m, \r\nPresentasi Janin : Kepala , Plasenta : Fundus, Lilitan Tali Pusat : -  \r\nKetuban : cukup, Doppler arteri umbilikalis - Arus Akhir Diastolik : Ada","lab":"","diagnosis":"Gravida + HEG","tata":"Cek triple eliminasi\r\nEdukasi pola makan\r\nAsam folat 1x400 mcg\r\n"}
+[13-Mar-2025 10:12:03 Asia/Jakarta] Debug - Found 5 penilaian medis records
+[13-Mar-2025 10:12:03 Asia/Jakarta] Debug - Sample penilaian medis: {"no_rawat":"20250310.002","tanggal":"2025-03-11 07:35:39","anamnesis":"Autoanamnesis","hubungan":"-","keluhan_utama":"1","rps":"","rpd":"","rpk":"","rpo":"","alergi":"","keadaan":"Sehat","gcs":"456","kesadaran":"Compos Mentis","td":"120\/80","nadi":"90","rr":"16","suhu":"36.4","spo":"99","bb":"","tb":"","kepala":"Normal","mata":"Normal","gigi":"Normal","tht":"Normal","thoraks":"Normal","abdomen":"Normal","genital":"Normal","ekstremitas":"Normal","kulit":"Normal","ket_fisik":"saat ini dalam batas normal","ultra":"Metode : Transabdominal \r\nKantung Kehamilan (GS): ada, Letak GS: intrauterin, Yolk Sac: terlihat \r\nJanin: Terlihat, Denyut Jantung Janin: ada\r\nCrown-Rump Length (CRL) : (lihat hasil usg)\r\nEstimasi Usia Kehamilan: __ minggu , Taksiran Persalinan: _____","lab":"","diagnosis":"G1P0","tata":"Cek triple eliminasi\r\nEdukasi pola makan\r\nAsam folat 1x400 mcg\r\n","tanggal_kontrol":"0000-00-00","atensi":0}
+[13-Mar-2025 10:12:03 Asia/Jakarta] Riwayat pemeriksaan count in controller: 7
+[13-Mar-2025 10:12:03 Asia/Jakarta] Error in getSkriningKehamilan: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'u609399718_praktekobgin.skrining_kehamilan' doesn't exist
+[13-Mar-2025 10:12:04 Asia/Jakarta] Mencoba menampilkan view detail_pasien.php
+[13-Mar-2025 10:12:04 Asia/Jakarta] File detail_pasien.php diakses
+[13-Mar-2025 10:12:04 Asia/Jakarta] Data pasien: {"no_rkm_medis":"RM-20250302-000","nm_pasien":"ARIFIAN JUARI","no_ktp":"1971041707840001","jk":"P","tmp_lahir":"Pangkalpinang","tgl_lahir":"1984-07-17","nm_ibu":"Susiana Tjia","alamat":"Perumahan Kusuma Pesanggrahan, Blok Welirang 15","gol_darah":"A","pekerjaan":"TNI\/Polri","stts_nikah":"MENIKAH","agama":"KATOLIK","tgl_daftar":"0000-00-00 00:00:00","no_tlp":"081334179767","umur":"40","pnd":"Sarjana","keluarga":"IBU","namakeluarga":"Juari","kd_pj":"BPJ","no_peserta":"","kd_kel":2,"kd_kec":1,"kd_kab":1,"pekerjaanpj":null,"alamatpj":null,"kelurahanpj":null,"kecamatanpj":null,"kabupatenpj":null,"perusahaan_pasien":null,"suku_bangsa":null,"bahasa_pasien":null,"cacat_fisik":null,"email":"","nip":null,"kd_prop":null,"propinsipj":null,"catatan_pasien":"pasiennya cerewet"}
+[13-Mar-2025 10:12:04 Asia/Jakarta] === Debug Riwayat Pemeriksaan ===
+[13-Mar-2025 10:12:04 Asia/Jakarta] Timestamp: 2025-03-13 10:12:04
+[13-Mar-2025 10:12:04 Asia/Jakarta] Jumlah data: 7
+[13-Mar-2025 10:12:04 Asia/Jakarta] Data pertama: {"no_rawat":"20250312.012","tgl_registrasi":"2025-03-12","jam_reg":"12:34:17","no_rkm_medis":"RM-20250302-000","status_bayar":"Belum Bayar","tgl_pemeriksaan":"2025-03-12 13:12:00","anamnesis":"Autoanamnesis","hubungan":"-","keluhan_utama":"tes","rps":"","rpd":"","rpk":"","rpo":"","alergi":"","keadaan":"Sehat","kesadaran":"Compos Mentis","gcs":"456","td":"120\/80","nadi":"90","rr":"16","suhu":"36.4","spo":"99","bb":"","tb":"","kepala":"Normal","mata":"Normal","gigi":"Normal","tht":"Normal","thoraks":"Normal","abdomen":"Normal","genital":"Normal","ekstremitas":"Normal","kulit":"Normal","ket_fisik":"saat ini dalam batas normal","ultra":"Gerakan janin : Normal, Gerakan pernapasan : terlihat, \r\nBiometri janin ~ lihat hasil USG, \r\nEstimasi berat janin : __ gram, Denyut Jantung Janin : ___ x\/m, \r\nPresentasi Janin : Kepala , Plasenta : Fundus, Lilitan Tali Pusat : -  \r\nKetuban : cukup, Doppler arteri umbilikalis - Arus Akhir Diastolik : Ada","lab":"","diagnosis":"Gravida + HEG","tata":"Cek triple eliminasi\r\nEdukasi pola makan\r\nAsam folat 1x400 mcg\r\n"}
+[13-Mar-2025 10:12:04 Asia/Jakarta] ================================
+[13-Mar-2025 10:12:04 Asia/Jakarta] ID status ginekologi: fb36ac68-5863-459a-b64d-0b9e9c07baae
+[13-Mar-2025 10:12:04 Asia/Jakarta] View detail_pasien.php berhasil ditampilkan
+[13-Mar-2025 12:12:25 Asia/Jakarta] Base URL: https://localhost/antrian%20pasien
+[13-Mar-2025 12:12:25 Asia/Jakarta] HTTP_HOST: localhost
+[13-Mar-2025 12:12:25 Asia/Jakarta] HTTPS: on
+[13-Mar-2025 12:12:25 Asia/Jakarta] Attempting to connect to database: auth-db1151.hstgr.io, u609399718_praktekobgin
+[13-Mar-2025 12:12:25 Asia/Jakarta] Database connection successful in database.php
+[13-Mar-2025 12:12:25 Asia/Jakarta] Request URI: /antrian%20pasien/index.php?module=rekam_medis&action=manajemen_antrian
+[13-Mar-2025 12:12:25 Asia/Jakarta] Query String: module=rekam_medis&action=manajemen_antrian
+[13-Mar-2025 12:12:25 Asia/Jakarta] Module: rekam_medis
+[13-Mar-2025 12:12:25 Asia/Jakarta] Action: manajemen_antrian
+[13-Mar-2025 12:12:25 Asia/Jakarta] Checking database connection in manajemen_antrian.php
+[13-Mar-2025 12:12:25 Asia/Jakarta] Database connection test successful in manajemen_antrian.php
+[13-Mar-2025 12:12:26 Asia/Jakarta] [2025-03-13 12:12:26] Error: [2] Undefined variable $base_url in /Applications/XAMPP/xamppfiles/htdocs/antrian pasien/modules/rekam_medis/views/manajemen_antrian.php on line 371
+
+[13-Mar-2025 12:12:26 Asia/Jakarta] Request Details: Array
+(
+    [REQUEST_URI] => /antrian%20pasien/index.php?module=rekam_medis&action=manajemen_antrian
+    [REQUEST_METHOD] => GET
+    [HTTP_HOST] => localhost
+    [HTTP_USER_AGENT] => Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36
+    [REMOTE_ADDR] => ::1
+    [HTTP_REFERER] => https://localhost/antrian%20pasien/edukasi.php
+)
+
+[13-Mar-2025 12:12:27 Asia/Jakarta] Base URL: https://localhost/antrian%20pasien
+[13-Mar-2025 12:12:27 Asia/Jakarta] HTTP_HOST: localhost
+[13-Mar-2025 12:12:27 Asia/Jakarta] HTTPS: on
+[13-Mar-2025 12:12:27 Asia/Jakarta] Attempting to connect to database: auth-db1151.hstgr.io, u609399718_praktekobgin
+[13-Mar-2025 12:12:28 Asia/Jakarta] Database connection successful in database.php
+[13-Mar-2025 12:12:28 Asia/Jakarta] Request URI: /antrian%20pasien/index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=RM-20250302-000&source=antrian
+[13-Mar-2025 12:12:28 Asia/Jakarta] Query String: module=rekam_medis&action=detailPasien&no_rkm_medis=RM-20250302-000&source=antrian
+[13-Mar-2025 12:12:28 Asia/Jakarta] Module: rekam_medis
+[13-Mar-2025 12:12:28 Asia/Jakarta] Action: detailPasien
+[13-Mar-2025 12:12:28 Asia/Jakarta] detailPasien called for no_rkm_medis: RM-20250302-000
+[13-Mar-2025 12:12:28 Asia/Jakarta] Using database: auth-db1151.hstgr.io, u609399718_praktekobgin
+[13-Mar-2025 12:12:28 Asia/Jakarta] Model PDO connection: Connected
+[13-Mar-2025 12:12:28 Asia/Jakarta] Pasien ditemukan: {"no_rkm_medis":"RM-20250302-000","nm_pasien":"ARIFIAN JUARI","no_ktp":"1971041707840001","jk":"P","tmp_lahir":"Pangkalpinang","tgl_lahir":"1984-07-17","nm_ibu":"Susiana Tjia","alamat":"Perumahan Kusuma Pesanggrahan, Blok Welirang 15","gol_darah":"A","pekerjaan":"TNI\/Polri","stts_nikah":"MENIKAH","agama":"KATOLIK","tgl_daftar":"0000-00-00 00:00:00","no_tlp":"081334179767","umur":"40","pnd":"Sarjana","keluarga":"IBU","namakeluarga":"Juari","kd_pj":"BPJ","no_peserta":"","kd_kel":2,"kd_kec":1,"kd_kab":1,"pekerjaanpj":null,"alamatpj":null,"kelurahanpj":null,"kecamatanpj":null,"kabupatenpj":null,"perusahaan_pasien":null,"suku_bangsa":null,"bahasa_pasien":null,"cacat_fisik":null,"email":"","nip":null,"kd_prop":null,"propinsipj":null,"catatan_pasien":"pasiennya cerewet"}
+[13-Mar-2025 12:12:28 Asia/Jakarta] Starting getRiwayatPemeriksaan for no_rkm_medis: RM-20250302-000
+[13-Mar-2025 12:12:28 Asia/Jakarta] Executing query: SELECT 
+                    rp.no_rawat,
+                    rp.tgl_registrasi,
+                    rp.jam_reg,
+                    rp.no_rkm_medis,
+                    rp.status_bayar,
+                    pmrk.tanggal as tgl_pemeriksaan,
+                    COALESCE(pmrk.anamnesis, '') as anamnesis,
+                    COALESCE(pmrk.hubungan, '') as hubungan,
+                    COALESCE(pmrk.keluhan_utama, '') as keluhan_utama,
+                    COALESCE(pmrk.rps, '') as rps,
+                    COALESCE(pmrk.rpd, '') as rpd,
+                    COALESCE(pmrk.rpk, '') as rpk,
+                    COALESCE(pmrk.rpo, '') as rpo,
+                    COALESCE(pmrk.alergi, '') as alergi,
+                    COALESCE(pmrk.keadaan, '') as keadaan,
+                    COALESCE(pmrk.kesadaran, '') as kesadaran,
+                    COALESCE(pmrk.gcs, '') as gcs,
+                    COALESCE(pmrk.td, '') as td,
+                    COALESCE(pmrk.nadi, '') as nadi,
+                    COALESCE(pmrk.rr, '') as rr,
+                    COALESCE(pmrk.suhu, '') as suhu,
+                    COALESCE(pmrk.spo, '') as spo,
+                    COALESCE(pmrk.bb, '') as bb,
+                    COALESCE(pmrk.tb, '') as tb,
+                    COALESCE(pmrk.kepala, '') as kepala,
+                    COALESCE(pmrk.mata, '') as mata,
+                    COALESCE(pmrk.gigi, '') as gigi,
+                    COALESCE(pmrk.tht, '') as tht,
+                    COALESCE(pmrk.thoraks, '') as thoraks,
+                    COALESCE(pmrk.abdomen, '') as abdomen,
+                    COALESCE(pmrk.genital, '') as genital,
+                    COALESCE(pmrk.ekstremitas, '') as ekstremitas,
+                    COALESCE(pmrk.kulit, '') as kulit,
+                    COALESCE(pmrk.ket_fisik, '') as ket_fisik,
+                    COALESCE(pmrk.ultra, '') as ultra,
+                    COALESCE(pmrk.lab, '') as lab,
+                    COALESCE(pmrk.diagnosis, '') as diagnosis,
+                    COALESCE(pmrk.tata, '') as tata
+                FROM reg_periksa rp
+                LEFT JOIN penilaian_medis_ralan_kandungan pmrk ON rp.no_rawat = pmrk.no_rawat
+                WHERE rp.no_rkm_medis = ?
+                ORDER BY rp.tgl_registrasi DESC, rp.jam_reg DESC
+            
+[13-Mar-2025 12:12:28 Asia/Jakarta] With parameter: RM-20250302-000
+[13-Mar-2025 12:12:28 Asia/Jakarta] Found 7 records
+[13-Mar-2025 12:12:28 Asia/Jakarta] Sample record: {"no_rawat":"20250312.012","tgl_registrasi":"2025-03-12","jam_reg":"12:34:17","no_rkm_medis":"RM-20250302-000","status_bayar":"Belum Bayar","tgl_pemeriksaan":"2025-03-12 13:12:00","anamnesis":"Autoanamnesis","hubungan":"-","keluhan_utama":"tes","rps":"","rpd":"","rpk":"","rpo":"","alergi":"","keadaan":"Sehat","kesadaran":"Compos Mentis","gcs":"456","td":"120\/80","nadi":"90","rr":"16","suhu":"36.4","spo":"99","bb":"","tb":"","kepala":"Normal","mata":"Normal","gigi":"Normal","tht":"Normal","thoraks":"Normal","abdomen":"Normal","genital":"Normal","ekstremitas":"Normal","kulit":"Normal","ket_fisik":"saat ini dalam batas normal","ultra":"Gerakan janin : Normal, Gerakan pernapasan : terlihat, \r\nBiometri janin ~ lihat hasil USG, \r\nEstimasi berat janin : __ gram, Denyut Jantung Janin : ___ x\/m, \r\nPresentasi Janin : Kepala , Plasenta : Fundus, Lilitan Tali Pusat : -  \r\nKetuban : cukup, Doppler arteri umbilikalis - Arus Akhir Diastolik : Ada","lab":"","diagnosis":"Gravida + HEG","tata":"Cek triple eliminasi\r\nEdukasi pola makan\r\nAsam folat 1x400 mcg\r\n"}
+[13-Mar-2025 12:12:28 Asia/Jakarta] Debug - Found 5 penilaian medis records
+[13-Mar-2025 12:12:28 Asia/Jakarta] Debug - Sample penilaian medis: {"no_rawat":"20250310.002","tanggal":"2025-03-11 07:35:39","anamnesis":"Autoanamnesis","hubungan":"-","keluhan_utama":"1","rps":"","rpd":"","rpk":"","rpo":"","alergi":"","keadaan":"Sehat","gcs":"456","kesadaran":"Compos Mentis","td":"120\/80","nadi":"90","rr":"16","suhu":"36.4","spo":"99","bb":"","tb":"","kepala":"Normal","mata":"Normal","gigi":"Normal","tht":"Normal","thoraks":"Normal","abdomen":"Normal","genital":"Normal","ekstremitas":"Normal","kulit":"Normal","ket_fisik":"saat ini dalam batas normal","ultra":"Metode : Transabdominal \r\nKantung Kehamilan (GS): ada, Letak GS: intrauterin, Yolk Sac: terlihat \r\nJanin: Terlihat, Denyut Jantung Janin: ada\r\nCrown-Rump Length (CRL) : (lihat hasil usg)\r\nEstimasi Usia Kehamilan: __ minggu , Taksiran Persalinan: _____","lab":"","diagnosis":"G1P0","tata":"Cek triple eliminasi\r\nEdukasi pola makan\r\nAsam folat 1x400 mcg\r\n","tanggal_kontrol":"0000-00-00","atensi":0}
+[13-Mar-2025 12:12:28 Asia/Jakarta] Riwayat pemeriksaan count in controller: 7
+[13-Mar-2025 12:12:28 Asia/Jakarta] Error in getSkriningKehamilan: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'u609399718_praktekobgin.skrining_kehamilan' doesn't exist
+[13-Mar-2025 12:12:29 Asia/Jakarta] Mencoba menampilkan view detail_pasien.php
+[13-Mar-2025 12:12:29 Asia/Jakarta] File detail_pasien.php diakses
+[13-Mar-2025 12:12:29 Asia/Jakarta] Data pasien: {"no_rkm_medis":"RM-20250302-000","nm_pasien":"ARIFIAN JUARI","no_ktp":"1971041707840001","jk":"P","tmp_lahir":"Pangkalpinang","tgl_lahir":"1984-07-17","nm_ibu":"Susiana Tjia","alamat":"Perumahan Kusuma Pesanggrahan, Blok Welirang 15","gol_darah":"A","pekerjaan":"TNI\/Polri","stts_nikah":"MENIKAH","agama":"KATOLIK","tgl_daftar":"0000-00-00 00:00:00","no_tlp":"081334179767","umur":"40","pnd":"Sarjana","keluarga":"IBU","namakeluarga":"Juari","kd_pj":"BPJ","no_peserta":"","kd_kel":2,"kd_kec":1,"kd_kab":1,"pekerjaanpj":null,"alamatpj":null,"kelurahanpj":null,"kecamatanpj":null,"kabupatenpj":null,"perusahaan_pasien":null,"suku_bangsa":null,"bahasa_pasien":null,"cacat_fisik":null,"email":"","nip":null,"kd_prop":null,"propinsipj":null,"catatan_pasien":"pasiennya cerewet"}
+[13-Mar-2025 12:12:29 Asia/Jakarta] === Debug Riwayat Pemeriksaan ===
+[13-Mar-2025 12:12:29 Asia/Jakarta] Timestamp: 2025-03-13 12:12:29
+[13-Mar-2025 12:12:29 Asia/Jakarta] Jumlah data: 7
+[13-Mar-2025 12:12:29 Asia/Jakarta] Data pertama: {"no_rawat":"20250312.012","tgl_registrasi":"2025-03-12","jam_reg":"12:34:17","no_rkm_medis":"RM-20250302-000","status_bayar":"Belum Bayar","tgl_pemeriksaan":"2025-03-12 13:12:00","anamnesis":"Autoanamnesis","hubungan":"-","keluhan_utama":"tes","rps":"","rpd":"","rpk":"","rpo":"","alergi":"","keadaan":"Sehat","kesadaran":"Compos Mentis","gcs":"456","td":"120\/80","nadi":"90","rr":"16","suhu":"36.4","spo":"99","bb":"","tb":"","kepala":"Normal","mata":"Normal","gigi":"Normal","tht":"Normal","thoraks":"Normal","abdomen":"Normal","genital":"Normal","ekstremitas":"Normal","kulit":"Normal","ket_fisik":"saat ini dalam batas normal","ultra":"Gerakan janin : Normal, Gerakan pernapasan : terlihat, \r\nBiometri janin ~ lihat hasil USG, \r\nEstimasi berat janin : __ gram, Denyut Jantung Janin : ___ x\/m, \r\nPresentasi Janin : Kepala , Plasenta : Fundus, Lilitan Tali Pusat : -  \r\nKetuban : cukup, Doppler arteri umbilikalis - Arus Akhir Diastolik : Ada","lab":"","diagnosis":"Gravida + HEG","tata":"Cek triple eliminasi\r\nEdukasi pola makan\r\nAsam folat 1x400 mcg\r\n"}
+[13-Mar-2025 12:12:29 Asia/Jakarta] ================================
+[13-Mar-2025 12:12:29 Asia/Jakarta] ID status ginekologi: fb36ac68-5863-459a-b64d-0b9e9c07baae
+[13-Mar-2025 12:12:29 Asia/Jakarta] View detail_pasien.php berhasil ditampilkan
+[13-Mar-2025 12:15:38 Asia/Jakarta] Base URL: https://localhost/antrian%20pasien
+[13-Mar-2025 12:15:38 Asia/Jakarta] HTTP_HOST: localhost
+[13-Mar-2025 12:15:38 Asia/Jakarta] HTTPS: on
+[13-Mar-2025 12:15:38 Asia/Jakarta] Attempting to connect to database: auth-db1151.hstgr.io, u609399718_praktekobgin
+[13-Mar-2025 12:15:38 Asia/Jakarta] Database connection successful in database.php
+[13-Mar-2025 12:15:38 Asia/Jakarta] Request URI: /antrian%20pasien/index.php?module=rekam_medis&action=manajemen_antrian
+[13-Mar-2025 12:15:38 Asia/Jakarta] Query String: module=rekam_medis&action=manajemen_antrian
+[13-Mar-2025 12:15:38 Asia/Jakarta] Module: rekam_medis
+[13-Mar-2025 12:15:38 Asia/Jakarta] Action: manajemen_antrian
+[13-Mar-2025 12:15:38 Asia/Jakarta] Checking database connection in manajemen_antrian.php
+[13-Mar-2025 12:15:38 Asia/Jakarta] Database connection test successful in manajemen_antrian.php
+[13-Mar-2025 12:15:39 Asia/Jakarta] [2025-03-13 12:15:39] Error: [2] Undefined variable $base_url in /Applications/XAMPP/xamppfiles/htdocs/antrian pasien/modules/rekam_medis/views/manajemen_antrian.php on line 371
+
+[13-Mar-2025 12:15:39 Asia/Jakarta] Request Details: Array
+(
+    [REQUEST_URI] => /antrian%20pasien/index.php?module=rekam_medis&action=manajemen_antrian
+    [REQUEST_METHOD] => GET
+    [HTTP_HOST] => localhost
+    [HTTP_USER_AGENT] => Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36
+    [REMOTE_ADDR] => ::1
+    [HTTP_REFERER] => https://localhost/antrian%20pasien/pengumuman.php
+)
+
+[13-Mar-2025 12:15:48 Asia/Jakarta] Base URL: https://localhost/antrian%20pasien
+[13-Mar-2025 12:15:48 Asia/Jakarta] HTTP_HOST: localhost
+[13-Mar-2025 12:15:48 Asia/Jakarta] HTTPS: on
+[13-Mar-2025 12:15:48 Asia/Jakarta] Attempting to connect to database: auth-db1151.hstgr.io, u609399718_praktekobgin
+[13-Mar-2025 12:15:48 Asia/Jakarta] Database connection successful in database.php
+[13-Mar-2025 12:15:48 Asia/Jakarta] Request URI: /antrian%20pasien/index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=RM-20250302-000&source=antrian
+[13-Mar-2025 12:15:48 Asia/Jakarta] Query String: module=rekam_medis&action=detailPasien&no_rkm_medis=RM-20250302-000&source=antrian
+[13-Mar-2025 12:15:48 Asia/Jakarta] Module: rekam_medis
+[13-Mar-2025 12:15:48 Asia/Jakarta] Action: detailPasien
+[13-Mar-2025 12:15:48 Asia/Jakarta] detailPasien called for no_rkm_medis: RM-20250302-000
+[13-Mar-2025 12:15:48 Asia/Jakarta] Using database: auth-db1151.hstgr.io, u609399718_praktekobgin
+[13-Mar-2025 12:15:48 Asia/Jakarta] Model PDO connection: Connected
+[13-Mar-2025 12:15:48 Asia/Jakarta] Pasien ditemukan: {"no_rkm_medis":"RM-20250302-000","nm_pasien":"ARIFIAN JUARI","no_ktp":"1971041707840001","jk":"P","tmp_lahir":"Pangkalpinang","tgl_lahir":"1984-07-17","nm_ibu":"Susiana Tjia","alamat":"Perumahan Kusuma Pesanggrahan, Blok Welirang 15","gol_darah":"A","pekerjaan":"TNI\/Polri","stts_nikah":"MENIKAH","agama":"KATOLIK","tgl_daftar":"0000-00-00 00:00:00","no_tlp":"081334179767","umur":"40","pnd":"Sarjana","keluarga":"IBU","namakeluarga":"Juari","kd_pj":"BPJ","no_peserta":"","kd_kel":2,"kd_kec":1,"kd_kab":1,"pekerjaanpj":null,"alamatpj":null,"kelurahanpj":null,"kecamatanpj":null,"kabupatenpj":null,"perusahaan_pasien":null,"suku_bangsa":null,"bahasa_pasien":null,"cacat_fisik":null,"email":"","nip":null,"kd_prop":null,"propinsipj":null,"catatan_pasien":"pasiennya cerewet"}
+[13-Mar-2025 12:15:48 Asia/Jakarta] Starting getRiwayatPemeriksaan for no_rkm_medis: RM-20250302-000
+[13-Mar-2025 12:15:48 Asia/Jakarta] Executing query: SELECT 
+                    rp.no_rawat,
+                    rp.tgl_registrasi,
+                    rp.jam_reg,
+                    rp.no_rkm_medis,
+                    rp.status_bayar,
+                    pmrk.tanggal as tgl_pemeriksaan,
+                    COALESCE(pmrk.anamnesis, '') as anamnesis,
+                    COALESCE(pmrk.hubungan, '') as hubungan,
+                    COALESCE(pmrk.keluhan_utama, '') as keluhan_utama,
+                    COALESCE(pmrk.rps, '') as rps,
+                    COALESCE(pmrk.rpd, '') as rpd,
+                    COALESCE(pmrk.rpk, '') as rpk,
+                    COALESCE(pmrk.rpo, '') as rpo,
+                    COALESCE(pmrk.alergi, '') as alergi,
+                    COALESCE(pmrk.keadaan, '') as keadaan,
+                    COALESCE(pmrk.kesadaran, '') as kesadaran,
+                    COALESCE(pmrk.gcs, '') as gcs,
+                    COALESCE(pmrk.td, '') as td,
+                    COALESCE(pmrk.nadi, '') as nadi,
+                    COALESCE(pmrk.rr, '') as rr,
+                    COALESCE(pmrk.suhu, '') as suhu,
+                    COALESCE(pmrk.spo, '') as spo,
+                    COALESCE(pmrk.bb, '') as bb,
+                    COALESCE(pmrk.tb, '') as tb,
+                    COALESCE(pmrk.kepala, '') as kepala,
+                    COALESCE(pmrk.mata, '') as mata,
+                    COALESCE(pmrk.gigi, '') as gigi,
+                    COALESCE(pmrk.tht, '') as tht,
+                    COALESCE(pmrk.thoraks, '') as thoraks,
+                    COALESCE(pmrk.abdomen, '') as abdomen,
+                    COALESCE(pmrk.genital, '') as genital,
+                    COALESCE(pmrk.ekstremitas, '') as ekstremitas,
+                    COALESCE(pmrk.kulit, '') as kulit,
+                    COALESCE(pmrk.ket_fisik, '') as ket_fisik,
+                    COALESCE(pmrk.ultra, '') as ultra,
+                    COALESCE(pmrk.lab, '') as lab,
+                    COALESCE(pmrk.diagnosis, '') as diagnosis,
+                    COALESCE(pmrk.tata, '') as tata
+                FROM reg_periksa rp
+                LEFT JOIN penilaian_medis_ralan_kandungan pmrk ON rp.no_rawat = pmrk.no_rawat
+                WHERE rp.no_rkm_medis = ?
+                ORDER BY rp.tgl_registrasi DESC, rp.jam_reg DESC
+            
+[13-Mar-2025 12:15:48 Asia/Jakarta] With parameter: RM-20250302-000
+[13-Mar-2025 12:15:48 Asia/Jakarta] Found 7 records
+[13-Mar-2025 12:15:48 Asia/Jakarta] Sample record: {"no_rawat":"20250312.012","tgl_registrasi":"2025-03-12","jam_reg":"12:34:17","no_rkm_medis":"RM-20250302-000","status_bayar":"Belum Bayar","tgl_pemeriksaan":"2025-03-12 13:12:00","anamnesis":"Autoanamnesis","hubungan":"-","keluhan_utama":"tes","rps":"","rpd":"","rpk":"","rpo":"","alergi":"","keadaan":"Sehat","kesadaran":"Compos Mentis","gcs":"456","td":"120\/80","nadi":"90","rr":"16","suhu":"36.4","spo":"99","bb":"","tb":"","kepala":"Normal","mata":"Normal","gigi":"Normal","tht":"Normal","thoraks":"Normal","abdomen":"Normal","genital":"Normal","ekstremitas":"Normal","kulit":"Normal","ket_fisik":"saat ini dalam batas normal","ultra":"Gerakan janin : Normal, Gerakan pernapasan : terlihat, \r\nBiometri janin ~ lihat hasil USG, \r\nEstimasi berat janin : __ gram, Denyut Jantung Janin : ___ x\/m, \r\nPresentasi Janin : Kepala , Plasenta : Fundus, Lilitan Tali Pusat : -  \r\nKetuban : cukup, Doppler arteri umbilikalis - Arus Akhir Diastolik : Ada","lab":"","diagnosis":"Gravida + HEG","tata":"Cek triple eliminasi\r\nEdukasi pola makan\r\nAsam folat 1x400 mcg\r\n"}
+[13-Mar-2025 12:15:48 Asia/Jakarta] Debug - Found 5 penilaian medis records
+[13-Mar-2025 12:15:48 Asia/Jakarta] Debug - Sample penilaian medis: {"no_rawat":"20250310.002","tanggal":"2025-03-11 07:35:39","anamnesis":"Autoanamnesis","hubungan":"-","keluhan_utama":"1","rps":"","rpd":"","rpk":"","rpo":"","alergi":"","keadaan":"Sehat","gcs":"456","kesadaran":"Compos Mentis","td":"120\/80","nadi":"90","rr":"16","suhu":"36.4","spo":"99","bb":"","tb":"","kepala":"Normal","mata":"Normal","gigi":"Normal","tht":"Normal","thoraks":"Normal","abdomen":"Normal","genital":"Normal","ekstremitas":"Normal","kulit":"Normal","ket_fisik":"saat ini dalam batas normal","ultra":"Metode : Transabdominal \r\nKantung Kehamilan (GS): ada, Letak GS: intrauterin, Yolk Sac: terlihat \r\nJanin: Terlihat, Denyut Jantung Janin: ada\r\nCrown-Rump Length (CRL) : (lihat hasil usg)\r\nEstimasi Usia Kehamilan: __ minggu , Taksiran Persalinan: _____","lab":"","diagnosis":"G1P0","tata":"Cek triple eliminasi\r\nEdukasi pola makan\r\nAsam folat 1x400 mcg\r\n","tanggal_kontrol":"0000-00-00","atensi":0}
+[13-Mar-2025 12:15:48 Asia/Jakarta] Riwayat pemeriksaan count in controller: 7
+[13-Mar-2025 12:15:48 Asia/Jakarta] Error in getSkriningKehamilan: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'u609399718_praktekobgin.skrining_kehamilan' doesn't exist
+[13-Mar-2025 12:15:49 Asia/Jakarta] Mencoba menampilkan view detail_pasien.php
+[13-Mar-2025 12:15:49 Asia/Jakarta] File detail_pasien.php diakses
+[13-Mar-2025 12:15:49 Asia/Jakarta] Data pasien: {"no_rkm_medis":"RM-20250302-000","nm_pasien":"ARIFIAN JUARI","no_ktp":"1971041707840001","jk":"P","tmp_lahir":"Pangkalpinang","tgl_lahir":"1984-07-17","nm_ibu":"Susiana Tjia","alamat":"Perumahan Kusuma Pesanggrahan, Blok Welirang 15","gol_darah":"A","pekerjaan":"TNI\/Polri","stts_nikah":"MENIKAH","agama":"KATOLIK","tgl_daftar":"0000-00-00 00:00:00","no_tlp":"081334179767","umur":"40","pnd":"Sarjana","keluarga":"IBU","namakeluarga":"Juari","kd_pj":"BPJ","no_peserta":"","kd_kel":2,"kd_kec":1,"kd_kab":1,"pekerjaanpj":null,"alamatpj":null,"kelurahanpj":null,"kecamatanpj":null,"kabupatenpj":null,"perusahaan_pasien":null,"suku_bangsa":null,"bahasa_pasien":null,"cacat_fisik":null,"email":"","nip":null,"kd_prop":null,"propinsipj":null,"catatan_pasien":"pasiennya cerewet"}
+[13-Mar-2025 12:15:49 Asia/Jakarta] === Debug Riwayat Pemeriksaan ===
+[13-Mar-2025 12:15:49 Asia/Jakarta] Timestamp: 2025-03-13 12:15:49
+[13-Mar-2025 12:15:49 Asia/Jakarta] Jumlah data: 7
+[13-Mar-2025 12:15:49 Asia/Jakarta] Data pertama: {"no_rawat":"20250312.012","tgl_registrasi":"2025-03-12","jam_reg":"12:34:17","no_rkm_medis":"RM-20250302-000","status_bayar":"Belum Bayar","tgl_pemeriksaan":"2025-03-12 13:12:00","anamnesis":"Autoanamnesis","hubungan":"-","keluhan_utama":"tes","rps":"","rpd":"","rpk":"","rpo":"","alergi":"","keadaan":"Sehat","kesadaran":"Compos Mentis","gcs":"456","td":"120\/80","nadi":"90","rr":"16","suhu":"36.4","spo":"99","bb":"","tb":"","kepala":"Normal","mata":"Normal","gigi":"Normal","tht":"Normal","thoraks":"Normal","abdomen":"Normal","genital":"Normal","ekstremitas":"Normal","kulit":"Normal","ket_fisik":"saat ini dalam batas normal","ultra":"Gerakan janin : Normal, Gerakan pernapasan : terlihat, \r\nBiometri janin ~ lihat hasil USG, \r\nEstimasi berat janin : __ gram, Denyut Jantung Janin : ___ x\/m, \r\nPresentasi Janin : Kepala , Plasenta : Fundus, Lilitan Tali Pusat : -  \r\nKetuban : cukup, Doppler arteri umbilikalis - Arus Akhir Diastolik : Ada","lab":"","diagnosis":"Gravida + HEG","tata":"Cek triple eliminasi\r\nEdukasi pola makan\r\nAsam folat 1x400 mcg\r\n"}
+[13-Mar-2025 12:15:49 Asia/Jakarta] ================================
+[13-Mar-2025 12:15:49 Asia/Jakarta] ID status ginekologi: fb36ac68-5863-459a-b64d-0b9e9c07baae
+[13-Mar-2025 12:15:49 Asia/Jakarta] View detail_pasien.php berhasil ditampilkan
+[13-Mar-2025 12:15:50 Asia/Jakarta] Base URL: https://localhost/antrian%20pasien
+[13-Mar-2025 12:15:50 Asia/Jakarta] HTTP_HOST: localhost
+[13-Mar-2025 12:15:50 Asia/Jakarta] HTTPS: on
+[13-Mar-2025 12:15:50 Asia/Jakarta] Attempting to connect to database: auth-db1151.hstgr.io, u609399718_praktekobgin
+[13-Mar-2025 12:15:50 Asia/Jakarta] Database connection successful in database.php
+[13-Mar-2025 12:15:50 Asia/Jakarta] Request URI: /antrian%20pasien/index.php?module=rekam_medis&action=generate_pdf&no_rkm_medis=RM-20250302-000
+[13-Mar-2025 12:15:50 Asia/Jakarta] Query String: module=rekam_medis&action=generate_pdf&no_rkm_medis=RM-20250302-000
+[13-Mar-2025 12:15:50 Asia/Jakarta] Module: rekam_medis
+[13-Mar-2025 12:15:50 Asia/Jakarta] Action: generate_pdf
+[13-Mar-2025 12:15:50 Asia/Jakarta] Routing to generate_pdf
+[13-Mar-2025 12:15:54 Asia/Jakarta] Base URL: https://localhost/antrian%20pasien
+[13-Mar-2025 12:15:54 Asia/Jakarta] HTTP_HOST: localhost
+[13-Mar-2025 12:15:54 Asia/Jakarta] HTTPS: on
+[13-Mar-2025 12:15:54 Asia/Jakarta] Attempting to connect to database: auth-db1151.hstgr.io, u609399718_praktekobgin
+[13-Mar-2025 12:15:54 Asia/Jakarta] Database connection successful in database.php
+[13-Mar-2025 12:15:54 Asia/Jakarta] Request URI: /antrian%20pasien/index.php?module=rekam_medis&action=generate_status_obstetri_pdf&no_rkm_medis=RM-20250302-000
+[13-Mar-2025 12:15:54 Asia/Jakarta] Query String: module=rekam_medis&action=generate_status_obstetri_pdf&no_rkm_medis=RM-20250302-000
+[13-Mar-2025 12:15:55 Asia/Jakarta] Module: rekam_medis
+[13-Mar-2025 12:15:55 Asia/Jakarta] Action: generate_status_obstetri_pdf
+[13-Mar-2025 12:15:55 Asia/Jakarta] Routing to generate_status_obstetri_pdf
+[13-Mar-2025 12:15:55 Asia/Jakarta] [2025-03-13 12:15:55] Error: [2] file_put_contents(/Applications/XAMPP/xamppfiles/htdocs/antrian pasien/modules/rekam_medis/../../pdf_debug.log): Failed to open stream: Permission denied in /Applications/XAMPP/xamppfiles/htdocs/antrian pasien/modules/rekam_medis/generate_status_obstetri_pdf.php on line 16
+
+[13-Mar-2025 12:15:55 Asia/Jakarta] Request Details: Array
+(
+    [REQUEST_URI] => /antrian%20pasien/index.php?module=rekam_medis&action=generate_status_obstetri_pdf&no_rkm_medis=RM-20250302-000
+    [REQUEST_METHOD] => GET
+    [HTTP_HOST] => localhost
+    [HTTP_USER_AGENT] => Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36
+    [REMOTE_ADDR] => ::1
+    [HTTP_REFERER] => https://localhost/antrian%20pasien/index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=RM-20250302-000&source=antrian
+)
+
+[13-Mar-2025 12:15:55 Asia/Jakarta] [2025-03-13 12:15:55] Error: [2] file_put_contents(/Applications/XAMPP/xamppfiles/htdocs/antrian pasien/modules/rekam_medis/../../pdf_debug.log): Failed to open stream: Permission denied in /Applications/XAMPP/xamppfiles/htdocs/antrian pasien/modules/rekam_medis/generate_status_obstetri_pdf.php on line 36
+
+[13-Mar-2025 12:15:55 Asia/Jakarta] Request Details: Array
+(
+    [REQUEST_URI] => /antrian%20pasien/index.php?module=rekam_medis&action=generate_status_obstetri_pdf&no_rkm_medis=RM-20250302-000
+    [REQUEST_METHOD] => GET
+    [HTTP_HOST] => localhost
+    [HTTP_USER_AGENT] => Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36
+    [REMOTE_ADDR] => ::1
+    [HTTP_REFERER] => https://localhost/antrian%20pasien/index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=RM-20250302-000&source=antrian
+)
+
+[13-Mar-2025 12:15:55 Asia/Jakarta] [2025-03-13 12:15:55] Error: [2] file_put_contents(/Applications/XAMPP/xamppfiles/htdocs/antrian pasien/modules/rekam_medis/../../pdf_debug.log): Failed to open stream: Permission denied in /Applications/XAMPP/xamppfiles/htdocs/antrian pasien/modules/rekam_medis/generate_status_obstetri_pdf.php on line 44
+
+[13-Mar-2025 12:15:55 Asia/Jakarta] Request Details: Array
+(
+    [REQUEST_URI] => /antrian%20pasien/index.php?module=rekam_medis&action=generate_status_obstetri_pdf&no_rkm_medis=RM-20250302-000
+    [REQUEST_METHOD] => GET
+    [HTTP_HOST] => localhost
+    [HTTP_USER_AGENT] => Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36
+    [REMOTE_ADDR] => ::1
+    [HTTP_REFERER] => https://localhost/antrian%20pasien/index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=RM-20250302-000&source=antrian
+)
+
+[13-Mar-2025 12:15:55 Asia/Jakarta] [2025-03-13 12:15:55] Error: [2] file_put_contents(/Applications/XAMPP/xamppfiles/htdocs/antrian pasien/modules/rekam_medis/../../pdf_debug.log): Failed to open stream: Permission denied in /Applications/XAMPP/xamppfiles/htdocs/antrian pasien/modules/rekam_medis/generate_status_obstetri_pdf.php on line 45
+
+[13-Mar-2025 12:15:55 Asia/Jakarta] Request Details: Array
+(
+    [REQUEST_URI] => /antrian%20pasien/index.php?module=rekam_medis&action=generate_status_obstetri_pdf&no_rkm_medis=RM-20250302-000
+    [REQUEST_METHOD] => GET
+    [HTTP_HOST] => localhost
+    [HTTP_USER_AGENT] => Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36
+    [REMOTE_ADDR] => ::1
+    [HTTP_REFERER] => https://localhost/antrian%20pasien/index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=RM-20250302-000&source=antrian
+)
+
+[13-Mar-2025 12:15:55 Asia/Jakarta] [2025-03-13 12:15:55] Error: [2] file_put_contents(/Applications/XAMPP/xamppfiles/htdocs/antrian pasien/modules/rekam_medis/../../pdf_debug.log): Failed to open stream: Permission denied in /Applications/XAMPP/xamppfiles/htdocs/antrian pasien/modules/rekam_medis/generate_status_obstetri_pdf.php on line 50
+
+[13-Mar-2025 12:15:55 Asia/Jakarta] Request Details: Array
+(
+    [REQUEST_URI] => /antrian%20pasien/index.php?module=rekam_medis&action=generate_status_obstetri_pdf&no_rkm_medis=RM-20250302-000
+    [REQUEST_METHOD] => GET
+    [HTTP_HOST] => localhost
+    [HTTP_USER_AGENT] => Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36
+    [REMOTE_ADDR] => ::1
+    [HTTP_REFERER] => https://localhost/antrian%20pasien/index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=RM-20250302-000&source=antrian
+)
+
+[13-Mar-2025 12:15:55 Asia/Jakarta] [2025-03-13 12:15:55] Error: [2] file_put_contents(/Applications/XAMPP/xamppfiles/htdocs/antrian pasien/modules/rekam_medis/../../pdf_debug.log): Failed to open stream: Permission denied in /Applications/XAMPP/xamppfiles/htdocs/antrian pasien/modules/rekam_medis/generate_status_obstetri_pdf.php on line 58
+
+[13-Mar-2025 12:15:55 Asia/Jakarta] Request Details: Array
+(
+    [REQUEST_URI] => /antrian%20pasien/index.php?module=rekam_medis&action=generate_status_obstetri_pdf&no_rkm_medis=RM-20250302-000
+    [REQUEST_METHOD] => GET
+    [HTTP_HOST] => localhost
+    [HTTP_USER_AGENT] => Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36
+    [REMOTE_ADDR] => ::1
+    [HTTP_REFERER] => https://localhost/antrian%20pasien/index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=RM-20250302-000&source=antrian
+)
+
+[13-Mar-2025 12:15:55 Asia/Jakarta] [2025-03-13 12:15:55] Error: [2] file_put_contents(/Applications/XAMPP/xamppfiles/htdocs/antrian pasien/modules/rekam_medis/../../pdf_debug.log): Failed to open stream: Permission denied in /Applications/XAMPP/xamppfiles/htdocs/antrian pasien/modules/rekam_medis/generate_status_obstetri_pdf.php on line 90
+
+[13-Mar-2025 12:15:55 Asia/Jakarta] Request Details: Array
+(
+    [REQUEST_URI] => /antrian%20pasien/index.php?module=rekam_medis&action=generate_status_obstetri_pdf&no_rkm_medis=RM-20250302-000
+    [REQUEST_METHOD] => GET
+    [HTTP_HOST] => localhost
+    [HTTP_USER_AGENT] => Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36
+    [REMOTE_ADDR] => ::1
+    [HTTP_REFERER] => https://localhost/antrian%20pasien/index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=RM-20250302-000&source=antrian
+)
+
+[13-Mar-2025 12:15:55 Asia/Jakarta] [2025-03-13 12:15:55] Error: [2] file_put_contents(/Applications/XAMPP/xamppfiles/htdocs/antrian pasien/modules/rekam_medis/../../pdf_debug.log): Failed to open stream: Permission denied in /Applications/XAMPP/xamppfiles/htdocs/antrian pasien/modules/rekam_medis/generate_status_obstetri_pdf.php on line 99
+
+[13-Mar-2025 12:15:55 Asia/Jakarta] Request Details: Array
+(
+    [REQUEST_URI] => /antrian%20pasien/index.php?module=rekam_medis&action=generate_status_obstetri_pdf&no_rkm_medis=RM-20250302-000
+    [REQUEST_METHOD] => GET
+    [HTTP_HOST] => localhost
+    [HTTP_USER_AGENT] => Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36
+    [REMOTE_ADDR] => ::1
+    [HTTP_REFERER] => https://localhost/antrian%20pasien/index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=RM-20250302-000&source=antrian
+)
+
+[13-Mar-2025 12:15:55 Asia/Jakarta] [2025-03-13 12:15:55] Error: [2] file_put_contents(/Applications/XAMPP/xamppfiles/htdocs/antrian pasien/modules/rekam_medis/../../pdf_debug.log): Failed to open stream: Permission denied in /Applications/XAMPP/xamppfiles/htdocs/antrian pasien/modules/rekam_medis/generate_status_obstetri_pdf.php on line 107
+
+[13-Mar-2025 12:15:55 Asia/Jakarta] Request Details: Array
+(
+    [REQUEST_URI] => /antrian%20pasien/index.php?module=rekam_medis&action=generate_status_obstetri_pdf&no_rkm_medis=RM-20250302-000
+    [REQUEST_METHOD] => GET
+    [HTTP_HOST] => localhost
+    [HTTP_USER_AGENT] => Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36
+    [REMOTE_ADDR] => ::1
+    [HTTP_REFERER] => https://localhost/antrian%20pasien/index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=RM-20250302-000&source=antrian
+)
+
+[13-Mar-2025 12:15:55 Asia/Jakarta] [2025-03-13 12:15:55] Error: [2] file_put_contents(/Applications/XAMPP/xamppfiles/htdocs/antrian pasien/modules/rekam_medis/../../pdf_debug.log): Failed to open stream: Permission denied in /Applications/XAMPP/xamppfiles/htdocs/antrian pasien/modules/rekam_medis/generate_status_obstetri_pdf.php on line 109
+
+[13-Mar-2025 12:15:55 Asia/Jakarta] Request Details: Array
+(
+    [REQUEST_URI] => /antrian%20pasien/index.php?module=rekam_medis&action=generate_status_obstetri_pdf&no_rkm_medis=RM-20250302-000
+    [REQUEST_METHOD] => GET
+    [HTTP_HOST] => localhost
+    [HTTP_USER_AGENT] => Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36
+    [REMOTE_ADDR] => ::1
+    [HTTP_REFERER] => https://localhost/antrian%20pasien/index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=RM-20250302-000&source=antrian
+)
+
+[13-Mar-2025 12:15:59 Asia/Jakarta] Base URL: https://localhost/antrian%20pasien
+[13-Mar-2025 12:15:59 Asia/Jakarta] HTTP_HOST: localhost
+[13-Mar-2025 12:15:59 Asia/Jakarta] HTTPS: on
+[13-Mar-2025 12:15:59 Asia/Jakarta] Attempting to connect to database: auth-db1151.hstgr.io, u609399718_praktekobgin
+[13-Mar-2025 12:15:59 Asia/Jakarta] Database connection successful in database.php
+[13-Mar-2025 12:15:59 Asia/Jakarta] Request URI: /antrian%20pasien/index.php?module=rekam_medis&action=generate_pdf&no_rkm_medis=RM-20250302-000
+[13-Mar-2025 12:15:59 Asia/Jakarta] Query String: module=rekam_medis&action=generate_pdf&no_rkm_medis=RM-20250302-000
+[13-Mar-2025 12:16:00 Asia/Jakarta] Module: rekam_medis
+[13-Mar-2025 12:16:00 Asia/Jakarta] Action: generate_pdf
+[13-Mar-2025 12:16:00 Asia/Jakarta] Routing to generate_pdf
