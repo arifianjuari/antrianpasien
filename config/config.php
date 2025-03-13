@@ -34,3 +34,8 @@ define('LOGS_PATH', ROOT_PATH . '/logs');
 if (!file_exists(LOGS_PATH)) {
     mkdir(LOGS_PATH, 0755, true);
 }
+
+// Konfigurasi upload
+$config['upload_path'] = __DIR__ . '/../uploads'; // Path absolut untuk development
+// Untuk produksi, ubah menjadi:
+// $config['upload_path'] = '/home/username/public_html/uploads'; // Sesuaikan dengan path server

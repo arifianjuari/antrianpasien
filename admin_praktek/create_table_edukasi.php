@@ -19,17 +19,19 @@ try {
         $sql = "CREATE TABLE `edukasi` (
             `id_edukasi` char(36) NOT NULL,
             `judul` varchar(255) NOT NULL,
-            `slug` varchar(255) NOT NULL,
-            `kategori` enum('Kesehatan Umum','Kehamilan','Persalinan','Pasca Melahirkan','Kesehatan Wanita','Tips dan Lifestyle') NOT NULL,
-            `gambar` varchar(255) DEFAULT NULL,
-            `konten` text NOT NULL,
-            `ringkasan` text DEFAULT NULL,
+            `kategori` enum('fetomaternal','ginekologi umum','onkogin','fertilitas','uroginekologi') NOT NULL,
+            `isi_edukasi` text NOT NULL,
+            `link_gambar` varchar(255) DEFAULT NULL,
+            `link_video` varchar(255) DEFAULT NULL,
+            `sumber` varchar(255) DEFAULT NULL,
+            `tag` varchar(255) DEFAULT NULL,
             `status_aktif` tinyint(1) NOT NULL DEFAULT 1,
-            `created_by` int(11) DEFAULT NULL,
+            `ditampilkan_beranda` tinyint(1) NOT NULL DEFAULT 0,
+            `urutan_tampil` int(11) DEFAULT NULL,
+            `dibuat_oleh` char(36) DEFAULT NULL,
             `created_at` datetime DEFAULT current_timestamp(),
             `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-            PRIMARY KEY (`id_edukasi`),
-            UNIQUE KEY `slug` (`slug`)
+            PRIMARY KEY (`id_edukasi`)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
 
         $conn->exec($sql);

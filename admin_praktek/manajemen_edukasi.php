@@ -9,6 +9,10 @@ if (!isAdmin()) {
     exit;
 }
 
+// Konfigurasi upload
+// Untuk produksi, variabel ini bisa diatur di config.php
+$upload_path = isset($config['upload_path']) ? $config['upload_path'] : '../uploads';
+
 // Fungsi untuk membuat slug dari judul
 function createSlug($string)
 {
@@ -47,40 +51,70 @@ if (isset($_POST['tambah'])) {
     $judul = $_POST['judul'];
     $kategori = $_POST['kategori'];
     $isi_edukasi = $_POST['isi_edukasi'];
-    $sumber = $_POST['sumber'] ?? null;
-    $tag = $_POST['tag'] ?? null;
+    $sumber = $_POST['sumber'] ?? '';
+    $tag = $_POST['tag'] ?? '';
     $status_aktif = isset($_POST['status_aktif']) ? 1 : 0;
     $ditampilkan_beranda = isset($_POST['ditampilkan_beranda']) ? 1 : 0;
     $urutan_tampil = $_POST['urutan_tampil'] ?? null;
     $dibuat_oleh = $_SESSION['user_id'];
+    $link_video = $_POST['link_video'] ?? '';
 
     // Upload gambar jika ada
     $link_gambar = '';
-    if (isset($_FILES['gambar']) && $_FILES['gambar']['error'] == 0) {
-        try {
-            require_once '../config/google_drive.php';
+    if (isset($_FILES['link_gambar']) && $_FILES['link_gambar']['error'] == 0) {
+        // Definisikan direktori upload
+        $upload_dir = '../uploads/edukasi/';
 
-            $file = $_FILES['gambar'];
-            $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
-            $filename = $id_edukasi . '-' . time() . '.' . $ext;
+        // Gunakan path absolut jika tersedia di config
+        if (isset($upload_path) && !empty($upload_path)) {
+            $target_dir = $upload_path . '/edukasi/';
+        } else {
+            $target_dir = $upload_dir;
+        }
 
-            // Upload ke Google Drive
-            $fileId = uploadToDrive($file, $filename);
-            $link_gambar = $fileId;
-        } catch (Exception $e) {
-            $error_message = "Error upload: " . $e->getMessage();
+        // Buat direktori jika belum ada
+        if (!file_exists($target_dir)) {
+            // Gunakan permission yang lebih aman (755 untuk direktori)
+            mkdir($target_dir, 0755, true);
+        }
+
+        // Validasi file
+        $allowed_types = ['image/jpeg', 'image/png', 'image/gif'];
+        $max_size = 2 * 1024 * 1024; // 2MB
+
+        $file_type = $_FILES['link_gambar']['type'];
+        $file_size = $_FILES['link_gambar']['size'];
+
+        if (!in_array($file_type, $allowed_types)) {
+            $error_message = "Error: Hanya file JPG, PNG, dan GIF yang diperbolehkan.";
+        } else if ($file_size > $max_size) {
+            $error_message = "Error: Ukuran file tidak boleh lebih dari 2MB.";
+        } else {
+            $file_extension = strtolower(pathinfo($_FILES["link_gambar"]["name"], PATHINFO_EXTENSION));
+            $new_filename = 'edukasi-' . time() . '-' . substr(md5(uniqid()), 0, 8) . '.' . $file_extension;
+            $target_file = $target_dir . $new_filename;
+
+            if (move_uploaded_file($_FILES["link_gambar"]["tmp_name"], $target_file)) {
+                $link_gambar = $new_filename;
+
+                // Setel permission file yang lebih aman (644 untuk file)
+                chmod($target_file, 0644);
+            } else {
+                $error_message = "Error: Gagal mengupload file.";
+            }
         }
     }
 
     try {
-        $stmt = $conn->prepare("INSERT INTO edukasi (id_edukasi, judul, kategori, isi_edukasi, link_gambar, sumber, tag, status_aktif, ditampilkan_beranda, urutan_tampil, dibuat_oleh) 
-                VALUES (:id_edukasi, :judul, :kategori, :isi_edukasi, :link_gambar, :sumber, :tag, :status_aktif, :ditampilkan_beranda, :urutan_tampil, :dibuat_oleh)");
+        $stmt = $conn->prepare("INSERT INTO edukasi (id_edukasi, judul, kategori, isi_edukasi, link_gambar, link_video, sumber, tag, status_aktif, ditampilkan_beranda, urutan_tampil, dibuat_oleh) 
+                VALUES (:id_edukasi, :judul, :kategori, :isi_edukasi, :link_gambar, :link_video, :sumber, :tag, :status_aktif, :ditampilkan_beranda, :urutan_tampil, :dibuat_oleh)");
 
         $stmt->bindParam(':id_edukasi', $id_edukasi);
         $stmt->bindParam(':judul', $judul);
         $stmt->bindParam(':kategori', $kategori);
         $stmt->bindParam(':isi_edukasi', $isi_edukasi);
         $stmt->bindParam(':link_gambar', $link_gambar);
+        $stmt->bindParam(':link_video', $link_video);
         $stmt->bindParam(':sumber', $sumber);
         $stmt->bindParam(':tag', $tag);
         $stmt->bindParam(':status_aktif', $status_aktif);
@@ -101,43 +135,90 @@ if (isset($_POST['edit'])) {
     $judul = $_POST['judul'];
     $kategori = $_POST['kategori'];
     $isi_edukasi = $_POST['isi_edukasi'];
-    $sumber = $_POST['sumber'] ?? null;
-    $tag = $_POST['tag'] ?? null;
+    $sumber = $_POST['sumber'] ?? '';
+    $tag = $_POST['tag'] ?? '';
     $status_aktif = isset($_POST['status_aktif']) ? 1 : 0;
     $ditampilkan_beranda = isset($_POST['ditampilkan_beranda']) ? 1 : 0;
     $urutan_tampil = $_POST['urutan_tampil'] ?? null;
+    $link_video = $_POST['link_video'] ?? '';
 
     try {
         // Cek apakah ada upload gambar baru
-        if (isset($_FILES['gambar']) && $_FILES['gambar']['error'] == 0) {
-            require_once '../config/google_drive.php';
+        if (isset($_FILES['link_gambar']) && $_FILES['link_gambar']['error'] == 0) {
+            // Definisikan direktori upload
+            $upload_dir = '../uploads/edukasi/';
 
-            $file = $_FILES['gambar'];
-            $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
-            $filename = $id_edukasi . '-' . time() . '.' . $ext;
+            // Gunakan path absolut jika tersedia di config
+            if (isset($upload_path) && !empty($upload_path)) {
+                $target_dir = $upload_path . '/edukasi/';
+            } else {
+                $target_dir = $upload_dir;
+            }
 
-            // Upload ke Google Drive
-            $fileId = uploadToDrive($file, $filename);
+            // Buat direktori jika belum ada
+            if (!file_exists($target_dir)) {
+                // Gunakan permission yang lebih aman (755 untuk direktori)
+                mkdir($target_dir, 0755, true);
+            }
 
-            // Update dengan gambar baru
-            $stmt = $conn->prepare("UPDATE edukasi SET 
-                    judul = :judul,
-                    kategori = :kategori,
-                    isi_edukasi = :isi_edukasi,
-                    link_gambar = :link_gambar,
-                    sumber = :sumber,
-                    tag = :tag,
-                    status_aktif = :status_aktif,
-                    ditampilkan_beranda = :ditampilkan_beranda,
-                    urutan_tampil = :urutan_tampil
-                    WHERE id_edukasi = :id_edukasi");
-            $stmt->bindParam(':link_gambar', $fileId);
+            // Validasi file
+            $allowed_types = ['image/jpeg', 'image/png', 'image/gif'];
+            $max_size = 2 * 1024 * 1024; // 2MB
+
+            $file_type = $_FILES['link_gambar']['type'];
+            $file_size = $_FILES['link_gambar']['size'];
+
+            if (!in_array($file_type, $allowed_types)) {
+                $error_message = "Error: Hanya file JPG, PNG, dan GIF yang diperbolehkan.";
+            } else if ($file_size > $max_size) {
+                $error_message = "Error: Ukuran file tidak boleh lebih dari 2MB.";
+            } else {
+                $file_extension = strtolower(pathinfo($_FILES["link_gambar"]["name"], PATHINFO_EXTENSION));
+                $new_filename = 'edukasi-' . time() . '-' . substr(md5(uniqid()), 0, 8) . '.' . $file_extension;
+                $target_file = $target_dir . $new_filename;
+
+                if (move_uploaded_file($_FILES["link_gambar"]["tmp_name"], $target_file)) {
+                    // Hapus gambar lama jika ada
+                    $stmt = $conn->prepare("SELECT link_gambar FROM edukasi WHERE id_edukasi = :id_edukasi");
+                    $stmt->bindParam(':id_edukasi', $id_edukasi);
+                    $stmt->execute();
+                    $old_image = $stmt->fetchColumn();
+
+                    if (!empty($old_image)) {
+                        $old_image_path = $target_dir . $old_image;
+                        if (file_exists($old_image_path)) {
+                            unlink($old_image_path);
+                        }
+                    }
+
+                    // Setel permission file yang lebih aman (644 untuk file)
+                    chmod($target_file, 0644);
+
+                    // Update dengan gambar baru
+                    $stmt = $conn->prepare("UPDATE edukasi SET 
+                            judul = :judul,
+                            kategori = :kategori,
+                            isi_edukasi = :isi_edukasi,
+                            link_gambar = :link_gambar,
+                            link_video = :link_video,
+                            sumber = :sumber,
+                            tag = :tag,
+                            status_aktif = :status_aktif,
+                            ditampilkan_beranda = :ditampilkan_beranda,
+                            urutan_tampil = :urutan_tampil
+                            WHERE id_edukasi = :id_edukasi");
+                    $stmt->bindParam(':link_gambar', $new_filename);
+                } else {
+                    $error_message = "Error: Gagal mengupload file.";
+                }
+            }
         } else {
             // Update tanpa mengubah gambar
             $stmt = $conn->prepare("UPDATE edukasi SET 
                     judul = :judul,
                     kategori = :kategori,
                     isi_edukasi = :isi_edukasi,
+                    link_video = :link_video,
                     sumber = :sumber,
                     tag = :tag,
                     status_aktif = :status_aktif,
@@ -150,6 +231,7 @@ if (isset($_POST['edit'])) {
         $stmt->bindParam(':judul', $judul);
         $stmt->bindParam(':kategori', $kategori);
         $stmt->bindParam(':isi_edukasi', $isi_edukasi);
+        $stmt->bindParam(':link_video', $link_video);
         $stmt->bindParam(':sumber', $sumber);
         $stmt->bindParam(':tag', $tag);
         $stmt->bindParam(':status_aktif', $status_aktif);
@@ -172,10 +254,23 @@ if (isset($_GET['hapus'])) {
         $stmt = $conn->prepare("SELECT link_gambar FROM edukasi WHERE id_edukasi = :id_edukasi");
         $stmt->bindParam(':id_edukasi', $id_edukasi);
         $stmt->execute();
-        $gambar = $stmt->fetchColumn();
+        $link_gambar = $stmt->fetchColumn();
 
-        if (!empty($gambar) && file_exists("../uploads/edukasi/" . $gambar)) {
-            unlink("../uploads/edukasi/" . $gambar);
+        if (!empty($link_gambar)) {
+            // Definisikan direktori upload
+            $upload_dir = '../uploads/edukasi/';
+
+            // Gunakan path absolut jika tersedia di config
+            if (isset($upload_path) && !empty($upload_path)) {
+                $target_dir = $upload_path . '/edukasi/';
+            } else {
+                $target_dir = $upload_dir;
+            }
+
+            $image_path = $target_dir . $link_gambar;
+            if (file_exists($image_path)) {
+                unlink($image_path);
+            }
         }
 
         // Hapus data dari database
@@ -296,13 +391,14 @@ try {
                                                         data-id="<?= $row['id_edukasi'] ?>"
                                                         data-judul="<?= htmlspecialchars($row['judul']) ?>"
                                                         data-kategori="<?= htmlspecialchars($row['kategori']) ?>"
-                                                        data-isi_edukasi="<?= htmlspecialchars($row['isi_edukasi']) ?>"
-                                                        data-sumber="<?= htmlspecialchars($row['sumber'] ?? '') ?>"
-                                                        data-tag="<?= htmlspecialchars($row['tag'] ?? '') ?>"
+                                                        data-konten="<?= htmlspecialchars($row['isi_edukasi']) ?>"
+                                                        data-sumber="<?= htmlspecialchars($row['sumber']) ?>"
+                                                        data-tag="<?= htmlspecialchars($row['tag']) ?>"
+                                                        data-link_video="<?= htmlspecialchars($row['link_video']) ?>"
                                                         data-status="<?= $row['status_aktif'] ?>"
                                                         data-ditampilkan_beranda="<?= $row['ditampilkan_beranda'] ?>"
-                                                        data-urutan_tampil="<?= $row['urutan_tampil'] ?? '' ?>"
-                                                        data-link_gambar="<?= htmlspecialchars($row['link_gambar'] ?? '') ?>">
+                                                        data-urutan_tampil="<?= $row['urutan_tampil'] ?>"
+                                                        data-gambar="<?= htmlspecialchars($row['link_gambar']) ?>">
                                                         <i class="bi bi-pencil-square"></i>
                                                     </button>
                                                     <a href="#" class="btn btn-sm btn-danger btn-hapus"
@@ -342,25 +438,29 @@ try {
                             <select class="form-select" id="kategori" name="kategori" required>
                                 <option value="">Pilih Kategori</option>
                                 <?php foreach ($kategori_list as $kategori): ?>
-                                    <option value="<?= $kategori ?>"><?= ucwords($kategori) ?></option>
+                                    <option value="<?= $kategori ?>"><?= $kategori ?></option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
                         <div class="mb-3">
                             <label for="gambar" class="form-label">Gambar</label>
-                            <input type="file" class="form-control" id="gambar" name="gambar" accept="image/*">
+                            <input type="file" class="form-control" id="link_gambar" name="link_gambar" accept="image/*">
                             <small class="text-muted">Format: JPG, PNG, GIF. Maksimal 2MB</small>
                         </div>
                         <div class="mb-3">
                             <label for="sumber" class="form-label">Sumber</label>
-                            <input type="text" class="form-control" id="sumber" name="sumber">
+                            <textarea class="form-control" id="sumber" name="sumber" rows="3"></textarea>
                         </div>
                         <div class="mb-3">
                             <label for="tag" class="form-label">Tag</label>
-                            <input type="text" class="form-control" id="tag" name="tag" placeholder="Pisahkan dengan koma">
+                            <input type="text" class="form-control" id="tag" name="tag" placeholder="Contoh: kehamilan, kesehatan, tips">
                         </div>
                         <div class="mb-3">
-                            <label for="isi_edukasi" class="form-label">Isi Edukasi <span class="text-danger">*</span></label>
+                            <label for="link_video" class="form-label">Link Video</label>
+                            <input type="text" class="form-control" id="link_video" name="link_video" placeholder="URL video YouTube, Vimeo, dll">
+                        </div>
+                        <div class="mb-3">
+                            <label for="isi_edukasi" class="form-label">Konten <span class="text-danger">*</span></label>
                             <textarea class="form-control summernote" id="isi_edukasi" name="isi_edukasi" required></textarea>
                         </div>
                         <div class="mb-3">
@@ -378,7 +478,7 @@ try {
                         <div class="mb-3">
                             <label for="urutan_tampil" class="form-label">Urutan Tampil</label>
                             <input type="number" class="form-control" id="urutan_tampil" name="urutan_tampil" min="1">
-                            <small class="text-muted">Opsional. Urutan artikel jika ditampilkan di beranda</small>
+                            <small class="text-muted">Urutan tampil di beranda (opsional)</small>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -410,26 +510,30 @@ try {
                             <select class="form-select" id="edit_kategori" name="kategori" required>
                                 <option value="">Pilih Kategori</option>
                                 <?php foreach ($kategori_list as $kategori): ?>
-                                    <option value="<?= $kategori ?>"><?= ucwords($kategori) ?></option>
+                                    <option value="<?= $kategori ?>"><?= $kategori ?></option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
                         <div class="mb-3">
                             <label for="edit_gambar" class="form-label">Gambar</label>
-                            <input type="file" class="form-control" id="edit_gambar" name="gambar" accept="image/*">
+                            <input type="file" class="form-control" id="edit_link_gambar" name="link_gambar" accept="image/*">
                             <small class="text-muted">Format: JPG, PNG, GIF. Maksimal 2MB</small>
                             <div id="preview_gambar" class="mt-2"></div>
                         </div>
                         <div class="mb-3">
                             <label for="edit_sumber" class="form-label">Sumber</label>
-                            <input type="text" class="form-control" id="edit_sumber" name="sumber">
+                            <textarea class="form-control" id="edit_sumber" name="sumber" rows="3"></textarea>
                         </div>
                         <div class="mb-3">
                             <label for="edit_tag" class="form-label">Tag</label>
-                            <input type="text" class="form-control" id="edit_tag" name="tag" placeholder="Pisahkan dengan koma">
+                            <input type="text" class="form-control" id="edit_tag" name="tag" placeholder="Contoh: kehamilan, kesehatan, tips">
                         </div>
                         <div class="mb-3">
-                            <label for="edit_isi_edukasi" class="form-label">Isi Edukasi <span class="text-danger">*</span></label>
+                            <label for="edit_link_video" class="form-label">Link Video</label>
+                            <input type="text" class="form-control" id="edit_link_video" name="link_video" placeholder="URL video YouTube, Vimeo, dll">
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit_isi_edukasi" class="form-label">Konten <span class="text-danger">*</span></label>
                             <textarea class="form-control summernote" id="edit_isi_edukasi" name="isi_edukasi" required></textarea>
                         </div>
                         <div class="mb-3">
@@ -447,7 +551,7 @@ try {
                         <div class="mb-3">
                             <label for="edit_urutan_tampil" class="form-label">Urutan Tampil</label>
                             <input type="number" class="form-control" id="edit_urutan_tampil" name="urutan_tampil" min="1">
-                            <small class="text-muted">Opsional. Urutan artikel jika ditampilkan di beranda</small>
+                            <small class="text-muted">Urutan tampil di beranda (opsional)</small>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -476,12 +580,6 @@ try {
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
-        // Fungsi untuk mendapatkan URL gambar dari Google Drive
-        function getDriveImageUrl(fileId) {
-            if (!fileId) return '';
-            return `https://drive.google.com/uc?export=view&id=${fileId}`;
-        }
-
         $(document).ready(function() {
             // Inisialisasi DataTables
             $('#tabelEdukasi').DataTable({
@@ -510,13 +608,14 @@ try {
                 var id = button.data('id');
                 var judul = button.data('judul');
                 var kategori = button.data('kategori');
-                var isi_edukasi = button.data('isi_edukasi');
+                var isi_edukasi = button.data('konten');
                 var sumber = button.data('sumber');
                 var tag = button.data('tag');
+                var link_video = button.data('link_video');
                 var status = button.data('status');
                 var ditampilkan_beranda = button.data('ditampilkan_beranda');
                 var urutan_tampil = button.data('urutan_tampil');
-                var link_gambar = button.data('link_gambar');
+                var link_gambar = button.data('gambar');
 
                 var modal = $(this);
                 modal.find('#edit_id_edukasi').val(id);
@@ -525,13 +624,14 @@ try {
                 modal.find('#edit_isi_edukasi').summernote('code', isi_edukasi);
                 modal.find('#edit_sumber').val(sumber);
                 modal.find('#edit_tag').val(tag);
+                modal.find('#edit_link_video').val(link_video);
                 modal.find('#edit_status_aktif').prop('checked', status == 1);
                 modal.find('#edit_ditampilkan_beranda').prop('checked', ditampilkan_beranda == 1);
                 modal.find('#edit_urutan_tampil').val(urutan_tampil);
 
                 // Tampilkan preview gambar jika ada
                 if (link_gambar) {
-                    var imgPreview = `<img src="${getDriveImageUrl(link_gambar)}" class="article-image-preview">`;
+                    var imgPreview = '<img src="<?= $base_url ?>/uploads/edukasi/' + link_gambar + '" class="article-image-preview">';
                     modal.find('#preview_gambar').html(imgPreview);
                 } else {
                     modal.find('#preview_gambar').empty();

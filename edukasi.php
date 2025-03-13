@@ -6,7 +6,6 @@ if (session_status() === PHP_SESSION_NONE) {
 
 require_once 'config/config.php';
 require_once 'config/database.php';
-require_once 'config/google_drive.php';
 
 // Ambil parameter kategori dari URL jika ada
 $selected_kategori = isset($_GET['kategori']) ? $_GET['kategori'] : '';
@@ -14,13 +13,14 @@ $selected_kategori = isset($_GET['kategori']) ? $_GET['kategori'] : '';
 // Ambil parameter pencarian dari URL jika ada
 $search = isset($_GET['search']) ? $_GET['search'] : '';
 
-// Daftar kategori sesuai dengan enum di database
+// Daftar kategori
 $kategori_list = [
-    'fetomaternal',
-    'ginekologi umum',
-    'onkogin',
-    'fertilitas',
-    'uroginekologi'
+    'Kesehatan Umum',
+    'Kehamilan',
+    'Persalinan',
+    'Pasca Melahirkan',
+    'Kesehatan Wanita',
+    'Tips dan Lifestyle'
 ];
 
 try {
@@ -36,24 +36,18 @@ try {
 
     // Tambahkan pencarian jika ada
     if (!empty($search)) {
-        $query .= " AND (judul LIKE :search OR isi_edukasi LIKE :search OR tag LIKE :search)";
+        $query .= " AND (judul LIKE :search OR ringkasan LIKE :search OR konten LIKE :search)";
         $params[':search'] = "%$search%";
     }
 
-    // Urutkan berdasarkan urutan_tampil jika ditampilkan di beranda, kemudian berdasarkan created_at
-    $query .= " ORDER BY CASE WHEN ditampilkan_beranda = 1 THEN urutan_tampil ELSE 999999 END, created_at DESC";
+    // Tambahkan pengurutan
+    $query .= " ORDER BY created_at DESC";
 
     $stmt = $conn->prepare($query);
     $stmt->execute($params);
     $artikels = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-    // Debug: Tampilkan query dan hasil
-    error_log("Query: " . $query);
-    error_log("Params: " . print_r($params, true));
-    error_log("Results: " . print_r($artikels, true));
 } catch (PDOException $e) {
     $error_message = "Error: " . $e->getMessage();
-    error_log($error_message);
     $artikels = [];
 }
 ?>
@@ -73,7 +67,7 @@ try {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
 
     <!-- Custom CSS -->
-    <link href="assets/css/styles.css" rel="stylesheet">
+    <link href="<?= $base_url ?>/assets/css/styles.css" rel="stylesheet">
 
     <style>
         .article-card {
@@ -175,15 +169,6 @@ try {
                 max-width: 100% !important;
             }
         }
-
-        .article-tags {
-            margin-bottom: 1rem;
-        }
-
-        .article-tags .badge {
-            margin-right: 0.5rem;
-            margin-bottom: 0.5rem;
-        }
     </style>
 </head>
 
@@ -223,7 +208,7 @@ try {
                 <?php foreach ($kategori_list as $kategori): ?>
                     <a href="<?= $base_url ?>/edukasi.php?kategori=<?= urlencode($kategori) ?>"
                         class="btn <?= $selected_kategori === $kategori ? 'btn-primary' : 'btn-outline-primary' ?>">
-                        <?= ucwords(htmlspecialchars($kategori)) ?>
+                        <?= $kategori ?>
                     </a>
                 <?php endforeach; ?>
             </div>
@@ -234,74 +219,65 @@ try {
                 </div>
             <?php endif; ?>
 
-            <?php if (empty($artikels)): ?>
-                <div class="alert alert-info" role="alert">
-                    Belum ada artikel edukasi yang tersedia.
-                    <?php if (!empty($search) || !empty($selected_kategori)): ?>
-                        <br>
-                        Coba cari dengan kata kunci lain atau lihat semua artikel
-                        <a href="<?= $base_url ?>/edukasi.php" class="alert-link">di sini</a>.
-                    <?php endif; ?>
-                </div>
-            <?php else: ?>
-                <div class="row g-4">
-                    <?php foreach ($artikels as $artikel): ?>
-                        <div class="col-12 col-md-6 col-lg-4">
-                            <div class="card article-card">
-                                <?php if (!empty($artikel['link_gambar'])): ?>
-                                    <a href="artikel_detail.php?id=<?= htmlspecialchars($artikel['id_edukasi']) ?>">
-                                        <img src="<?= getDriveImageUrl($artikel['link_gambar']) ?>"
-                                            class="article-image" alt="<?= htmlspecialchars($artikel['judul']) ?>">
+            <div class="row g-4">
+                <?php foreach ($artikels as $artikel): ?>
+                    <div class="col-12 col-md-6 col-lg-4">
+                        <div class="card article-card">
+                            <?php if (!empty($artikel['gambar'])): ?>
+                                <img src="<?= $base_url ?>/uploads/edukasi/<?= htmlspecialchars($artikel['gambar']) ?>"
+                                    class="article-image" alt="<?= htmlspecialchars($artikel['judul']) ?>">
+                            <?php else: ?>
+                                <img src="<?= $base_url ?>/assets/images/default-article.jpg"
+                                    class="article-image" alt="Default Image">
+                            <?php endif; ?>
+
+                            <span class="badge bg-primary article-category">
+                                <?= htmlspecialchars($artikel['kategori']) ?>
+                            </span>
+
+                            <div class="card-body">
+                                <h5 class="card-title mb-3">
+                                    <a href="<?= $base_url ?>/edukasi/<?= htmlspecialchars($artikel['slug']) ?>"
+                                        class="text-decoration-none text-dark">
+                                        <?= htmlspecialchars($artikel['judul']) ?>
                                     </a>
-                                <?php else: ?>
-                                    <a href="artikel_detail.php?id=<?= htmlspecialchars($artikel['id_edukasi']) ?>">
-                                        <img src="<?= $base_url ?>/assets/images/default-article.jpg"
-                                            class="article-image" alt="Default Image">
-                                    </a>
+                                </h5>
+
+                                <?php if (!empty($artikel['ringkasan'])): ?>
+                                    <p class="article-summary mb-3">
+                                        <?= htmlspecialchars($artikel['ringkasan']) ?>
+                                    </p>
                                 <?php endif; ?>
 
-                                <span class="badge bg-primary article-category">
-                                    <?= ucwords(htmlspecialchars($artikel['kategori'])) ?>
-                                </span>
+                                <div class="article-meta">
+                                    <i class="bi bi-calendar3"></i>
+                                    <?= date('d F Y', strtotime($artikel['created_at'])) ?>
+                                </div>
 
-                                <div class="card-body">
-                                    <h5 class="card-title mb-3">
-                                        <a href="artikel_detail.php?id=<?= htmlspecialchars($artikel['id_edukasi']) ?>"
-                                            class="text-decoration-none text-dark">
-                                            <?= htmlspecialchars($artikel['judul']) ?>
-                                        </a>
-                                    </h5>
-
-                                    <?php if (!empty($artikel['isi_edukasi'])): ?>
-                                        <p class="article-summary mb-3">
-                                            <?= htmlspecialchars(substr(strip_tags($artikel['isi_edukasi']), 0, 200)) ?>...
-                                        </p>
-                                        <a href="artikel_detail.php?id=<?= htmlspecialchars($artikel['id_edukasi']) ?>"
-                                            class="btn btn-sm btn-outline-primary mb-3">Baca Selengkapnya</a>
-                                    <?php endif; ?>
-
-                                    <?php if (!empty($artikel['tag'])): ?>
-                                        <div class="article-tags">
-                                            <?php foreach (explode(',', $artikel['tag']) as $tag): ?>
-                                                <span class="badge bg-secondary"><?= trim(htmlspecialchars($tag)) ?></span>
-                                            <?php endforeach; ?>
-                                        </div>
-                                    <?php endif; ?>
-
-                                    <div class="article-meta">
-                                        <i class="bi bi-calendar3"></i>
-                                        <?= date('d F Y', strtotime($artikel['created_at'])) ?>
-                                        <?php if (!empty($artikel['sumber'])): ?>
-                                            <span class="ms-2">
-                                                <i class="bi bi-link-45deg"></i>
-                                                <?= htmlspecialchars($artikel['sumber']) ?>
-                                            </span>
-                                        <?php endif; ?>
-                                    </div>
+                                <div class="mt-3">
+                                    <a href="<?= $base_url ?>/edukasi/<?= htmlspecialchars($artikel['slug']) ?>"
+                                        class="btn btn-outline-primary btn-sm">
+                                        Baca Selengkapnya
+                                    </a>
                                 </div>
                             </div>
                         </div>
-                    <?php endforeach; ?>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+
+            <?php if (empty($artikels)): ?>
+                <div class="text-center py-5">
+                    <i class="bi bi-journal-x display-1 text-muted"></i>
+                    <h4 class="mt-3">Belum ada artikel</h4>
+                    <?php if (!empty($search)): ?>
+                        <p class="text-muted">Tidak ditemukan artikel yang sesuai dengan pencarian Anda</p>
+                        <a href="<?= $base_url ?>/edukasi.php" class="btn btn-primary mt-2">
+                            Lihat Semua Artikel
+                        </a>
+                    <?php else: ?>
+                        <p class="text-muted">Silakan cek kembali di lain waktu</p>
+                    <?php endif; ?>
                 </div>
             <?php endif; ?>
         </div>
