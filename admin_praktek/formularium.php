@@ -68,19 +68,21 @@ if (isset($_POST['tambah'])) {
     $nama_obat = $_POST['nama_obat'];
     $nama_generik = $_POST['nama_generik'] ?? '';
     $bentuk_sediaan = $_POST['bentuk_sediaan'] ?? '';
+    $dosis = $_POST['dosis'] ?? '';
     $kategori = $_POST['kategori'] ?? '';
     $catatan_obat = $_POST['catatan_obat'] ?? '';
     $harga = $_POST['harga'];
     $status_aktif = isset($_POST['status_aktif']) ? 1 : 0;
 
     try {
-        $stmt = $conn->prepare("INSERT INTO formularium (id_obat, nama_obat, nama_generik, bentuk_sediaan, kategori, catatan_obat, harga, status_aktif) 
-                VALUES (:id_obat, :nama_obat, :nama_generik, :bentuk_sediaan, :kategori, :catatan_obat, :harga, :status_aktif)");
+        $stmt = $conn->prepare("INSERT INTO formularium (id_obat, nama_obat, nama_generik, bentuk_sediaan, dosis, kategori, catatan_obat, harga, status_aktif) 
+                VALUES (:id_obat, :nama_obat, :nama_generik, :bentuk_sediaan, :dosis, :kategori, :catatan_obat, :harga, :status_aktif)");
 
         $stmt->bindParam(':id_obat', $id_obat);
         $stmt->bindParam(':nama_obat', $nama_obat);
         $stmt->bindParam(':nama_generik', $nama_generik);
         $stmt->bindParam(':bentuk_sediaan', $bentuk_sediaan);
+        $stmt->bindParam(':dosis', $dosis);
         $stmt->bindParam(':kategori', $kategori);
         $stmt->bindParam(':catatan_obat', $catatan_obat);
         $stmt->bindParam(':harga', $harga);
@@ -99,6 +101,7 @@ if (isset($_POST['edit'])) {
     $nama_obat = $_POST['nama_obat'];
     $nama_generik = $_POST['nama_generik'] ?? '';
     $bentuk_sediaan = $_POST['bentuk_sediaan'] ?? '';
+    $dosis = $_POST['dosis'] ?? '';
     $kategori = $_POST['kategori'] ?? '';
     $catatan_obat = $_POST['catatan_obat'] ?? '';
     $harga = $_POST['harga'];
@@ -109,6 +112,7 @@ if (isset($_POST['edit'])) {
                 nama_obat = :nama_obat,
                 nama_generik = :nama_generik,
                 bentuk_sediaan = :bentuk_sediaan,
+                dosis = :dosis,
                 kategori = :kategori,
                 catatan_obat = :catatan_obat,
                 harga = :harga,
@@ -119,6 +123,7 @@ if (isset($_POST['edit'])) {
         $stmt->bindParam(':nama_obat', $nama_obat);
         $stmt->bindParam(':nama_generik', $nama_generik);
         $stmt->bindParam(':bentuk_sediaan', $bentuk_sediaan);
+        $stmt->bindParam(':dosis', $dosis);
         $stmt->bindParam(':kategori', $kategori);
         $stmt->bindParam(':catatan_obat', $catatan_obat);
         $stmt->bindParam(':harga', $harga);
@@ -147,7 +152,17 @@ if (isset($_GET['hapus'])) {
 
 // Ambil data untuk ditampilkan
 try {
-    $stmt = $conn->query("SELECT * FROM formularium ORDER BY nama_obat ASC");
+    // Filter berdasarkan kategori jika ada
+    $kategori_filter = isset($_GET['kategori']) ? $_GET['kategori'] : '';
+
+    if (!empty($kategori_filter)) {
+        $stmt = $conn->prepare("SELECT * FROM formularium WHERE kategori = :kategori ORDER BY nama_obat ASC");
+        $stmt->bindParam(':kategori', $kategori_filter);
+        $stmt->execute();
+    } else {
+        $stmt = $conn->query("SELECT * FROM formularium ORDER BY nama_obat ASC");
+    }
+
     $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
     $error_message = "Error: " . $e->getMessage();
@@ -174,6 +189,17 @@ try {
 
     <!-- Custom CSS -->
     <link href="<?= $base_url ?>/assets/css/styles.css" rel="stylesheet">
+
+    <style>
+        .filter-container {
+            margin-bottom: 20px;
+        }
+
+        .filter-container .btn {
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+    </style>
 </head>
 
 <body>
@@ -212,6 +238,22 @@ try {
                             </button>
                         </div>
                         <div class="card-body">
+                            <!-- Filter Kategori -->
+                            <div class="filter-container">
+                                <div class="d-flex flex-wrap align-items-center">
+                                    <label class="me-2"><strong>Filter Kategori:</strong></label>
+                                    <a href="<?= $base_url ?>/admin_praktek/formularium.php" class="btn <?= empty($kategori_filter) ? 'btn-primary' : 'btn-outline-primary' ?>">
+                                        Semua
+                                    </a>
+                                    <?php foreach ($kategori_list as $kat): ?>
+                                        <a href="<?= $base_url ?>/admin_praktek/formularium.php?kategori=<?= urlencode($kat) ?>"
+                                            class="btn <?= $kategori_filter === $kat ? 'btn-primary' : 'btn-outline-primary' ?>">
+                                            <?= $kat ?>
+                                        </a>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
+
                             <div class="table-responsive">
                                 <table id="tabelFormularium" class="table table-striped table-hover">
                                     <thead>
@@ -220,7 +262,7 @@ try {
                                             <th>Nama Obat</th>
                                             <th>Nama Generik</th>
                                             <th>Bentuk Sediaan</th>
-                                            <th>Kategori</th>
+                                            <th>Dosis</th>
                                             <th>Harga</th>
                                             <th>Status</th>
                                             <th>Aksi</th>
@@ -236,7 +278,7 @@ try {
                                                 <td><?= htmlspecialchars($row['nama_obat']) ?></td>
                                                 <td><?= htmlspecialchars($row['nama_generik']) ?></td>
                                                 <td><?= htmlspecialchars($row['bentuk_sediaan']) ?></td>
-                                                <td><?= htmlspecialchars($row['kategori']) ?></td>
+                                                <td><?= htmlspecialchars($row['dosis']) ?></td>
                                                 <td><?= formatRupiah($row['harga']) ?></td>
                                                 <td>
                                                     <span class="badge <?= $row['status_aktif'] ? 'bg-success' : 'bg-danger' ?>">
@@ -251,6 +293,7 @@ try {
                                                         data-nama="<?= htmlspecialchars($row['nama_obat']) ?>"
                                                         data-generik="<?= htmlspecialchars($row['nama_generik']) ?>"
                                                         data-bentuk="<?= htmlspecialchars($row['bentuk_sediaan']) ?>"
+                                                        data-dosis="<?= htmlspecialchars($row['dosis']) ?>"
                                                         data-kategori="<?= htmlspecialchars($row['kategori']) ?>"
                                                         data-catatan="<?= htmlspecialchars($row['catatan_obat']) ?>"
                                                         data-harga="<?= $row['harga'] ?>"
@@ -301,6 +344,10 @@ try {
                                     <option value="<?= $bentuk ?>"><?= $bentuk ?></option>
                                 <?php endforeach; ?>
                             </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="dosis" class="form-label">Dosis</label>
+                            <input type="text" class="form-control" id="dosis" name="dosis">
                         </div>
                         <div class="mb-3">
                             <label for="kategori" class="form-label">Kategori</label>
@@ -367,6 +414,10 @@ try {
                             </select>
                         </div>
                         <div class="mb-3">
+                            <label for="edit_dosis" class="form-label">Dosis</label>
+                            <input type="text" class="form-control" id="edit_dosis" name="dosis">
+                        </div>
+                        <div class="mb-3">
                             <label for="edit_kategori" class="form-label">Kategori</label>
                             <select class="form-select" id="edit_kategori" name="kategori">
                                 <option value="">Pilih Kategori</option>
@@ -431,6 +482,7 @@ try {
                 var nama = button.data('nama');
                 var generik = button.data('generik');
                 var bentuk = button.data('bentuk');
+                var dosis = button.data('dosis');
                 var kategori = button.data('kategori');
                 var catatan = button.data('catatan');
                 var harga = button.data('harga');
@@ -441,6 +493,7 @@ try {
                 modal.find('#edit_nama_obat').val(nama);
                 modal.find('#edit_nama_generik').val(generik);
                 modal.find('#edit_bentuk_sediaan').val(bentuk);
+                modal.find('#edit_dosis').val(dosis);
                 modal.find('#edit_kategori').val(kategori);
                 modal.find('#edit_catatan_obat').val(catatan);
                 modal.find('#edit_harga').val(harga);

@@ -202,7 +202,7 @@ if (!defined('BASE_PATH')) {
                                                         </div>
                                                         <div class="card-body p-2">
                                                             <button type="button" class="btn btn-sm btn-info w-100" data-bs-toggle="modal" data-bs-target="#modalDaftarTemplateUsg">
-                                                                <i class="fas fa-list"></i> Lihat Template
+                                                                <i class="fas fa-list"></i> Lihat Template USG
                                                             </button>
                                                         </div>
                                                     </div>
@@ -357,6 +357,26 @@ if (!defined('BASE_PATH')) {
                                             </div>
                                         </div>
                                         <div class="mb-3">
+                                            <label>Resep</label>
+                                            <div class="row">
+                                                <div class="col-md-8">
+                                                    <textarea name="resep" id="resep" class="form-control" rows="4"></textarea>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="card border">
+                                                        <div class="card-header py-1 bg-light">
+                                                            <h6 class="mb-0 small">Formularium</h6>
+                                                        </div>
+                                                        <div class="card-body p-2">
+                                                            <button type="button" class="btn btn-sm btn-info w-100" data-bs-toggle="modal" data-bs-target="#modalDaftarTemplateResep">
+                                                                <i class="fas fa-list"></i> Lihat Daftar
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
                                             <label>Tanggal Kontrol</label>
                                             <input type="date" name="tanggal_kontrol" class="form-control">
                                         </div>
@@ -399,25 +419,20 @@ if (!defined('BASE_PATH')) {
                 <!-- Filter Kategori -->
                 <div class="row mb-3">
                     <div class="col-md-4">
-                        <form method="get" class="d-flex">
-                            <input type="hidden" name="module" value="rekam_medis">
-                            <input type="hidden" name="action" value="form_penilaian_medis_ralan_kandungan">
-                            <input type="hidden" name="no_rawat" value="<?= $data['no_rawat'] ?>">
-                            <select name="kategori" class="form-select me-2" onchange="this.form.submit()">
-                                <option value="">Semua Kategori</option>
-                                <option value="fetomaternal" <?= isset($_GET['kategori']) && $_GET['kategori'] == 'fetomaternal' ? 'selected' : '' ?>>Fetomaternal</option>
-                                <option value="ginekologi umum" <?= isset($_GET['kategori']) && $_GET['kategori'] == 'ginekologi umum' ? 'selected' : '' ?>>Ginekologi Umum</option>
-                                <option value="onkogin" <?= isset($_GET['kategori']) && $_GET['kategori'] == 'onkogin' ? 'selected' : '' ?>>Onkogin</option>
-                                <option value="fertilitas" <?= isset($_GET['kategori']) && $_GET['kategori'] == 'fertilitas' ? 'selected' : '' ?>>Fertilitas</option>
-                                <option value="uroginekologi" <?= isset($_GET['kategori']) && $_GET['kategori'] == 'uroginekologi' ? 'selected' : '' ?>>Uroginekologi</option>
-                            </select>
-                        </form>
+                        <select id="filter_kategori_tatalaksana" class="form-select me-2">
+                            <option value="">Semua Kategori</option>
+                            <option value="fetomaternal">Fetomaternal</option>
+                            <option value="ginekologi umum">Ginekologi Umum</option>
+                            <option value="onkogin">Onkogin</option>
+                            <option value="fertilitas">Fertilitas</option>
+                            <option value="uroginekologi">Uroginekologi</option>
+                        </select>
                     </div>
                 </div>
 
                 <!-- Tabel Template -->
                 <div class="table-responsive">
-                    <table class="table table-bordered table-hover">
+                    <table class="table table-bordered table-hover" id="tabelTemplateTatalaksana">
                         <thead class="table-light">
                             <tr>
                                 <th width="5%">No</th>
@@ -437,22 +452,14 @@ if (!defined('BASE_PATH')) {
                                 die("Koneksi gagal: " . $conn->connect_error);
                             }
 
-                            // Query untuk mengambil data template
-                            $where = "";
-                            if (isset($_GET['kategori']) && !empty($_GET['kategori'])) {
-                                $kategori = $conn->real_escape_string($_GET['kategori']);
-                                $where = "WHERE kategori_tx = '$kategori' AND status = 'active'";
-                            } else {
-                                $where = "WHERE status = 'active'";
-                            }
-
-                            $sql = "SELECT * FROM template_tatalaksana $where ORDER BY kategori_tx ASC, nama_template_tx ASC";
+                            // Query untuk mengambil semua data template
+                            $sql = "SELECT * FROM template_tatalaksana WHERE status = 'active' ORDER BY kategori_tx ASC, nama_template_tx ASC";
                             $result = $conn->query($sql);
 
                             if ($result->num_rows > 0) {
                                 $no = 1;
                                 while ($row = $result->fetch_assoc()) {
-                                    echo "<tr>";
+                                    echo "<tr class='template-row' data-kategori='" . htmlspecialchars($row['kategori_tx']) . "'>";
                                     echo "<td>" . $no++ . "</td>";
                                     echo "<td>" . htmlspecialchars($row['nama_template_tx']) . "</td>";
                                     echo "<td><div style='max-height: 100px; overflow-y: auto;'>" . nl2br(htmlspecialchars($row['isi_template_tx'])) . "</div></td>";
@@ -494,22 +501,17 @@ if (!defined('BASE_PATH')) {
                 <!-- Filter Kategori -->
                 <div class="row mb-3">
                     <div class="col-md-4">
-                        <form method="get" class="d-flex">
-                            <input type="hidden" name="module" value="rekam_medis">
-                            <input type="hidden" name="action" value="form_penilaian_medis_ralan_kandungan">
-                            <input type="hidden" name="no_rawat" value="<?= $data['no_rawat'] ?>">
-                            <select name="kategori_usg" class="form-select me-2" onchange="this.form.submit()">
-                                <option value="">Semua Kategori</option>
-                                <option value="obstetri" <?= isset($_GET['kategori_usg']) && $_GET['kategori_usg'] == 'obstetri' ? 'selected' : '' ?>>Obstetri</option>
-                                <option value="ginekologi" <?= isset($_GET['kategori_usg']) && $_GET['kategori_usg'] == 'ginekologi' ? 'selected' : '' ?>>Ginekologi</option>
-                            </select>
-                        </form>
+                        <select id="filter_kategori_usg" class="form-select me-2">
+                            <option value="">Semua Kategori</option>
+                            <option value="obstetri" <?= isset($_GET['kategori_usg']) && $_GET['kategori_usg'] == 'obstetri' ? 'selected' : '' ?>>Obstetri</option>
+                            <option value="ginekologi" <?= isset($_GET['kategori_usg']) && $_GET['kategori_usg'] == 'ginekologi' ? 'selected' : '' ?>>Ginekologi</option>
+                        </select>
                     </div>
                 </div>
 
                 <!-- Tabel Template -->
                 <div class="table-responsive">
-                    <table class="table table-bordered table-hover">
+                    <table class="table table-bordered table-hover" id="tabelTemplateUsg">
                         <thead class="table-light">
                             <tr>
                                 <th width="5%">No</th>
@@ -525,23 +527,14 @@ if (!defined('BASE_PATH')) {
                             // Koneksi ke database
                             global $conn;
 
-                            // Filter berdasarkan kategori
-                            $where = "";
-                            if (isset($_GET['kategori_usg']) && !empty($_GET['kategori_usg'])) {
-                                $kategori = $conn->quote($_GET['kategori_usg']);
-                                $where = "WHERE kategori_usg = $kategori AND status = 'active'";
-                            } else {
-                                $where = "WHERE status = 'active'";
-                            }
-
-                            // Query untuk mendapatkan template
-                            $sql = "SELECT * FROM template_usg $where ORDER BY kategori_usg ASC, nama_template_usg ASC";
+                            // Query untuk mendapatkan semua template
+                            $sql = "SELECT * FROM template_usg WHERE status = 'active' ORDER BY kategori_usg ASC, nama_template_usg ASC";
                             $stmt = $conn->query($sql);
 
                             if ($stmt->rowCount() > 0) {
                                 $no = 1;
                                 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                                    echo "<tr>";
+                                    echo "<tr class='template-row' data-kategori='" . $row['kategori_usg'] . "'>";
                                     echo "<td>" . $no++ . "</td>";
                                     echo "<td>" . htmlspecialchars($row['nama_template_usg']) . "</td>";
                                     echo "<td><div style='max-height: 100px; overflow-y: auto;'>" . nl2br(htmlspecialchars($row['isi_template_usg'])) . "</div></td>";
@@ -636,6 +629,99 @@ if (!defined('BASE_PATH')) {
     </div>
 </div>
 
+<!-- Modal Daftar Template Resep -->
+<div class="modal fade" id="modalDaftarTemplateResep" tabindex="-1" aria-labelledby="modalDaftarTemplateResepLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalDaftarTemplateResepLabel">Daftar Formularium</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Filter Kategori -->
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <select id="filter_kategori_obat" class="form-select me-2">
+                            <option value="">Semua Kategori</option>
+                            <option value="Analgesik" <?= isset($_GET['kategori_obat']) && $_GET['kategori_obat'] == 'Analgesik' ? 'selected' : '' ?>>Analgesik</option>
+                            <option value="Antibiotik" <?= isset($_GET['kategori_obat']) && $_GET['kategori_obat'] == 'Antibiotik' ? 'selected' : '' ?>>Antibiotik</option>
+                            <option value="Antiinflamasi" <?= isset($_GET['kategori_obat']) && $_GET['kategori_obat'] == 'Antiinflamasi' ? 'selected' : '' ?>>Antiinflamasi</option>
+                            <option value="Antihipertensi" <?= isset($_GET['kategori_obat']) && $_GET['kategori_obat'] == 'Antihipertensi' ? 'selected' : '' ?>>Antihipertensi</option>
+                            <option value="Antidiabetes" <?= isset($_GET['kategori_obat']) && $_GET['kategori_obat'] == 'Antidiabetes' ? 'selected' : '' ?>>Antidiabetes</option>
+                            <option value="Vitamin dan Suplemen" <?= isset($_GET['kategori_obat']) && $_GET['kategori_obat'] == 'Vitamin dan Suplemen' ? 'selected' : '' ?>>Vitamin dan Suplemen</option>
+                            <option value="Hormon" <?= isset($_GET['kategori_obat']) && $_GET['kategori_obat'] == 'Hormon' ? 'selected' : '' ?>>Hormon</option>
+                            <option value="Obat Kulit" <?= isset($_GET['kategori_obat']) && $_GET['kategori_obat'] == 'Obat Kulit' ? 'selected' : '' ?>>Obat Kulit</option>
+                            <option value="Obat Mata" <?= isset($_GET['kategori_obat']) && $_GET['kategori_obat'] == 'Obat Mata' ? 'selected' : '' ?>>Obat Mata</option>
+                            <option value="Obat Saluran Pencernaan" <?= isset($_GET['kategori_obat']) && $_GET['kategori_obat'] == 'Obat Saluran Pencernaan' ? 'selected' : '' ?>>Obat Saluran Pencernaan</option>
+                            <option value="Obat Saluran Pernapasan" <?= isset($_GET['kategori_obat']) && $_GET['kategori_obat'] == 'Obat Saluran Pernapasan' ? 'selected' : '' ?>>Obat Saluran Pernapasan</option>
+                            <option value="Lainnya" <?= isset($_GET['kategori_obat']) && $_GET['kategori_obat'] == 'Lainnya' ? 'selected' : '' ?>>Lainnya</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <input type="text" id="search_generik" class="form-control" placeholder="Cari nama generik...">
+                    </div>
+                </div>
+
+                <!-- Tabel Formularium -->
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover" id="tabelFormularium">
+                        <thead class="table-light">
+                            <tr>
+                                <th width="5%">
+                                    <input type="checkbox" id="checkAll" class="form-check-input">
+                                </th>
+                                <th width="20%">Nama Obat</th>
+                                <th width="15%">Nama Generik</th>
+                                <th width="15%">Bentuk & Dosis</th>
+                                <th width="15%">Kategori</th>
+                                <th width="15%">Catatan</th>
+                                <th width="15%">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php
+                            // Koneksi ke database
+                            $conn = new mysqli('auth-db1151.hstgr.io', 'u609399718_adminpraktek', 'Obgin@12345', 'u609399718_praktekobgin');
+
+                            if ($conn->connect_error) {
+                                die("Koneksi gagal: " . $conn->connect_error);
+                            }
+
+                            // Query untuk mendapatkan semua data formularium
+                            $sql = "SELECT * FROM formularium WHERE status_aktif = 1 ORDER BY nama_obat ASC";
+                            $result = $conn->query($sql);
+
+                            if ($result->num_rows > 0) {
+                                while ($row = $result->fetch_assoc()) {
+                                    $bentuk_dosis = $row['bentuk_sediaan'] . ' ' . $row['dosis'];
+                                    echo "<tr class='obat-row' data-kategori='" . htmlspecialchars($row['kategori']) . "'>";
+                                    echo "<td><input type='checkbox' class='form-check-input obat-checkbox' data-nama='" . htmlspecialchars($row['nama_obat']) . "' data-bentuk-dosis='" . htmlspecialchars($bentuk_dosis) . "' data-catatan='" . htmlspecialchars($row['catatan_obat']) . "' data-generik='" . htmlspecialchars($row['nama_generik']) . "'></td>";
+                                    echo "<td>" . htmlspecialchars($row['nama_obat']) . "</td>";
+                                    echo "<td>" . htmlspecialchars($row['nama_generik']) . "</td>";
+                                    echo "<td>" . htmlspecialchars($bentuk_dosis) . "</td>";
+                                    echo "<td>" . htmlspecialchars($row['kategori']) . "</td>";
+                                    echo "<td>" . htmlspecialchars($row['catatan_obat']) . "</td>";
+                                    echo "<td><span class='badge bg-success'>Aktif</span></td>";
+                                    echo "</tr>";
+                                }
+                            } else {
+                                echo "<tr><td colspan='7' class='text-center'>Tidak ada data obat</td></tr>";
+                            }
+
+                            $conn->close();
+                            ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                <button type="button" class="btn btn-primary" onclick="tambahkanObatTerpilih()">Tambahkan Obat Terpilih</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     function gunakanTemplate(isi) {
         const currentValue = document.getElementById('tatalaksana').value;
@@ -661,4 +747,192 @@ if (!defined('BASE_PATH')) {
         document.getElementById('diagnosis').value = isi;
         $('#modalRiwayatDiagnosis').modal('hide');
     }
+
+    // Fungsi untuk menangani checkbox "Pilih Semua"
+    document.getElementById('checkAll').addEventListener('change', function() {
+        var checkboxes = document.getElementsByClassName('obat-checkbox');
+        for (var checkbox of checkboxes) {
+            checkbox.checked = this.checked;
+        }
+    });
+
+    // Fungsi untuk menambahkan obat yang dipilih ke field resep
+    function tambahkanObatTerpilih() {
+        var checkboxes = document.getElementsByClassName('obat-checkbox');
+        var resepField = document.getElementById('resep');
+        var obatTerpilih = [];
+
+        for (var checkbox of checkboxes) {
+            if (checkbox.checked) {
+                var namaObat = checkbox.getAttribute('data-nama');
+                var bentukDosis = checkbox.getAttribute('data-bentuk-dosis');
+                var catatan = checkbox.getAttribute('data-catatan');
+
+                var textObat = namaObat + ' - ' + bentukDosis;
+
+                if (catatan) {
+                    textObat += '\nCatatan: ' + catatan;
+                }
+                obatTerpilih.push(textObat);
+            }
+        }
+
+        if (obatTerpilih.length > 0) {
+            var currentValue = resepField.value;
+            var newValue = obatTerpilih.join('\n');
+
+            if (currentValue && currentValue.trim() !== '') {
+                resepField.value = currentValue + '\n' + newValue;
+            } else {
+                resepField.value = newValue;
+            }
+        }
+
+        $('#modalDaftarTemplateResep').modal('hide');
+    }
+
+    // Filter untuk template USG
+    document.addEventListener('DOMContentLoaded', function() {
+        // Tambahkan event listener untuk filter kategori USG
+        document.getElementById('filter_kategori_usg').addEventListener('change', function() {
+            var kategori = this.value;
+            var rows = document.querySelectorAll('#tabelTemplateUsg tbody tr.template-row');
+
+            rows.forEach(function(row) {
+                if (kategori === '' || row.getAttribute('data-kategori') === kategori) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            // Perbarui nomor urut yang ditampilkan
+            var visibleRows = document.querySelectorAll('#tabelTemplateUsg tbody tr.template-row:not([style*="display: none"])');
+            visibleRows.forEach(function(row, index) {
+                row.cells[0].textContent = index + 1;
+            });
+
+            // Tampilkan pesan jika tidak ada data
+            var noDataRow = document.querySelector('#tabelTemplateUsg tbody tr:not(.template-row)');
+            if (noDataRow) {
+                noDataRow.style.display = visibleRows.length === 0 ? '' : 'none';
+            } else if (visibleRows.length === 0) {
+                var tbody = document.querySelector('#tabelTemplateUsg tbody');
+                var tr = document.createElement('tr');
+                tr.className = 'no-data-row';
+                tr.innerHTML = '<td colspan="6" class="text-center">Tidak ada template tersedia</td>';
+                tbody.appendChild(tr);
+            } else {
+                var noDataRows = document.querySelectorAll('#tabelTemplateUsg tbody tr.no-data-row');
+                noDataRows.forEach(function(row) {
+                    row.style.display = 'none';
+                });
+            }
+        });
+
+        // Tambahkan event listener untuk filter kategori obat dan pencarian nama generik
+        function filterTable() {
+            var kategori = document.getElementById('filter_kategori_obat').value;
+            var searchTerm = document.getElementById('search_generik').value.toLowerCase();
+            var rows = document.querySelectorAll('#tabelFormularium tbody tr.obat-row');
+
+            rows.forEach(function(row) {
+                var rowKategori = row.getAttribute('data-kategori');
+                var namaGenerik = row.cells[2].textContent.toLowerCase(); // Kolom nama generik
+                var showByKategori = kategori === '' || rowKategori === kategori;
+                var showBySearch = searchTerm === '' || namaGenerik.includes(searchTerm);
+
+                if (showByKategori && showBySearch) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            // Tampilkan pesan jika tidak ada data
+            var visibleRows = document.querySelectorAll('#tabelFormularium tbody tr.obat-row:not([style*="display: none"])');
+            if (visibleRows.length === 0) {
+                var tbody = document.querySelector('#tabelFormularium tbody');
+                var noDataRow = document.querySelector('#tabelFormularium tbody tr.no-data-row');
+
+                if (!noDataRow) {
+                    var tr = document.createElement('tr');
+                    tr.className = 'no-data-row';
+                    tr.innerHTML = '<td colspan="7" class="text-center">Tidak ada data obat yang sesuai dengan kriteria pencarian</td>';
+                    tbody.appendChild(tr);
+                } else {
+                    noDataRow.style.display = '';
+                }
+            } else {
+                var noDataRows = document.querySelectorAll('#tabelFormularium tbody tr.no-data-row');
+                noDataRows.forEach(function(row) {
+                    row.style.display = 'none';
+                });
+            }
+
+            // Uncheck "Pilih Semua" checkbox saat filter berubah
+            document.getElementById('checkAll').checked = false;
+        }
+
+        // Event listener untuk filter kategori
+        document.getElementById('filter_kategori_obat').addEventListener('change', filterTable);
+
+        // Event listener untuk pencarian nama generik
+        document.getElementById('search_generik').addEventListener('input', filterTable);
+
+        // Inisialisasi DataTables untuk tabel formularium
+        $(document).ready(function() {
+            var table = $('#tabelFormularium').DataTable({
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/id.json'
+                },
+                pageLength: 10,
+                order: [
+                    [1, 'asc']
+                ]
+            });
+
+            // Hapus event handler lama untuk filter kategori
+            $('select[name="kategori_obat"]').off('change');
+        });
+
+        // Tambahkan event listener untuk filter kategori tatalaksana
+        document.getElementById('filter_kategori_tatalaksana').addEventListener('change', function() {
+            var kategori = this.value;
+            var rows = document.querySelectorAll('#tabelTemplateTatalaksana tbody tr.template-row');
+
+            rows.forEach(function(row) {
+                if (kategori === '' || row.getAttribute('data-kategori') === kategori) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            // Perbarui nomor urut yang ditampilkan
+            var visibleRows = document.querySelectorAll('#tabelTemplateTatalaksana tbody tr.template-row:not([style*="display: none"])');
+            visibleRows.forEach(function(row, index) {
+                row.cells[0].textContent = index + 1;
+            });
+
+            // Tampilkan pesan jika tidak ada data
+            var tbody = document.querySelector('#tabelTemplateTatalaksana tbody');
+            var noDataRow = document.querySelector('#tabelTemplateTatalaksana tbody tr:not(.template-row)');
+
+            if (visibleRows.length === 0) {
+                if (!noDataRow) {
+                    var tr = document.createElement('tr');
+                    tr.className = 'no-data-row';
+                    tr.innerHTML = '<td colspan="6" class="text-center">Tidak ada template tersedia untuk kategori ini</td>';
+                    tbody.appendChild(tr);
+                } else {
+                    noDataRow.style.display = '';
+                }
+            } else {
+                if (noDataRow) {
+                    noDataRow.style.display = 'none';
+                }
+            }
+        });
+    });
 </script>

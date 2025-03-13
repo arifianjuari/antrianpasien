@@ -879,6 +879,8 @@ class RekamMedisController
                     diagnosis,
                     tata,
                     tanggal_kontrol,
+                    atensi,
+                    resep
                     atensi
                     tata
                 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -1458,6 +1460,7 @@ class RekamMedisController
                 'lab' => $_POST['lab'],
                 'diagnosis' => $_POST['diagnosis'],
                 'tata' => $_POST['tata'],
+                'resep' => $_POST['resep'],
                 'tanggal_kontrol' => $_POST['tanggal_kontrol'] ?? null,
                 'atensi' => $_POST['atensi'] ?? '0'
             ];

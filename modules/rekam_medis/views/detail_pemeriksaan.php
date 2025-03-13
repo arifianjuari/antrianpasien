@@ -106,6 +106,10 @@ error_log("Edit URL: " . $edit_url);
                             <td><?= nl2br($pemeriksaan['tata']) ?></td>
                         </tr>
                         <tr>
+                            <th>Resep</th>
+                            <td><?= nl2br($pemeriksaan['resep']) ?></td>
+                        </tr>
+                        <tr>
                             <th>Edukasi</th>
                             <td><?= nl2br($pemeriksaan['konsul']) ?></td>
                         </tr>

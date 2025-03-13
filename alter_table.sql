@@ -3,6 +3,10 @@ ALTER TABLE penilaian_medis_ralan_kandungan
 ADD COLUMN no_rkm_medis VARCHAR(15) AFTER no_rawat,
 ADD INDEX idx_no_rkm_medis (no_rkm_medis);
 
+-- Menambahkan kolom resep
+ALTER TABLE penilaian_medis_ralan_kandungan
+ADD COLUMN resep TEXT AFTER tata;
+
 -- Mengupdate data no_rkm_medis dari tabel reg_periksa
 UPDATE penilaian_medis_ralan_kandungan pm
 JOIN reg_periksa rp ON pm.no_rawat = rp.no_rawat

@@ -621,6 +621,10 @@ error_log("Data pasien: " . json_encode($pasien));
                                                                 <th>Tatalaksana</th>
                                                                 <td><?= $rp['tata'] ?: '-' ?></td>
                                                             </tr>
+                                                            <tr>
+                                                                <th>Resep</th>
+                                                                <td><?= $rp['resep'] ?: '-' ?></td>
+                                                            </tr>
                                                         </table>
                                                     </div>
                                                 </div>

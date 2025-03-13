@@ -158,7 +158,7 @@ class RekamMedis
                     tfu, tbj, his, kontraksi, djj,
                     inspeksi, inspekulo, vt, rt,
                     ultra, kardio, lab,
-                    diagnosis, tata, konsul
+                    diagnosis, tata, konsul, resep
                 ) VALUES (
                     :no_rawat, :tanggal, :kd_dokter,
                     :anamnesis, :hubungan, :keluhan_utama, :rps, :rpd,
@@ -169,7 +169,7 @@ class RekamMedis
                     :tfu, :tbj, :his, :kontraksi, :djj,
                     :inspeksi, :inspekulo, :vt, :rt,
                     :ultra, :kardio, :lab,
-                    :diagnosis, :tata, :konsul
+                    :diagnosis, :tata, :konsul, :resep
                 )
             ");
 
@@ -219,7 +219,8 @@ class RekamMedis
                 ':lab' => $data['lab'],
                 ':diagnosis' => $data['diagnosis'],
                 ':tata' => $data['tata'],
-                ':konsul' => $data['konsul']
+                ':konsul' => $data['konsul'],
+                ':resep' => $data['resep']
             ]);
 
             return true;
@@ -242,7 +243,7 @@ class RekamMedis
                     kontraksi = ?, djj = ?, inspeksi = ?, inspekulo = ?, fluxus = ?,
                     fluor = ?, dalam = ?, pembukaan = ?, portio = ?, ketuban = ?,
                     presentasi = ?, penurunan = ?, denominator = ?, ukuran_panggul = ?, diagnosa = ?,
-                    tindakan = ?, edukasi = ?
+                    tindakan = ?, edukasi = ?, resep = ?
                 WHERE no_rawat = ?
             ");
 
@@ -284,6 +285,7 @@ class RekamMedis
                 $data['diagnosa'],
                 $data['tindakan'],
                 $data['edukasi'],
+                $data['resep'],
                 $data['no_rawat']
             ]);
 
@@ -675,7 +677,8 @@ class RekamMedis
                     COALESCE(pmrk.ultra, '') as ultra,
                     COALESCE(pmrk.lab, '') as lab,
                     COALESCE(pmrk.diagnosis, '') as diagnosis,
-                    COALESCE(pmrk.tata, '') as tata
+                    COALESCE(pmrk.tata, '') as tata,
+                    COALESCE(pmrk.resep, '') as resep
                 FROM reg_periksa rp
                 LEFT JOIN penilaian_medis_ralan_kandungan pmrk ON rp.no_rawat = pmrk.no_rawat
                 WHERE rp.no_rkm_medis = ?
@@ -735,14 +738,14 @@ class RekamMedis
                         kepala, mata, gigi, tht, thoraks,
                         abdomen, genital, ekstremitas, kulit, ket_fisik,
                         ultra, lab, diagnosis, tata,
-                        tanggal_kontrol, atensi
+                        tanggal_kontrol, atensi, resep
                     ) VALUES (
                         :no_rawat, NOW(), :keluhan_utama, :rps, :rpd, :alergi,
                         :gcs, :td, :nadi, :rr, :suhu, :spo, :bb, :tb,
                         :kepala, :mata, :gigi, :tht, :thoraks,
                         :abdomen, :genital, :ekstremitas, :kulit, :ket_fisik,
                         :ultra, :lab, :diagnosis, :tata,
-                        :tanggal_kontrol, :atensi
+                        :tanggal_kontrol, :atensi, :resep
                     )
                 ");
             } else {
@@ -775,6 +778,7 @@ class RekamMedis
                         lab = :lab,
                         diagnosis = :diagnosis,
                         tata = :tata,
+                        resep = :resep,
                         tanggal_kontrol = :tanggal_kontrol,
                         atensi = :atensi
                     WHERE no_rawat = :no_rawat
@@ -809,6 +813,7 @@ class RekamMedis
                 ':lab' => $data['lab'],
                 ':diagnosis' => $data['diagnosis'],
                 ':tata' => $data['tata'],
+                ':resep' => $data['resep'],
                 ':tanggal_kontrol' => $data['tanggal_kontrol'],
                 ':atensi' => $data['atensi']
             ];

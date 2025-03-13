@@ -21,6 +21,7 @@ try {
             `nama_obat` varchar(255) NOT NULL,
             `nama_generik` varchar(255) DEFAULT NULL,
             `bentuk_sediaan` varchar(50) DEFAULT NULL,
+            `dosis` varchar(100) DEFAULT NULL,
             `kategori` varchar(100) DEFAULT NULL,
             `catatan_obat` text DEFAULT NULL,
             `harga` int(11) NOT NULL,
@@ -66,6 +67,7 @@ try {
                             <li><strong>nama_obat</strong> - Nama obat</li>
                             <li><strong>nama_generik</strong> - Nama generik obat</li>
                             <li><strong>bentuk_sediaan</strong> - Bentuk sediaan obat (tablet, kapsul, sirup, dll)</li>
+                            <li><strong>dosis</strong> - Dosis obat</li>
                             <li><strong>kategori</strong> - Kategori obat</li>
                             <li><strong>catatan_obat</strong> - Catatan atau deskripsi obat</li>
                             <li><strong>harga</strong> - Harga obat</li>
