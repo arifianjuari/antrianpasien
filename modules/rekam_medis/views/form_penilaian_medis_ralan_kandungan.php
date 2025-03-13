@@ -114,21 +114,76 @@ if (!defined('BASE_PATH')) {
                                         <h5 class="card-title mb-0">Anamnesis</h5>
                                     </div>
                                     <div class="card-body">
-                                        <div class="mb-3">
-                                            <label>Keluhan Utama</label>
-                                            <textarea name="keluhan_utama" class="form-control" rows="2" required></textarea>
+                                        <div class="row g-2">
+                                            <div class="col-6">
+                                                <div class="mb-2">
+                                                    <label>Keluhan Utama</label>
+                                                    <textarea name="keluhan_utama" class="form-control form-control-sm" rows="2" required></textarea>
+                                                </div>
+                                                <div class="mb-2">
+                                                    <label>Riwayat Penyakit Sekarang</label>
+                                                    <textarea name="rps" class="form-control form-control-sm" rows="2"></textarea>
+                                                </div>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="mb-2">
+                                                    <label>Riwayat Penyakit Dahulu</label>
+                                                    <textarea name="rpd" class="form-control form-control-sm" rows="2"></textarea>
+                                                </div>
+                                                <div class="mb-2">
+                                                    <label>Alergi</label>
+                                                    <input type="text" name="alergi" class="form-control form-control-sm">
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div class="mb-3">
-                                            <label>Riwayat Penyakit Sekarang</label>
-                                            <textarea name="rps" class="form-control" rows="2"></textarea>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label>Riwayat Penyakit Dahulu</label>
-                                            <textarea name="rpd" class="form-control" rows="2"></textarea>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label>Alergi</label>
-                                            <input type="text" name="alergi" class="form-control">
+                                    </div>
+                                </div>
+
+                                <!-- Pemeriksaan Fisik -->
+                                <div class="card mb-3">
+                                    <div class="card-header">
+                                        <h5 class="card-title mb-0">Pemeriksaan Fisik</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row g-2">
+                                            <div class="col-4">
+                                                <div class="mb-2">
+                                                    <label>GCS</label>
+                                                    <input type="text" name="gcs" class="form-control form-control-sm" required value="456">
+                                                </div>
+                                                <div class="mb-2">
+                                                    <label>TD (mmHg)</label>
+                                                    <input type="text" name="td" class="form-control form-control-sm" required value="120/80">
+                                                </div>
+                                                <div class="mb-2">
+                                                    <label>Nadi (x/menit)</label>
+                                                    <input type="text" name="nadi" class="form-control form-control-sm" required value="90">
+                                                </div>
+                                            </div>
+                                            <div class="col-4">
+                                                <div class="mb-2">
+                                                    <label>RR (x/menit)</label>
+                                                    <input type="text" name="rr" class="form-control form-control-sm" required value="16">
+                                                </div>
+                                                <div class="mb-2">
+                                                    <label>Suhu (°C)</label>
+                                                    <input type="text" name="suhu" class="form-control form-control-sm" required value="36.4">
+                                                </div>
+                                                <div class="mb-2">
+                                                    <label>SpO2 (%)</label>
+                                                    <input type="text" name="spo" class="form-control form-control-sm" value="99">
+                                                </div>
+                                            </div>
+                                            <div class="col-4">
+                                                <div class="mb-2">
+                                                    <label>BB (kg)</label>
+                                                    <input type="text" name="bb" class="form-control form-control-sm">
+                                                </div>
+                                                <div class="mb-2">
+                                                    <label>TB (cm)</label>
+                                                    <input type="text" name="tb" class="form-control form-control-sm">
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -136,49 +191,95 @@ if (!defined('BASE_PATH')) {
 
                             <!-- Kolom 2 -->
                             <div class="col-md-4">
-                                <!-- Pemeriksaan Fisik -->
+                                <!-- Pemeriksaan Organ -->
                                 <div class="card mb-3">
                                     <div class="card-header">
-                                        <h5 class="card-title mb-0">Pemeriksaan Fisik</h5>
+                                        <h5 class="card-title mb-0">Pemeriksaan Organ</h5>
                                     </div>
                                     <div class="card-body">
-                                        <div class="mb-3">
-                                            <label>GCS</label>
-                                            <input type="text" name="gcs" class="form-control" required value="456">
+                                        <div class="row g-2">
+                                            <div class="col-4">
+                                                <div class="mb-2">
+                                                    <label>Kepala</label>
+                                                    <select name="kepala" class="form-select form-select-sm" required>
+                                                        <option value="Normal">Normal</option>
+                                                        <option value="Abnormal">Abnormal</option>
+                                                        <option value="Tidak Diperiksa">Tidak Diperiksa</option>
+                                                    </select>
+                                                </div>
+                                                <div class="mb-2">
+                                                    <label>Mata</label>
+                                                    <select name="mata" class="form-select form-select-sm" required>
+                                                        <option value="Normal">Normal</option>
+                                                        <option value="Abnormal">Abnormal</option>
+                                                        <option value="Tidak Diperiksa">Tidak Diperiksa</option>
+                                                    </select>
+                                                </div>
+                                                <div class="mb-2">
+                                                    <label>Gigi</label>
+                                                    <select name="gigi" class="form-select form-select-sm" required>
+                                                        <option value="Normal">Normal</option>
+                                                        <option value="Abnormal">Abnormal</option>
+                                                        <option value="Tidak Diperiksa">Tidak Diperiksa</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-4">
+                                                <div class="mb-2">
+                                                    <label>THT</label>
+                                                    <select name="tht" class="form-select form-select-sm" required>
+                                                        <option value="Normal">Normal</option>
+                                                        <option value="Abnormal">Abnormal</option>
+                                                        <option value="Tidak Diperiksa">Tidak Diperiksa</option>
+                                                    </select>
+                                                </div>
+                                                <div class="mb-2">
+                                                    <label>Thoraks</label>
+                                                    <select name="thoraks" class="form-select form-select-sm" required>
+                                                        <option value="Normal">Normal</option>
+                                                        <option value="Abnormal">Abnormal</option>
+                                                        <option value="Tidak Diperiksa">Tidak Diperiksa</option>
+                                                    </select>
+                                                </div>
+                                                <div class="mb-2">
+                                                    <label>Abdomen</label>
+                                                    <select name="abdomen" class="form-select form-select-sm" required>
+                                                        <option value="Normal">Normal</option>
+                                                        <option value="Abnormal">Abnormal</option>
+                                                        <option value="Tidak Diperiksa">Tidak Diperiksa</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-4">
+                                                <div class="mb-2">
+                                                    <label>Genital</label>
+                                                    <select name="genital" class="form-select form-select-sm" required>
+                                                        <option value="Normal">Normal</option>
+                                                        <option value="Abnormal">Abnormal</option>
+                                                        <option value="Tidak Diperiksa">Tidak Diperiksa</option>
+                                                    </select>
+                                                </div>
+                                                <div class="mb-2">
+                                                    <label>Ekstremitas</label>
+                                                    <select name="ekstremitas" class="form-select form-select-sm" required>
+                                                        <option value="Normal">Normal</option>
+                                                        <option value="Abnormal">Abnormal</option>
+                                                        <option value="Tidak Diperiksa">Tidak Diperiksa</option>
+                                                    </select>
+                                                </div>
+                                                <div class="mb-2">
+                                                    <label>Kulit</label>
+                                                    <select name="kulit" class="form-select form-select-sm" required>
+                                                        <option value="Normal">Normal</option>
+                                                        <option value="Abnormal">Abnormal</option>
+                                                        <option value="Tidak Diperiksa">Tidak Diperiksa</option>
+                                                    </select>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div class="row mb-3">
-                                            <div class="col-6">
-                                                <label>TD (mmHg)</label>
-                                                <input type="text" name="td" class="form-control" required value="120/80">
-                                            </div>
-                                            <div class="col-6">
-                                                <label>Nadi (x/menit)</label>
-                                                <input type="text" name="nadi" class="form-control" required value="90">
-                                            </div>
-                                        </div>
-                                        <div class="row mb-3">
-                                            <div class="col-6">
-                                                <label>RR (x/menit)</label>
-                                                <input type="text" name="rr" class="form-control" required value="16">
-                                            </div>
-                                            <div class="col-6">
-                                                <label>Suhu (°C)</label>
-                                                <input type="text" name="suhu" class="form-control" required value="36.4">
-                                            </div>
-                                        </div>
-                                        <div class="row mb-3">
-                                            <div class="col-6">
-                                                <label>SpO2 (%)</label>
-                                                <input type="text" name="spo" class="form-control" value="99">
-                                            </div>
-                                            <div class="col-6">
-                                                <label>BB (kg)</label>
-                                                <input type="text" name="bb" class="form-control">
-                                            </div>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label>TB (cm)</label>
-                                            <input type="text" name="tb" class="form-control">
+                                        <div class="mb-2">
+                                            <label>Keterangan Pemeriksaan Fisik</label>
+                                            <textarea name="ket_fisik" class="form-control form-control-sm" rows="1">saat ini dalam batas normal</textarea>
                                         </div>
                                     </div>
                                 </div>
@@ -193,7 +294,7 @@ if (!defined('BASE_PATH')) {
                                             <label>Ultrasonografi</label>
                                             <div class="row">
                                                 <div class="col-md-8">
-                                                    <textarea name="ultra" id="ultrasonografi" class="form-control" rows="8"></textarea>
+                                                    <textarea name="ultra" id="ultrasonografi" class="form-control" rows="10"></textarea>
                                                 </div>
                                                 <div class="col-md-4">
                                                     <div class="card border">
@@ -219,97 +320,6 @@ if (!defined('BASE_PATH')) {
 
                             <!-- Kolom 3 -->
                             <div class="col-md-4">
-                                <!-- Pemeriksaan Organ -->
-                                <div class="card mb-3">
-                                    <div class="card-header">
-                                        <h5 class="card-title mb-0">Pemeriksaan Organ</h5>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="row">
-                                            <div class="col-6">
-                                                <div class="mb-2">
-                                                    <label>Kepala</label>
-                                                    <select name="kepala" class="form-select" required>
-                                                        <option value="Normal">Normal</option>
-                                                        <option value="Abnormal">Abnormal</option>
-                                                        <option value="Tidak Diperiksa">Tidak Diperiksa</option>
-                                                    </select>
-                                                </div>
-                                                <div class="mb-2">
-                                                    <label>Mata</label>
-                                                    <select name="mata" class="form-select" required>
-                                                        <option value="Normal">Normal</option>
-                                                        <option value="Abnormal">Abnormal</option>
-                                                        <option value="Tidak Diperiksa">Tidak Diperiksa</option>
-                                                    </select>
-                                                </div>
-                                                <div class="mb-2">
-                                                    <label>Gigi</label>
-                                                    <select name="gigi" class="form-select" required>
-                                                        <option value="Normal">Normal</option>
-                                                        <option value="Abnormal">Abnormal</option>
-                                                        <option value="Tidak Diperiksa">Tidak Diperiksa</option>
-                                                    </select>
-                                                </div>
-                                                <div class="mb-2">
-                                                    <label>THT</label>
-                                                    <select name="tht" class="form-select" required>
-                                                        <option value="Normal">Normal</option>
-                                                        <option value="Abnormal">Abnormal</option>
-                                                        <option value="Tidak Diperiksa">Tidak Diperiksa</option>
-                                                    </select>
-                                                </div>
-                                                <div class="mb-2">
-                                                    <label>Thoraks</label>
-                                                    <select name="thoraks" class="form-select" required>
-                                                        <option value="Normal">Normal</option>
-                                                        <option value="Abnormal">Abnormal</option>
-                                                        <option value="Tidak Diperiksa">Tidak Diperiksa</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <div class="col-6">
-                                                <div class="mb-2">
-                                                    <label>Abdomen</label>
-                                                    <select name="abdomen" class="form-select" required>
-                                                        <option value="Normal">Normal</option>
-                                                        <option value="Abnormal">Abnormal</option>
-                                                        <option value="Tidak Diperiksa">Tidak Diperiksa</option>
-                                                    </select>
-                                                </div>
-                                                <div class="mb-2">
-                                                    <label>Genital</label>
-                                                    <select name="genital" class="form-select" required>
-                                                        <option value="Normal">Normal</option>
-                                                        <option value="Abnormal">Abnormal</option>
-                                                        <option value="Tidak Diperiksa">Tidak Diperiksa</option>
-                                                    </select>
-                                                </div>
-                                                <div class="mb-2">
-                                                    <label>Ekstremitas</label>
-                                                    <select name="ekstremitas" class="form-select" required>
-                                                        <option value="Normal">Normal</option>
-                                                        <option value="Abnormal">Abnormal</option>
-                                                        <option value="Tidak Diperiksa">Tidak Diperiksa</option>
-                                                    </select>
-                                                </div>
-                                                <div class="mb-2">
-                                                    <label>Kulit</label>
-                                                    <select name="kulit" class="form-select" required>
-                                                        <option value="Normal">Normal</option>
-                                                        <option value="Abnormal">Abnormal</option>
-                                                        <option value="Tidak Diperiksa">Tidak Diperiksa</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label>Keterangan Pemeriksaan Fisik</label>
-                                            <textarea name="ket_fisik" class="form-control" rows="2">saat ini dalam batas normal</textarea>
-                                        </div>
-                                    </div>
-                                </div>
-
                                 <!-- Diagnosis & Tatalaksana -->
                                 <div class="card mb-3">
                                     <div class="card-header">
@@ -356,6 +366,28 @@ if (!defined('BASE_PATH')) {
                                                 </div>
                                             </div>
                                         </div>
+
+                                        <div class="mb-3">
+                                            <label>Edukasi</label>
+                                            <div class="row">
+                                                <div class="col-md-8">
+                                                    <textarea name="edukasi" id="edukasi" class="form-control" rows="4"></textarea>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="card border">
+                                                        <div class="card-header py-1 bg-light">
+                                                            <h6 class="mb-0 small">Template Edukasi</h6>
+                                                        </div>
+                                                        <div class="card-body p-2">
+                                                            <button type="button" class="btn btn-sm btn-info w-100" data-bs-toggle="modal" data-bs-target="#modalDaftarEdukasi">
+                                                                <i class="fas fa-list"></i> Lihat Template
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
                                         <div class="mb-3">
                                             <label>Resep</label>
                                             <div class="row">
@@ -722,6 +754,87 @@ if (!defined('BASE_PATH')) {
     </div>
 </div>
 
+<!-- Modal Daftar Template Edukasi -->
+<div class="modal fade" id="modalDaftarEdukasi" tabindex="-1" aria-labelledby="modalDaftarEdukasiLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalDaftarEdukasiLabel">Daftar Template Edukasi</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Filter Kategori -->
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <select id="filter_kategori_edukasi" class="form-select me-2">
+                            <option value="">Semua Kategori</option>
+                            <option value="fetomaternal">Fetomaternal</option>
+                            <option value="ginekologi umum">Ginekologi Umum</option>
+                            <option value="onkogin">Onkogin</option>
+                            <option value="fertilitas">Fertilitas</option>
+                            <option value="uroginekologi">Uroginekologi</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <input type="text" id="search_edukasi" class="form-control" placeholder="Cari judul atau isi edukasi...">
+                    </div>
+                </div>
+
+                <!-- Tabel Template -->
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover" id="tabelTemplateEdukasi">
+                        <thead class="table-light">
+                            <tr>
+                                <th width="5%">No</th>
+                                <th width="20%">Judul</th>
+                                <th width="40%">Isi Edukasi</th>
+                                <th width="15%">Kategori</th>
+                                <th width="10%">Tags</th>
+                                <th width="10%">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php
+                            // Koneksi ke database
+                            $conn = new mysqli('auth-db1151.hstgr.io', 'u609399718_adminpraktek', 'Obgin@12345', 'u609399718_praktekobgin');
+
+                            if ($conn->connect_error) {
+                                die("Koneksi gagal: " . $conn->connect_error);
+                            }
+
+                            // Query untuk mendapatkan semua template edukasi
+                            $sql = "SELECT * FROM edukasi WHERE status_aktif = 1 ORDER BY kategori ASC, judul ASC";
+                            $result = $conn->query($sql);
+
+                            if ($result->num_rows > 0) {
+                                $no = 1;
+                                while ($row = $result->fetch_assoc()) {
+                                    echo "<tr class='template-row' data-kategori='" . htmlspecialchars($row['kategori']) . "' data-judul='" . htmlspecialchars($row['judul']) . "'>";
+                                    echo "<td>" . $no++ . "</td>";
+                                    echo "<td>" . htmlspecialchars($row['judul']) . "</td>";
+                                    echo "<td><div style='max-height: 100px; overflow-y: auto;'>" . $row['isi_edukasi'] . "</div></td>";
+                                    echo "<td>" . ucwords($row['kategori']) . "</td>";
+                                    echo "<td>" . htmlspecialchars($row['tag'] ?? '-') . "</td>";
+                                    echo "<td><button type='button' class='btn btn-sm btn-primary w-100' onclick='gunakanTemplateEdukasi(" . json_encode($row['isi_edukasi']) . ")'><i class='fas fa-check'></i> Gunakan</button></td>";
+                                    echo "</tr>";
+                                }
+                            } else {
+                                echo "<tr><td colspan='6' class='text-center'>Tidak ada template edukasi tersedia</td></tr>";
+                            }
+
+                            $conn->close();
+                            ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     function gunakanTemplate(isi) {
         const currentValue = document.getElementById('tatalaksana').value;
@@ -746,6 +859,25 @@ if (!defined('BASE_PATH')) {
     function gunakanDiagnosis(isi) {
         document.getElementById('diagnosis').value = isi;
         $('#modalRiwayatDiagnosis').modal('hide');
+    }
+
+    function gunakanTemplateEdukasi(isi) {
+        const currentValue = document.getElementById('edukasi').value;
+
+        // Hapus escape karakter yang mungkin ada
+        const cleanedIsi = isi.replace(/\\n/g, '\n').replace(/\\"/g, '"').replace(/\\'/g, "'");
+
+        // Konversi HTML ke teks biasa
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = cleanedIsi;
+        const textContent = tempDiv.textContent || tempDiv.innerText || '';
+
+        if (currentValue && currentValue.trim() !== '') {
+            document.getElementById('edukasi').value = currentValue + '\n\n' + textContent;
+        } else {
+            document.getElementById('edukasi').value = textContent;
+        }
+        $('#modalDaftarEdukasi').modal('hide');
     }
 
     // Fungsi untuk menangani checkbox "Pilih Semua"
@@ -928,11 +1060,63 @@ if (!defined('BASE_PATH')) {
                 } else {
                     noDataRow.style.display = '';
                 }
+            }
+        });
+
+        // Filter untuk template edukasi
+        function filterTemplateEdukasi() {
+            var kategori = document.getElementById('filter_kategori_edukasi').value;
+            var searchText = document.getElementById('search_edukasi').value.toLowerCase();
+            var rows = document.querySelectorAll('#tabelTemplateEdukasi tbody tr.template-row');
+            var hasVisibleRows = false;
+
+            rows.forEach(function(row) {
+                var rowKategori = row.getAttribute('data-kategori');
+                var rowJudul = row.getAttribute('data-judul').toLowerCase();
+                var rowIsi = row.cells[2].textContent.toLowerCase();
+                var rowTags = row.cells[4].textContent.toLowerCase();
+
+                var matchesKategori = kategori === '' || rowKategori === kategori;
+                var matchesSearch = searchText === '' ||
+                    rowJudul.includes(searchText) ||
+                    rowIsi.includes(searchText) ||
+                    rowTags.includes(searchText);
+
+                if (matchesKategori && matchesSearch) {
+                    row.style.display = '';
+                    hasVisibleRows = true;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            // Perbarui nomor urut yang ditampilkan
+            var visibleRows = document.querySelectorAll('#tabelTemplateEdukasi tbody tr.template-row:not([style*="display: none"])');
+            visibleRows.forEach(function(row, index) {
+                row.cells[0].textContent = index + 1;
+            });
+
+            // Tampilkan pesan jika tidak ada data
+            var tbody = document.querySelector('#tabelTemplateEdukasi tbody');
+            var noDataRow = document.querySelector('#tabelTemplateEdukasi tbody tr.no-data-row');
+
+            if (!hasVisibleRows) {
+                if (!noDataRow) {
+                    var tr = document.createElement('tr');
+                    tr.className = 'no-data-row';
+                    tr.innerHTML = '<td colspan="6" class="text-center">Tidak ada template edukasi yang sesuai dengan kriteria pencarian</td>';
+                    tbody.appendChild(tr);
+                } else {
+                    noDataRow.style.display = '';
+                }
             } else {
                 if (noDataRow) {
                     noDataRow.style.display = 'none';
                 }
             }
-        });
+        }
+
+        document.getElementById('filter_kategori_edukasi').addEventListener('change', filterTemplateEdukasi);
+        document.getElementById('search_edukasi').addEventListener('input', filterTemplateEdukasi);
     });
 </script>

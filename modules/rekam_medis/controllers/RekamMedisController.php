@@ -1460,6 +1460,7 @@ class RekamMedisController
                 'lab' => $_POST['lab'],
                 'diagnosis' => $_POST['diagnosis'],
                 'tata' => $_POST['tata'],
+                'edukasi' => $_POST['edukasi'],
                 'resep' => $_POST['resep'],
                 'tanggal_kontrol' => $_POST['tanggal_kontrol'] ?? null,
                 'atensi' => $_POST['atensi'] ?? '0'
@@ -1863,6 +1864,7 @@ class RekamMedisController
             'gravida' => isset($_POST['gravida']) ? $_POST['gravida'] : null,
             'paritas' => isset($_POST['paritas']) ? $_POST['paritas'] : null,
             'abortus' => isset($_POST['abortus']) ? $_POST['abortus'] : null,
+            'tb' => isset($_POST['tb']) ? $_POST['tb'] : null,
             'tanggal_hpht' => isset($_POST['tanggal_hpht']) ? $_POST['tanggal_hpht'] : null,
             'tanggal_tp' => isset($_POST['tanggal_tp']) ? $_POST['tanggal_tp'] : null,
             'tanggal_tp_penyesuaian' => isset($_POST['tanggal_tp_penyesuaian']) ? $_POST['tanggal_tp_penyesuaian'] : null,
@@ -1931,6 +1933,7 @@ class RekamMedisController
             'gravida' => isset($_POST['gravida']) ? $_POST['gravida'] : null,
             'paritas' => isset($_POST['paritas']) ? $_POST['paritas'] : null,
             'abortus' => isset($_POST['abortus']) ? $_POST['abortus'] : null,
+            'tb' => isset($_POST['tb']) ? $_POST['tb'] : null,
             'tanggal_hpht' => isset($_POST['tanggal_hpht']) ? $_POST['tanggal_hpht'] : null,
             'tanggal_tp' => isset($_POST['tanggal_tp']) ? $_POST['tanggal_tp'] : null,
             'tanggal_tp_penyesuaian' => isset($_POST['tanggal_tp_penyesuaian']) ? $_POST['tanggal_tp_penyesuaian'] : null,

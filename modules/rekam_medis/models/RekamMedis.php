@@ -465,11 +465,11 @@ class RekamMedis
 
             $stmt = $this->pdo->prepare("
                 INSERT INTO status_obstetri (
-                    id_status_obstetri, no_rkm_medis, gravida, paritas, abortus,
+                    id_status_obstetri, no_rkm_medis, gravida, paritas, abortus, tb,
                     tanggal_hpht, tanggal_tp, tanggal_tp_penyesuaian, faktor_risiko_umum, faktor_risiko_obstetri,
                     faktor_risiko_preeklampsia, hasil_faktor_risiko, updated_at
                 ) VALUES (
-                    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP
+                    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP
                 )
             ");
 
@@ -479,6 +479,7 @@ class RekamMedis
                 $data['gravida'],
                 $data['paritas'],
                 $data['abortus'],
+                $data['tb'],
                 $data['tanggal_hpht'],
                 $data['tanggal_tp'],
                 $data['tanggal_tp_penyesuaian'],
@@ -514,6 +515,7 @@ class RekamMedis
                     gravida = ?,
                     paritas = ?,
                     abortus = ?,
+                    tb = ?,
                     tanggal_hpht = ?,
                     tanggal_tp = ?,
                     tanggal_tp_penyesuaian = ?,
@@ -529,6 +531,7 @@ class RekamMedis
                 $data['gravida'],
                 $data['paritas'],
                 $data['abortus'],
+                $data['tb'],
                 $data['tanggal_hpht'],
                 $data['tanggal_tp'],
                 $data['tanggal_tp_penyesuaian'],
@@ -737,14 +740,14 @@ class RekamMedis
                         gcs, td, nadi, rr, suhu, spo, bb, tb,
                         kepala, mata, gigi, tht, thoraks,
                         abdomen, genital, ekstremitas, kulit, ket_fisik,
-                        ultra, lab, diagnosis, tata,
+                        ultra, lab, diagnosis, tata, edukasi,
                         tanggal_kontrol, atensi, resep
                     ) VALUES (
                         :no_rawat, NOW(), :keluhan_utama, :rps, :rpd, :alergi,
                         :gcs, :td, :nadi, :rr, :suhu, :spo, :bb, :tb,
                         :kepala, :mata, :gigi, :tht, :thoraks,
                         :abdomen, :genital, :ekstremitas, :kulit, :ket_fisik,
-                        :ultra, :lab, :diagnosis, :tata,
+                        :ultra, :lab, :diagnosis, :tata, :edukasi,
                         :tanggal_kontrol, :atensi, :resep
                     )
                 ");
@@ -778,6 +781,7 @@ class RekamMedis
                         lab = :lab,
                         diagnosis = :diagnosis,
                         tata = :tata,
+                        edukasi = :edukasi,
                         resep = :resep,
                         tanggal_kontrol = :tanggal_kontrol,
                         atensi = :atensi
@@ -813,6 +817,7 @@ class RekamMedis
                 ':lab' => $data['lab'],
                 ':diagnosis' => $data['diagnosis'],
                 ':tata' => $data['tata'],
+                ':edukasi' => $data['edukasi'],
                 ':resep' => $data['resep'],
                 ':tanggal_kontrol' => $data['tanggal_kontrol'],
                 ':atensi' => $data['atensi']

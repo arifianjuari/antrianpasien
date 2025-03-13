@@ -13,6 +13,7 @@ $id_status_obstetri = $isEdit ? $statusObstetri['id_status_obstetri'] : '';
 $gravida = $isEdit ? $statusObstetri['gravida'] : '';
 $paritas = $isEdit ? $statusObstetri['paritas'] : '';
 $abortus = $isEdit ? $statusObstetri['abortus'] : '';
+$tb = $isEdit ? $statusObstetri['tb'] : '';
 $tanggal_hpht = $isEdit ? $statusObstetri['tanggal_hpht'] : '';
 $tanggal_tp = $isEdit ? $statusObstetri['tanggal_tp'] : '';
 $tanggal_tp_penyesuaian = $isEdit ? $statusObstetri['tanggal_tp_penyesuaian'] : '';
@@ -115,6 +116,12 @@ $faktor_risiko_preeklampsia = $isEdit && !empty($statusObstetri['faktor_risiko_p
                                             <label class="col-sm-4 col-form-label">Abortus</label>
                                             <div class="col-sm-8">
                                                 <input type="number" class="form-control" name="abortus" value="<?= $abortus ?>" min="0">
+                                            </div>
+                                        </div>
+                                        <div class="row mb-2">
+                                            <label class="col-sm-4 col-form-label">Tinggi Badan (cm)</label>
+                                            <div class="col-sm-8">
+                                                <input type="number" class="form-control" name="tb" value="<?= $tb ?>" min="0" step="1">
                                             </div>
                                         </div>
                                         <div class="row mb-2">
@@ -292,6 +299,7 @@ $faktor_risiko_preeklampsia = $isEdit && !empty($statusObstetri['faktor_risiko_p
     document.addEventListener('DOMContentLoaded', function() {
         const hphtInput = document.querySelector('input[name="tanggal_hpht"]');
         const tpInput = document.querySelector('input[name="tanggal_tp"]');
+        const tpPenyesuaianInput = document.querySelector('input[name="tanggal_tp_penyesuaian"]');
 
         hphtInput.addEventListener('change', function() {
             if (this.value) {
@@ -304,8 +312,11 @@ $faktor_risiko_preeklampsia = $isEdit && !empty($statusObstetri['faktor_risiko_p
                 const year = tpDate.getFullYear();
                 const month = String(tpDate.getMonth() + 1).padStart(2, '0');
                 const day = String(tpDate.getDate()).padStart(2, '0');
+                const formattedDate = `${year}-${month}-${day}`;
 
-                tpInput.value = `${year}-${month}-${day}`;
+                // Set nilai untuk TP dan TP Penyesuaian
+                tpInput.value = formattedDate;
+                tpPenyesuaianInput.value = formattedDate;
             }
         });
     });
