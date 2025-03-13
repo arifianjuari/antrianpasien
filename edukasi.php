@@ -15,12 +15,12 @@ $search = isset($_GET['search']) ? $_GET['search'] : '';
 
 // Daftar kategori
 $kategori_list = [
-    'Kesehatan Umum',
-    'Kehamilan',
-    'Persalinan',
-    'Pasca Melahirkan',
-    'Kesehatan Wanita',
-    'Tips dan Lifestyle'
+    'onkogin' => 'Onkogin',
+    'endokrin' => 'Endokrin',
+    'infertilitas' => 'Infertilitas',
+    'fetomaternal' => 'Fetomaternal',
+    'urogin' => 'Urogin',
+    'tips_kesehatan' => 'Tips Kesehatan'
 ];
 
 try {
@@ -205,10 +205,10 @@ try {
                     class="btn <?= empty($selected_kategori) ? 'btn-primary' : 'btn-outline-primary' ?>">
                     Semua
                 </a>
-                <?php foreach ($kategori_list as $kategori): ?>
-                    <a href="<?= $base_url ?>/edukasi.php?kategori=<?= urlencode($kategori) ?>"
-                        class="btn <?= $selected_kategori === $kategori ? 'btn-primary' : 'btn-outline-primary' ?>">
-                        <?= $kategori ?>
+                <?php foreach ($kategori_list as $key => $nama_kategori): ?>
+                    <a href="<?= $base_url ?>/edukasi.php?kategori=<?= urlencode($key) ?>"
+                        class="btn <?= $selected_kategori === $key ? 'btn-primary' : 'btn-outline-primary' ?>">
+                        <?= $nama_kategori ?>
                     </a>
                 <?php endforeach; ?>
             </div>
