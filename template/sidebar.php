@@ -170,6 +170,12 @@ function clean_url($url)
                             </a>
                         </li>
                         <li>
+                            <a href="<?php echo $base_url; ?>/admin_praktek/formularium.php" class="nav-link <?php echo $current_page == 'formularium.php' ? 'active' : 'text-dark'; ?>">
+                                <i class="bi bi-capsule"></i>
+                                <span class="menu-text">Formularium</span>
+                            </a>
+                        </li>
+                        <li>
                             <a href="<?php echo $base_url; ?>/admin_praktek/manajemen_edukasi.php" class="nav-link <?php echo $current_page == 'manajemen_edukasi.php' ? 'active' : 'text-dark'; ?>">
                                 <i class="bi bi-journal-text"></i>
                                 <span class="menu-text">Manajemen Edukasi</span>
