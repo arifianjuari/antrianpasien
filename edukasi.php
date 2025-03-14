@@ -36,7 +36,7 @@ try {
 
     // Tambahkan pencarian jika ada
     if (!empty($search)) {
-        $query .= " AND (judul LIKE :search OR ringkasan LIKE :search OR konten LIKE :search)";
+        $query .= " AND (judul LIKE :search OR isi_edukasi LIKE :search)";
         $params[':search'] = "%$search%";
     }
 
@@ -75,6 +75,7 @@ try {
             transition: transform 0.2s;
             border: none;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: relative;
         }
 
         .article-card:hover {
@@ -82,16 +83,9 @@ try {
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
 
-        .article-image {
-            height: 200px;
-            object-fit: cover;
-            border-top-left-radius: calc(0.375rem - 1px);
-            border-top-right-radius: calc(0.375rem - 1px);
-        }
-
         .article-category {
             position: absolute;
-            top: 10px;
+            bottom: 10px;
             right: 10px;
         }
 
@@ -102,11 +96,13 @@ try {
             -webkit-line-clamp: 3;
             -webkit-box-orient: vertical;
             overflow: hidden;
+            margin-bottom: 2rem;
         }
 
         .article-meta {
             font-size: 0.85rem;
             color: #6c757d;
+            margin-bottom: 2.5rem;
         }
 
         .category-filter {
@@ -223,18 +219,6 @@ try {
                 <?php foreach ($artikels as $artikel): ?>
                     <div class="col-12 col-md-6 col-lg-4">
                         <div class="card article-card">
-                            <?php if (!empty($artikel['gambar'])): ?>
-                                <img src="<?= $base_url ?>/uploads/edukasi/<?= htmlspecialchars($artikel['gambar']) ?>"
-                                    class="article-image" alt="<?= htmlspecialchars($artikel['judul']) ?>">
-                            <?php else: ?>
-                                <img src="<?= $base_url ?>/assets/images/default-article.jpg"
-                                    class="article-image" alt="Default Image">
-                            <?php endif; ?>
-
-                            <span class="badge bg-primary article-category">
-                                <?= htmlspecialchars($artikel['kategori']) ?>
-                            </span>
-
                             <div class="card-body">
                                 <h5 class="card-title mb-3">
                                     <a href="<?= $base_url ?>/edukasi/<?= htmlspecialchars($artikel['slug']) ?>"
@@ -243,9 +227,9 @@ try {
                                     </a>
                                 </h5>
 
-                                <?php if (!empty($artikel['ringkasan'])): ?>
+                                <?php if (!empty($artikel['isi_edukasi'])): ?>
                                     <p class="article-summary mb-3">
-                                        <?= htmlspecialchars($artikel['ringkasan']) ?>
+                                        <?= htmlspecialchars(substr(strip_tags($artikel['isi_edukasi']), 0, 150)) . '...' ?>
                                     </p>
                                 <?php endif; ?>
 
@@ -255,11 +239,15 @@ try {
                                 </div>
 
                                 <div class="mt-3">
-                                    <a href="<?= $base_url ?>/edukasi/<?= htmlspecialchars($artikel['slug']) ?>"
+                                    <a href="<?= $base_url ?>/edukasi-detail.php?id=<?= htmlspecialchars($artikel['id_edukasi']) ?>"
                                         class="btn btn-outline-primary btn-sm">
                                         Baca Selengkapnya
                                     </a>
                                 </div>
+
+                                <span class="badge bg-primary article-category">
+                                    <?= htmlspecialchars($artikel['kategori']) ?>
+                                </span>
                             </div>
                         </div>
                     </div>
