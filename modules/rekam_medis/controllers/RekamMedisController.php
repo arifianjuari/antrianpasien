@@ -1177,6 +1177,8 @@ class RekamMedisController
                 'lab' => $_POST['lab'] ?? '',
                 'diagnosis' => $_POST['diagnosis'] ?? '',
                 'tata' => $_POST['tata'] ?? '',
+                'edukasi' => $_POST['edukasi'] ?? '',
+                'resep' => $_POST['resep'] ?? '',
                 'tanggal_kontrol' => $_POST['tanggal_kontrol'] ?? null,
                 'atensi' => $_POST['atensi'] ?? '0'
             ];
@@ -2450,6 +2452,59 @@ class RekamMedisController
             die("Error: " . $e->getMessage());
         } catch (Exception $e) {
             error_log("General error in generate_status_obstetri_pdf: " . $e->getMessage());
+            die("Error: " . $e->getMessage());
+        }
+    }
+
+    public function generate_status_ginekologi_pdf()
+    {
+        if (!isset($_GET['no_rkm_medis'])) {
+            die("Nomor rekam medis tidak ditemukan");
+        }
+
+        $no_rkm_medis = $_GET['no_rkm_medis'];
+
+        try {
+            // Query untuk mendapatkan data pasien
+            $query_pasien = "SELECT * FROM pasien WHERE no_rkm_medis = :no_rkm_medis";
+            $stmt_pasien = $this->pdo->prepare($query_pasien);
+            $stmt_pasien->execute([':no_rkm_medis' => $no_rkm_medis]);
+            $pasien = $stmt_pasien->fetch(PDO::FETCH_ASSOC);
+
+            if (!$pasien) {
+                die("Data pasien tidak ditemukan");
+            }
+
+            // Query untuk status ginekologi
+            $query_ginekologi = "SELECT * FROM status_ginekologi WHERE no_rkm_medis = :no_rkm_medis ORDER BY created_at DESC LIMIT 1";
+            $stmt_ginekologi = $this->pdo->prepare($query_ginekologi);
+            $stmt_ginekologi->execute([':no_rkm_medis' => $no_rkm_medis]);
+            $statusGinekologi = $stmt_ginekologi->fetch(PDO::FETCH_ASSOC);
+
+            if (!$statusGinekologi) {
+                die("Data status ginekologi tidak ditemukan");
+            }
+
+            // Query untuk data pemeriksaan dari penilaian_medis_ralan_kandungan
+            // Cari berdasarkan no_rawat yang mengandung no_rkm_medis
+            $query_pemeriksaan = "
+                SELECT * FROM penilaian_medis_ralan_kandungan 
+                WHERE no_rawat IN (
+                    SELECT no_rawat FROM reg_periksa WHERE no_rkm_medis = :no_rkm_medis
+                )
+                ORDER BY tanggal DESC LIMIT 1
+            ";
+            $stmt_pemeriksaan = $this->pdo->prepare($query_pemeriksaan);
+            $stmt_pemeriksaan->execute([':no_rkm_medis' => $no_rkm_medis]);
+            $pemeriksaan = $stmt_pemeriksaan->fetch(PDO::FETCH_ASSOC);
+
+            // Generate PDF
+            require_once('modules/rekam_medis/generate_status_ginekologi_pdf.php');
+        } catch (PDOException $e) {
+            error_log("Database error in generate_status_ginekologi_pdf: " . $e->getMessage());
+            die("Error: " . $e->getMessage());
+        } catch (Exception $e) {
+            error_log("General error in generate_status_ginekologi_pdf: " . $e->getMessage());
             die("Error: " . $e->getMessage());
         }
     }

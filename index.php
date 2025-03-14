@@ -291,6 +291,10 @@ try {
                 error_log("Routing to generate_status_obstetri_pdf");
                 $rekamMedisController->generate_status_obstetri_pdf();
                 break;
+            case 'generate_status_ginekologi_pdf':
+                error_log("Routing to generate_status_ginekologi_pdf");
+                $rekamMedisController->generate_status_ginekologi_pdf();
+                break;
             default:
                 if (empty($action)) {
                     $rekamMedisController->index();

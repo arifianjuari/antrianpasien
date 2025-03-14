@@ -858,10 +858,15 @@ if (!isset($pemeriksaan) || !$pemeriksaan) {
         tempDiv.innerHTML = cleanedIsi;
         const textContent = tempDiv.textContent || tempDiv.innerText || '';
 
+        // Bersihkan spasi dan baris kosong berlebihan
+        const cleanedContent = textContent
+            .replace(/^\s+|\s+$/g, '') // Hapus whitespace di awal dan akhir
+            .replace(/\n\s*\n\s*\n/g, '\n\n'); // Ubah 3 atau lebih baris kosong menjadi 2
+
         if (currentValue && currentValue.trim() !== '') {
-            document.getElementById('edukasi').value = currentValue + '\n\n' + textContent;
+            document.getElementById('edukasi').value = currentValue + '\n\n' + cleanedContent;
         } else {
-            document.getElementById('edukasi').value = textContent;
+            document.getElementById('edukasi').value = cleanedContent;
         }
         $('#modalDaftarEdukasi').modal('hide');
     }

@@ -170,6 +170,9 @@ error_log("Data pasien: " . json_encode($pasien));
                             <a href="index.php?module=rekam_medis&action=generate_status_obstetri_pdf&no_rkm_medis=<?= $pasien['no_rkm_medis'] ?>" class="btn btn-danger btn-sm" target="_blank">
                                 <i class="fas fa-file-pdf"></i> Download Status Obstetri
                             </a>
+                            <a href="index.php?module=rekam_medis&action=generate_status_ginekologi_pdf&no_rkm_medis=<?= $pasien['no_rkm_medis'] ?>" class="btn btn-danger btn-sm" target="_blank">
+                                <i class="fas fa-file-pdf"></i> Download Status Ginekologi
+                            </a>
                         </div>
                     </div>
                     <div class="card-body">

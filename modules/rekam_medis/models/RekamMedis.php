@@ -158,7 +158,7 @@ class RekamMedis
                     tfu, tbj, his, kontraksi, djj,
                     inspeksi, inspekulo, vt, rt,
                     ultra, kardio, lab,
-                    diagnosis, tata, konsul, resep
+                    diagnosis, tata, konsul, edukasi, resep
                 ) VALUES (
                     :no_rawat, :tanggal, :kd_dokter,
                     :anamnesis, :hubungan, :keluhan_utama, :rps, :rpd,
@@ -169,7 +169,7 @@ class RekamMedis
                     :tfu, :tbj, :his, :kontraksi, :djj,
                     :inspeksi, :inspekulo, :vt, :rt,
                     :ultra, :kardio, :lab,
-                    :diagnosis, :tata, :konsul, :resep
+                    :diagnosis, :tata, :konsul, :edukasi, :resep
                 )
             ");
 
@@ -220,6 +220,7 @@ class RekamMedis
                 ':diagnosis' => $data['diagnosis'],
                 ':tata' => $data['tata'],
                 ':konsul' => $data['konsul'],
+                ':edukasi' => $data['edukasi'],
                 ':resep' => $data['resep']
             ]);
 
