@@ -71,6 +71,19 @@
         window.addEventListener('online', () => {
             window.location.reload();
         });
+
+        // Tambahkan event listener untuk tombol kembali
+        document.addEventListener('DOMContentLoaded', () => {
+            // Tambahkan tombol kembali ke halaman utama
+            const container = document.querySelector('.offline-container');
+            const backButton = document.createElement('button');
+            backButton.className = 'btn btn-outline-secondary mt-2';
+            backButton.textContent = 'Kembali ke Halaman Utama';
+            backButton.addEventListener('click', () => {
+                window.location.href = './index.php';
+            });
+            container.appendChild(backButton);
+        });
     </script>
 </body>
 
