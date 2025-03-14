@@ -1,4 +1,4 @@
-const CACHE_NAME = 'praktek-obgin-v1';
+const CACHE_NAME = 'praktek-obgin-v2';
 const urlsToCache = [
     '/',
     '/index.php',
@@ -35,7 +35,7 @@ self.addEventListener('install', event => {
                         console.log('Semua URL berhasil di-cache');
                     })
                     .catch(error => {
-                        console.error('Error saat caching:', error);
+                        console.error('Error during service worker installation:', error);
                     });
             })
     );
@@ -82,7 +82,6 @@ self.addEventListener('fetch', event => {
     event.respondWith(
         caches.match(event.request)
             .then(response => {
-                // Cache hit - return response
                 if (response) {
                     console.log('Cache hit untuk:', event.request.url);
                     return response;
@@ -94,12 +93,12 @@ self.addEventListener('fetch', event => {
 
                 return fetch(fetchRequest)
                     .then(response => {
-                        // Check if valid response
+                        // Periksa apakah response valid
                         if (!response || response.status !== 200) {
                             console.log('Response tidak valid untuk:', event.request.url, 'Status:', response.status);
 
-                            // Jika status 500, tampilkan halaman offline
-                            if (response.status === 500 && event.request.mode === 'navigate') {
+                            // Jika status 500 atau error lainnya dan request adalah navigasi
+                            if ((response.status === 500 || !response.ok) && event.request.mode === 'navigate') {
                                 console.log('Server error 500, menampilkan halaman offline');
                                 return caches.match('/offline.html');
                             }
@@ -120,13 +119,13 @@ self.addEventListener('fetch', event => {
                     })
                     .catch(error => {
                         console.log('Fetch error:', error);
-                        // If both cache and network fail, show offline page
+                        // Jika request gagal (offline atau error network lainnya)
                         if (event.request.mode === 'navigate') {
-                            console.log('Menampilkan halaman offline karena error:', error);
+                            console.log('Menampilkan halaman offline');
                             return caches.match('/offline.html');
                         }
 
-                        // Untuk request gambar, tampilkan placeholder
+                        // Untuk request gambar yang gagal
                         if (event.request.destination === 'image') {
                             return new Response(
                                 '<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"><rect width="200" height="200" fill="#f0f0f0"/><text x="50%" y="50%" font-family="Arial" font-size="20" text-anchor="middle" fill="#999">Image Offline</text></svg>',
@@ -134,11 +133,7 @@ self.addEventListener('fetch', event => {
                             );
                         }
 
-                        // Untuk request lainnya yang gagal
-                        return new Response('Network error', {
-                            status: 408,
-                            headers: { 'Content-Type': 'text/plain' }
-                        });
+                        throw error;
                     });
             })
     );
