@@ -320,7 +320,7 @@ $conn->close();
                                         </div>
                                         <div class="mb-2">
                                             <label>Keterangan Pemeriksaan Fisik</label>
-                                            <textarea name="ket_fisik" class="form-control form-control-sm" rows="1">saat ini dalam batas normal</textarea>
+                                            <textarea name="ket_fisik" class="form-control form-control-sm" rows="1"></textarea>
                                         </div>
                                     </div>
                                 </div>

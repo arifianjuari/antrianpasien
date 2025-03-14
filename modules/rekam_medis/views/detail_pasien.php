@@ -173,6 +173,9 @@ error_log("Data pasien: " . json_encode($pasien));
                             <a href="index.php?module=rekam_medis&action=generate_status_ginekologi_pdf&no_rkm_medis=<?= $pasien['no_rkm_medis'] ?>" class="btn btn-danger btn-sm" target="_blank">
                                 <i class="fas fa-file-pdf"></i> Download Status Ginekologi
                             </a>
+                            <a href="index.php?module=rekam_medis&action=generate_edukasi_pdf&no_rkm_medis=<?= $pasien['no_rkm_medis'] ?>" class="btn btn-danger btn-sm" target="_blank">
+                                <i class="fas fa-file-pdf"></i> Download Edukasi
+                            </a>
                         </div>
                     </div>
                     <div class="card-body">
@@ -589,12 +592,12 @@ error_log("Data pasien: " . json_encode($pasien));
                                                                 <td><?= ($rp['bb'] || $rp['tb']) ? ($rp['bb'] ?: '-') . ' kg / ' . ($rp['tb'] ?: '-') . ' cm' : '-' ?></td>
                                                             </tr>
                                                             <tr>
-                                                                <th>Tekanan Darah</th>
-                                                                <td><?= $rp['td'] ? $rp['td'] . ' mmHg' : '-' ?></td>
+                                                                <th>BMI</th>
+                                                                <td><?= $rp['bmi'] ? $rp['bmi'] . ' kg/m² (' . $rp['interpretasi_bmi'] . ')' : '-' ?></td>
                                                             </tr>
                                                             <tr>
-                                                                <th>Nadi</th>
-                                                                <td><?= $rp['nadi'] ? $rp['nadi'] . ' x/menit' : '-' ?></td>
+                                                                <th>Tekanan Darah</th>
+                                                                <td><?= $rp['td'] ? $rp['td'] . ' mmHg' : '-' ?></td>
                                                             </tr>
                                                         </table>
                                                     </div>

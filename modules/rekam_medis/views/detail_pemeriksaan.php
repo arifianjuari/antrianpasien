@@ -98,6 +98,14 @@ error_log("Edit URL: " . $edit_url);
                             <td><?= nl2br($pemeriksaan['rps']) ?></td>
                         </tr>
                         <tr>
+                            <th>BB/TB</th>
+                            <td><?= ($pemeriksaan['bb'] || $pemeriksaan['tb']) ? ($pemeriksaan['bb'] ?: '-') . ' kg / ' . ($pemeriksaan['tb'] ?: '-') . ' cm' : '-' ?></td>
+                        </tr>
+                        <tr>
+                            <th>BMI</th>
+                            <td><?= $pemeriksaan['bmi'] ? $pemeriksaan['bmi'] . ' kg/m² (' . $pemeriksaan['interpretasi_bmi'] . ')' : '-' ?></td>
+                        </tr>
+                        <tr>
                             <th>Diagnosis</th>
                             <td><?= nl2br($pemeriksaan['diagnosis']) ?></td>
                         </tr>

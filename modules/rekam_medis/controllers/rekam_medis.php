@@ -66,4 +66,33 @@ switch ($_REQUEST['action']) {
             require_once('modules/rekam_medis/generate_status_ginekologi_pdf.php');
         }
         break;
+
+    case 'generate_edukasi_pdf':
+        if (isset($_GET['no_rkm_medis'])) {
+            $no_rkm_medis = $_GET['no_rkm_medis'];
+
+            // Query untuk mendapatkan data pasien
+            $query_pasien = "SELECT * FROM pasien WHERE no_rkm_medis = '$no_rkm_medis'";
+            $pasien = mysqli_fetch_assoc(mysqli_query($conn, $query_pasien));
+
+            // Query untuk data pemeriksaan dari penilaian_medis_ralan_kandungan
+            // Cari berdasarkan no_rawat yang mengandung no_rkm_medis
+            $query_pemeriksaan = "
+                SELECT * FROM penilaian_medis_ralan_kandungan 
+                WHERE no_rawat IN (
+                    SELECT no_rawat FROM reg_periksa WHERE no_rkm_medis = '$no_rkm_medis'
+                )
+                ORDER BY tanggal DESC LIMIT 1
+            ";
+            $pemeriksaan = mysqli_fetch_assoc(mysqli_query($conn, $query_pemeriksaan));
+
+            // Jika tidak ada data pemeriksaan, buat array kosong
+            if (!$pemeriksaan) {
+                $pemeriksaan = ['edukasi' => 'Tidak ada data edukasi'];
+            }
+
+            // Generate PDF
+            require_once('modules/rekam_medis/generate_edukasi_pdf.php');
+        }
+        break;
 }

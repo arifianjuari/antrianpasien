@@ -668,6 +668,8 @@ class RekamMedis
                     COALESCE(pmrk.spo, '') as spo,
                     COALESCE(pmrk.bb, '') as bb,
                     COALESCE(pmrk.tb, '') as tb,
+                    COALESCE(pmrk.bmi, '') as bmi,
+                    COALESCE(pmrk.interpretasi_bmi, '') as interpretasi_bmi,
                     COALESCE(pmrk.kepala, '') as kepala,
                     COALESCE(pmrk.mata, '') as mata,
                     COALESCE(pmrk.gigi, '') as gigi,

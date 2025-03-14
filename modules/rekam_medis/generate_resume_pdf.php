@@ -139,7 +139,7 @@ try {
 
     // Coba query dengan no_rawat
     $query_pemeriksaan = "SELECT pmrk.tanggal as tanggal, pmrk.ket_fisik, pmrk.lab, pmrk.ultra, pmrk.diagnosis, pmrk.tata,
-                         pmrk.td, pmrk.bb 
+                         pmrk.td, pmrk.bb, pmrk.bmi, pmrk.interpretasi_bmi 
                          FROM penilaian_medis_ralan_kandungan pmrk
                          JOIN reg_periksa rp ON pmrk.no_rawat = rp.no_rawat
                          WHERE rp.no_rkm_medis = :no_rkm_medis 
@@ -185,13 +185,18 @@ try {
     $pdf->Cell(20, 2, 'Pemeriksaan fisik ', 0, 0, 'L');
     $pdf->SetFont('helvetica', '', 8);
 
-    // Gabungkan data TD, BB, dan ket_fisik
+    // Gabungkan data TD, BMI, dan ket_fisik
     $pemeriksaan_fisik = '';
     if (!empty($pemeriksaan['td'])) {
         $pemeriksaan_fisik .= 'TD ' . $pemeriksaan['td'] . ', ';
     }
-    if (!empty($pemeriksaan['bb'])) {
-        $pemeriksaan_fisik .= 'BB ' . $pemeriksaan['bb'] . ', ';
+    if (!empty($pemeriksaan['bmi'])) {
+        $pemeriksaan_fisik .= 'BMI ' . $pemeriksaan['bmi'];
+        if (!empty($pemeriksaan['interpretasi_bmi'])) {
+            $pemeriksaan_fisik .= ' (' . $pemeriksaan['interpretasi_bmi'] . '), ';
+        } else {
+            $pemeriksaan_fisik .= ', ';
+        }
     }
     if (!empty($pemeriksaan['ket_fisik'])) {
         $pemeriksaan_fisik .= $pemeriksaan['ket_fisik'];

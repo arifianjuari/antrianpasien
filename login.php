@@ -107,41 +107,81 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 // Generate new CSRF token
 $csrf_token = generateCSRFToken();
+
+// Generate CSRF token if not exists
+if (!isset($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+$csrf_token = $_SESSION['csrf_token'];
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Sistem Antrian Pasien</title>
+    <title>Login - Antrian Pasien</title>
+
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#198754">
+    <meta name="description" content="Aplikasi Antrian Pasien">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Antrian Pasien">
+
+    <!-- PWA Icons -->
+    <link rel="manifest" href="/assets/pwa/manifest.json">
+    <link rel="icon" type="image/png" href="/assets/pwa/icons/icon-192x192.png">
+    <link rel="apple-touch-icon" href="/assets/pwa/icons/icon-192x192.png">
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
         body {
             background-color: #f5f5f5;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .login-form {
+        .login-container {
             max-width: 400px;
-            padding: 15px;
-            margin: auto;
-            margin-top: 100px;
+            padding: 2rem;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
         .password-toggle {
-            cursor: pointer;
             position: absolute;
             right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
+            top: 38px;
+            cursor: pointer;
+        }
+
+        /* Tombol Install PWA */
+        #install-button {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            padding: 10px 15px;
+            background-color: #198754;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
         }
     </style>
 </head>
 
 <body>
     <div class="container">
-        <div class="login-form">
+        <div class="login-container">
             <h2 class="text-center mb-4">Login</h2>
             <?php if ($error): ?>
                 <div class="alert alert-danger"><?php echo htmlspecialchars($error); ?></div>
@@ -172,7 +212,15 @@ $csrf_token = generateCSRFToken();
             </form>
         </div>
     </div>
+
+    <!-- Tombol Install PWA -->
+    <button id="install-button">Instal Aplikasi</button>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- PWA Script -->
+    <script src="/assets/pwa/pwa.js"></script>
+
     <script>
         document.getElementById('togglePassword').addEventListener('click', function() {
             const password = document.getElementById('password');
