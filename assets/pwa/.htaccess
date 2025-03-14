@@ -1,1 +1,33 @@
- 
+# Proper MIME types for PWA files
+<IfModule mod_mime.c>
+    AddType application/javascript .js
+    AddType application/manifest+json .json
+</IfModule>
+
+# Cache control for PWA assets
+<IfModule mod_headers.c>
+    # No cache for service worker
+    <FilesMatch "sw.js">
+        Header set Cache-Control "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0"
+        Header set Pragma "no-cache"
+        Header set Expires "0"
+    </FilesMatch>
+    
+    # Long cache for icons
+    <FilesMatch "\.(png|jpg|jpeg|gif|ico|svg)$">
+        Header set Cache-Control "public, max-age=31536000"
+    </FilesMatch>
+    
+    # Cache for manifest
+    <FilesMatch "manifest.json">
+        Header set Cache-Control "public, max-age=86400"
+    </FilesMatch>
+</IfModule>
+
+# Allow Cross-Origin Resource Sharing
+<IfModule mod_headers.c>
+    Header set Access-Control-Allow-Origin "*"
+</IfModule>
+
+# Prevent directory listing
+Options -Indexes 

@@ -12,8 +12,22 @@ if ('serviceWorker' in navigator) {
 
                     newWorker.addEventListener('statechange', () => {
                         console.log('Service worker state:', newWorker.state);
+
+                        // Jika service worker baru sudah diinstal, minta refresh halaman
+                        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                            // Tampilkan pesan ke pengguna bahwa ada pembaruan
+                            if (confirm('Pembaruan aplikasi tersedia. Muat ulang halaman untuk menerapkan?')) {
+                                window.location.reload();
+                            }
+                        }
                     });
                 });
+
+                // Cek dan perbarui service worker secara berkala
+                setInterval(() => {
+                    registration.update();
+                    console.log('Memeriksa pembaruan service worker...');
+                }, 60 * 60 * 1000); // Periksa setiap 1 jam
 
                 // Mendaftarkan untuk push notification jika didukung
                 if ('PushManager' in window) {
@@ -31,6 +45,12 @@ if ('serviceWorker' in navigator) {
             })
             .catch(error => {
                 console.error('ServiceWorker gagal didaftarkan:', error);
+
+                // Coba daftarkan ulang jika gagal
+                setTimeout(() => {
+                    console.log('Mencoba mendaftarkan service worker lagi...');
+                    navigator.serviceWorker.register('/assets/pwa/sw.js', { scope: '/' });
+                }, 3000);
             });
 
         // Periksa apakah ada service worker yang perlu diperbarui

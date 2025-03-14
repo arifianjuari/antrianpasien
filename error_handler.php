@@ -40,12 +40,38 @@ function fatalErrorHandler()
         if (strpos($_SERVER['HTTP_ACCEPT'], 'text/html') !== false) {
             header('HTTP/1.1 500 Internal Server Error');
 
-            // Cek apakah request dari PWA
-            $isPWA = isset($_SERVER['HTTP_SEC_FETCH_MODE']) && $_SERVER['HTTP_SEC_FETCH_MODE'] === 'navigate';
+            // Deteksi apakah request dari PWA atau mobile
+            $isPWA = false;
+            $isMobile = false;
 
-            if ($isPWA) {
-                // Jika PWA, arahkan ke offline.html
+            // Cek apakah request dari PWA
+            if (isset($_SERVER['HTTP_SEC_FETCH_MODE']) && $_SERVER['HTTP_SEC_FETCH_MODE'] === 'navigate') {
+                $isPWA = true;
+            }
+
+            // Cek apakah request dari mobile
+            if (isset($_SERVER['HTTP_USER_AGENT'])) {
+                $userAgent = $_SERVER['HTTP_USER_AGENT'];
+                if (
+                    strpos($userAgent, 'Android') !== false ||
+                    strpos($userAgent, 'iPhone') !== false ||
+                    strpos($userAgent, 'iPad') !== false ||
+                    strpos($userAgent, 'Mobile') !== false
+                ) {
+                    $isMobile = true;
+                }
+            }
+
+            // Selalu arahkan ke offline.html untuk PWA dan mobile
+            if ($isPWA || $isMobile) {
+                // Pastikan header cache control diatur dengan benar
+                header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+                header('Pragma: no-cache');
+                header('Expires: 0');
+
+                // Arahkan ke offline.html
                 header('Location: /offline.html');
+                exit;
             } else {
                 // Tampilkan pesan error yang lebih user-friendly
                 echo '<html><head><title>Error</title>';

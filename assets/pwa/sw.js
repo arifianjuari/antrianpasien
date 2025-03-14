@@ -122,7 +122,7 @@ self.addEventListener('fetch', event => {
                         console.log('Fetch error:', error);
                         // If both cache and network fail, show offline page
                         if (event.request.mode === 'navigate') {
-                            console.log('Menampilkan halaman offline');
+                            console.log('Menampilkan halaman offline karena error:', error);
                             return caches.match('/offline.html');
                         }
 
@@ -133,6 +133,12 @@ self.addEventListener('fetch', event => {
                                 { headers: { 'Content-Type': 'image/svg+xml' } }
                             );
                         }
+
+                        // Untuk request lainnya yang gagal
+                        return new Response('Network error', {
+                            status: 408,
+                            headers: { 'Content-Type': 'text/plain' }
+                        });
                     });
             })
     );
