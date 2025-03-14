@@ -3,6 +3,47 @@
 if (!defined('BASE_PATH')) {
     die('No direct script access allowed');
 }
+
+// Ambil data TB dan BB terakhir
+$tb_terakhir = '';
+$bb_terakhir = '';
+$diagnosis_terakhir = '';
+$tatalaksana_terakhir = '';
+$resep_terakhir = '';
+$no_rkm_medis = $data['no_rkm_medis'];
+
+$conn = new mysqli('auth-db1151.hstgr.io', 'u609399718_adminpraktek', 'Obgin@12345', 'u609399718_praktekobgin');
+
+if ($conn->connect_error) {
+    die("Koneksi gagal: " . $conn->connect_error);
+}
+
+$sql = "SELECT tb, bb, diagnosis, tata, resep 
+        FROM penilaian_medis_ralan_kandungan pmrk
+        JOIN reg_periksa rp ON pmrk.no_rawat = rp.no_rawat
+        WHERE rp.no_rkm_medis = ? 
+        AND (pmrk.tb IS NOT NULL OR pmrk.bb IS NOT NULL OR pmrk.diagnosis IS NOT NULL 
+             OR pmrk.tata IS NOT NULL OR pmrk.resep IS NOT NULL)
+        AND (pmrk.tb != '' OR pmrk.bb != '' OR pmrk.diagnosis != '' 
+             OR pmrk.tata != '' OR pmrk.resep != '')
+        ORDER BY pmrk.tanggal DESC 
+        LIMIT 1";
+
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("s", $no_rkm_medis);
+$stmt->execute();
+$result = $stmt->get_result();
+
+if ($row = $result->fetch_assoc()) {
+    $tb_terakhir = $row['tb'];
+    $bb_terakhir = $row['bb'];
+    $diagnosis_terakhir = $row['diagnosis'];
+    $tatalaksana_terakhir = $row['tata'];
+    $resep_terakhir = $row['resep'];
+}
+
+$stmt->close();
+$conn->close();
 ?>
 
 <style>
@@ -177,11 +218,11 @@ if (!defined('BASE_PATH')) {
                                             <div class="col-4">
                                                 <div class="mb-2">
                                                     <label>BB (kg)</label>
-                                                    <input type="text" name="bb" class="form-control form-control-sm">
+                                                    <input type="text" name="bb" class="form-control form-control-sm" value="<?= htmlspecialchars($bb_terakhir) ?>">
                                                 </div>
                                                 <div class="mb-2">
                                                     <label>TB (cm)</label>
-                                                    <input type="text" name="tb" class="form-control form-control-sm">
+                                                    <input type="text" name="tb" class="form-control form-control-sm" value="<?= htmlspecialchars($tb_terakhir) ?>">
                                                 </div>
                                             </div>
                                         </div>
@@ -330,7 +371,7 @@ if (!defined('BASE_PATH')) {
                                             <label>Diagnosis</label>
                                             <div class="row">
                                                 <div class="col-md-8">
-                                                    <textarea name="diagnosis" id="diagnosis" class="form-control" rows="2"></textarea>
+                                                    <textarea name="diagnosis" id="diagnosis" class="form-control" rows="2"><?= htmlspecialchars($diagnosis_terakhir) ?></textarea>
                                                 </div>
                                                 <div class="col-md-4">
                                                     <div class="card border">
@@ -350,7 +391,7 @@ if (!defined('BASE_PATH')) {
                                             <label>Tatalaksana</label>
                                             <div class="row">
                                                 <div class="col-md-8">
-                                                    <textarea name="tata" id="tatalaksana" class="form-control" rows="4"></textarea>
+                                                    <textarea name="tata" id="tatalaksana" class="form-control" rows="4"><?= htmlspecialchars($tatalaksana_terakhir) ?></textarea>
                                                 </div>
                                                 <div class="col-md-4">
                                                     <div class="card border">
@@ -392,7 +433,7 @@ if (!defined('BASE_PATH')) {
                                             <label>Resep</label>
                                             <div class="row">
                                                 <div class="col-md-8">
-                                                    <textarea name="resep" id="resep" class="form-control" rows="4"></textarea>
+                                                    <textarea name="resep" id="resep" class="form-control" rows="4"><?= htmlspecialchars($resep_terakhir) ?></textarea>
                                                 </div>
                                                 <div class="col-md-4">
                                                     <div class="card border">

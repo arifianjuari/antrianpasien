@@ -96,21 +96,17 @@ try {
     // Rencana & Saran
     $tata = !empty($pemeriksaan['tata']) ? $pemeriksaan['tata'] : '-';
     $resep = !empty($pemeriksaan['resep']) ? $pemeriksaan['resep'] : '-';
-    $edukasi = !empty($pemeriksaan['edukasi']) ? $pemeriksaan['edukasi'] : '-';
 
     $pdf->Cell(25, 4, 'Rencana & Saran', 0, 0, 'L');
 
     // Gabungkan semua informasi rencana & saran
     $rencana_saran = $tata;
     if (!empty($resep) && $resep != '-') {
-        $rencana_saran .= ', ' . $resep;
-    }
-    if (!empty($edukasi) && $edukasi != '-') {
-        $rencana_saran .= ', ' . $edukasi;
+        $rencana_saran .= $resep;
     }
 
     // Gunakan MultiCell untuk rencana & saran agar bisa wrap text
-    $pdf->Cell(3, 4, ':', 0, 0, 'L');
+    $pdf->Cell(2, 4, ':', 0, 0, 'L');
     $current_x = $pdf->GetX();
     $current_y = $pdf->GetY();
     $pdf->MultiCell(69, 3, $rencana_saran, 0, 'L');
