@@ -1,19 +1,19 @@
 const CACHE_NAME = 'praktek-obgin-v1';
 const urlsToCache = [
-    './',
-    './index.php',
-    './login.php',
-    './register.php',
-    './dashboard.php',
-    './offline.html',
-    './assets/pwa/manifest.json',
-    './assets/pwa/icons/praktekobgin_icon72x72.png',
-    './assets/pwa/icons/praktekobgin_icon96x96.png',
-    './assets/pwa/icons/praktekobgin_icon128.png',
-    './assets/pwa/icons/praktekobgin_icon144.png',
-    './assets/pwa/icons/praktekobgin_icon192.png',
-    './assets/pwa/icons/praktekobgin_icon384.png',
-    './assets/pwa/icons/praktekobgin_icon512.png',
+    '/',
+    '/index.php',
+    '/login.php',
+    '/register.php',
+    '/dashboard.php',
+    '/offline.html',
+    '/assets/pwa/manifest.json',
+    '/assets/pwa/icons/praktekobgin_icon72x72.png',
+    '/assets/pwa/icons/praktekobgin_icon96x96.png',
+    '/assets/pwa/icons/praktekobgin_icon128.png',
+    '/assets/pwa/icons/praktekobgin_icon144.png',
+    '/assets/pwa/icons/praktekobgin_icon192.png',
+    '/assets/pwa/icons/praktekobgin_icon384.png',
+    '/assets/pwa/icons/praktekobgin_icon512.png',
     'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css',
     'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css',
     'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',
@@ -56,7 +56,6 @@ self.addEventListener('activate', event => {
                         console.log('Menghapus cache lama:', cacheName);
                         return caches.delete(cacheName);
                     }
-                    return null;
                 })
             );
         }).then(() => {
@@ -96,8 +95,15 @@ self.addEventListener('fetch', event => {
                 return fetch(fetchRequest)
                     .then(response => {
                         // Check if valid response
-                        if (!response || response.status !== 200 || response.type !== 'basic') {
-                            console.log('Response tidak valid untuk:', event.request.url);
+                        if (!response || response.status !== 200) {
+                            console.log('Response tidak valid untuk:', event.request.url, 'Status:', response.status);
+
+                            // Jika status 500, tampilkan halaman offline
+                            if (response.status === 500 && event.request.mode === 'navigate') {
+                                console.log('Server error 500, menampilkan halaman offline');
+                                return caches.match('/offline.html');
+                            }
+
                             return response;
                         }
 
@@ -117,7 +123,7 @@ self.addEventListener('fetch', event => {
                         // If both cache and network fail, show offline page
                         if (event.request.mode === 'navigate') {
                             console.log('Menampilkan halaman offline');
-                            return caches.match('./offline.html');
+                            return caches.match('/offline.html');
                         }
 
                         // Untuk request gambar, tampilkan placeholder
@@ -127,14 +133,6 @@ self.addEventListener('fetch', event => {
                                 { headers: { 'Content-Type': 'image/svg+xml' } }
                             );
                         }
-
-                        return new Response('Konten tidak tersedia saat offline', {
-                            status: 503,
-                            statusText: 'Service Unavailable',
-                            headers: new Headers({
-                                'Content-Type': 'text/plain'
-                            })
-                        });
                     });
             })
     );
@@ -147,8 +145,8 @@ self.addEventListener('push', event => {
     const title = 'Praktek Obgin';
     const options = {
         body: event.data ? event.data.text() : 'Notifikasi baru',
-        icon: './assets/pwa/icons/praktekobgin_icon192.png',
-        badge: './assets/pwa/icons/praktekobgin_icon72x72.png',
+        icon: '/assets/pwa/icons/praktekobgin_icon192.png',
+        badge: '/assets/pwa/icons/praktekobgin_icon72x72.png',
         vibrate: [100, 50, 100],
         data: {
             dateOfArrival: Date.now(),
@@ -158,7 +156,7 @@ self.addEventListener('push', event => {
             {
                 action: 'explore',
                 title: 'Lihat Aplikasi',
-                icon: './assets/pwa/icons/praktekobgin_icon72x72.png'
+                icon: '/assets/pwa/icons/praktekobgin_icon72x72.png'
             }
         ]
     };
@@ -175,6 +173,6 @@ self.addEventListener('notificationclick', event => {
     event.notification.close();
 
     event.waitUntil(
-        clients.openWindow('./')
+        clients.openWindow('/')
     );
 }); 

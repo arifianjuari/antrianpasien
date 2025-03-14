@@ -53,37 +53,98 @@
             background-color: #146c43;
             border-color: #146c43;
         }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            border-color: #6c757d;
+            margin-left: 10px;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+            border-color: #5a6268;
+        }
+
+        .error-message {
+            display: none;
+            margin-top: 1rem;
+            padding: 0.5rem;
+            background-color: #f8d7da;
+            color: #842029;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
     </style>
 </head>
 
 <body>
     <div class="offline-container">
         <div class="offline-icon">
-            <i class="bi bi-wifi-off"></i>
+            <i class="bi bi-wifi-off" id="icon-offline"></i>
+            <i class="bi bi-exclamation-triangle" id="icon-error" style="display: none; color: #dc3545;"></i>
         </div>
-        <h1>Anda Sedang Offline</h1>
-        <p>Maaf, Anda tidak dapat mengakses halaman ini karena tidak ada koneksi internet. Silakan periksa koneksi Anda
+        <h1 id="title">Anda Sedang Offline</h1>
+        <p id="message">Maaf, Anda tidak dapat mengakses halaman ini karena tidak ada koneksi internet. Silakan periksa
+            koneksi Anda
             dan coba lagi.</p>
-        <button class="btn btn-primary" onclick="window.location.reload()">Coba Lagi</button>
+        <div>
+            <button class="btn btn-primary" onclick="tryReload()">Coba Lagi</button>
+            <button class="btn btn-secondary" onclick="goHome()">Halaman Utama</button>
+        </div>
+        <div class="error-message" id="error-details"></div>
     </div>
     <script>
-        // Cek koneksi saat tombol "Coba Lagi" ditekan
-        window.addEventListener('online', () => {
-            window.location.reload();
+        // Cek apakah halaman ini dimuat karena error server atau offline
+        document.addEventListener('DOMContentLoaded', function () {
+            // Cek status koneksi
+            if (navigator.onLine) {
+                // Jika online, kemungkinan error server
+                document.getElementById('icon-offline').style.display = 'none';
+                document.getElementById('icon-error').style.display = 'inline';
+                document.getElementById('title').textContent = 'Terjadi Kesalahan';
+                document.getElementById('message').textContent = 'Maaf, terjadi kesalahan pada server. Silakan coba lagi nanti atau hubungi administrator.';
+
+                // Cek apakah ada parameter error di URL
+                const urlParams = new URLSearchParams(window.location.search);
+                const errorCode = urlParams.get('error');
+                if (errorCode) {
+                    document.getElementById('error-details').style.display = 'block';
+                    document.getElementById('error-details').textContent = 'Kode Error: ' + errorCode;
+                }
+            }
+
+            // Cek koneksi saat tombol "Coba Lagi" ditekan
+            window.addEventListener('online', function () {
+                document.getElementById('icon-offline').style.display = 'inline';
+                document.getElementById('icon-error').style.display = 'none';
+                document.getElementById('title').textContent = 'Koneksi Pulih';
+                document.getElementById('message').textContent = 'Koneksi internet Anda telah pulih. Silakan muat ulang halaman.';
+            });
+
+            window.addEventListener('offline', function () {
+                document.getElementById('icon-offline').style.display = 'inline';
+                document.getElementById('icon-error').style.display = 'none';
+                document.getElementById('title').textContent = 'Anda Sedang Offline';
+                document.getElementById('message').textContent = 'Maaf, Anda tidak dapat mengakses halaman ini karena tidak ada koneksi internet. Silakan periksa koneksi Anda dan coba lagi.';
+            });
         });
 
-        // Tambahkan event listener untuk tombol kembali
-        document.addEventListener('DOMContentLoaded', () => {
-            // Tambahkan tombol kembali ke halaman utama
-            const container = document.querySelector('.offline-container');
-            const backButton = document.createElement('button');
-            backButton.className = 'btn btn-outline-secondary mt-2';
-            backButton.textContent = 'Kembali ke Halaman Utama';
-            backButton.addEventListener('click', () => {
-                window.location.href = './index.php';
-            });
-            container.appendChild(backButton);
-        });
+        // Fungsi untuk mencoba muat ulang halaman
+        function tryReload() {
+            // Simpan URL terakhir jika ada
+            const lastUrl = sessionStorage.getItem('lastUrl') || '/';
+            window.location.href = lastUrl;
+        }
+
+        // Fungsi untuk kembali ke halaman utama
+        function goHome() {
+            window.location.href = '/';
+        }
+
+        // Simpan URL terakhir sebelum offline
+        if (navigator.onLine && window.location.pathname !== '/offline.html') {
+            sessionStorage.setItem('lastUrl', window.location.href);
+        }
     </script>
 </body>
 
