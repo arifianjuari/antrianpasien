@@ -1,10 +1,11 @@
-const CACHE_NAME = 'praktek-obgin-v2';
+const CACHE_NAME = 'praktek-obgin-v3';
 const urlsToCache = [
     '/',
     '/index.php',
     '/login.php',
     '/register.php',
     '/dashboard.php',
+    '/pendaftaran/form_pendaftaran_pasien.php',
     '/offline.html',
     '/assets/pwa/manifest.json',
     '/assets/pwa/icons/praktekobgin_icon72x72.png',
@@ -174,6 +175,6 @@ self.addEventListener('notificationclick', event => {
     event.notification.close();
 
     event.waitUntil(
-        clients.openWindow('/')
+        clients.openWindow('/pendaftaran/form_pendaftaran_pasien.php')
     );
 }); 

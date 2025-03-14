@@ -43,4 +43,40 @@ AddOutputFilterByType DEFLATE application/xml
 AddOutputFilterByType DEFLATE application/xhtml+xml
 AddOutputFilterByType DEFLATE application/rss+xml
 AddOutputFilterByType DEFLATE application/javascript
-AddOutputFilterByType DEFLATE application/x-javascript 
+AddOutputFilterByType DEFLATE application/x-javascript
+
+# Redirect dari home.php ke form pendaftaran
+RewriteRule ^home\.php$ /pendaftaran/form_pendaftaran_pasien.php [R=301,L]
+
+# Redirect dari root ke form pendaftaran
+RewriteCond %{REQUEST_URI} ^/?$
+RewriteRule ^(.*)$ /pendaftaran/form_pendaftaran_pasien.php [R=301,L]
+
+# Jika file atau direktori tidak ada, arahkan ke form pendaftaran
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /pendaftaran/form_pendaftaran_pasien.php [L]
+
+# Pastikan file PHP bisa diakses
+<FilesMatch "\.php$">
+    Require all granted
+</FilesMatch>
+
+# Pengaturan header untuk PWA
+<IfModule mod_headers.c>
+    Header set Cache-Control "no-cache, no-store, must-revalidate"
+    Header set Pragma "no-cache"
+    Header set Expires 0
+</IfModule>
+
+# Pengaturan CORS jika diperlukan
+<IfModule mod_headers.c>
+    Header set Access-Control-Allow-Origin "*"
+</IfModule>
+
+# Pengaturan keamanan dasar
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set X-XSS-Protection "1; mode=block"
+</IfModule> 
