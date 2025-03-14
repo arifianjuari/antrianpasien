@@ -13,25 +13,37 @@ const urlsToCache = [
     'https://code.jquery.com/jquery-3.6.0.min.js'
 ];
 
+console.log('Service Worker dimuat');
+
 // Install Service Worker
 self.addEventListener('install', event => {
+    console.log('Service Worker: Event install terdeteksi');
     event.waitUntil(
         caches.open(CACHE_NAME)
             .then(cache => {
-                console.log('Cache opened');
-                return cache.addAll(urlsToCache);
+                console.log('Cache dibuka:', CACHE_NAME);
+                return cache.addAll(urlsToCache)
+                    .then(() => {
+                        console.log('Semua URL berhasil di-cache');
+                    })
+                    .catch(error => {
+                        console.error('Error saat caching:', error);
+                    });
             })
     );
 });
 
 // Activate Service Worker
 self.addEventListener('activate', event => {
+    console.log('Service Worker: Event activate terdeteksi');
     const cacheWhitelist = [CACHE_NAME];
     event.waitUntil(
         caches.keys().then(cacheNames => {
+            console.log('Cache yang ada:', cacheNames);
             return Promise.all(
                 cacheNames.map(cacheName => {
                     if (cacheWhitelist.indexOf(cacheName) === -1) {
+                        console.log('Menghapus cache lama:', cacheName);
                         return caches.delete(cacheName);
                     }
                 })
@@ -42,14 +54,17 @@ self.addEventListener('activate', event => {
 
 // Fetch Event
 self.addEventListener('fetch', event => {
+    console.log('Service Worker: Event fetch terdeteksi untuk:', event.request.url);
     event.respondWith(
         caches.match(event.request)
             .then(response => {
                 // Cache hit - return response
                 if (response) {
+                    console.log('Cache hit untuk:', event.request.url);
                     return response;
                 }
 
+                console.log('Cache miss untuk:', event.request.url);
                 // Clone the request
                 const fetchRequest = event.request.clone();
 
@@ -57,6 +72,7 @@ self.addEventListener('fetch', event => {
                     response => {
                         // Check if valid response
                         if (!response || response.status !== 200 || response.type !== 'basic') {
+                            console.log('Response tidak valid untuk:', event.request.url);
                             return response;
                         }
 
@@ -67,6 +83,7 @@ self.addEventListener('fetch', event => {
                             .then(cache => {
                                 // Don't cache POST requests
                                 if (event.request.method !== 'POST') {
+                                    console.log('Menyimpan response ke cache:', event.request.url);
                                     cache.put(event.request, responseToCache);
                                 }
                             });
@@ -78,6 +95,7 @@ self.addEventListener('fetch', event => {
             .catch(() => {
                 // If both cache and network fail, show offline page
                 if (event.request.mode === 'navigate') {
+                    console.log('Menampilkan halaman offline');
                     return caches.match('/offline.html');
                 }
             })
