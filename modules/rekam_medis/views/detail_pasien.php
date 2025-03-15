@@ -185,13 +185,39 @@ error_log("Data pasien: " . json_encode($pasien));
 
         @media (max-width: 768px) {
             .download-buttons {
-                flex-direction: column;
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
                 width: 100%;
             }
 
             .download-buttons .btn {
+                padding: 6px 8px;
+                font-size: 0.8rem;
                 width: 100%;
-                margin-bottom: 5px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                white-space: normal;
+                text-align: center;
+                min-height: 40px;
+            }
+
+            .download-buttons .btn i {
+                margin-right: 4px;
+                font-size: 0.9rem;
+            }
+
+            .download-buttons .btn span {
+                display: inline-block;
+                line-height: 1.2;
+            }
+
+            /* Tampilan super compact untuk layar sangat kecil */
+            @media (max-width: 400px) {
+                .download-buttons {
+                    grid-template-columns: 1fr;
+                }
             }
 
             .card-header {
@@ -202,6 +228,37 @@ error_log("Data pasien: " . json_encode($pasien));
             .card-tools {
                 margin-top: 10px;
                 width: 100%;
+            }
+        }
+
+        /* Tambahkan CSS untuk tab Download */
+        .download-section .card {
+            border: 1px solid rgba(0, 0, 0, .125);
+            transition: all 0.3s ease;
+        }
+
+        .download-section .card:hover {
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .download-section .btn {
+            text-align: left;
+            padding: 12px 15px;
+            font-size: 0.9rem;
+        }
+
+        .download-section .btn i {
+            font-size: 1.1rem;
+        }
+
+        @media (max-width: 768px) {
+            .download-section .col-md-6 {
+                padding: 0 5px;
+            }
+
+            .download-section .btn {
+                padding: 10px;
+                font-size: 0.85rem;
             }
         }
     </style>
@@ -223,39 +280,54 @@ error_log("Data pasien: " . json_encode($pasien));
                 <?php endif; ?>
 
                 <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">Detail Rekam Medis Pasien</h3>
-                        <div class="card-tools">
-                            <div class="card-header-actions">
-                                <?php
-                                // Untuk sementara, selalu arahkan ke manajemen_antrian
-                                $return_url = 'index.php?module=rekam_medis&action=manajemen_antrian';
+                    <div class="card-header p-2">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                            <!-- Tombol Kembali di kiri -->
+                            <a href="<?= $return_url ?>" class="btn btn-light btn-sm">
+                                <i class="fas fa-arrow-left"></i> Kembali
+                            </a>
 
-                                // Simpan parameter source di session untuk digunakan di halaman lain
-                                $_SESSION['source_page'] = 'antrian';
-                                ?>
-                                <a href="<?= $return_url ?>" class="btn btn-default btn-sm">
-                                    <i class="fas fa-arrow-left"></i> Kembali
-                                </a>
-
-                                <!-- Tombol Download yang sudah dirapikan dan dipindahkan ke header -->
-                                <div class="download-buttons">
-                                    <a href="index.php?module=rekam_medis&action=generate_pdf&no_rkm_medis=<?= $pasien['no_rkm_medis'] ?>" class="btn btn-danger btn-sm" target="_blank">
-                                        <i class="fas fa-file-pdf"></i> Download Resume PDF
-                                    </a>
-                                    <a href="index.php?module=rekam_medis&action=generate_status_obstetri_pdf&no_rkm_medis=<?= $pasien['no_rkm_medis'] ?>" class="btn btn-danger btn-sm" target="_blank">
-                                        <i class="fas fa-file-pdf"></i> Download Status Obstetri
-                                    </a>
-                                    <a href="index.php?module=rekam_medis&action=generate_status_ginekologi_pdf&no_rkm_medis=<?= $pasien['no_rkm_medis'] ?>" class="btn btn-danger btn-sm" target="_blank">
-                                        <i class="fas fa-file-pdf"></i> Download Status Ginekologi
-                                    </a>
-                                    <a href="index.php?module=rekam_medis&action=generate_edukasi_pdf&no_rkm_medis=<?= $pasien['no_rkm_medis'] ?>" class="btn btn-danger btn-sm" target="_blank">
-                                        <i class="fas fa-file-pdf"></i> Download Edukasi
-                                    </a>
-                                </div>
-                            </div>
+                            <h5 class="card-title mb-0">Detail Rekam Medis Pasien</h5>
                         </div>
                     </div>
+
+                    <style>
+                        /* Update CSS untuk layout header */
+                        .card-header {
+                            border-bottom: 1px solid rgba(0, 0, 0, .125);
+                        }
+
+                        .download-buttons {
+                            display: flex;
+                            flex-wrap: wrap;
+                            gap: 8px;
+                            justify-content: flex-end;
+                        }
+
+                        @media (max-width: 768px) {
+                            .download-buttons {
+                                display: grid;
+                                grid-template-columns: repeat(2, 1fr);
+                                width: 100%;
+                            }
+
+                            .card-header .d-flex {
+                                flex-direction: column;
+                                align-items: stretch !important;
+                            }
+
+                            .card-header .btn-light {
+                                width: fit-content;
+                            }
+                        }
+
+                        @media (max-width: 400px) {
+                            .download-buttons {
+                                grid-template-columns: 1fr;
+                            }
+                        }
+                    </style>
+
                     <div class="card-body">
                         <?php if (isset($_SESSION['success'])): ?>
                             <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -312,6 +384,11 @@ error_log("Data pasien: " . json_encode($pasien));
                             <li class="nav-item">
                                 <a class="nav-link collapsed" id="status-ginekologi-tab" data-toggle="collapse" href="#status-ginekologi" role="tab">
                                     Status Ginekologi <i class="fas fa-chevron-down"></i>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link collapsed" id="download-tab" data-toggle="collapse" href="#download" role="tab">
+                                    Download <i class="fas fa-chevron-down"></i>
                                 </a>
                             </li>
                         </ul>
@@ -422,7 +499,7 @@ error_log("Data pasien: " . json_encode($pasien));
                             <div class="tab-pane fade" id="skrining" role="tabpanel">
                                 <div class="mb-3">
                                     <?php if (!isset($statusObstetri) || count($statusObstetri) === 0): ?>
-                                        <a href="index.php?module=rekam_medis&action=tambah_status_obstetri&no_rkm_medis=<?= $pasien['no_rkm_medis'] ?>&source=<?= $_SESSION['source_page'] ?>" class="btn btn-primary btn-sm">
+                                        <a href="index.php?module=rekam_medis&action=tambah_status_obstetri&no_rkm_medis=<?= $pasien['no_rkm_medis'] ?>&source=<?= $_SESSION['source_page'] ?>" class="btn btn-add btn-sm">
                                             <i class="fas fa-plus"></i> Tambah Status Obstetri
                                         </a>
                                     <?php endif; ?>
@@ -590,13 +667,55 @@ error_log("Data pasien: " . json_encode($pasien));
                                     </table>
                                 </div>
                             </div>
+
+                            <!-- Tab Download -->
+                            <div class="tab-pane fade" id="download" role="tabpanel">
+                                <div class="p-3">
+                                    <div class="row download-section">
+                                        <div class="col-md-6 mb-3">
+                                            <div class="card h-100">
+                                                <div class="card-header bg-light">
+                                                    <h6 class="card-title mb-0" style="font-size: 0.9rem;">Dokumen Rekam Medis</h6>
+                                                </div>
+                                                <div class="card-body">
+                                                    <div class="d-grid gap-2">
+                                                        <a href="index.php?module=rekam_medis&action=generate_pdf&no_rkm_medis=<?= $pasien['no_rkm_medis'] ?>" class="btn btn-download" target="_blank">
+                                                            <i class="fas fa-file-pdf me-2"></i> Resume Rekam Medis
+                                                        </a>
+                                                        <a href="index.php?module=rekam_medis&action=generate_edukasi_pdf&no_rkm_medis=<?= $pasien['no_rkm_medis'] ?>" class="btn btn-download" target="_blank">
+                                                            <i class="fas fa-file-pdf me-2"></i> Edukasi Pasien
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <div class="card h-100">
+                                                <div class="card-header bg-light">
+                                                    <h6 class="card-title mb-0" style="font-size: 0.9rem;">Dokumen Kebidanan</h6>
+                                                </div>
+                                                <div class="card-body">
+                                                    <div class="d-grid gap-2">
+                                                        <a href="index.php?module=rekam_medis&action=generate_status_obstetri_pdf&no_rkm_medis=<?= $pasien['no_rkm_medis'] ?>" class="btn btn-download" target="_blank">
+                                                            <i class="fas fa-file-pdf me-2"></i> Status Obstetri
+                                                        </a>
+                                                        <a href="index.php?module=rekam_medis&action=generate_status_ginekologi_pdf&no_rkm_medis=<?= $pasien['no_rkm_medis'] ?>" class="btn btn-download" target="_blank">
+                                                            <i class="fas fa-file-pdf me-2"></i> Status Ginekologi
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- Riwayat Kunjungan & Pemeriksaan -->
                         <div class="riwayat-section mt-4">
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <h5 class="mb-0">Riwayat Kunjungan & Pemeriksaan</h5>
-                                <a href="index.php?module=rekam_medis&action=tambah_pemeriksaan&no_rkm_medis=<?= $pasien['no_rkm_medis'] ?>&source=<?= $_SESSION['source_page'] ?>" class="btn btn-primary btn-sm">
+                                <a href="index.php?module=rekam_medis&action=tambah_pemeriksaan&no_rkm_medis=<?= $pasien['no_rkm_medis'] ?>&source=<?= $_SESSION['source_page'] ?>" class="btn btn-add btn-sm">
                                     <i class="fas fa-plus"></i> Tambah Kunjungan
                                 </a>
                             </div>
@@ -724,7 +843,7 @@ error_log("Data pasien: " . json_encode($pasien));
                                                 </div>
                                                 <div>
                                                     <?php if (empty($rp['keluhan_utama'])): ?>
-                                                        <a href="index.php?module=rekam_medis&action=form_penilaian_medis_ralan_kandungan&no_rawat=<?= $rp['no_rawat'] ?>&source=<?= $_SESSION['source_page'] ?>" class="btn btn-primary btn-sm">
+                                                        <a href="index.php?module=rekam_medis&action=form_penilaian_medis_ralan_kandungan&no_rawat=<?= $rp['no_rawat'] ?>&source=<?= $_SESSION['source_page'] ?>" class="btn btn-add btn-sm">
                                                             <i class="fas fa-plus"></i> Tambah Pemeriksaan
                                                         </a>
                                                     <?php else: ?>
