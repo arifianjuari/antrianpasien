@@ -132,6 +132,78 @@ error_log("Data pasien: " . json_encode($pasien));
             font-size: 0.85rem !important;
             /* Mengurangi ukuran font untuk judul card */
         }
+
+        /* Tambahan style untuk tombol download */
+        .download-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .download-buttons .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap;
+            padding: 6px 12px;
+            font-size: 0.85rem;
+        }
+
+        .download-buttons .btn i {
+            margin-right: 6px;
+        }
+
+        .card-header-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-tools {
+            display: flex;
+            justify-content: flex-end;
+            width: 100%;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        @media (max-width: 992px) {
+            .card-header-actions {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .download-buttons {
+                margin-top: 10px;
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .download-buttons {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .download-buttons .btn {
+                width: 100%;
+                margin-bottom: 5px;
+            }
+
+            .card-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .card-tools {
+                margin-top: 10px;
+                width: 100%;
+            }
+        }
     </style>
 
     <div class="container-fluid">
@@ -154,28 +226,34 @@ error_log("Data pasien: " . json_encode($pasien));
                     <div class="card-header">
                         <h3 class="card-title">Detail Rekam Medis Pasien</h3>
                         <div class="card-tools">
-                            <?php
-                            // Untuk sementara, selalu arahkan ke manajemen_antrian
-                            $return_url = 'index.php?module=rekam_medis&action=manajemen_antrian';
+                            <div class="card-header-actions">
+                                <?php
+                                // Untuk sementara, selalu arahkan ke manajemen_antrian
+                                $return_url = 'index.php?module=rekam_medis&action=manajemen_antrian';
 
-                            // Simpan parameter source di session untuk digunakan di halaman lain
-                            $_SESSION['source_page'] = 'antrian';
-                            ?>
-                            <a href="<?= $return_url ?>" class="btn btn-default btn-sm">
-                                <i class="fas fa-arrow-left"></i> Kembali
-                            </a>
-                            <a href="index.php?module=rekam_medis&action=generate_pdf&no_rkm_medis=<?= $pasien['no_rkm_medis'] ?>" class="btn btn-danger btn-sm" target="_blank">
-                                <i class="fas fa-file-pdf"></i> Download Resume PDF
-                            </a>
-                            <a href="index.php?module=rekam_medis&action=generate_status_obstetri_pdf&no_rkm_medis=<?= $pasien['no_rkm_medis'] ?>" class="btn btn-danger btn-sm" target="_blank">
-                                <i class="fas fa-file-pdf"></i> Download Status Obstetri
-                            </a>
-                            <a href="index.php?module=rekam_medis&action=generate_status_ginekologi_pdf&no_rkm_medis=<?= $pasien['no_rkm_medis'] ?>" class="btn btn-danger btn-sm" target="_blank">
-                                <i class="fas fa-file-pdf"></i> Download Status Ginekologi
-                            </a>
-                            <a href="index.php?module=rekam_medis&action=generate_edukasi_pdf&no_rkm_medis=<?= $pasien['no_rkm_medis'] ?>" class="btn btn-danger btn-sm" target="_blank">
-                                <i class="fas fa-file-pdf"></i> Download Edukasi
-                            </a>
+                                // Simpan parameter source di session untuk digunakan di halaman lain
+                                $_SESSION['source_page'] = 'antrian';
+                                ?>
+                                <a href="<?= $return_url ?>" class="btn btn-default btn-sm">
+                                    <i class="fas fa-arrow-left"></i> Kembali
+                                </a>
+
+                                <!-- Tombol Download yang sudah dirapikan dan dipindahkan ke header -->
+                                <div class="download-buttons">
+                                    <a href="index.php?module=rekam_medis&action=generate_pdf&no_rkm_medis=<?= $pasien['no_rkm_medis'] ?>" class="btn btn-danger btn-sm" target="_blank">
+                                        <i class="fas fa-file-pdf"></i> Download Resume PDF
+                                    </a>
+                                    <a href="index.php?module=rekam_medis&action=generate_status_obstetri_pdf&no_rkm_medis=<?= $pasien['no_rkm_medis'] ?>" class="btn btn-danger btn-sm" target="_blank">
+                                        <i class="fas fa-file-pdf"></i> Download Status Obstetri
+                                    </a>
+                                    <a href="index.php?module=rekam_medis&action=generate_status_ginekologi_pdf&no_rkm_medis=<?= $pasien['no_rkm_medis'] ?>" class="btn btn-danger btn-sm" target="_blank">
+                                        <i class="fas fa-file-pdf"></i> Download Status Ginekologi
+                                    </a>
+                                    <a href="index.php?module=rekam_medis&action=generate_edukasi_pdf&no_rkm_medis=<?= $pasien['no_rkm_medis'] ?>" class="btn btn-danger btn-sm" target="_blank">
+                                        <i class="fas fa-file-pdf"></i> Download Edukasi
+                                    </a>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="card-body">

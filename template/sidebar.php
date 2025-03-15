@@ -272,42 +272,52 @@ function clean_url($url)
     }
 
     .sidebar {
-        width: 280px;
+        width: 240px;
         min-height: 100vh;
         position: fixed;
         left: 0;
         top: 0;
-        transition: all 0.3s ease;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         z-index: 1050;
-        background-color: white;
+        background-color: #ffffff;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
     }
 
     /* Base styles */
     .nav-link {
         display: flex;
         align-items: center;
-        padding: 0.625rem 1rem;
-        color: #212529;
+        padding: 0.5rem 1rem;
+        color: #4a5568;
         text-decoration: none;
-        gap: 0.75rem;
+        gap: 0.5rem;
         border-radius: 0.375rem;
         white-space: nowrap;
+        transition: all 0.2s ease;
+        margin: 0.125rem 0.25rem;
     }
 
     .nav-link i {
         font-size: 1.1rem;
-        min-width: 1.5rem;
+        min-width: 1.25rem;
         text-align: center;
+        transition: all 0.2s ease;
     }
 
     .nav-link:hover {
-        background-color: rgba(13, 110, 253, 0.1);
-        color: #0d6efd;
+        background-color: #f0f7ff;
+        color: #2563eb;
+        transform: translateX(3px);
+    }
+
+    .nav-link:hover i {
+        color: #2563eb;
     }
 
     .nav-link.active:not([href="<?php echo clean_url($base_url); ?>/dashboard.php"]) {
-        background-color: #0d6efd;
+        background-color: #2563eb;
         color: white !important;
+        box-shadow: 0 2px 4px -1px rgba(37, 99, 235, 0.2);
     }
 
     .nav-link.active:not([href="<?php echo clean_url($base_url); ?>/dashboard.php"]) i {
@@ -316,25 +326,29 @@ function clean_url($url)
 
     /* Submenu styles */
     .submenu {
-        padding-left: 2.25rem;
+        padding-left: 2rem;
         list-style: none;
         margin: 0;
         overflow: hidden;
-        transition: all 0.3s ease;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .submenu .nav-link {
-        padding: 0.5rem 1rem;
-        font-size: 0.9375rem;
+        padding: 0.4rem 1rem;
+        font-size: 0.875rem;
+        margin: 0.125rem 0.25rem;
     }
 
     .submenu-toggle {
         cursor: pointer;
+        position: relative;
     }
 
     .submenu-arrow {
         transition: transform 0.3s ease;
-        font-size: 0.875rem;
+        font-size: 0.75rem;
+        position: absolute;
+        right: 0.75rem;
     }
 
     .has-submenu.open .submenu-arrow {
@@ -358,15 +372,17 @@ function clean_url($url)
         left: 100%;
         top: 0;
         width: 200px;
-        padding: 0.5rem;
+        padding: 0.25rem;
         background: white;
-        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         border-radius: 0.375rem;
         z-index: 1060;
+        margin-left: 0.5rem;
     }
 
     .sidebar.minimized .has-submenu:hover .submenu .nav-link {
         padding: 0.5rem 1rem;
+        margin: 0.125rem 0;
     }
 
     .sidebar.minimized .has-submenu:hover .submenu .menu-text {
@@ -375,8 +391,8 @@ function clean_url($url)
 
     /* Main content adjustment */
     .main-content {
-        margin-left: 280px;
-        transition: margin-left 0.3s ease;
+        margin-left: 240px;
+        transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         padding: 1rem;
     }
 
@@ -391,19 +407,18 @@ function clean_url($url)
         }
 
         .sidebar {
-            width: 280px;
-            /* Tetap 280px lebar di mobile, tapi akan di-collapse */
+            width: 240px;
             height: 100vh;
             min-height: 100vh;
             position: fixed;
             margin-bottom: 0;
             transform: translateX(0);
-            transition: transform 0.3s ease;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             overflow-y: auto;
             max-height: 100vh;
             top: 0;
             left: 0;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
         }
 
         .sidebar.mobile-collapsed {
@@ -421,6 +436,7 @@ function clean_url($url)
             display: none;
             transition: opacity 0.3s ease;
             opacity: 0;
+            backdrop-filter: blur(4px);
         }
 
         .sidebar-overlay.show {
@@ -437,8 +453,8 @@ function clean_url($url)
         /* Mobile toggle button that stays fixed */
         .mobile-toggle-container {
             position: fixed;
-            top: 10px;
-            left: 10px;
+            top: 1rem;
+            left: 1rem;
             z-index: 1030;
             display: none;
             transition: all 0.3s ease;
@@ -449,28 +465,38 @@ function clean_url($url)
         }
 
         .mobile-toggle-container .btn {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            background-color: white;
+            border: none;
+            color: #2563eb;
+        }
+
+        .mobile-toggle-container .btn:hover {
+            background-color: #f0f7ff;
+            transform: translateY(-2px);
         }
 
         .nav-link {
-            padding: 0.75rem 1rem;
+            padding: 0.5rem 1rem;
+            margin: 0.125rem 0.25rem;
         }
 
         .submenu {
-            padding-left: 1rem;
-            background: rgba(0, 0, 0, 0.02);
+            padding-left: 0.75rem;
+            background: #f8fafc;
             border-radius: 0.375rem;
-            margin: 0.5rem 0;
+            margin: 0.25rem 0.25rem;
         }
 
         .submenu .nav-link {
-            padding: 0.625rem 1rem;
+            padding: 0.4rem 1rem;
+            margin: 0.125rem 0;
         }
 
         /* Hide minimize button on mobile */
@@ -491,6 +517,13 @@ function clean_url($url)
 
         .dropdown-item {
             padding: 0.5rem 1rem;
+            color: #4a5568;
+            transition: all 0.2s ease;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f0f7ff;
+            color: #2563eb;
         }
 
         /* Adjust submenu behavior for mobile */
@@ -499,6 +532,7 @@ function clean_url($url)
             width: 100%;
             box-shadow: none;
             padding-left: 1rem;
+            background: #f8fafc;
         }
 
         .sidebar.minimized .menu-text {
@@ -531,16 +565,16 @@ function clean_url($url)
     /* Small mobile devices */
     @media (max-width: 575.98px) {
         .nav-link {
-            padding: 0.625rem 0.75rem;
+            padding: 0.4rem 0.75rem;
         }
 
         .submenu {
-            padding-left: 0.75rem;
+            padding-left: 0.5rem;
         }
 
         .dropdown-menu {
             margin: 0;
-            padding: 0.25rem 0;
+            padding: 0.125rem 0;
         }
     }
 
@@ -560,11 +594,11 @@ function clean_url($url)
 
     /* Additional alignment fixes */
     .nav-item {
-        margin: 0.125rem 0;
+        margin: 0.0625rem 0;
     }
 
     .submenu .nav-item:last-child {
-        margin-bottom: 0.25rem;
+        margin-bottom: 0.125rem;
     }
 
     .dropdown-toggle::after {
@@ -573,6 +607,25 @@ function clean_url($url)
 
     .dropdown-menu {
         min-width: 200px;
+    }
+
+    /* Custom scrollbar */
+    .sidebar::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .sidebar::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 3px;
+    }
+
+    .sidebar::-webkit-scrollbar-thumb {
+        background: #cbd5e0;
+        border-radius: 3px;
+    }
+
+    .sidebar::-webkit-scrollbar-thumb:hover {
+        background: #a0aec0;
     }
 </style>
 

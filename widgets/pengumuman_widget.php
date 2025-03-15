@@ -89,7 +89,7 @@ if (isset($conn_created_here) && $conn_created_here) {
 
 <?php if (count($pengumuman_widget) > 0): ?>
     <div class="card mb-4 border-0 shadow-sm">
-        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+        <div class="card-header bg-warning text-white d-flex justify-content-between align-items-center" style="background-color: #e67e22 !important;">
             <h5 class="mb-0"><i class="bi bi-megaphone"></i> Pengumuman Terbaru</h5>
             <a href="<?php echo $base_url; ?>/pengumuman.php" class="btn btn-sm btn-light">Lihat Semua</a>
         </div>

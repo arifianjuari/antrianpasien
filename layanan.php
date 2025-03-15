@@ -78,12 +78,6 @@ try {
             background-color: #0d6efd;
         }
 
-        .service-icon {
-            font-size: 2rem;
-            color: #0d6efd;
-            margin-bottom: 1rem;
-        }
-
         .badge-booking {
             position: absolute;
             top: 10px;
@@ -122,6 +116,25 @@ try {
             font-size: 1.5rem;
             margin-right: 0.5rem;
             vertical-align: middle;
+        }
+
+        .card-title {
+            margin-top: 0;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        .service-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #f0f0f0;
         }
     </style>
 </head>
@@ -180,27 +193,6 @@ try {
                                     <?php endif; ?>
 
                                     <div class="card-body">
-                                        <div class="service-icon">
-                                            <?php
-                                            switch ($kategori) {
-                                                case 'Konsultasi':
-                                                    echo '<i class="bi bi-chat-dots"></i>';
-                                                    break;
-                                                case 'Tindakan':
-                                                    echo '<i class="bi bi-bandaid"></i>';
-                                                    break;
-                                                case 'Pemeriksaan':
-                                                    echo '<i class="bi bi-clipboard2-pulse"></i>';
-                                                    break;
-                                                case 'Paket':
-                                                    echo '<i class="bi bi-box"></i>';
-                                                    break;
-                                                default:
-                                                    echo '<i class="bi bi-grid"></i>';
-                                            }
-                                            ?>
-                                        </div>
-
                                         <h5 class="card-title mb-3"><?= htmlspecialchars($item['nama_layanan']) ?></h5>
 
                                         <?php if (!empty($item['deskripsi'])): ?>
@@ -214,7 +206,7 @@ try {
                                             </div>
                                         <?php endif; ?>
 
-                                        <div class="d-flex justify-content-between align-items-center mt-3">
+                                        <div class="service-footer">
                                             <?php if ($item['durasi_estimasi']): ?>
                                                 <span class="service-duration">
                                                     <i class="bi bi-clock"></i> <?= $item['durasi_estimasi'] ?> menit

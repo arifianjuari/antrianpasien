@@ -199,13 +199,6 @@ ob_start();
                             </div>
                         </div>
                     <?php else: ?>
-                        <div class="alert alert-info rounded-4 mb-4">
-                            <div class="d-flex align-items-center">
-                                <i class="fas fa-info-circle fa-2x me-3"></i>
-                                <div>Nomor antrian dihitung berdasarkan hari dan waktu pendaftaran. Pasien yang mendaftar lebih awal untuk hari yang sama akan mendapatkan nomor antrian yang lebih kecil.</div>
-                            </div>
-                        </div>
-
                         <!-- Tampilan Antrian Minimalis -->
                         <div class="row">
                             <?php foreach ($antrian_by_day_place as $group): ?>

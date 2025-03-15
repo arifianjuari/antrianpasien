@@ -168,7 +168,7 @@ if ($result && $result->num_rows > 0) {
             <div class="row mb-3">
                 <div class="col-12">
                     <div class="card">
-                        <div class="card-header bg-primary text-white">
+                        <div class="card-header bg-warning text-white" style="background-color: #e67e22 !important;">
                             <div class="d-flex justify-content-between align-items-center">
                                 <h5 class="mb-0"><?php echo $page_title; ?></h5>
                                 <a href="javascript:history.back()" class="btn btn-sm btn-light">
