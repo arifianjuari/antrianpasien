@@ -72,6 +72,7 @@ try {
             p.Keluhan,
             p.Status_Pendaftaran,
             p.Waktu_Pendaftaran,
+            p.Waktu_Perkiraan,
             jr.Hari,
             jr.Jam_Mulai,
             jr.Jam_Selesai,
@@ -402,6 +403,36 @@ try {
                                 font-size: 12px;
                             }
                         }
+
+                        .waktu-perkiraan-cell {
+                            position: relative;
+                        }
+
+                        .waktu-display {
+                            cursor: pointer;
+                        }
+
+                        .waktu-display:hover {
+                            color: #0d6efd;
+                            text-decoration: underline;
+                        }
+
+                        .waktu-input {
+                            width: 100px;
+                            display: inline-block;
+                            margin-right: 5px;
+                        }
+
+                        .edit-btn {
+                            padding: 2px 6px;
+                            font-size: 12px;
+                        }
+
+                        @media (max-width: 768px) {
+                            .waktu-input {
+                                width: 80px;
+                            }
+                        }
                     </style>
 
                     <?php if (empty($antrian)): ?>
@@ -417,6 +448,7 @@ try {
                                         <th>Aksi</th>
                                         <th>Nama Pasien</th>
                                         <th>Waktu Daftar</th>
+                                        <th>Waktu Perkiraan</th>
                                         <th>Keluhan</th>
                                         <th>Status</th>
                                     </tr>
@@ -499,6 +531,14 @@ try {
                                             </td>
                                             <td><?= htmlspecialchars($a['Nama_Pasien']) ?></td>
                                             <td><?= date('d/m/Y H:i', strtotime($a['Waktu_Pendaftaran'])) ?></td>
+                                            <td class="waktu-perkiraan-cell" data-id="<?= $a['ID_Pendaftaran'] ?>">
+                                                <span class="waktu-display"><?= !empty($a['Waktu_Perkiraan']) ? date('H:i', strtotime($a['Waktu_Perkiraan'])) : '-' ?></span>
+                                                <input type="time" class="form-control waktu-input" style="display: none;"
+                                                    value="<?= !empty($a['Waktu_Perkiraan']) ? date('H:i', strtotime($a['Waktu_Perkiraan'])) : '' ?>">
+                                                <button class="btn btn-sm btn-outline-primary edit-btn" style="display: none;">
+                                                    <i class="bi bi-check"></i>
+                                                </button>
+                                            </td>
                                             <td><?= !empty($a['Keluhan']) ? htmlspecialchars($a['Keluhan']) : '-' ?></td>
                                             <td>
                                                 <span class="badge <?= getStatusBadgeClass($a['Status_Pendaftaran']) ?>">
@@ -596,6 +636,64 @@ try {
         const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
         tooltipTriggerList.map(function(tooltipTriggerEl) {
             return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Inisialisasi semua cell waktu perkiraan
+        document.querySelectorAll('.waktu-perkiraan-cell').forEach(cell => {
+            const display = cell.querySelector('.waktu-display');
+            const input = cell.querySelector('.waktu-input');
+            const editBtn = cell.querySelector('.edit-btn');
+
+            // Tampilkan input saat display diklik
+            display.addEventListener('click', function() {
+                display.style.display = 'none';
+                input.style.display = 'inline-block';
+                editBtn.style.display = 'inline-block';
+                input.focus();
+            });
+
+            // Simpan perubahan saat tombol check diklik
+            editBtn.addEventListener('click', function() {
+                const id = cell.dataset.id;
+                const newTime = input.value;
+
+                // Kirim update ke server
+                fetch('modules/rekam_medis/controllers/update_waktu_perkiraan.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: `id_pendaftaran=${id}&waktu_perkiraan=${newTime}`
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Update tampilan
+                            display.textContent = newTime || '-';
+                            display.style.display = 'inline-block';
+                            input.style.display = 'none';
+                            editBtn.style.display = 'none';
+                        } else {
+                            alert('Gagal mengupdate waktu: ' + data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Terjadi kesalahan saat mengupdate waktu');
+                    });
+            });
+
+            // Handle ketika input kehilangan fokus
+            input.addEventListener('blur', function(e) {
+                // Jika yang diklik bukan tombol edit, kembalikan ke tampilan awal
+                if (!e.relatedTarget || !e.relatedTarget.classList.contains('edit-btn')) {
+                    display.style.display = 'inline-block';
+                    input.style.display = 'none';
+                    editBtn.style.display = 'none';
+                }
+            });
         });
     });
 </script>

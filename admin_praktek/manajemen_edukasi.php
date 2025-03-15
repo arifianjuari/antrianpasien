@@ -599,7 +599,19 @@ try {
                     ['table', ['table']],
                     ['insert', ['link']],
                     ['view', ['fullscreen', 'codeview', 'help']]
-                ]
+                ],
+                callbacks: {
+                    onInit: function() {
+                        // Menghapus spasi kosong saat inisialisasi
+                        $(this).summernote('code', $(this).summernote('code').trim());
+                    },
+                    onChange: function(contents) {
+                        // Menghapus spasi kosong saat konten berubah
+                        if (contents.startsWith('<p><br></p>')) {
+                            $(this).summernote('code', contents.replace(/^<p><br><\/p>/, ''));
+                        }
+                    }
+                }
             });
 
             // Mengisi data ke modal edit

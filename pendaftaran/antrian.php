@@ -43,6 +43,7 @@ try {
             p.ID_Pendaftaran,
             p.nm_pasien,
             p.Status_Pendaftaran,
+            p.Waktu_Perkiraan,
             jr.Hari,
             jr.Jam_Mulai,
             jr.Jam_Selesai,
@@ -225,6 +226,7 @@ ob_start();
                                                         <tr>
                                                             <th class="text-center no-column">No</th>
                                                             <th class="pasien-column">Pasien</th>
+                                                            <th class="waktu-perkiraan-column">Waktu Perkiraan</th>
                                                             <th class="waktu-column">Waktu Daftar</th>
                                                             <th class="status-column">Status</th>
                                                         </tr>
@@ -237,6 +239,11 @@ ob_start();
                                                                 </td>
                                                                 <td>
                                                                     <div class="fw-bold"><?= htmlspecialchars($a['nm_pasien']) ?></div>
+                                                                </td>
+                                                                <td>
+                                                                    <div class="small">
+                                                                        <i class="far fa-clock me-1"></i><?= !empty($a['Waktu_Perkiraan']) ? date('H:i', strtotime($a['Waktu_Perkiraan'])) : '-' ?>
+                                                                    </div>
                                                                 </td>
                                                                 <td>
                                                                     <div class="small">
@@ -391,6 +398,9 @@ $additional_css = "
     }
     .table th.pasien-column {
         width: 200px;
+    }
+    .table th.waktu-perkiraan-column {
+        width: 150px;
     }
     .table th.waktu-column {
         width: 180px;
