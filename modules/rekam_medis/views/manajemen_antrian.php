@@ -91,7 +91,7 @@ try {
     if (!empty($status_filter)) {
         $query .= " AND p.Status_Pendaftaran = :status";
     } else if ($default_filter) {
-        $query .= " AND p.Status_Pendaftaran NOT IN ('Dibatalkan', 'Selesai')";
+        $query .= " AND p.Status_Pendaftaran IN ('Dikonfirmasi', 'Menunggu Konfirmasi')";
     }
 
     if (!empty($search)) {
@@ -224,46 +224,18 @@ try {
                             <div class="card shadow-sm">
                                 <div class="card-body p-3">
                                     <div class="row">
-                                        <div class="col-md-2 col-6 text-center mb-2 mb-md-0">
-                                            <div class="bg-light rounded p-2 stat-box">
-                                                <h6 class="mb-0">Total Aktif</h6>
-                                                <h3 class="mb-0"><?= $total_antrian ?></h3>
-                                                <small>Pendaftaran Aktif</small>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-2 col-6 text-center mb-2 mb-md-0">
-                                            <div class="bg-warning bg-opacity-25 rounded p-2 stat-box">
-                                                <h6 class="mb-0">Menunggu</h6>
-                                                <h3 class="mb-0"><?= isset($status_counts['Menunggu Konfirmasi']) ? $status_counts['Menunggu Konfirmasi'] : 0 ?></h3>
-                                                <small>Konfirmasi</small>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-2 col-6 text-center mb-2 mb-md-0">
+                                        <div class="col-md-6 col-6 text-center mb-2 mb-md-0">
                                             <div class="bg-success bg-opacity-25 rounded p-2 stat-box">
                                                 <h6 class="mb-0">Dikonfirmasi</h6>
                                                 <h3 class="mb-0"><?= isset($status_counts['Dikonfirmasi']) ? $status_counts['Dikonfirmasi'] : 0 ?></h3>
                                                 <small>Pendaftaran</small>
                                             </div>
                                         </div>
-                                        <div class="col-md-2 col-6 text-center mb-2 mb-md-0">
-                                            <div class="bg-info bg-opacity-25 rounded p-2 stat-box">
-                                                <h6 class="mb-0">Selesai</h6>
-                                                <h3 class="mb-0"><?= isset($status_counts['Selesai']) ? $status_counts['Selesai'] : 0 ?></h3>
-                                                <small>Pendaftaran</small>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-2 col-6 text-center mb-2 mb-md-0">
-                                            <div class="bg-secondary bg-opacity-25 rounded p-2 stat-box">
-                                                <h6 class="mb-0">Total Semua</h6>
-                                                <h3 class="mb-0"><?= $total_keseluruhan ?></h3>
-                                                <small>Semua Pendaftaran</small>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-2 col-6 text-center mb-2 mb-md-0">
-                                            <div class="bg-danger bg-opacity-25 rounded p-2 stat-box">
-                                                <h6 class="mb-0">Dibatalkan</h6>
-                                                <h3 class="mb-0"><?= isset($status_counts['Dibatalkan']) ? $status_counts['Dibatalkan'] : 0 ?></h3>
-                                                <small>Pendaftaran</small>
+                                        <div class="col-md-6 col-6 text-center mb-2 mb-md-0">
+                                            <div class="bg-warning bg-opacity-25 rounded p-2 stat-box">
+                                                <h6 class="mb-0">Menunggu</h6>
+                                                <h3 class="mb-0"><?= isset($status_counts['Menunggu Konfirmasi']) ? $status_counts['Menunggu Konfirmasi'] : 0 ?></h3>
+                                                <small>Konfirmasi</small>
                                             </div>
                                         </div>
                                     </div>
@@ -273,109 +245,164 @@ try {
                     </div>
 
                     <!-- Filter dan Pengurutan -->
-                    <div class="row mb-4">
-                        <div class="col-md-8">
-                            <form method="GET" class="d-flex gap-2 filter-form">
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <form method="GET">
                                 <input type="hidden" name="module" value="rekam_medis">
                                 <input type="hidden" name="action" value="manajemen_antrian">
-                                <div class="search-container">
-                                    <input type="text" name="search" class="form-control"
-                                        placeholder="Cari nama pasien, No.RM, atau ID pendaftaran..."
-                                        value="<?= htmlspecialchars($search) ?>">
-                                </div>
-                                <div class="filter-container">
-                                    <select name="status" class="form-select">
-                                        <option value="" <?= $status_filter === '' ? 'selected' : '' ?>>Semua Status</option>
-                                        <option value="Menunggu Konfirmasi" <?= $status_filter === 'Menunggu Konfirmasi' ? 'selected' : '' ?>>Menunggu Konfirmasi</option>
-                                        <option value="Dikonfirmasi" <?= $status_filter === 'Dikonfirmasi' ? 'selected' : '' ?>>Dikonfirmasi</option>
-                                        <option value="Dibatalkan" <?= $status_filter === 'Dibatalkan' ? 'selected' : '' ?>>Dibatalkan</option>
-                                        <option value="Selesai" <?= $status_filter === 'Selesai' ? 'selected' : '' ?>>Selesai</option>
-                                    </select>
-                                </div>
-                                <div class="filter-container">
-                                    <select name="hari" class="form-select">
-                                        <option value="">Semua Hari</option>
-                                        <option value="Senin">Senin</option>
-                                        <option value="Selasa">Selasa</option>
-                                        <option value="Rabu">Rabu</option>
-                                        <option value="Kamis">Kamis</option>
-                                        <option value="Jumat">Jumat</option>
-                                        <option value="Sabtu">Sabtu</option>
-                                        <option value="Minggu">Minggu</option>
-                                    </select>
-                                </div>
-                                <div class="filter-container">
-                                    <select name="dokter" class="form-select">
-                                        <option value="">Semua Dokter</option>
-                                        <?php
-                                        $query_dokter = "SELECT DISTINCT Nama_Dokter FROM dokter WHERE Status_Aktif = 1";
-                                        $stmt_dokter = $conn->query($query_dokter);
-                                        while ($row = $stmt_dokter->fetch(PDO::FETCH_ASSOC)) {
-                                            echo "<option value='" . htmlspecialchars($row['Nama_Dokter']) . "'>" . htmlspecialchars($row['Nama_Dokter']) . "</option>";
-                                        }
-                                        ?>
-                                    </select>
-                                </div>
-                                <div class="filter-container">
-                                    <select name="tempat" class="form-select">
-                                        <option value="">Semua Tempat</option>
-                                        <?php
-                                        $query_tempat = "SELECT DISTINCT Nama_Tempat FROM tempat_praktek WHERE Status_Aktif = 1";
-                                        $stmt_tempat = $conn->query($query_tempat);
-                                        while ($row = $stmt_tempat->fetch(PDO::FETCH_ASSOC)) {
-                                            echo "<option value='" . htmlspecialchars($row['Nama_Tempat']) . "'>" . htmlspecialchars($row['Nama_Tempat']) . "</option>";
-                                        }
-                                        ?>
-                                    </select>
-                                </div>
-                                <div class="filter-container">
-                                    <select name="sort" class="form-select">
-                                        <option value="waktu_desc" <?= $sort_by === 'waktu_desc' ? 'selected' : '' ?>>Waktu Terbaru</option>
-                                        <option value="waktu_asc" <?= $sort_by === 'waktu_asc' ? 'selected' : '' ?>>Waktu Terlama</option>
-                                        <option value="nama_asc" <?= $sort_by === 'nama_asc' ? 'selected' : '' ?>>Nama (A-Z)</option>
-                                        <option value="nama_desc" <?= $sort_by === 'nama_desc' ? 'selected' : '' ?>>Nama (Z-A)</option>
-                                        <option value="status_asc" <?= $sort_by === 'status_asc' ? 'selected' : '' ?>>Status (A-Z)</option>
-                                        <option value="status_desc" <?= $sort_by === 'status_desc' ? 'selected' : '' ?>>Status (Z-A)</option>
-                                        <option value="hari_asc" <?= $sort_by === 'hari_asc' ? 'selected' : '' ?>>Hari (Senin-Minggu)</option>
-                                    </select>
-                                </div>
-                                <div class="button-container">
-                                    <button type="submit" class="btn btn-primary btn-icon" data-bs-toggle="tooltip" title="Cari">
-                                        <i class="bi bi-search"></i>
+
+                                <!-- Action Buttons Mobile -->
+                                <div class="d-flex justify-content-end gap-2 mb-2">
+                                    <a href="<?php echo $base_url; ?>/pendaftaran/form_pendaftaran_pasien.php"
+                                        class="btn btn-primary"
+                                        style="height: 38px; min-width: 38px;"
+                                        data-bs-toggle="tooltip"
+                                        title="Tambah Pendaftaran">
+                                        <i class="bi bi-plus-circle"></i>
+                                    </a>
+
+                                    <button type="button"
+                                        class="btn btn-success"
+                                        style="height: 38px; min-width: 38px;"
+                                        onclick="refreshPage()"
+                                        data-bs-toggle="tooltip"
+                                        title="Refresh">
+                                        <i class="bi bi-arrow-clockwise"></i>
                                     </button>
                                 </div>
-                                <?php if (!empty($search) || !empty($status_filter) || $sort_by !== 'waktu_desc'): ?>
-                                    <div class="button-container">
-                                        <a href="index.php?module=rekam_medis&action=manajemen_antrian" class="btn btn-secondary btn-icon" data-bs-toggle="tooltip" title="Reset Filter">
-                                            <i class="bi bi-x-circle"></i>
-                                        </a>
-                                    </div>
-                                <?php endif; ?>
 
-                                <?php if ($default_filter): ?>
-                                    <div class="button-container">
-                                        <a href="index.php?module=rekam_medis&action=manajemen_antrian&clear_filter=1" class="btn btn-info btn-icon" data-bs-toggle="tooltip" title="Tampilkan Semua Data">
-                                            <i class="bi bi-eye"></i>
-                                        </a>
+                                <!-- Search Box -->
+                                <div class="mb-2">
+                                    <div class="input-group">
+                                        <input type="text"
+                                            name="search"
+                                            class="form-control"
+                                            style="height: 38px;"
+                                            placeholder="Cari nama/No.RM/ID..."
+                                            value="<?= htmlspecialchars($search) ?>">
+                                        <button type="submit"
+                                            class="btn btn-primary"
+                                            style="height: 38px; min-width: 38px;">
+                                            <i class="bi bi-search"></i>
+                                        </button>
+                                        <?php if (!empty($search) || !empty($status_filter) || $sort_by !== 'waktu_desc'): ?>
+                                            <a href="index.php?module=rekam_medis&action=manajemen_antrian"
+                                                class="btn btn-secondary"
+                                                style="height: 38px; min-width: 38px;"
+                                                data-bs-toggle="tooltip"
+                                                title="Reset Filter">
+                                                <i class="bi bi-x-circle"></i>
+                                            </a>
+                                        <?php endif; ?>
                                     </div>
-                                <?php else: ?>
-                                    <div class="button-container">
-                                        <a href="index.php?module=rekam_medis&action=manajemen_antrian" class="btn btn-warning btn-icon" data-bs-toggle="tooltip" title="Sembunyikan Data Selesai/Dibatalkan">
-                                            <i class="bi bi-filter"></i>
-                                        </a>
+                                </div>
+
+                                <!-- Filter Dropdowns -->
+                                <div class="row g-2">
+                                    <div class="col-6">
+                                        <select name="status" class="form-select" style="height: 38px;">
+                                            <option value="">Status</option>
+                                            <option value="Dikonfirmasi" <?= $status_filter === 'Dikonfirmasi' ? 'selected' : '' ?>>Dikonfirmasi</option>
+                                            <option value="Menunggu Konfirmasi" <?= $status_filter === 'Menunggu Konfirmasi' ? 'selected' : '' ?>>Menunggu</option>
+                                        </select>
                                     </div>
-                                <?php endif; ?>
+                                    <div class="col-6">
+                                        <select name="hari" class="form-select" style="height: 38px;">
+                                            <option value="">Hari</option>
+                                            <option value="Senin">Senin</option>
+                                            <option value="Selasa">Selasa</option>
+                                            <option value="Rabu">Rabu</option>
+                                            <option value="Kamis">Kamis</option>
+                                            <option value="Jumat">Jumat</option>
+                                            <option value="Sabtu">Sabtu</option>
+                                            <option value="Minggu">Minggu</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-6">
+                                        <select name="dokter" class="form-select" style="height: 38px;">
+                                            <option value="">Dokter</option>
+                                            <?php
+                                            $query_dokter = "SELECT DISTINCT Nama_Dokter FROM dokter WHERE Status_Aktif = 1";
+                                            $stmt_dokter = $conn->query($query_dokter);
+                                            while ($row = $stmt_dokter->fetch(PDO::FETCH_ASSOC)) {
+                                                $selected = ($_GET['dokter'] ?? '') === $row['Nama_Dokter'] ? 'selected' : '';
+                                                echo "<option value='" . htmlspecialchars($row['Nama_Dokter']) . "' $selected>" .
+                                                    htmlspecialchars($row['Nama_Dokter']) . "</option>";
+                                            }
+                                            ?>
+                                        </select>
+                                    </div>
+                                    <div class="col-6">
+                                        <select name="tempat" class="form-select" style="height: 38px;">
+                                            <option value="">Tempat</option>
+                                            <?php
+                                            $query_tempat = "SELECT DISTINCT Nama_Tempat FROM tempat_praktek WHERE Status_Aktif = 1";
+                                            $stmt_tempat = $conn->query($query_tempat);
+                                            while ($row = $stmt_tempat->fetch(PDO::FETCH_ASSOC)) {
+                                                $selected = ($_GET['tempat'] ?? '') === $row['Nama_Tempat'] ? 'selected' : '';
+                                                echo "<option value='" . htmlspecialchars($row['Nama_Tempat']) . "' $selected>" .
+                                                    htmlspecialchars($row['Nama_Tempat']) . "</option>";
+                                            }
+                                            ?>
+                                        </select>
+                                    </div>
+                                    <div class="col-12">
+                                        <select name="sort" class="form-select" style="height: 38px;">
+                                            <option value="waktu_desc" <?= $sort_by === 'waktu_desc' ? 'selected' : '' ?>>Terbaru</option>
+                                            <option value="waktu_asc" <?= $sort_by === 'waktu_asc' ? 'selected' : '' ?>>Terlama</option>
+                                            <option value="nama_asc" <?= $sort_by === 'nama_asc' ? 'selected' : '' ?>>Nama (A-Z)</option>
+                                            <option value="nama_desc" <?= $sort_by === 'nama_desc' ? 'selected' : '' ?>>Nama (Z-A)</option>
+                                        </select>
+                                    </div>
+                                </div>
                             </form>
                         </div>
-                        <div class="col-md-4 text-end">
-                            <a href="<?php echo $base_url; ?>/pendaftaran/form_pendaftaran_pasien.php" class="btn btn-primary btn-icon me-2" data-bs-toggle="tooltip" title="Tambah Pendaftaran Baru">
-                                <i class="bi bi-plus-circle"></i>
-                            </a>
-                            <button type="button" class="btn btn-success btn-icon" onclick="refreshPage()" data-bs-toggle="tooltip" title="Refresh Data">
-                                <i class="bi bi-arrow-clockwise"></i>
-                            </button>
-                        </div>
                     </div>
+
+                    <style>
+                        @media (max-width: 768px) {
+                            .table-responsive {
+                                margin: 0 -12px;
+                            }
+
+                            .table td,
+                            .table th {
+                                white-space: nowrap;
+                                padding: 12px 8px;
+                            }
+
+                            .btn-group .btn {
+                                padding: 8px;
+                                height: 35px;
+                                min-width: 35px;
+                                display: inline-flex;
+                                align-items: center;
+                                justify-content: center;
+                            }
+
+                            .form-select,
+                            .form-control,
+                            .btn {
+                                font-size: 14px;
+                            }
+
+                            .stat-box {
+                                padding: 15px !important;
+                            }
+
+                            .stat-box h3 {
+                                font-size: 24px;
+                            }
+
+                            .stat-box h6 {
+                                font-size: 14px;
+                            }
+
+                            .stat-box small {
+                                font-size: 12px;
+                            }
+                        }
+                    </style>
 
                     <?php if (empty($antrian)): ?>
                         <div class="alert alert-info">

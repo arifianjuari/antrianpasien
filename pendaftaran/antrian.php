@@ -110,12 +110,14 @@ try {
         $a['Jam_Selesai_Format'] = date('H:i', strtotime($a['Jam_Selesai']));
         $a['Waktu_Daftar_Format'] = date('d/m/Y H:i', strtotime($a['Waktu_Pendaftaran']));
 
-        $key = $a['Hari'] . '_' . $a['Nama_Tempat'] . '_' . $a['Nama_Dokter'];
+        $key = $a['Hari'] . '_' . $a['Nama_Tempat'] . '_' . $a['Nama_Dokter'] . '_' . $a['Jam_Mulai_Format'] . '-' . $a['Jam_Selesai_Format'];
         if (!isset($antrian_by_day_place[$key])) {
             $antrian_by_day_place[$key] = [
                 'hari' => $a['Hari'],
                 'tempat' => $a['Nama_Tempat'],
                 'dokter' => $a['Nama_Dokter'],
+                'jam_mulai' => $a['Jam_Mulai_Format'],
+                'jam_selesai' => $a['Jam_Selesai_Format'],
                 'antrian' => []
             ];
         }
@@ -205,33 +207,33 @@ ob_start();
                                 <div class="col-md-12 mb-4">
                                     <div class="card border-0 shadow-sm rounded-4">
                                         <div class="card-header bg-light d-flex justify-content-between align-items-center py-3">
-                                            <h6 class="mb-0 fw-bold">
-                                                <i class="fas fa-calendar-day me-2 text-primary"></i><?= htmlspecialchars($group['hari']) ?>
-                                                <span class="mx-2">|</span>
-                                                <i class="fas fa-hospital me-2 text-primary"></i><?= htmlspecialchars($group['tempat']) ?>
-                                                <span class="mx-2">|</span>
-                                                <i class="fas fa-user-md me-2 text-primary"></i><?= htmlspecialchars($group['dokter']) ?>
+                                            <h6 class="mb-0 fw-bold text-teal">
+                                                <i class="fas fa-calendar-day me-2 text-pink"></i><span class="text-teal"><?= htmlspecialchars($group['hari']) ?></span>
+                                                <span class="mx-2 text-muted">|</span>
+                                                <i class="fas fa-hospital me-2 text-pink"></i><span class="text-teal"><?= htmlspecialchars($group['tempat']) ?></span>
+                                                <span class="mx-2 text-muted">|</span>
+                                                <i class="fas fa-user-md me-2 text-pink"></i><span class="text-teal"><?= htmlspecialchars($group['dokter']) ?></span>
+                                                <span class="mx-2 text-muted">|</span>
+                                                <i class="fas fa-clock me-2 text-pink"></i><span class="text-teal"><?= htmlspecialchars($group['jam_mulai']) ?> - <?= htmlspecialchars($group['jam_selesai']) ?></span>
                                             </h6>
-                                            <span class="badge bg-primary rounded-pill"><?= count($group['antrian']) ?> Antrian</span>
+                                            <span class="badge bg-teal rounded-pill"><?= count($group['antrian']) ?> Antrian</span>
                                         </div>
                                         <div class="card-body p-0">
                                             <div class="table-responsive">
                                                 <table class="table table-hover mb-0">
                                                     <thead class="table-light">
                                                         <tr>
-                                                            <th class="text-center">No</th>
-                                                            <th>Pasien</th>
-                                                            <th>Waktu Daftar</th>
-                                                            <th>Jadwal</th>
-                                                            <th>Layanan</th>
-                                                            <th>Status</th>
+                                                            <th class="text-center no-column">No</th>
+                                                            <th class="pasien-column">Pasien</th>
+                                                            <th class="waktu-column">Waktu Daftar</th>
+                                                            <th class="status-column">Status</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
                                                         <?php foreach ($group['antrian'] as $a): ?>
                                                             <tr>
                                                                 <td class="text-center">
-                                                                    <div class="antrian-number"><?= htmlspecialchars($a['Nomor_Urut']) ?></div>
+                                                                    <span class="fw-bold fs-5"><?= htmlspecialchars($a['Nomor_Urut']) ?></span>
                                                                 </td>
                                                                 <td>
                                                                     <div class="fw-bold"><?= htmlspecialchars($a['nm_pasien']) ?></div>
@@ -240,16 +242,6 @@ ob_start();
                                                                     <div class="small">
                                                                         <i class="far fa-clock me-1"></i><?= $a['Waktu_Daftar_Format'] ?>
                                                                     </div>
-                                                                </td>
-                                                                <td>
-                                                                    <span class="badge bg-light text-dark">
-                                                                        <i class="far fa-clock me-1"></i><?= $a['Jam_Mulai_Format'] ?> - <?= $a['Jam_Selesai_Format'] ?>
-                                                                    </span>
-                                                                </td>
-                                                                <td>
-                                                                    <span class="badge <?= strpos($a['Jenis_Layanan'], 'BPJS') !== false ? 'bg-success' : 'bg-primary' ?> rounded-pill">
-                                                                        <?= htmlspecialchars($a['Jenis_Layanan']) ?>
-                                                                    </span>
                                                                 </td>
                                                                 <td>
                                                                     <span class="badge bg-<?= $a['Status_Pendaftaran'] == 'Menunggu' ? 'warning' : ($a['Status_Pendaftaran'] == 'Dalam Proses' ? 'info' : 'secondary') ?> rounded-pill">
@@ -366,19 +358,6 @@ $additional_css = "
     .border-primary {
         border-color: #0d6efd !important;
     }
-    .antrian-number {
-        background-color: #0d6efd;
-        color: white;
-        font-weight: bold;
-        font-size: 1.2rem;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0 auto;
-    }
     .rounded-4 {
         border-radius: 0.75rem !important;
     }
@@ -387,13 +366,60 @@ $additional_css = "
         border-top-right-radius: 0.75rem !important;
     }
     .table > :not(caption) > * > * {
-        padding: 1rem 0.75rem;
+        padding: 0.5rem 0.75rem;
     }
     .badge {
         font-weight: 500;
+        padding: 0.35em 0.65em;
+        font-size: 0.85em;
     }
     .rounded-pill {
         border-radius: 50rem !important;
+    }
+
+    /* Pengaturan Tabel */
+    .table-responsive {
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+    .table th, .table td {
+        vertical-align: middle;
+    }
+    /* Lebar kolom spesifik */
+    .table th.no-column {
+        width: 80px;
+    }
+    .table th.pasien-column {
+        width: 200px;
+    }
+    .table th.waktu-column {
+        width: 180px;
+    }
+    .table th.status-column {
+        width: 150px;
+    }
+    /* Mencegah wrapping teks */
+    .table td {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-size: 0.95rem;
+    }
+    .table td > div {
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .table td .small {
+        font-size: 0.85rem;
+    }
+    .table thead th {
+        font-size: 0.95rem;
+    }
+    .table td .fw-bold {
+        font-size: 0.95rem;
+    }
+    .table td .fs-5 {
+        font-size: 1rem !important;
     }
 
     /* Floating WhatsApp Icon */
@@ -438,6 +464,21 @@ $additional_css = "
     .floating-whatsapp:hover .tooltip-text {
         visibility: visible;
         opacity: 1;
+    }
+
+    /* Warna Teal untuk header */
+    .text-teal {
+        color: #20B2AA !important;
+    }
+    .bg-teal {
+        background-color: #20B2AA !important;
+        color: white;
+    }
+    .text-pink {
+        color: #FF69B4 !important;
+    }
+    .text-muted {
+        color: #6c757d !important;
     }
 ";
 
