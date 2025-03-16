@@ -283,7 +283,7 @@ error_log("Data pasien: " . json_encode($pasien));
                     <div class="card-header p-2">
                         <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
                             <!-- Tombol Kembali di kiri -->
-                            <a href="<?= $return_url ?>" class="btn btn-light btn-sm">
+                            <a href="index.php?module=rekam_medis&action=manajemen_antrian" class="btn btn-light btn-sm">
                                 <i class="fas fa-arrow-left"></i> Kembali
                             </a>
 
