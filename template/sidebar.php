@@ -1031,6 +1031,12 @@ function is_current_module($module, $action = null)
                                 <span class="menu-text">Manajemen Edukasi</span>
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a href="<?php echo $base_url; ?>/admin_praktek/dashboard_antrian.php" class="nav-link <?php echo is_current_page('/admin_praktek/dashboard_antrian.php') ? 'active' : ''; ?>">
+                                <i class="bi bi-display"></i>
+                                <span class="menu-text">Dashboard Antrian</span>
+                            </a>
+                        </li>
                     </ul>
                 </li>
             <?php endif; ?>

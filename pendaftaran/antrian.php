@@ -251,7 +251,7 @@ ob_start();
                                                                     </div>
                                                                 </td>
                                                                 <td>
-                                                                    <span class="badge bg-<?= $a['Status_Pendaftaran'] == 'Menunggu' ? 'warning' : ($a['Status_Pendaftaran'] == 'Dalam Proses' ? 'info' : 'secondary') ?> rounded-pill">
+                                                                    <span class="badge bg-<?= $a['Status_Pendaftaran'] == 'Menunggu' ? 'warning' : ($a['Status_Pendaftaran'] == 'Dalam Proses' ? 'info' : ($a['Status_Pendaftaran'] == 'Dikonfirmasi' ? 'success' : 'secondary')) ?> rounded-pill">
                                                                         <?= htmlspecialchars($a['Status_Pendaftaran']) ?>
                                                                     </span>
                                                                 </td>

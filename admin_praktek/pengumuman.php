@@ -249,9 +249,9 @@ $page_title = "Manajemen Pengumuman";
             <div class="row mb-3">
                 <div class="col-12">
                     <div class="card">
-                        <div class="card-header d-flex justify-content-between align-items-center">
+                        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                             <h5 class="mb-0"><?php echo $page_title; ?></h5>
-                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#pengumumanModal">
+                            <button type="button" class="btn btn-sm btn-light" data-bs-toggle="modal" data-bs-target="#pengumumanModal">
                                 <i class="bi bi-plus-circle"></i> Tambah Pengumuman
                             </button>
                         </div>

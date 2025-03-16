@@ -53,7 +53,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
 
 // Filter dan pengurutan
 $status_filter = isset($_GET['status']) ? $_GET['status'] : '';
-$sort_by = isset($_GET['sort']) ? $_GET['sort'] : 'waktu_desc';
+$sort_by = isset($_GET['sort']) ? $_GET['sort'] : 'waktu_asc';
 $search = isset($_GET['search']) ? $_GET['search'] : '';
 
 // Filter default: tampilkan semua kecuali yang dibatalkan dan selesai
@@ -115,8 +115,8 @@ try {
     }
 
     switch ($sort_by) {
-        case 'waktu_asc':
-            $query .= " ORDER BY p.Waktu_Pendaftaran ASC";
+        case 'waktu_desc':
+            $query .= " ORDER BY p.Waktu_Pendaftaran DESC";
             break;
         case 'nama_asc':
             $query .= " ORDER BY pas.nm_pasien ASC";
@@ -141,9 +141,9 @@ try {
                         WHEN 'Minggu' THEN 7 
                         ELSE 8 END ASC, jr.Jam_Mulai ASC";
             break;
-        case 'waktu_desc':
+        case 'waktu_asc':
         default:
-            $query .= " ORDER BY p.Waktu_Pendaftaran DESC";
+            $query .= " ORDER BY p.Waktu_Pendaftaran ASC";
             break;
     }
 
@@ -219,96 +219,78 @@ try {
         <div class="col-12">
             <div class="card shadow">
                 <div class="card-body">
-                    <!-- Statistik Antrian -->
+                    <!-- Statistik Antrian dan Filter -->
                     <div class="row mb-4">
-                        <div class="col-md-12">
-                            <div class="card shadow-sm">
-                                <div class="card-body p-3">
-                                    <div class="row">
-                                        <div class="col-md-6 col-6 text-center mb-2 mb-md-0">
-                                            <div class="bg-success bg-opacity-25 rounded p-2 stat-box">
-                                                <h6 class="mb-0">Dikonfirmasi</h6>
-                                                <h3 class="mb-0"><?= isset($status_counts['Dikonfirmasi']) ? $status_counts['Dikonfirmasi'] : 0 ?></h3>
-                                                <small>Pendaftaran</small>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6 col-6 text-center mb-2 mb-md-0">
-                                            <div class="bg-warning bg-opacity-25 rounded p-2 stat-box">
-                                                <h6 class="mb-0">Menunggu</h6>
-                                                <h3 class="mb-0"><?= isset($status_counts['Menunggu Konfirmasi']) ? $status_counts['Menunggu Konfirmasi'] : 0 ?></h3>
-                                                <small>Konfirmasi</small>
-                                            </div>
-                                        </div>
+                        <div class="col-md-4 col-5">
+                            <!-- Statistik Antrian -->
+                            <div class="d-flex flex-column gap-2">
+                                <div class="bg-success bg-opacity-25 rounded p-2 stat-box">
+                                    <div class="d-flex flex-column">
+                                        <small class="mb-0">Dikonfirmasi</small>
+                                        <h4 class="mb-0"><?= isset($status_counts['Dikonfirmasi']) ? $status_counts['Dikonfirmasi'] : 0 ?></h4>
+                                    </div>
+                                </div>
+                                <div class="bg-warning bg-opacity-25 rounded p-2 stat-box">
+                                    <div class="d-flex flex-column">
+                                        <small class="mb-0">Menunggu</small>
+                                        <h4 class="mb-0"><?= isset($status_counts['Menunggu Konfirmasi']) ? $status_counts['Menunggu Konfirmasi'] : 0 ?></h4>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-
-                    <!-- Filter dan Pengurutan -->
-                    <div class="row mb-3">
-                        <div class="col-12">
-                            <form method="GET">
+                        <div class="col-md-8 col-7">
+                            <!-- Filter dan Pencarian -->
+                            <form method="GET" class="h-100">
                                 <input type="hidden" name="module" value="rekam_medis">
                                 <input type="hidden" name="action" value="manajemen_antrian">
 
-                                <!-- Action Buttons Mobile -->
-                                <div class="d-flex justify-content-end gap-2 mb-2">
-                                    <a href="<?php echo $base_url; ?>/pendaftaran/form_pendaftaran_pasien.php"
-                                        class="btn btn-primary"
-                                        style="height: 38px; min-width: 38px;"
-                                        data-bs-toggle="tooltip"
-                                        title="Tambah Pendaftaran">
-                                        <i class="bi bi-plus-circle"></i>
-                                    </a>
+                                <div class="d-flex flex-column h-100">
+                                    <!-- Action Buttons dan Search Box -->
+                                    <div class="d-flex gap-2 mb-2">
+                                        <a href="<?php echo $base_url; ?>/pendaftaran/form_pendaftaran_pasien.php"
+                                            class="btn btn-primary btn-icon"
+                                            data-bs-toggle="tooltip"
+                                            title="Tambah Pendaftaran">
+                                            <i class="bi bi-plus-circle"></i>
+                                        </a>
 
-                                    <button type="button"
-                                        class="btn btn-success"
-                                        style="height: 38px; min-width: 38px;"
-                                        onclick="refreshPage()"
-                                        data-bs-toggle="tooltip"
-                                        title="Refresh">
-                                        <i class="bi bi-arrow-clockwise"></i>
-                                    </button>
-                                </div>
-
-                                <!-- Search Box -->
-                                <div class="mb-2">
-                                    <div class="input-group">
-                                        <input type="text"
-                                            name="search"
-                                            class="form-control"
-                                            style="height: 38px;"
-                                            placeholder="Cari nama/No.RM/ID..."
-                                            value="<?= htmlspecialchars($search) ?>">
-                                        <button type="submit"
-                                            class="btn btn-primary"
-                                            style="height: 38px; min-width: 38px;">
-                                            <i class="bi bi-search"></i>
+                                        <button type="button"
+                                            class="btn btn-success btn-icon"
+                                            onclick="refreshPage()"
+                                            data-bs-toggle="tooltip"
+                                            title="Refresh">
+                                            <i class="bi bi-arrow-clockwise"></i>
                                         </button>
-                                        <?php if (!empty($search) || !empty($status_filter) || $sort_by !== 'waktu_desc'): ?>
-                                            <a href="index.php?module=rekam_medis&action=manajemen_antrian"
-                                                class="btn btn-secondary"
-                                                style="height: 38px; min-width: 38px;"
-                                                data-bs-toggle="tooltip"
-                                                title="Reset Filter">
-                                                <i class="bi bi-x-circle"></i>
-                                            </a>
-                                        <?php endif; ?>
-                                    </div>
-                                </div>
 
-                                <!-- Filter Dropdowns -->
-                                <div class="row g-2">
-                                    <div class="col-6">
-                                        <select name="status" class="form-select" style="height: 38px;">
+                                        <div class="input-group" style="width: auto;">
+                                            <input type="text"
+                                                name="search"
+                                                class="form-control"
+                                                placeholder="Cari nama/No.RM/ID..."
+                                                value="<?= htmlspecialchars($search) ?>"
+                                                style="max-width: 200px;">
+                                            <button type="submit" class="btn btn-primary">
+                                                <i class="bi bi-search"></i>
+                                            </button>
+                                            <?php if (!empty($search) || !empty($status_filter) || $sort_by !== 'waktu_asc'): ?>
+                                                <a href="index.php?module=rekam_medis&action=manajemen_antrian"
+                                                    class="btn btn-secondary"
+                                                    data-bs-toggle="tooltip"
+                                                    title="Reset Filter">
+                                                    <i class="bi bi-x-circle"></i>
+                                                </a>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+
+                                    <!-- Filter Dropdowns dalam Satu Baris -->
+                                    <div class="d-flex gap-2">
+                                        <select name="status" class="form-select" style="width: auto;">
                                             <option value="">Status</option>
                                             <option value="Dikonfirmasi" <?= $status_filter === 'Dikonfirmasi' ? 'selected' : '' ?>>Dikonfirmasi</option>
                                             <option value="Menunggu Konfirmasi" <?= $status_filter === 'Menunggu Konfirmasi' ? 'selected' : '' ?>>Menunggu</option>
                                         </select>
-                                    </div>
-                                    <div class="col-6">
-                                        <select name="hari" class="form-select" style="height: 38px;">
+                                        <select name="hari" class="form-select" style="width: auto;">
                                             <option value="">Hari</option>
                                             <option value="Senin">Senin</option>
                                             <option value="Selasa">Selasa</option>
@@ -318,9 +300,7 @@ try {
                                             <option value="Sabtu">Sabtu</option>
                                             <option value="Minggu">Minggu</option>
                                         </select>
-                                    </div>
-                                    <div class="col-6">
-                                        <select name="dokter" class="form-select" style="height: 38px;">
+                                        <select name="dokter" class="form-select" style="width: auto;">
                                             <option value="">Dokter</option>
                                             <?php
                                             $query_dokter = "SELECT DISTINCT Nama_Dokter FROM dokter WHERE Status_Aktif = 1";
@@ -332,9 +312,7 @@ try {
                                             }
                                             ?>
                                         </select>
-                                    </div>
-                                    <div class="col-6">
-                                        <select name="tempat" class="form-select" style="height: 38px;">
+                                        <select name="tempat" class="form-select" style="width: auto;">
                                             <option value="">Tempat</option>
                                             <?php
                                             $query_tempat = "SELECT DISTINCT Nama_Tempat FROM tempat_praktek WHERE Status_Aktif = 1";
@@ -346,11 +324,9 @@ try {
                                             }
                                             ?>
                                         </select>
-                                    </div>
-                                    <div class="col-12">
-                                        <select name="sort" class="form-select" style="height: 38px;">
-                                            <option value="waktu_desc" <?= $sort_by === 'waktu_desc' ? 'selected' : '' ?>>Terbaru</option>
+                                        <select name="sort" class="form-select" style="width: auto;">
                                             <option value="waktu_asc" <?= $sort_by === 'waktu_asc' ? 'selected' : '' ?>>Terlama</option>
+                                            <option value="waktu_desc" <?= $sort_by === 'waktu_desc' ? 'selected' : '' ?>>Terbaru</option>
                                             <option value="nama_asc" <?= $sort_by === 'nama_asc' ? 'selected' : '' ?>>Nama (A-Z)</option>
                                             <option value="nama_desc" <?= $sort_by === 'nama_desc' ? 'selected' : '' ?>>Nama (Z-A)</option>
                                         </select>
@@ -362,45 +338,52 @@ try {
 
                     <style>
                         @media (max-width: 768px) {
-                            .table-responsive {
-                                margin: 0 -12px;
+                            .stat-box {
+                                padding: 8px !important;
                             }
 
-                            .table td,
-                            .table th {
-                                white-space: nowrap;
-                                padding: 12px 8px;
+                            .stat-box h4 {
+                                font-size: 1.2rem;
+                                margin: 0;
                             }
 
-                            .btn-group .btn {
-                                padding: 8px;
-                                height: 35px;
-                                min-width: 35px;
-                                display: inline-flex;
-                                align-items: center;
-                                justify-content: center;
+                            .stat-box small {
+                                font-size: 0.8rem;
                             }
 
                             .form-select,
                             .form-control,
                             .btn {
-                                font-size: 14px;
+                                font-size: 0.85rem;
+                                height: 32px;
+                                padding: 4px 8px;
                             }
 
-                            .stat-box {
-                                padding: 15px !important;
+                            .btn-icon {
+                                width: 32px;
+                                height: 32px;
+                                padding: 0;
+                                display: inline-flex;
+                                align-items: center;
+                                justify-content: center;
                             }
 
-                            .stat-box h3 {
-                                font-size: 24px;
+                            .input-group {
+                                width: auto !important;
                             }
 
-                            .stat-box h6 {
-                                font-size: 14px;
+                            .d-flex.gap-2 {
+                                flex-wrap: nowrap;
+                                overflow-x: auto;
+                                padding-bottom: 8px;
                             }
 
-                            .stat-box small {
-                                font-size: 12px;
+                            .form-select {
+                                min-width: 100px;
+                            }
+
+                            .form-control {
+                                min-width: 150px;
                             }
                         }
 
@@ -433,6 +416,76 @@ try {
                                 width: 80px;
                             }
                         }
+
+                        .table {
+                            width: 100%;
+                            margin-bottom: 0;
+                        }
+
+                        .table th,
+                        .table td {
+                            white-space: nowrap;
+                            vertical-align: middle;
+                            padding: 8px 12px;
+                        }
+
+                        /* Style khusus untuk setiap kolom */
+                        .table td:first-child,
+                        /* Kolom aksi */
+                        .table th:first-child {
+                            min-width: 200px;
+                            width: auto;
+                        }
+
+                        .table td:nth-child(2),
+                        /* Kolom No Antrian */
+                        .table th:nth-child(2) {
+                            min-width: 100px;
+                            text-align: center;
+                        }
+
+                        .table td:nth-child(3),
+                        /* Kolom Nama */
+                        .table th:nth-child(3) {
+                            min-width: 200px;
+                            padding-right: 24px;
+                        }
+
+                        .table td:nth-child(4),
+                        /* Kolom Waktu */
+                        .table th:nth-child(4) {
+                            min-width: 120px;
+                            text-align: center;
+                        }
+
+                        .table td:nth-child(5),
+                        /* Kolom Keluhan */
+                        .table th:nth-child(5) {
+                            min-width: 150px;
+                        }
+
+                        .table td:nth-child(6),
+                        /* Kolom Status */
+                        .table th:nth-child(6) {
+                            min-width: 130px;
+                            text-align: center;
+                        }
+
+                        .table td:first-child .btn-group {
+                            display: flex;
+                            flex-wrap: nowrap;
+                            gap: 2px;
+                        }
+
+                        .table-responsive {
+                            overflow-x: auto;
+                            -webkit-overflow-scrolling: touch;
+                        }
+
+                        .nowrap {
+                            white-space: nowrap;
+                            width: 100%;
+                        }
                     </style>
 
                     <?php if (empty($antrian)): ?>
@@ -441,115 +494,173 @@ try {
                             Tidak ada data antrian saat ini.
                         </div>
                     <?php else: ?>
-                        <div class="table-responsive">
-                            <table class="table table-striped table-hover">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>Aksi</th>
-                                        <th>Nama Pasien</th>
-                                        <th>Waktu Daftar</th>
-                                        <th>Waktu Perkiraan</th>
-                                        <th>Keluhan</th>
-                                        <th>Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php foreach ($antrian as $a): ?>
-                                        <tr>
-                                            <td>
-                                                <div class="btn-group" role="group">
-                                                    <!-- Tombol untuk melihat rekam medis -->
-                                                    <a href="index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=<?= $a['no_rkm_medis'] ?>&source=antrian"
-                                                        class="btn btn-primary btn-sm btn-icon" data-bs-toggle="tooltip"
-                                                        title="Lihat Rekam Medis">
-                                                        <i class="bi bi-journal-medical"></i>
-                                                    </a>
+                        <?php
+                        // Kelompokkan antrian berdasarkan dokter, hari, dan tempat
+                        $grouped_antrian = [];
+                        foreach ($antrian as $a) {
+                            $key = $a['Nama_Dokter'] . '|' . $a['Hari'] . '|' . $a['Nama_Tempat'];
+                            if (!isset($grouped_antrian[$key])) {
+                                $grouped_antrian[$key] = [
+                                    'dokter' => $a['Nama_Dokter'],
+                                    'hari' => $a['Hari'],
+                                    'tempat' => $a['Nama_Tempat'],
+                                    'jam_praktek' => $a['Jam_Mulai'] . ' - ' . $a['Jam_Selesai'],
+                                    'data' => []
+                                ];
+                            }
+                            $grouped_antrian[$key]['data'][] = $a;
+                        }
 
-                                                    <?php if ($a['Status_Pendaftaran'] !== 'Menunggu Konfirmasi'): ?>
-                                                        <button type="button" class="btn btn-sm btn-outline-warning btn-icon"
-                                                            onclick="updateStatusDirect('<?= $a['ID_Pendaftaran'] ?>', 'Menunggu Konfirmasi')"
-                                                            data-bs-toggle="tooltip" title="Ubah ke Menunggu Konfirmasi">
-                                                            <i class="bi bi-hourglass"></i>
-                                                        </button>
-                                                    <?php endif; ?>
+                        // Urutkan grup berdasarkan hari
+                        $hari_order = ['Senin' => 1, 'Selasa' => 2, 'Rabu' => 3, 'Kamis' => 4, 'Jumat' => 5, 'Sabtu' => 6, 'Minggu' => 7];
+                        uksort($grouped_antrian, function ($a, $b) use ($hari_order) {
+                            $a_parts = explode('|', $a);
+                            $b_parts = explode('|', $b);
 
-                                                    <?php if ($a['Status_Pendaftaran'] !== 'Dikonfirmasi'): ?>
-                                                        <button type="button" class="btn btn-sm btn-outline-success btn-icon"
-                                                            onclick="updateStatusDirect('<?= $a['ID_Pendaftaran'] ?>', 'Dikonfirmasi')"
-                                                            data-bs-toggle="tooltip" title="Konfirmasi Pendaftaran">
-                                                            <i class="bi bi-check-circle"></i>
-                                                        </button>
-                                                    <?php endif; ?>
+                            // Bandingkan hari terlebih dahulu
+                            $a_hari = $hari_order[$a_parts[1]] ?? 8;
+                            $b_hari = $hari_order[$b_parts[1]] ?? 8;
 
-                                                    <?php if ($a['Status_Pendaftaran'] !== 'Selesai'): ?>
-                                                        <button type="button" class="btn btn-sm btn-outline-info btn-icon"
-                                                            onclick="updateStatusDirect('<?= $a['ID_Pendaftaran'] ?>', 'Selesai')"
-                                                            data-bs-toggle="tooltip" title="Tandai Selesai">
-                                                            <i class="bi bi-flag"></i>
-                                                        </button>
-                                                    <?php endif; ?>
+                            if ($a_hari !== $b_hari) {
+                                return $a_hari - $b_hari;
+                            }
 
-                                                    <?php if ($a['Status_Pendaftaran'] !== 'Dibatalkan'): ?>
-                                                        <button type="button" class="btn btn-sm btn-outline-danger btn-icon"
-                                                            onclick="updateStatusDirect('<?= $a['ID_Pendaftaran'] ?>', 'Dibatalkan')"
-                                                            data-bs-toggle="tooltip" title="Batalkan Pendaftaran">
-                                                            <i class="bi bi-x-circle"></i>
-                                                        </button>
-                                                    <?php endif; ?>
+                            // Jika hari sama, bandingkan dokter
+                            return strcmp($a_parts[0], $b_parts[0]);
+                        });
+                        ?>
 
-                                                    <?php if (!empty($a['no_tlp'])): ?>
-                                                        <?php
-                                                        // Bersihkan nomor telepon dari karakter non-numerik
-                                                        $no_tlp_clean = preg_replace('/[^0-9]/', '', $a['no_tlp']);
+                        <?php foreach ($grouped_antrian as $group): ?>
+                            <div class="card mb-3 shadow-sm">
+                                <div class="card-header bg-light">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div class="text-muted">
+                                                <span class="me-3"><?= htmlspecialchars($group['dokter']) ?></span>
+                                                <span class="me-3"><i class="bi bi-calendar-day"></i> <?= htmlspecialchars($group['hari']) ?></span>
+                                                <span class="me-3"><i class="bi bi-clock"></i> <?= htmlspecialchars($group['jam_praktek']) ?></span>
+                                                <span><i class="bi bi-geo-alt"></i> <?= htmlspecialchars($group['tempat']) ?></span>
+                                            </div>
+                                        </div>
+                                        <span class="badge bg-primary rounded-pill"><?= count($group['data']) ?> Pasien</span>
+                                    </div>
+                                </div>
+                                <div class="card-body p-0">
+                                    <div class="table-responsive">
+                                        <table class="table table-striped table-hover mb-0 nowrap">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th class="text-center small fw-normal">Aksi</th>
+                                                    <th class="text-center small fw-normal">No Antrian</th>
+                                                    <th class="text-center small fw-normal">Nama Pasien</th>
+                                                    <th class="text-center small fw-normal">Waktu Perkiraan</th>
+                                                    <th class="text-center small fw-normal">Keluhan</th>
+                                                    <th class="text-center small fw-normal">Status</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <?php
+                                                $no = 1;
+                                                foreach ($group['data'] as $a):
+                                                ?>
+                                                    <tr>
+                                                        <td>
+                                                            <div class="btn-group" role="group">
+                                                                <!-- Tombol untuk melihat rekam medis -->
+                                                                <a href="index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=<?= $a['no_rkm_medis'] ?>&source=antrian"
+                                                                    class="btn btn-primary btn-sm btn-icon" data-bs-toggle="tooltip"
+                                                                    title="Lihat Rekam Medis">
+                                                                    <i class="bi bi-journal-medical"></i>
+                                                                </a>
 
-                                                        // Pastikan format nomor telepon benar (awali dengan 62)
-                                                        if (substr($no_tlp_clean, 0, 1) == '0') {
-                                                            $no_tlp_clean = '62' . substr($no_tlp_clean, 1);
-                                                        } elseif (substr($no_tlp_clean, 0, 2) != '62') {
-                                                            $no_tlp_clean = '62' . $no_tlp_clean;
-                                                        }
+                                                                <?php if ($a['Status_Pendaftaran'] !== 'Menunggu Konfirmasi'): ?>
+                                                                    <button type="button" class="btn btn-sm btn-outline-warning btn-icon"
+                                                                        onclick="updateStatusDirect('<?= $a['ID_Pendaftaran'] ?>', 'Menunggu Konfirmasi')"
+                                                                        data-bs-toggle="tooltip" title="Ubah ke Menunggu Konfirmasi">
+                                                                        <i class="bi bi-hourglass"></i>
+                                                                    </button>
+                                                                <?php endif; ?>
 
-                                                        // Buat pesan untuk WhatsApp
-                                                        $pesan = "Halo " . $a['Nama_Pasien'] . ", ";
-                                                        $pesan .= "pendaftaran Anda dengan ID " . $a['ID_Pendaftaran'] . " ";
-                                                        $pesan .= "pada tanggal " . date('d/m/Y H:i', strtotime($a['Waktu_Pendaftaran'])) . " ";
-                                                        $pesan .= "saat ini berstatus " . $a['Status_Pendaftaran'] . ".";
+                                                                <?php if ($a['Status_Pendaftaran'] !== 'Dikonfirmasi'): ?>
+                                                                    <button type="button" class="btn btn-sm btn-outline-success btn-icon"
+                                                                        onclick="updateStatusDirect('<?= $a['ID_Pendaftaran'] ?>', 'Dikonfirmasi')"
+                                                                        data-bs-toggle="tooltip" title="Konfirmasi Pendaftaran">
+                                                                        <i class="bi bi-check-circle"></i>
+                                                                    </button>
+                                                                <?php endif; ?>
 
-                                                        // Encode pesan untuk URL
-                                                        $pesan_encoded = urlencode($pesan);
+                                                                <?php if ($a['Status_Pendaftaran'] !== 'Selesai'): ?>
+                                                                    <button type="button" class="btn btn-sm btn-outline-info btn-icon"
+                                                                        onclick="updateStatusDirect('<?= $a['ID_Pendaftaran'] ?>', 'Selesai')"
+                                                                        data-bs-toggle="tooltip" title="Tandai Selesai">
+                                                                        <i class="bi bi-flag"></i>
+                                                                    </button>
+                                                                <?php endif; ?>
 
-                                                        // Buat URL WhatsApp
-                                                        $whatsapp_url = "https://wa.me/" . $no_tlp_clean . "?text=" . $pesan_encoded;
-                                                        ?>
-                                                        <a href="<?= $whatsapp_url ?>" target="_blank"
-                                                            class="btn btn-sm btn-success btn-icon"
-                                                            data-bs-toggle="tooltip" title="Hubungi via WhatsApp">
-                                                            <i class="bi bi-whatsapp"></i>
-                                                        </a>
-                                                    <?php endif; ?>
-                                                </div>
-                                            </td>
-                                            <td><?= htmlspecialchars($a['Nama_Pasien']) ?></td>
-                                            <td><?= date('d/m/Y H:i', strtotime($a['Waktu_Pendaftaran'])) ?></td>
-                                            <td class="waktu-perkiraan-cell" data-id="<?= $a['ID_Pendaftaran'] ?>">
-                                                <span class="waktu-display"><?= !empty($a['Waktu_Perkiraan']) ? date('H:i', strtotime($a['Waktu_Perkiraan'])) : '-' ?></span>
-                                                <input type="time" class="form-control waktu-input" style="display: none;"
-                                                    value="<?= !empty($a['Waktu_Perkiraan']) ? date('H:i', strtotime($a['Waktu_Perkiraan'])) : '' ?>">
-                                                <button class="btn btn-sm btn-outline-primary edit-btn" style="display: none;">
-                                                    <i class="bi bi-check"></i>
-                                                </button>
-                                            </td>
-                                            <td><?= !empty($a['Keluhan']) ? htmlspecialchars($a['Keluhan']) : '-' ?></td>
-                                            <td>
-                                                <span class="badge <?= getStatusBadgeClass($a['Status_Pendaftaran']) ?>">
-                                                    <?= htmlspecialchars($a['Status_Pendaftaran']) ?>
-                                                </span>
-                                            </td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                </tbody>
-                            </table>
-                        </div>
+                                                                <?php if ($a['Status_Pendaftaran'] !== 'Dibatalkan'): ?>
+                                                                    <button type="button" class="btn btn-sm btn-outline-danger btn-icon"
+                                                                        onclick="updateStatusDirect('<?= $a['ID_Pendaftaran'] ?>', 'Dibatalkan')"
+                                                                        data-bs-toggle="tooltip" title="Batalkan Pendaftaran">
+                                                                        <i class="bi bi-x-circle"></i>
+                                                                    </button>
+                                                                <?php endif; ?>
+
+                                                                <?php if (!empty($a['no_tlp'])): ?>
+                                                                    <?php
+                                                                    // Bersihkan nomor telepon dari karakter non-numerik
+                                                                    $no_tlp_clean = preg_replace('/[^0-9]/', '', $a['no_tlp']);
+
+                                                                    // Pastikan format nomor telepon benar (awali dengan 62)
+                                                                    if (substr($no_tlp_clean, 0, 1) == '0') {
+                                                                        $no_tlp_clean = '62' . substr($no_tlp_clean, 1);
+                                                                    } elseif (substr($no_tlp_clean, 0, 2) != '62') {
+                                                                        $no_tlp_clean = '62' . $no_tlp_clean;
+                                                                    }
+
+                                                                    // Buat pesan untuk WhatsApp
+                                                                    $pesan = "Halo " . $a['Nama_Pasien'] . ", ";
+                                                                    $pesan .= "pendaftaran Anda dengan ID " . $a['ID_Pendaftaran'] . " ";
+                                                                    $pesan .= "pada tanggal " . date('d/m/Y H:i', strtotime($a['Waktu_Pendaftaran'])) . " ";
+                                                                    $pesan .= "saat ini berstatus " . $a['Status_Pendaftaran'] . ".";
+
+                                                                    // Encode pesan untuk URL
+                                                                    $pesan_encoded = urlencode($pesan);
+
+                                                                    // Buat URL WhatsApp
+                                                                    $whatsapp_url = "https://wa.me/" . $no_tlp_clean . "?text=" . $pesan_encoded;
+                                                                    ?>
+                                                                    <a href="<?= $whatsapp_url ?>" target="_blank"
+                                                                        class="btn btn-sm btn-success btn-icon"
+                                                                        data-bs-toggle="tooltip" title="Hubungi via WhatsApp">
+                                                                        <i class="bi bi-whatsapp"></i>
+                                                                    </a>
+                                                                <?php endif; ?>
+                                                            </div>
+                                                        </td>
+                                                        <td class="text-center fw-bold"><?= $no++ ?></td>
+                                                        <td><?= htmlspecialchars($a['Nama_Pasien']) ?></td>
+                                                        <td class="waktu-perkiraan-cell" data-id="<?= $a['ID_Pendaftaran'] ?>">
+                                                            <span class="waktu-display"><?= !empty($a['Waktu_Perkiraan']) ? date('H:i', strtotime($a['Waktu_Perkiraan'])) : '-' ?></span>
+                                                            <input type="time" class="form-control waktu-input" style="display: none;"
+                                                                value="<?= !empty($a['Waktu_Perkiraan']) ? date('H:i', strtotime($a['Waktu_Perkiraan'])) : '' ?>">
+                                                            <button class="btn btn-sm btn-outline-primary edit-btn" style="display: none;">
+                                                                <i class="bi bi-check"></i>
+                                                            </button>
+                                                        </td>
+                                                        <td><?= !empty($a['Keluhan']) ? htmlspecialchars($a['Keluhan']) : '-' ?></td>
+                                                        <td>
+                                                            <span class="badge <?= getStatusBadgeClass($a['Status_Pendaftaran']) ?>">
+                                                                <?= htmlspecialchars($a['Status_Pendaftaran']) ?>
+                                                            </span>
+                                                        </td>
+                                                    </tr>
+                                                <?php endforeach; ?>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
                     <?php endif; ?>
                 </div>
             </div>
@@ -723,7 +834,15 @@ $additional_css = "
     }
     .table th {
         background-color: #f8f9fa;
-        font-weight: 600;
+        font-weight: normal;
+        font-size: 0.875rem;
+        white-space: nowrap;
+        text-align: center;
+        vertical-align: middle;
+    }
+    .table td {
+        white-space: nowrap;
+        vertical-align: middle;
     }
     .badge {
         font-size: 0.875rem;

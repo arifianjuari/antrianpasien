@@ -289,6 +289,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             error_log("ID Pendaftaran dibuat: " . $id_pendaftaran);
 
+            // Dapatkan informasi jadwal untuk menghitung Waktu_Perkiraan
+            $query_jadwal = "SELECT Jam_Mulai FROM jadwal_rutin WHERE ID_Jadwal_Rutin = ?";
+            $stmt_jadwal = $conn->prepare($query_jadwal);
+            $stmt_jadwal->execute([$id_jadwal]);
+            $jadwal_info = $stmt_jadwal->fetch(PDO::FETCH_ASSOC);
+
+            // Hitung nomor antrian saat ini untuk jadwal tersebut
+            $query_antrian = "SELECT COUNT(*) as jumlah_antrian FROM pendaftaran 
+                              WHERE ID_Jadwal = ? AND DATE(Waktu_Pendaftaran) = CURDATE()";
+            $stmt_antrian = $conn->prepare($query_antrian);
+            $stmt_antrian->execute([$id_jadwal]);
+            $antrian_info = $stmt_antrian->fetch(PDO::FETCH_ASSOC);
+            $nomor_antrian = $antrian_info['jumlah_antrian'] + 1; // Antrian berikutnya
+
+            // Hitung Waktu_Perkiraan: Jam_Mulai + (8 menit × nomor antrian)
+            $jam_mulai = $jadwal_info['Jam_Mulai'];
+            $waktu_perkiraan = date('Y-m-d H:i:s', strtotime(date('Y-m-d ') . $jam_mulai . ' + ' . ($nomor_antrian * 8) . ' minutes'));
+
+            error_log("Jam Mulai: " . $jam_mulai . ", Nomor Antrian: " . $nomor_antrian . ", Waktu Perkiraan: " . $waktu_perkiraan);
+
             // Simpan data pendaftaran - sesuaikan dengan struktur tabel yang ada
             $query = "INSERT INTO pendaftaran (
                         ID_Pendaftaran, 
@@ -303,8 +323,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         ID_Dokter,
                         ID_Jadwal,
                         Status_Pendaftaran,
-                        Waktu_Pendaftaran
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Menunggu Konfirmasi', ?)";
+                        Waktu_Pendaftaran,
+                        Waktu_Perkiraan
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Menunggu Konfirmasi', ?, ?)";
 
             // Buat timestamp dengan zona waktu Asia/Jakarta
             $waktu_pendaftaran = date('Y-m-d H:i:s');
@@ -323,7 +344,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $id_tempat_praktek,
                 $id_dokter,
                 $id_jadwal,
-                $waktu_pendaftaran
+                $waktu_pendaftaran,
+                $waktu_perkiraan
             ]));
 
             $stmt = $conn->prepare($query);
@@ -339,7 +361,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $id_tempat_praktek,
                 $id_dokter,
                 $id_jadwal,
-                $waktu_pendaftaran
+                $waktu_pendaftaran,
+                $waktu_perkiraan
             ]);
 
             error_log("Data pendaftaran berhasil disimpan");
