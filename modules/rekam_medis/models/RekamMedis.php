@@ -649,6 +649,7 @@ class RekamMedis
                     rp.jam_reg,
                     rp.no_rkm_medis,
                     rp.status_bayar,
+                    rp.rincian,
                     pmrk.tanggal as tgl_pemeriksaan,
                     COALESCE(pmrk.anamnesis, '') as anamnesis,
                     COALESCE(pmrk.hubungan, '') as hubungan,
@@ -1025,14 +1026,16 @@ class RekamMedis
                     tgl_registrasi,
                     jam_reg,
                     no_rkm_medis,
-                    status_bayar
+                    status_bayar,
+                    rincian
                 ) VALUES (
                     :no_reg,
                     :no_rawat,
                     :tgl_registrasi,
                     :jam_reg,
                     :no_rkm_medis,
-                    :status_bayar
+                    :status_bayar,
+                    :rincian
                 )
             ");
 
@@ -1042,7 +1045,8 @@ class RekamMedis
                 ':tgl_registrasi' => $data['tgl_registrasi'],
                 ':jam_reg' => $data['jam_reg'],
                 ':no_rkm_medis' => $data['no_rkm_medis'],
-                ':status_bayar' => $data['status_bayar']
+                ':status_bayar' => $data['status_bayar'],
+                ':rincian' => $data['rincian'] ?? null
             ];
 
             error_log("Query parameters: " . print_r($params, true));

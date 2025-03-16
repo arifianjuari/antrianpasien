@@ -758,6 +758,26 @@ error_log("Data pasien: " . json_encode($pasien));
                                                             <th>Status Bayar</th>
                                                             <td><?= $rp['status_bayar'] ?></td>
                                                         </tr>
+                                                        <tr>
+                                                            <th>Rincian</th>
+                                                            <td>
+                                                                <?php
+                                                                // Debug: tampilkan raw data
+                                                                if (isset($_GET['debug'])) {
+                                                                    echo '<pre class="text-muted small">';
+                                                                    echo "Raw rincian data: ";
+                                                                    var_dump($rp['rincian']);
+                                                                    echo '</pre>';
+                                                                }
+                                                                // Tampilkan data rincian dengan format yang lebih baik
+                                                                if (!empty($rp['rincian'])) {
+                                                                    echo nl2br(htmlspecialchars($rp['rincian']));
+                                                                } else {
+                                                                    echo '-';
+                                                                }
+                                                                ?>
+                                                            </td>
+                                                        </tr>
                                                     </table>
                                                 </div>
                                                 <div class="col-md-6">

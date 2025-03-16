@@ -98,6 +98,32 @@ if (!isset($kunjungan) || !$kunjungan) {
                     </div>
                 </div>
 
+                <!-- Rincian -->
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label>Rincian</label>
+                            <div class="row">
+                                <div class="col-md-9">
+                                    <textarea name="rincian" id="rincian" class="form-control" rows="4" placeholder="Masukkan rincian kunjungan"><?= htmlspecialchars($kunjungan['rincian'] ?? '') ?></textarea>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="card border">
+                                        <div class="card-header py-1 bg-light">
+                                            <h6 class="mb-0 small">Template Layanan</h6>
+                                        </div>
+                                        <div class="card-body p-2">
+                                            <button type="button" class="btn btn-sm btn-info w-100" data-bs-toggle="modal" data-bs-target="#modalDaftarLayanan">
+                                                <i class="fas fa-list"></i> Pilih Layanan
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Tombol Aksi -->
                 <div class="form-group mt-4">
                     <button type="submit" class="btn btn-primary">
@@ -111,3 +137,161 @@ if (!isset($kunjungan) || !$kunjungan) {
         </div>
     </div>
 </div>
+
+<!-- Modal Daftar Layanan -->
+<div class="modal fade" id="modalDaftarLayanan" tabindex="-1" aria-labelledby="modalDaftarLayananLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalDaftarLayananLabel">Daftar Layanan</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Filter Kategori -->
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <select id="filter_kategori_layanan" class="form-select me-2">
+                            <option value="">Semua Kategori</option>
+                            <option value="Pemeriksaan">Pemeriksaan</option>
+                            <option value="Tindakan">Tindakan</option>
+                            <option value="USG">USG</option>
+                            <option value="Lainnya">Lainnya</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <input type="text" id="search_layanan" class="form-control" placeholder="Cari layanan...">
+                    </div>
+                </div>
+
+                <!-- Tabel Layanan -->
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover" id="tabelLayanan">
+                        <thead class="table-light">
+                            <tr>
+                                <th width="5%">
+                                    <input type="checkbox" id="checkAllLayanan" class="form-check-input">
+                                </th>
+                                <th width="30%">Nama Layanan</th>
+                                <th width="15%">Kategori</th>
+                                <th width="15%">Tarif</th>
+                                <th width="35%">Keterangan</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php
+                            $conn = new mysqli('auth-db1151.hstgr.io', 'u609399718_adminpraktek', 'Obgin@12345', 'u609399718_praktekobgin');
+
+                            if ($conn->connect_error) {
+                                die("Koneksi gagal: " . $conn->connect_error);
+                            }
+
+                            $sql = "SELECT * FROM menu_layanan WHERE status_aktif = 1 ORDER BY nama_layanan ASC";
+                            $result = $conn->query($sql);
+
+                            if ($result->num_rows > 0) {
+                                while ($row = $result->fetch_assoc()) {
+                                    echo "<tr class='layanan-row' data-kategori='" . htmlspecialchars($row['kategori']) . "'>";
+                                    echo "<td><input type='checkbox' class='form-check-input layanan-checkbox' 
+                                              data-nama='" . htmlspecialchars($row['nama_layanan']) . "'
+                                              data-tarif='" . htmlspecialchars(number_format($row['harga'], 0, ',', '.')) . "'
+                                              data-keterangan='" . htmlspecialchars($row['keterangan']) . "'></td>";
+                                    echo "<td>" . htmlspecialchars($row['nama_layanan']) . "</td>";
+                                    echo "<td>" . htmlspecialchars($row['kategori']) . "</td>";
+                                    echo "<td>Rp " . number_format($row['harga'], 0, ',', '.') . "</td>";
+                                    echo "<td>" . htmlspecialchars($row['keterangan']) . "</td>";
+                                    echo "</tr>";
+                                }
+                            } else {
+                                echo "<tr><td colspan='5' class='text-center'>Tidak ada data layanan</td></tr>";
+                            }
+
+                            $conn->close();
+                            ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                <button type="button" class="btn btn-primary" onclick="tambahkanLayananTerpilih()">Tambahkan Layanan Terpilih</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Fungsi untuk checkbox "Pilih Semua" layanan
+    document.getElementById('checkAllLayanan').addEventListener('change', function() {
+        var checkboxes = document.getElementsByClassName('layanan-checkbox');
+        for (var checkbox of checkboxes) {
+            checkbox.checked = this.checked;
+        }
+    });
+
+    // Fungsi untuk menambahkan layanan yang dipilih ke textarea rincian
+    function tambahkanLayananTerpilih() {
+        var checkboxes = document.getElementsByClassName('layanan-checkbox');
+        var rincianField = document.getElementById('rincian');
+        var layananTerpilih = [];
+
+        for (var checkbox of checkboxes) {
+            if (checkbox.checked) {
+                var namaLayanan = checkbox.getAttribute('data-nama');
+                var tarif = checkbox.getAttribute('data-tarif');
+                var keterangan = checkbox.getAttribute('data-keterangan');
+
+                var textLayanan = namaLayanan + ' - Rp ' + tarif;
+                if (keterangan && keterangan.trim() !== '') {
+                    textLayanan += '\nKeterangan: ' + keterangan;
+                }
+                layananTerpilih.push(textLayanan);
+            }
+        }
+
+        if (layananTerpilih.length > 0) {
+            var currentValue = rincianField.value;
+            var newValue = layananTerpilih.join('\n\n');
+
+            if (currentValue && currentValue.trim() !== '') {
+                rincianField.value = currentValue + '\n\n' + newValue;
+            } else {
+                rincianField.value = newValue;
+            }
+        }
+
+        $('#modalDaftarLayanan').modal('hide');
+    }
+
+    // Filter untuk layanan
+    document.addEventListener('DOMContentLoaded', function() {
+        function filterLayanan() {
+            var kategori = document.getElementById('filter_kategori_layanan').value;
+            var searchTerm = document.getElementById('search_layanan').value.toLowerCase();
+            var rows = document.querySelectorAll('#tabelLayanan tbody tr.layanan-row');
+
+            rows.forEach(function(row) {
+                var rowKategori = row.getAttribute('data-kategori');
+                var namaLayanan = row.cells[1].textContent.toLowerCase();
+                var keterangan = row.cells[4].textContent.toLowerCase();
+
+                var showByKategori = kategori === '' || rowKategori === kategori;
+                var showBySearch = searchTerm === '' ||
+                    namaLayanan.includes(searchTerm) ||
+                    keterangan.includes(searchTerm);
+
+                if (showByKategori && showBySearch) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            // Uncheck "Pilih Semua" checkbox saat filter berubah
+            document.getElementById('checkAllLayanan').checked = false;
+        }
+
+        // Event listener untuk filter kategori dan pencarian
+        document.getElementById('filter_kategori_layanan').addEventListener('change', filterLayanan);
+        document.getElementById('search_layanan').addEventListener('input', filterLayanan);
+    });
+</script>

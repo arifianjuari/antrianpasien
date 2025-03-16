@@ -1249,7 +1249,8 @@ class RekamMedisController
                 'tgl_registrasi' => $_POST['tgl_registrasi'],
                 'jam_reg' => $_POST['jam_reg'],
                 'no_reg' => $_POST['no_reg'],
-                'status_bayar' => $_POST['status_bayar']
+                'status_bayar' => $_POST['status_bayar'],
+                'rincian' => $_POST['rincian'] ?? null
             ];
 
             error_log("Attempting to save pemeriksaan with data: " . json_encode($data));
@@ -1567,46 +1568,24 @@ class RekamMedisController
                 throw new Exception('Parameter no_rawat tidak ditemukan');
             }
 
-            // Ambil data kunjungan - hanya kolom yang ada di tabel reg_periksa
-            $query = "SELECT rp.no_reg, rp.no_rawat, rp.tgl_registrasi, rp.jam_reg, 
-                     rp.no_rkm_medis, rp.status_bayar,
-                     p.nm_pasien, p.tgl_lahir, p.jk
-                     FROM reg_periksa rp 
-                     LEFT JOIN pasien p ON p.no_rkm_medis = rp.no_rkm_medis
-                     WHERE rp.no_rawat = ?";
-            error_log('Query: ' . $query);
-
-            $stmt = $this->pdo->prepare($query);
-            if (!$stmt) {
-                error_log('PDO prepare error: ' . json_encode($this->pdo->errorInfo()));
-                throw new Exception('Gagal mempersiapkan query');
-            }
-
-            $result = $stmt->execute([$no_rawat]);
-            if (!$result) {
-                error_log('PDO execute error: ' . json_encode($stmt->errorInfo()));
-                throw new Exception('Gagal mengeksekusi query');
-            }
-
+            // Query untuk mengambil data kunjungan
+            $stmt = $this->pdo->prepare("
+                SELECT rp.*, p.nm_pasien 
+                FROM reg_periksa rp 
+                JOIN pasien p ON rp.no_rkm_medis = p.no_rkm_medis 
+                WHERE rp.no_rawat = ?
+            ");
+            $stmt->execute([$no_rawat]);
             $kunjungan = $stmt->fetch(PDO::FETCH_ASSOC);
+
             error_log('Data kunjungan: ' . json_encode($kunjungan));
 
             if (!$kunjungan) {
                 throw new Exception('Data kunjungan tidak ditemukan');
             }
 
-            // Cek keberadaan file view
-            $view_file = BASE_PATH . '/modules/rekam_medis/views/form_edit_kunjungan.php';
-            error_log('View file path: ' . $view_file);
-
-            if (!file_exists($view_file)) {
-                error_log('View file tidak ditemukan: ' . $view_file);
-                throw new Exception('File view tidak ditemukan');
-            }
-
-            error_log('Loading view file...');
-            require $view_file;
-            error_log('View file loaded successfully');
+            // Tampilkan form edit
+            include 'modules/rekam_medis/views/form_edit_kunjungan.php';
         } catch (Exception $e) {
             error_log('Error in edit_kunjungan: ' . $e->getMessage());
             error_log('Stack trace: ' . $e->getTraceAsString());
@@ -1652,7 +1631,8 @@ class RekamMedisController
             $query = "UPDATE reg_periksa SET 
                      tgl_registrasi = ?,
                      jam_reg = ?,
-                     status_bayar = ?
+                     status_bayar = ?,
+                     rincian = ?
                      WHERE no_rawat = ?";
             error_log('Query: ' . $query);
 
@@ -1666,6 +1646,7 @@ class RekamMedisController
                 $_POST['tgl_registrasi'],
                 $_POST['jam_reg'],
                 $_POST['status_bayar'] ?? 'Belum Bayar',
+                $_POST['rincian'] ?? null,
                 $_POST['no_rawat']
             ];
             error_log('Execute params: ' . json_encode($params));

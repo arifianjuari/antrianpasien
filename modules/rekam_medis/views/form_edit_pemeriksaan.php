@@ -33,23 +33,32 @@ if (!isset($pemeriksaan) || !$pemeriksaan) {
 
     /* CSS untuk fitur template */
     .card .small {
-        font-size: 0.75rem !important;
+        font-size: 0.6rem !important;
     }
 
     .modal-title {
-        font-size: 0.95rem;
+        font-size: 0.8rem;
     }
 
     .modal .table {
-        font-size: 0.8rem;
+        font-size: 0.7rem;
     }
 
     .modal label {
-        font-size: 0.8rem;
+        font-size: 0.7rem;
     }
 
     .btn-sm {
-        font-size: 0.75rem;
+        font-size: 0.6rem;
+    }
+
+    /* CSS untuk warna teks tombol info */
+    .btn-info {
+        color: #fff !important;
+    }
+
+    .btn-info:hover {
+        color: #fff !important;
     }
 </style>
 
