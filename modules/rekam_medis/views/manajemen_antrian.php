@@ -438,9 +438,9 @@ try {
                         }
 
                         .table td:nth-child(2),
-                        /* Kolom No Antrian */
+                        /* Kolom No */
                         .table th:nth-child(2) {
-                            min-width: 100px;
+                            min-width: 40px;
                             text-align: center;
                         }
 
@@ -531,18 +531,18 @@ try {
                         ?>
 
                         <?php foreach ($grouped_antrian as $group): ?>
-                            <div class="card mb-3 shadow-sm">
-                                <div class="card-header bg-light">
+                            <div class="card mb-2 shadow-sm">
+                                <div class="card-header bg-light py-1 px-2">
                                     <div class="d-flex justify-content-between align-items-center">
-                                        <div class="d-flex align-items-center gap-2">
-                                            <div class="text-muted">
-                                                <span class="me-3"><?= htmlspecialchars($group['dokter']) ?></span>
-                                                <span class="me-3"><i class="bi bi-calendar-day"></i> <?= htmlspecialchars($group['hari']) ?></span>
-                                                <span class="me-3"><i class="bi bi-clock"></i> <?= htmlspecialchars($group['jam_praktek']) ?></span>
+                                        <div class="d-flex align-items-center">
+                                            <div class="text-muted" style="font-size: 0.75rem;">
+                                                <span class="fw-medium me-1"><?= htmlspecialchars($group['dokter']) ?></span>
+                                                <span class="me-1"><i class="bi bi-calendar-day"></i> <?= htmlspecialchars($group['hari']) ?></span>
+                                                <span class="me-1"><i class="bi bi-clock"></i> <?= htmlspecialchars($group['jam_praktek']) ?></span>
                                                 <span><i class="bi bi-geo-alt"></i> <?= htmlspecialchars($group['tempat']) ?></span>
                                             </div>
                                         </div>
-                                        <span class="badge bg-primary rounded-pill"><?= count($group['data']) ?> Pasien</span>
+                                        <span class="badge bg-primary rounded-pill" style="font-size: 0.7rem;"><?= count($group['data']) ?> Pasien</span>
                                     </div>
                                 </div>
                                 <div class="card-body p-0">
@@ -551,7 +551,7 @@ try {
                                             <thead class="table-light">
                                                 <tr>
                                                     <th class="text-center small fw-normal">Aksi</th>
-                                                    <th class="text-center small fw-normal">No Antrian</th>
+                                                    <th class="text-center small fw-normal">No</th>
                                                     <th class="text-center small fw-normal">Nama Pasien</th>
                                                     <th class="text-center small fw-normal">Waktu Perkiraan</th>
                                                     <th class="text-center small fw-normal">Keluhan</th>

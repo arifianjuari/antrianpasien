@@ -186,7 +186,7 @@ require_once __DIR__ . '/../template/sidebar.php';
                 <div class="card">
                     <div class="card-header bg-primary text-white">
                         <h5 class="card-title mb-0">
-                            <i class="bi bi-megaphone"></i> Pengumuman Terkini
+                            <i class="bi bi-megaphone"></i> Pengumuman
                         </h5>
                     </div>
                     <div class="card-body p-0">
@@ -227,7 +227,7 @@ require_once __DIR__ . '/../template/sidebar.php';
                 <div class="card">
                     <div class="card-header bg-primary text-white">
                         <h5 class="card-title mb-0">
-                            <i class="bi bi-list-ol"></i> Daftar Antrian Hari Ini
+                            <i class="bi bi-list-ol"></i> Daftar Antrian Saat Ini
                         </h5>
                     </div>
                     <div class="card-body p-0">
