@@ -97,9 +97,16 @@ if (isset($_GET['success']) && $_GET['success'] == '1') {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Sanitasi input
     $judul = sanitize_input($_POST['judul']);
-    // Untuk isi_pengumuman, kita tidak menggunakan sanitize_input karena akan menghilangkan tag HTML yang valid
-    // Sebagai gantinya, kita gunakan strip_tags dengan tag yang diizinkan
-    $isi_pengumuman = strip_tags($_POST['isi_pengumuman'], '<p><br><strong><em><u><h1><h2><h3><h4><h5><h6><ul><ol><li><blockquote><a><img><table><thead><tbody><tr><td><th>');
+
+    // Bersihkan isi_pengumuman dari tag <p> yang tidak diinginkan
+    $isi_pengumuman = $_POST['isi_pengumuman'];
+    $isi_pengumuman = preg_replace('/<p[^>]*>/', '', $isi_pengumuman); // Hapus tag pembuka <p>
+    $isi_pengumuman = str_replace('</p>', '', $isi_pengumuman); // Hapus tag penutup </p>
+    $isi_pengumuman = trim($isi_pengumuman); // Hapus whitespace di awal dan akhir
+
+    // Sanitasi tag HTML yang diizinkan
+    $isi_pengumuman = strip_tags($isi_pengumuman, '<br><strong><em><u><h1><h2><h3><h4><h5><h6><ul><ol><li><blockquote><a><img><table><thead><tbody><tr><td><th>');
+
     $tanggal_mulai = sanitize_input($_POST['tanggal_mulai']);
     $tanggal_berakhir = !empty($_POST['tanggal_berakhir']) ? sanitize_input($_POST['tanggal_berakhir']) : null;
     $status_aktif = isset($_POST['status_aktif']) ? 1 : 0;

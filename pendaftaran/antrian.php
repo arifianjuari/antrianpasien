@@ -54,6 +54,8 @@ try {
             (SELECT COUNT(*) + 1 FROM pendaftaran p2 
              JOIN jadwal_rutin jr2 ON p2.ID_Jadwal = jr2.ID_Jadwal_Rutin 
              WHERE jr2.Hari = jr.Hari 
+             AND p2.ID_Tempat_Praktek = p.ID_Tempat_Praktek
+             AND p2.ID_Dokter = p.ID_Dokter
              AND p2.Waktu_Pendaftaran < p.Waktu_Pendaftaran
              AND p2.Status_Pendaftaran NOT IN ('Dibatalkan', 'Selesai')) AS Nomor_Urut
         FROM 

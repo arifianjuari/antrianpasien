@@ -38,45 +38,109 @@ try {
     ");
     $pengumuman = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // Query untuk mengambil data antrian hari ini
-    $today = date('Y-m-d');
+    // Mendapatkan hari dalam bahasa Indonesia
+    $hari_ini = date('w');
+    $nama_hari = '';
+    switch ($hari_ini) {
+        case 0:
+            $nama_hari = 'Minggu';
+            break;
+        case 1:
+            $nama_hari = 'Senin';
+            break;
+        case 2:
+            $nama_hari = 'Selasa';
+            break;
+        case 3:
+            $nama_hari = 'Rabu';
+            break;
+        case 4:
+            $nama_hari = 'Kamis';
+            break;
+        case 5:
+            $nama_hari = 'Jumat';
+            break;
+        case 6:
+            $nama_hari = 'Sabtu';
+            break;
+    }
+
+    // Debug: Tampilkan hari
+    echo "<!-- Debug: Hari ini = $nama_hari -->";
+
+    // Query untuk mengambil data statistik antrian hari ini
     $stmt = $pdo->prepare("
         SELECT COUNT(*) as total_antrian,
-               SUM(CASE WHEN Status_Pendaftaran = 'selesai' THEN 1 ELSE 0 END) as sudah_dilayani,
-               SUM(CASE WHEN Status_Pendaftaran = 'menunggu' THEN 1 ELSE 0 END) as sedang_menunggu
-        FROM pendaftaran 
-        WHERE DATE(Waktu_Perkiraan) = ?
+               SUM(CASE WHEN p.Status_Pendaftaran = 'Selesai' THEN 1 ELSE 0 END) as sudah_dilayani,
+               SUM(CASE WHEN p.Status_Pendaftaran IN ('Menunggu Konfirmasi', 'Dikonfirmasi') THEN 1 ELSE 0 END) as sedang_menunggu
+        FROM pendaftaran p
+        JOIN jadwal_rutin jr ON p.ID_Jadwal = jr.ID_Jadwal_Rutin
+        WHERE jr.Hari = ?
     ");
-    $stmt->execute([$today]);
+    $stmt->execute([$nama_hari]);
     $statistik = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    // Debug: Tampilkan hasil statistik
+    echo "<!-- Debug: Statistik = " . print_r($statistik, true) . " -->";
 
     // Query untuk antrian yang sedang dilayani
     $stmt = $pdo->prepare("
         SELECT p.*, p.nm_pasien as nama 
         FROM pendaftaran p 
-        WHERE p.Status_Pendaftaran = 'dilayani' 
-        AND DATE(p.Waktu_Perkiraan) = ? 
+        JOIN jadwal_rutin jr ON p.ID_Jadwal = jr.ID_Jadwal_Rutin
+        WHERE p.Status_Pendaftaran = 'Dikonfirmasi' 
+        AND jr.Hari = ?
         ORDER BY p.Waktu_Perkiraan DESC 
         LIMIT 1
     ");
-    $stmt->execute([$today]);
+    $stmt->execute([$nama_hari]);
     $antrian_sekarang = $stmt->fetch(PDO::FETCH_ASSOC);
 
     // Query untuk antrian berikutnya
     $stmt = $pdo->prepare("
-        SELECT p.*, p.nm_pasien as nama 
-        FROM pendaftaran p 
-        WHERE p.Status_Pendaftaran = 'menunggu' 
-        AND DATE(p.Waktu_Perkiraan) = ? 
-        ORDER BY p.Waktu_Perkiraan ASC 
-        LIMIT 3
+        SELECT 
+            p.ID_Pendaftaran,
+            p.nm_pasien,
+            p.Status_Pendaftaran,
+            p.Waktu_Perkiraan,
+            jr.Hari,
+            jr.Jam_Mulai,
+            jr.Jam_Selesai,
+            jr.Jenis_Layanan,
+            tp.Nama_Tempat,
+            d.Nama_Dokter,
+            p.Waktu_Pendaftaran,
+            (SELECT COUNT(*) + 1 FROM pendaftaran p2 
+             JOIN jadwal_rutin jr2 ON p2.ID_Jadwal = jr2.ID_Jadwal_Rutin 
+             WHERE jr2.Hari = jr.Hari 
+             AND p2.ID_Tempat_Praktek = p.ID_Tempat_Praktek
+             AND p2.ID_Dokter = p.ID_Dokter
+             AND p2.Waktu_Pendaftaran < p.Waktu_Pendaftaran
+             AND p2.Status_Pendaftaran NOT IN ('Selesai')) AS Nomor_Urut
+        FROM 
+            pendaftaran p
+        JOIN 
+            jadwal_rutin jr ON p.ID_Jadwal = jr.ID_Jadwal_Rutin
+        JOIN 
+            tempat_praktek tp ON p.ID_Tempat_Praktek = tp.ID_Tempat_Praktek
+        JOIN 
+            dokter d ON p.ID_Dokter = d.ID_Dokter
+        WHERE 
+            p.Status_Pendaftaran IN ('Menunggu Konfirmasi', 'Dikonfirmasi')
+            AND jr.Hari = ?
+        ORDER BY 
+            jr.Jam_Mulai ASC, p.Waktu_Pendaftaran ASC
+        LIMIT 5
     ");
-    $stmt->execute([$today]);
+    $stmt->execute([$nama_hari]);
     $antrian_berikutnya = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Debug: Tampilkan hasil antrian
+    echo "<!-- Debug: Antrian = " . print_r($antrian_berikutnya, true) . " -->";
 } catch (PDOException $e) {
     // Log error
     error_log("Database Error: " . $e->getMessage());
-    $error_message = "Terjadi kesalahan saat mengambil data. Silakan coba lagi nanti.";
+    $error_message = "Terjadi kesalahan saat mengambil data. Silakan coba lagi nanti. Error: " . $e->getMessage();
 }
 
 // Include template header dan sidebar
@@ -105,10 +169,21 @@ require_once __DIR__ . '/../template/sidebar.php';
         </div>
 
         <!-- Row untuk Pengumuman dan Jam -->
-        <div class="row mb-4">
-            <!-- Kolom Pengumuman dan Video -->
-            <div class="col-lg-8 mb-4 mb-lg-0">
-                <div class="card mb-4">
+        <div class="row">
+            <!-- Kolom Jam Digital -->
+            <div class="col-lg-3">
+                <!-- Card Jam Digital -->
+                <div class="card">
+                    <div class="card-body text-center py-3">
+                        <h2 class="display-4 mb-2" id="jamDigital">00:00:00</h2>
+                        <h4 class="mb-2" id="tanggalHari">Senin, 1 Januari 2024</h4>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kolom Pengumuman -->
+            <div class="col-lg-6">
+                <div class="card">
                     <div class="card-header bg-primary text-white">
                         <h5 class="card-title mb-0">
                             <i class="bi bi-megaphone"></i> Pengumuman Terkini
@@ -119,7 +194,6 @@ require_once __DIR__ . '/../template/sidebar.php';
                             <?php if (!empty($pengumuman)): ?>
                                 <?php foreach ($pengumuman as $p): ?>
                                     <div class="pengumuman-item mb-3 p-3 border-bottom">
-                                        <h6 class="fw-bold"><?= htmlspecialchars($p['judul']) ?></h6>
                                         <p class="mb-1"><?= htmlspecialchars($p['isi_pengumuman']) ?></p>
                                         <small class="text-muted">
                                             <?= date('d/m/Y H:i', strtotime($p['created_at'])) ?>
@@ -134,8 +208,9 @@ require_once __DIR__ . '/../template/sidebar.php';
                         </div>
                     </div>
                 </div>
-                <!-- Section untuk YouTube Video -->
-                <div id="youtubeSection" class="mt-3" style="display: none;">
+
+                <!-- Section untuk YouTube Video (dipindah ke sini) -->
+                <div id="youtubeSection" style="display: none; margin-top: 1rem;">
                     <div class="card">
                         <div class="card-body p-0">
                             <div id="youtubePlayer" class="ratio ratio-16x9">
@@ -146,19 +221,8 @@ require_once __DIR__ . '/../template/sidebar.php';
                 </div>
             </div>
 
-            <!-- Kolom Jam dan Antrian -->
-            <div class="col-lg-4">
-                <!-- Card Jam Digital -->
-                <div class="card mb-4">
-                    <div class="card-body text-center py-3">
-                        <h2 class="display-4 mb-2" id="jamDigital">00:00:00</h2>
-                        <h4 class="mb-2" id="tanggalHari">Senin, 1 Januari 2024</h4>
-                        <div class="alert alert-info py-2 mb-0">
-                            <i class="bi bi-info-circle"></i> Status: Jam Praktek
-                        </div>
-                    </div>
-                </div>
-
+            <!-- Kolom Antrian -->
+            <div class="col-lg-3">
                 <!-- Card Daftar Antrian -->
                 <div class="card">
                     <div class="card-header bg-primary text-white">
@@ -167,51 +231,64 @@ require_once __DIR__ . '/../template/sidebar.php';
                         </h5>
                     </div>
                     <div class="card-body p-0">
-                        <div class="table-responsive">
-                            <table class="table table-hover mb-0">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th class="text-center">No</th>
-                                        <th>Pasien</th>
-                                        <th>Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="antrian-list">
-                                    <?php if (!empty($antrian_berikutnya)): ?>
-                                        <?php foreach ($antrian_berikutnya as $index => $antrian): ?>
+                        <?php if (!empty($antrian_berikutnya)): ?>
+                            <?php
+                            // Mengelompokkan antrian berdasarkan dokter dan tempat praktek
+                            $grouped_antrian = [];
+                            foreach ($antrian_berikutnya as $antrian) {
+                                $key = $antrian['Nama_Dokter'] . '|' . $antrian['Nama_Tempat'] . '|' . $antrian['Jam_Mulai'] . '-' . $antrian['Jam_Selesai'];
+                                if (!isset($grouped_antrian[$key])) {
+                                    $grouped_antrian[$key] = [];
+                                }
+                                $grouped_antrian[$key][] = $antrian;
+                            }
+                            ?>
+
+                            <?php foreach ($grouped_antrian as $key => $antrians): ?>
+                                <?php
+                                list($dokter, $tempat, $jadwal) = explode('|', $key);
+                                ?>
+                                <div class="border-bottom p-2 bg-light">
+                                    <div class="small fw-bold text-primary"><?= htmlspecialchars($dokter) ?></div>
+                                    <div class="small text-muted">
+                                        <?= htmlspecialchars($tempat) ?> | <?= htmlspecialchars($jadwal) ?>
+                                    </div>
+                                </div>
+                                <div class="table-responsive">
+                                    <table class="table table-hover mb-0">
+                                        <thead class="table-light">
                                             <tr>
-                                                <td class="text-center">
-                                                    <span class="fw-bold"><?= $antrian['ID_Pendaftaran'] ?></span>
-                                                </td>
-                                                <td>
-                                                    <div class="fw-bold"><?= htmlspecialchars($antrian['nm_pasien']) ?></div>
-                                                    <small class="text-muted">
-                                                        <i class="bi bi-clock"></i>
-                                                        <?= date('H:i', strtotime($antrian['Waktu_Perkiraan'])) ?>
-                                                    </small>
-                                                </td>
-                                                <td>
-                                                    <span class="badge bg-warning rounded-pill">
-                                                        <?= htmlspecialchars($antrian['Status_Pendaftaran']) ?>
-                                                    </span>
-                                                </td>
+                                                <th class="text-center" width="80px">No</th>
+                                                <th>Nama</th>
                                             </tr>
-                                        <?php endforeach; ?>
-                                    <?php else: ?>
-                                        <tr>
-                                            <td colspan="3" class="text-center">Tidak ada antrian</td>
-                                        </tr>
-                                    <?php endif; ?>
-                                </tbody>
-                            </table>
-                        </div>
+                                        </thead>
+                                        <tbody>
+                                            <?php foreach ($antrians as $antrian): ?>
+                                                <tr>
+                                                    <td class="text-center">
+                                                        <span class="fw-bold"><?= $antrian['Nomor_Urut'] ?></span>
+                                                    </td>
+                                                    <td>
+                                                        <?= htmlspecialchars($antrian['nm_pasien']) ?>
+                                                    </td>
+                                                </tr>
+                                            <?php endforeach; ?>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <div class="text-center p-3 text-muted">
+                                <p>Tidak ada antrian</p>
+                            </div>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Row untuk Statistik -->
-        <div class="row mb-4">
+        <!-- <div class="row mb-4">
             <div class="col-lg-3 col-md-6 mb-4">
                 <div class="card border-0 shadow-sm">
                     <div class="card-body">
@@ -272,7 +349,7 @@ require_once __DIR__ . '/../template/sidebar.php';
                     </div>
                 </div>
             </div>
-        </div>
+        </div> -->
     </div>
 </div>
 
@@ -355,7 +432,7 @@ require_once __DIR__ . '/../template/sidebar.php';
         overflow: hidden;
         text-overflow: ellipsis;
         margin-bottom: 5px !important;
-        font-size: 0.9rem;
+        font-size: 1.5rem;
         line-height: 1.4;
     }
 
@@ -464,6 +541,26 @@ require_once __DIR__ . '/../template/sidebar.php';
     .table-responsive::-webkit-scrollbar-thumb:hover {
         background: #555;
     }
+
+    #youtubeSection {
+        margin-left: -50%;
+        /* Menggeser ke kiri sejauh lebar kolom jam digital */
+        width: 150%;
+        /* Memperlebar hingga mencakup area jam digital */
+        position: relative;
+    }
+
+    #youtubeSection .card {
+        margin-top: 1rem;
+    }
+
+    /* Menyesuaikan tampilan pada layar kecil */
+    @media (max-width: 992px) {
+        #youtubeSection {
+            margin-left: 0;
+            width: 100%;
+        }
+    }
 </style>
 
 <script>
@@ -498,15 +595,6 @@ require_once __DIR__ . '/../template/sidebar.php';
 
     // Fungsi untuk memperbarui tampilan data antrian
     function updateQueueDisplay(data) {
-        // Update statistik
-        if (data.statistik) {
-            document.querySelector('[data-stat="total_antrian"]').textContent = data.statistik.total_antrian || 0;
-            document.querySelector('[data-stat="sudah_dilayani"]').textContent = data.statistik.sudah_dilayani || 0;
-            document.querySelector('[data-stat="sedang_menunggu"]').textContent = data.statistik.sedang_menunggu || 0;
-            document.querySelector('[data-stat="estimasi_waktu"]').textContent =
-                '~' + ((data.statistik.sedang_menunggu || 0) * 15) + ' Menit';
-        }
-
         // Update antrian sekarang
         const antrianSekarangContainer = document.querySelector('#antrian-sekarang');
         if (data.antrian_sekarang) {
@@ -520,19 +608,22 @@ require_once __DIR__ . '/../template/sidebar.php';
         }
 
         // Update antrian berikutnya
-        const antrianBerikutnyaBody = document.querySelector('#antrian-berikutnya tbody');
+        const antrianBerikutnyaBody = document.querySelector('#antrian-list');
         if (data.antrian_berikutnya && data.antrian_berikutnya.length > 0) {
             antrianBerikutnyaBody.innerHTML = data.antrian_berikutnya.map(antrian => `
                 <tr>
-                    <td>${antrian.ID_Pendaftaran}</td>
-                    <td>${antrian.nm_pasien}</td>
-                    <td><span class="badge bg-warning">Menunggu</span></td>
+                    <td class="text-center">
+                        <span class="fw-bold">${antrian.Nomor_Urut}</span>
+                    </td>
+                    <td>
+                        ${antrian.nm_pasien}
+                    </td>
                 </tr>
             `).join('');
         } else {
             antrianBerikutnyaBody.innerHTML = `
                 <tr>
-                    <td colspan="3" class="text-center">Tidak ada antrian berikutnya</td>
+                    <td colspan="2" class="text-center">Tidak ada antrian</td>
                 </tr>
             `;
         }
@@ -542,7 +633,6 @@ require_once __DIR__ . '/../template/sidebar.php';
         if (data.pengumuman && data.pengumuman.length > 0) {
             pengumumanContainer.innerHTML = data.pengumuman.map(p => `
                 <div class="pengumuman-item mb-3 p-3 border-bottom">
-                    <h6 class="fw-bold">${p.judul}</h6>
                     <p class="mb-1">${p.isi}</p>
                     <small class="text-muted">${new Date(p.created_at).toLocaleString('id-ID')}</small>
                 </div>
@@ -590,7 +680,7 @@ require_once __DIR__ . '/../template/sidebar.php';
     // Fungsi untuk menerapkan pengaturan
     function applySettings(settings) {
         // Terapkan pengaturan tampilan pengumuman
-        const announcementSection = document.querySelector('.col-lg-8');
+        const announcementSection = document.querySelector('.col-lg-6');
         announcementSection.style.display = settings.showAnnouncement ? 'block' : 'none';
 
         // Terapkan pengaturan YouTube

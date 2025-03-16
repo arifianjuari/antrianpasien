@@ -38,7 +38,7 @@ function is_current_module($module, $action = null)
 <style>
     /* Variabel warna untuk konsistensi */
     :root {
-        --primary-color: rgb(255, 65, 132);
+        --primary-color: #f08080;
         --primary-light: #e8f5f3;
         --primary-dark: rgb(188, 34, 96);
         --text-dark: #333;
