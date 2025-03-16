@@ -18,22 +18,21 @@ try {
     $stmt = $pdo->prepare("
         SELECT 
             COUNT(*) as total_antrian,
-            SUM(CASE WHEN status = 'selesai' THEN 1 ELSE 0 END) as sudah_dilayani,
-            SUM(CASE WHEN status = 'menunggu' THEN 1 ELSE 0 END) as sedang_menunggu
-        FROM antrian 
-        WHERE DATE(tanggal) = ?
+            SUM(CASE WHEN Status_Pendaftaran = 'selesai' THEN 1 ELSE 0 END) as sudah_dilayani,
+            SUM(CASE WHEN Status_Pendaftaran = 'menunggu' THEN 1 ELSE 0 END) as sedang_menunggu
+        FROM pendaftaran 
+        WHERE DATE(Waktu_Perkiraan) = ?
     ");
     $stmt->execute([$today]);
     $response['statistik'] = $stmt->fetch(PDO::FETCH_ASSOC);
 
     // Query untuk antrian yang sedang dilayani
     $stmt = $pdo->prepare("
-        SELECT a.*, p.nama 
-        FROM antrian a 
-        JOIN pasien p ON a.id_pasien = p.id 
-        WHERE a.status = 'dilayani' 
-        AND DATE(a.tanggal) = ? 
-        ORDER BY a.updated_at DESC 
+        SELECT p.*, p.nm_pasien as nama 
+        FROM pendaftaran p 
+        WHERE p.Status_Pendaftaran = 'dilayani' 
+        AND DATE(p.Waktu_Perkiraan) = ? 
+        ORDER BY p.Waktu_Perkiraan DESC 
         LIMIT 1
     ");
     $stmt->execute([$today]);
@@ -41,12 +40,11 @@ try {
 
     // Query untuk antrian berikutnya
     $stmt = $pdo->prepare("
-        SELECT a.*, p.nama 
-        FROM antrian a 
-        JOIN pasien p ON a.id_pasien = p.id 
-        WHERE a.status = 'menunggu' 
-        AND DATE(a.tanggal) = ? 
-        ORDER BY a.no_antrian ASC 
+        SELECT p.*, p.nm_pasien as nama 
+        FROM pendaftaran p 
+        WHERE p.Status_Pendaftaran = 'menunggu' 
+        AND DATE(p.Waktu_Perkiraan) = ? 
+        ORDER BY p.Waktu_Perkiraan ASC 
         LIMIT 3
     ");
     $stmt->execute([$today]);
