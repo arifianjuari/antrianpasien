@@ -5,7 +5,7 @@
     "start_url": "/index.php",
     "scope": "/",
     "display": "standalone",
-    "orientation": "portrait",
+    "orientation": "any",
     "background_color": "#ffffff",
     "theme_color": "#198754",
     "prefer_related_applications": false,
