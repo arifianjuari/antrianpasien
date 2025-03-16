@@ -223,17 +223,17 @@ try {
                     <div class="row mb-4">
                         <div class="col-md-4 col-5">
                             <!-- Statistik Antrian -->
-                            <div class="d-flex flex-column gap-2">
-                                <div class="bg-success bg-opacity-25 rounded p-2 stat-box">
-                                    <div class="d-flex flex-column">
-                                        <small class="mb-0">Dikonfirmasi</small>
-                                        <h4 class="mb-0"><?= isset($status_counts['Dikonfirmasi']) ? $status_counts['Dikonfirmasi'] : 0 ?></h4>
+                            <div class="d-flex gap-2">
+                                <div class="bg-success bg-opacity-25 rounded stat-box-small">
+                                    <div class="d-flex flex-column align-items-center justify-content-center">
+                                        <div class="stat-value"><?= isset($status_counts['Dikonfirmasi']) ? $status_counts['Dikonfirmasi'] : 0 ?></div>
+                                        <div class="stat-label">Dikonfirmasi</div>
                                     </div>
                                 </div>
-                                <div class="bg-warning bg-opacity-25 rounded p-2 stat-box">
-                                    <div class="d-flex flex-column">
-                                        <small class="mb-0">Menunggu</small>
-                                        <h4 class="mb-0"><?= isset($status_counts['Menunggu Konfirmasi']) ? $status_counts['Menunggu Konfirmasi'] : 0 ?></h4>
+                                <div class="bg-warning bg-opacity-25 rounded stat-box-small">
+                                    <div class="d-flex flex-column align-items-center justify-content-center">
+                                        <div class="stat-value"><?= isset($status_counts['Menunggu Konfirmasi']) ? $status_counts['Menunggu Konfirmasi'] : 0 ?></div>
+                                        <div class="stat-label">Menunggu</div>
                                     </div>
                                 </div>
                             </div>
@@ -246,35 +246,35 @@ try {
 
                                 <div class="d-flex flex-column h-100">
                                     <!-- Action Buttons dan Search Box -->
-                                    <div class="d-flex gap-2 mb-2">
+                                    <div class="d-flex gap-1 mb-2 flex-wrap">
                                         <a href="<?php echo $base_url; ?>/pendaftaran/form_pendaftaran_pasien.php"
-                                            class="btn btn-primary btn-icon"
+                                            class="btn btn-primary btn-sm btn-icon"
                                             data-bs-toggle="tooltip"
                                             title="Tambah Pendaftaran">
                                             <i class="bi bi-plus-circle"></i>
                                         </a>
 
                                         <button type="button"
-                                            class="btn btn-success btn-icon"
+                                            class="btn btn-success btn-sm btn-icon"
                                             onclick="refreshPage()"
                                             data-bs-toggle="tooltip"
                                             title="Refresh">
                                             <i class="bi bi-arrow-clockwise"></i>
                                         </button>
 
-                                        <div class="input-group" style="width: auto;">
+                                        <div class="input-group input-group-sm" style="width: auto; max-width: 200px;">
                                             <input type="text"
                                                 name="search"
-                                                class="form-control"
-                                                placeholder="Cari nama/No.RM/ID..."
+                                                class="form-control form-control-sm"
+                                                placeholder="Cari..."
                                                 value="<?= htmlspecialchars($search) ?>"
-                                                style="max-width: 200px;">
-                                            <button type="submit" class="btn btn-primary">
+                                                style="max-width: 120px;">
+                                            <button type="submit" class="btn btn-primary btn-sm">
                                                 <i class="bi bi-search"></i>
                                             </button>
                                             <?php if (!empty($search) || !empty($status_filter) || $sort_by !== 'waktu_asc'): ?>
                                                 <a href="index.php?module=rekam_medis&action=manajemen_antrian"
-                                                    class="btn btn-secondary"
+                                                    class="btn btn-secondary btn-sm"
                                                     data-bs-toggle="tooltip"
                                                     title="Reset Filter">
                                                     <i class="bi bi-x-circle"></i>
@@ -284,13 +284,13 @@ try {
                                     </div>
 
                                     <!-- Filter Dropdowns dalam Satu Baris -->
-                                    <div class="d-flex gap-2">
-                                        <select name="status" class="form-select" style="width: auto;">
+                                    <div class="d-flex gap-1 filter-container">
+                                        <select name="status" class="form-select form-select-sm filter-item">
                                             <option value="">Status</option>
                                             <option value="Dikonfirmasi" <?= $status_filter === 'Dikonfirmasi' ? 'selected' : '' ?>>Dikonfirmasi</option>
                                             <option value="Menunggu Konfirmasi" <?= $status_filter === 'Menunggu Konfirmasi' ? 'selected' : '' ?>>Menunggu</option>
                                         </select>
-                                        <select name="hari" class="form-select" style="width: auto;">
+                                        <select name="hari" class="form-select form-select-sm filter-item">
                                             <option value="">Hari</option>
                                             <option value="Senin">Senin</option>
                                             <option value="Selasa">Selasa</option>
@@ -300,7 +300,7 @@ try {
                                             <option value="Sabtu">Sabtu</option>
                                             <option value="Minggu">Minggu</option>
                                         </select>
-                                        <select name="dokter" class="form-select" style="width: auto;">
+                                        <select name="dokter" class="form-select form-select-sm filter-item">
                                             <option value="">Dokter</option>
                                             <?php
                                             $query_dokter = "SELECT DISTINCT Nama_Dokter FROM dokter WHERE Status_Aktif = 1";
@@ -312,7 +312,7 @@ try {
                                             }
                                             ?>
                                         </select>
-                                        <select name="tempat" class="form-select" style="width: auto;">
+                                        <select name="tempat" class="form-select form-select-sm filter-item">
                                             <option value="">Tempat</option>
                                             <?php
                                             $query_tempat = "SELECT DISTINCT Nama_Tempat FROM tempat_praktek WHERE Status_Aktif = 1";
@@ -324,12 +324,15 @@ try {
                                             }
                                             ?>
                                         </select>
-                                        <select name="sort" class="form-select" style="width: auto;">
+                                        <select name="sort" class="form-select form-select-sm filter-item">
                                             <option value="waktu_asc" <?= $sort_by === 'waktu_asc' ? 'selected' : '' ?>>Terlama</option>
                                             <option value="waktu_desc" <?= $sort_by === 'waktu_desc' ? 'selected' : '' ?>>Terbaru</option>
                                             <option value="nama_asc" <?= $sort_by === 'nama_asc' ? 'selected' : '' ?>>Nama (A-Z)</option>
                                             <option value="nama_desc" <?= $sort_by === 'nama_desc' ? 'selected' : '' ?>>Nama (Z-A)</option>
                                         </select>
+                                        <button type="submit" class="btn btn-sm btn-primary filter-button">
+                                            <i class="bi bi-filter"></i>
+                                        </button>
                                     </div>
                                 </div>
                             </form>
@@ -337,31 +340,85 @@ try {
                     </div>
 
                     <style>
+                        /* Tambahan style untuk filter */
+                        .form-select-sm,
+                        .form-control-sm,
+                        .btn-sm {
+                            height: 30px;
+                            font-size: 0.85rem;
+                            padding: 2px 6px;
+                        }
+
+                        .btn-sm.btn-icon {
+                            width: 30px;
+                            height: 30px;
+                            padding: 0;
+                            display: inline-flex;
+                            align-items: center;
+                            justify-content: center;
+                        }
+
+                        .input-group-sm .form-control {
+                            height: 30px;
+                        }
+
+                        .d-flex.gap-1 {
+                            column-gap: 4px !important;
+                        }
+
+                        .filter-container {
+                            flex-wrap: nowrap;
+                            overflow-x: auto;
+                            padding-bottom: 4px;
+                            scrollbar-width: thin;
+                            -ms-overflow-style: none;
+                        }
+
+                        .filter-container::-webkit-scrollbar {
+                            height: 4px;
+                        }
+
+                        .filter-container::-webkit-scrollbar-thumb {
+                            background-color: rgba(0, 0, 0, 0.2);
+                            border-radius: 4px;
+                        }
+
+                        .filter-item {
+                            flex: 0 0 auto;
+                            width: auto;
+                            min-width: 80px;
+                            max-width: 120px;
+                        }
+
+                        .filter-button {
+                            flex: 0 0 auto;
+                        }
+
                         @media (max-width: 768px) {
                             .stat-box {
-                                padding: 8px !important;
+                                padding: 6px !important;
                             }
 
                             .stat-box h4 {
-                                font-size: 1.2rem;
+                                font-size: 1.1rem;
                                 margin: 0;
                             }
 
                             .stat-box small {
-                                font-size: 0.8rem;
+                                font-size: 0.75rem;
                             }
 
                             .form-select,
                             .form-control,
                             .btn {
-                                font-size: 0.85rem;
-                                height: 32px;
-                                padding: 4px 8px;
+                                font-size: 0.8rem;
+                                height: 28px;
+                                padding: 2px 6px;
                             }
 
                             .btn-icon {
-                                width: 32px;
-                                height: 32px;
+                                width: 28px;
+                                height: 28px;
                                 padding: 0;
                                 display: inline-flex;
                                 align-items: center;
@@ -372,18 +429,36 @@ try {
                                 width: auto !important;
                             }
 
-                            .d-flex.gap-2 {
-                                flex-wrap: nowrap;
-                                overflow-x: auto;
-                                padding-bottom: 8px;
-                            }
-
-                            .form-select {
-                                min-width: 100px;
+                            .filter-item {
+                                min-width: 70px;
+                                max-width: 90px;
                             }
 
                             .form-control {
-                                min-width: 150px;
+                                min-width: 80px;
+                                max-width: 100px !important;
+                            }
+
+                            .waktu-input {
+                                width: 80px;
+                            }
+                        }
+
+                        @media (max-width: 576px) {
+
+                            .col-5,
+                            .col-7 {
+                                padding-left: 8px;
+                                padding-right: 8px;
+                            }
+
+                            .card-body {
+                                padding: 12px 8px;
+                            }
+
+                            .filter-item {
+                                min-width: 60px;
+                                max-width: 80px;
                             }
                         }
 
@@ -409,12 +484,6 @@ try {
                         .edit-btn {
                             padding: 2px 6px;
                             font-size: 12px;
-                        }
-
-                        @media (max-width: 768px) {
-                            .waktu-input {
-                                width: 80px;
-                            }
                         }
 
                         .table {
@@ -485,6 +554,61 @@ try {
                         .nowrap {
                             white-space: nowrap;
                             width: 100%;
+                        }
+
+                        /* Tambahan style untuk statistik box kecil */
+                        .stat-box-small {
+                            width: 80px;
+                            height: 70px;
+                            padding: 8px 4px;
+                            text-align: center;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                        }
+
+                        .stat-value {
+                            font-size: 1.5rem;
+                            font-weight: bold;
+                            line-height: 1;
+                        }
+
+                        .stat-label {
+                            font-size: 0.7rem;
+                            margin-top: 2px;
+                        }
+
+                        @media (max-width: 768px) {
+                            .stat-box-small {
+                                width: 70px;
+                                height: 60px;
+                                padding: 6px 2px;
+                            }
+
+                            .stat-value {
+                                font-size: 1.3rem;
+                            }
+
+                            .stat-label {
+                                font-size: 0.65rem;
+                                margin-top: 1px;
+                            }
+                        }
+
+                        @media (max-width: 576px) {
+                            .stat-box-small {
+                                width: 60px;
+                                height: 55px;
+                                padding: 4px 2px;
+                            }
+
+                            .stat-value {
+                                font-size: 1.2rem;
+                            }
+
+                            .stat-label {
+                                font-size: 0.6rem;
+                            }
                         }
                     </style>
 
