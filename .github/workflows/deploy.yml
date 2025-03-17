@@ -11,9 +11,12 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 30  # Menambahkan timeout di tingkat job
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 2  # Mengambil hanya 2 commit terakhir untuk mempercepat
 
       - name: Deploy via FTP
         uses: SamKirkland/FTP-Deploy-Action@4.3.0
@@ -23,7 +26,6 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./
           server-dir: /public_html/
-          timeout: 600000  # Menambah timeout menjadi 10 menit
           exclude: |
             **/.git*
             **/.git*/**
@@ -31,3 +33,6 @@ jobs:
             README.md
             **/tests/**
             **/.env*
+            **/vendor/**
+            **/.idea/**
+            **/.vscode/**
