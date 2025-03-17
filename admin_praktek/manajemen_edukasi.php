@@ -1,16 +1,53 @@
 <?php
+// Aktifkan error reporting untuk debugging di localhost
+if ($_SERVER['SERVER_NAME'] == 'localhost' || $_SERVER['SERVER_NAME'] == '127.0.0.1') {
+    error_reporting(E_ALL);
+    ini_set('display_errors', 1);
+} else {
+    // Di server produksi, log error tapi jangan tampilkan
+    error_reporting(E_ALL);
+    ini_set('display_errors', 0);
+    ini_set('log_errors', 1);
+    ini_set('error_log', '../logs/php-errors.log');
+}
+
+// Set memory limit yang cukup untuk manipulasi gambar
+ini_set('memory_limit', '128M');
+
+// Load file konfigurasi
 require_once '../config/config.php';
 require_once '../config/database.php';
 require_once '../config/auth.php';
-require_once '../vendor/autoload.php'; // Tambahkan ini untuk load Intervention/Image
-
-use Intervention\Image\ImageManager;
-use Intervention\Image\Drivers\Gd\Driver;
 
 // Cek apakah user adalah admin
 if (!isAdmin()) {
     header('Location: ' . $base_url . '/login.php');
     exit;
+}
+
+// Pengecekan ekstensi yang dibutuhkan
+$required_extensions = ['gd', 'fileinfo', 'pdo_mysql'];
+$missing_extensions = [];
+foreach ($required_extensions as $ext) {
+    if (!extension_loaded($ext)) {
+        $missing_extensions[] = $ext;
+    }
+}
+
+if (!empty($missing_extensions)) {
+    die('Ekstensi PHP berikut diperlukan tapi tidak tersedia: ' . implode(', ', $missing_extensions));
+}
+
+// Cek keberadaan dan permission folder upload
+$upload_dir = '../uploads/edukasi/';
+if (!file_exists($upload_dir)) {
+    if (!@mkdir($upload_dir, 0755, true)) {
+        die("Gagal membuat direktori upload: $upload_dir");
+    }
+}
+
+if (!is_writable($upload_dir)) {
+    die("Direktori upload tidak writable: $upload_dir");
 }
 
 // Konfigurasi upload dan optimasi gambar
@@ -22,12 +59,113 @@ $image_config = [
     'output_format' => 'jpg'
 ];
 
-// Inisialisasi Image Manager
-$manager = new ImageManager(new Driver());
+// Fungsi untuk menangani upload dan proses gambar tanpa Intervention/Image
+// Menggunakan GD secara langsung
+function processImageUpload($image_file, $image_config, $upload_dir)
+{
+    if ($image_file['error'] !== 0) {
+        return [false, "Error kode: " . $image_file['error']];
+    }
 
-// Konfigurasi upload
-// Untuk produksi, variabel ini bisa diatur di config.php
-$upload_path = isset($config['upload_path']) ? $config['upload_path'] : '../uploads';
+    // Validasi file
+    $file_type = $image_file['type'];
+    $file_size = $image_file['size'];
+
+    if (!in_array($file_type, $image_config['allowed_types'])) {
+        return [false, "Hanya file JPG, PNG, dan GIF yang diperbolehkan."];
+    }
+
+    if ($file_size > $image_config['max_size']) {
+        return [false, "Ukuran file tidak boleh lebih dari 2MB."];
+    }
+
+    try {
+        // Generate nama file unik
+        $file_extension = strtolower(pathinfo($image_file["name"], PATHINFO_EXTENSION));
+        $new_filename = 'edukasi-' . time() . '-' . substr(md5(uniqid()), 0, 8) . '.jpg';
+        $target_file = $upload_dir . $new_filename;
+
+        // Buat sumber gambar berdasarkan tipe file
+        $src_image = null;
+
+        switch ($file_type) {
+            case 'image/jpeg':
+            case 'image/jpg':
+                $src_image = imagecreatefromjpeg($image_file['tmp_name']);
+                break;
+            case 'image/png':
+                $src_image = imagecreatefrompng($image_file['tmp_name']);
+                break;
+            case 'image/gif':
+                $src_image = imagecreatefromgif($image_file['tmp_name']);
+                break;
+            default:
+                throw new Exception("Format gambar tidak didukung.");
+        }
+
+        if (!$src_image) {
+            throw new Exception("Gagal membaca gambar.");
+        }
+
+        // Dapatkan dimensi gambar asli
+        $src_width = imagesx($src_image);
+        $src_height = imagesy($src_image);
+
+        // Hitung dimensi baru dengan mempertahankan rasio aspek
+        $max_dimension = $image_config['max_dimension'];
+
+        if ($src_width > $max_dimension || $src_height > $max_dimension) {
+            if ($src_width > $src_height) {
+                $dst_width = $max_dimension;
+                $dst_height = floor($src_height * ($max_dimension / $src_width));
+            } else {
+                $dst_height = $max_dimension;
+                $dst_width = floor($src_width * ($max_dimension / $src_height));
+            }
+        } else {
+            // Tidak perlu resize jika gambar sudah lebih kecil
+            $dst_width = $src_width;
+            $dst_height = $src_height;
+        }
+
+        // Buat gambar baru
+        $dst_image = imagecreatetruecolor($dst_width, $dst_height);
+
+        // Pertahankan alpha channel jika PNG
+        if ($file_type == 'image/png') {
+            imagealphablending($dst_image, false);
+            imagesavealpha($dst_image, true);
+        }
+
+        // Resize gambar
+        imagecopyresampled(
+            $dst_image,
+            $src_image,
+            0,
+            0,
+            0,
+            0,
+            $dst_width,
+            $dst_height,
+            $src_width,
+            $src_height
+        );
+
+        // Simpan gambar
+        imagejpeg($dst_image, $target_file, $image_config['quality']);
+
+        // Bersihkan memori
+        imagedestroy($src_image);
+        imagedestroy($dst_image);
+
+        // Set permission
+        chmod($target_file, 0644);
+
+        return [true, $new_filename];
+    } catch (Exception $e) {
+        return [false, "Gagal mengoptimasi gambar: " . $e->getMessage()];
+    }
+}
 
 // Fungsi untuk membuat slug dari judul
 function createSlug($string)
@@ -67,78 +205,53 @@ if (isset($_POST['tambah'])) {
     $judul = $_POST['judul'];
     $kategori = $_POST['kategori'];
     $isi_edukasi = $_POST['isi_edukasi'];
-    $sumber = $_POST['sumber'] ?? '';
-    $tag = $_POST['tag'] ?? '';
+    $sumber = isset($_POST['sumber']) ? $_POST['sumber'] : '';
+    $tag = isset($_POST['tag']) ? $_POST['tag'] : '';
     $status_aktif = isset($_POST['status_aktif']) ? 1 : 0;
     $ditampilkan_beranda = isset($_POST['ditampilkan_beranda']) ? 1 : 0;
-    $urutan_tampil = $_POST['urutan_tampil'] ?? null;
+    $urutan_tampil = isset($_POST['urutan_tampil']) ? $_POST['urutan_tampil'] : null;
     $dibuat_oleh = $_SESSION['user_id'];
-    $link_video = $_POST['link_video'] ?? '';
+    $link_video = isset($_POST['link_video']) ? $_POST['link_video'] : '';
 
     // Upload gambar jika ada
     $link_gambar = '';
     if (isset($_FILES['link_gambar']) && $_FILES['link_gambar']['error'] == 0) {
-        // Validasi file
-        $file_type = $_FILES['link_gambar']['type'];
-        $file_size = $_FILES['link_gambar']['size'];
+        list($success, $result) = processImageUpload(
+            $_FILES['link_gambar'],
+            $image_config,
+            $upload_dir
+        );
 
-        if (!in_array($file_type, $image_config['allowed_types'])) {
-            $error_message = "Error: Hanya file JPG, PNG, dan GIF yang diperbolehkan.";
-        } else if ($file_size > $image_config['max_size']) {
-            $error_message = "Error: Ukuran file tidak boleh lebih dari 2MB.";
+        if ($success) {
+            $link_gambar = $result;
         } else {
-            try {
-                // Buat direktori jika belum ada
-                $upload_dir = '../uploads/edukasi/';
-                if (!file_exists($upload_dir)) {
-                    mkdir($upload_dir, 0755, true);
-                }
-
-                // Generate nama file unik
-                $file_extension = strtolower(pathinfo($_FILES["link_gambar"]["name"], PATHINFO_EXTENSION));
-                $new_filename = 'edukasi-' . time() . '-' . substr(md5(uniqid()), 0, 8) . '.jpg';
-                $target_file = $upload_dir . $new_filename;
-
-                // Buat instance Image Intervention
-                $image = $manager->read($_FILES['link_gambar']['tmp_name']);
-
-                // Resize dengan mempertahankan aspect ratio
-                $image->scale(width: $image_config['max_dimension'], height: $image_config['max_dimension']);
-
-                // Simpan gambar dengan kompresi
-                $image->encode('jpg', $image_config['quality'])->save($target_file);
-
-                // Set permission yang aman
-                chmod($target_file, 0644);
-
-                $link_gambar = $new_filename;
-            } catch (Exception $e) {
-                $error_message = "Error: Gagal mengupload file. " . $e->getMessage();
-            }
+            $error_message = "Error: " . $result;
         }
     }
 
-    try {
-        $stmt = $conn->prepare("INSERT INTO edukasi (id_edukasi, judul, kategori, isi_edukasi, link_gambar, link_video, sumber, tag, status_aktif, ditampilkan_beranda, urutan_tampil, dibuat_oleh) 
-                VALUES (:id_edukasi, :judul, :kategori, :isi_edukasi, :link_gambar, :link_video, :sumber, :tag, :status_aktif, :ditampilkan_beranda, :urutan_tampil, :dibuat_oleh)");
+    if (!isset($error_message)) {
+        try {
+            $stmt = $conn->prepare("INSERT INTO edukasi (id_edukasi, judul, kategori, isi_edukasi, link_gambar, link_video, sumber, tag, status_aktif, ditampilkan_beranda, urutan_tampil, dibuat_oleh) 
+                    VALUES (:id_edukasi, :judul, :kategori, :isi_edukasi, :link_gambar, :link_video, :sumber, :tag, :status_aktif, :ditampilkan_beranda, :urutan_tampil, :dibuat_oleh)");
 
-        $stmt->bindParam(':id_edukasi', $id_edukasi);
-        $stmt->bindParam(':judul', $judul);
-        $stmt->bindParam(':kategori', $kategori);
-        $stmt->bindParam(':isi_edukasi', $isi_edukasi);
-        $stmt->bindParam(':link_gambar', $link_gambar);
-        $stmt->bindParam(':link_video', $link_video);
-        $stmt->bindParam(':sumber', $sumber);
-        $stmt->bindParam(':tag', $tag);
-        $stmt->bindParam(':status_aktif', $status_aktif);
-        $stmt->bindParam(':ditampilkan_beranda', $ditampilkan_beranda);
-        $stmt->bindParam(':urutan_tampil', $urutan_tampil);
-        $stmt->bindParam(':dibuat_oleh', $dibuat_oleh);
+            $stmt->bindParam(':id_edukasi', $id_edukasi);
+            $stmt->bindParam(':judul', $judul);
+            $stmt->bindParam(':kategori', $kategori);
+            $stmt->bindParam(':isi_edukasi', $isi_edukasi);
+            $stmt->bindParam(':link_gambar', $link_gambar);
+            $stmt->bindParam(':link_video', $link_video);
+            $stmt->bindParam(':sumber', $sumber);
+            $stmt->bindParam(':tag', $tag);
+            $stmt->bindParam(':status_aktif', $status_aktif);
+            $stmt->bindParam(':ditampilkan_beranda', $ditampilkan_beranda);
+            $stmt->bindParam(':urutan_tampil', $urutan_tampil);
+            $stmt->bindParam(':dibuat_oleh', $dibuat_oleh);
 
-        $stmt->execute();
-        $success_message = "Artikel edukasi berhasil ditambahkan";
-    } catch (PDOException $e) {
-        $error_message = "Error: " . $e->getMessage();
+            $stmt->execute();
+            $success_message = "Artikel edukasi berhasil ditambahkan";
+        } catch (PDOException $e) {
+            $error_message = "Error database: " . $e->getMessage();
+        }
     }
 }
 
@@ -148,79 +261,66 @@ if (isset($_POST['edit'])) {
     $judul = $_POST['judul'];
     $kategori = $_POST['kategori'];
     $isi_edukasi = $_POST['isi_edukasi'];
-    $sumber = $_POST['sumber'] ?? '';
-    $tag = $_POST['tag'] ?? '';
+    $sumber = isset($_POST['sumber']) ? $_POST['sumber'] : '';
+    $tag = isset($_POST['tag']) ? $_POST['tag'] : '';
     $status_aktif = isset($_POST['status_aktif']) ? 1 : 0;
     $ditampilkan_beranda = isset($_POST['ditampilkan_beranda']) ? 1 : 0;
-    $urutan_tampil = $_POST['urutan_tampil'] ?? null;
-    $link_video = $_POST['link_video'] ?? '';
+    $urutan_tampil = isset($_POST['urutan_tampil']) ? $_POST['urutan_tampil'] : null;
+    $link_video = isset($_POST['link_video']) ? $_POST['link_video'] : '';
 
     try {
         // Cek apakah ada upload gambar baru
         if (isset($_FILES['link_gambar']) && $_FILES['link_gambar']['error'] == 0) {
-            // Validasi file
-            $file_type = $_FILES['link_gambar']['type'];
-            $file_size = $_FILES['link_gambar']['size'];
+            list($success, $result) = processImageUpload(
+                $_FILES['link_gambar'],
+                $image_config,
+                $upload_dir
+            );
 
-            if (!in_array($file_type, $image_config['allowed_types'])) {
-                $error_message = "Error: Hanya file JPG, PNG, dan GIF yang diperbolehkan.";
-            } else if ($file_size > $image_config['max_size']) {
-                $error_message = "Error: Ukuran file tidak boleh lebih dari 2MB.";
-            } else {
-                try {
-                    // Buat direktori jika belum ada
-                    $upload_dir = '../uploads/edukasi/';
-                    if (!file_exists($upload_dir)) {
-                        mkdir($upload_dir, 0755, true);
+            if ($success) {
+                $new_filename = $result;
+
+                // Hapus gambar lama jika ada
+                $stmt = $conn->prepare("SELECT link_gambar FROM edukasi WHERE id_edukasi = :id_edukasi");
+                $stmt->bindParam(':id_edukasi', $id_edukasi);
+                $stmt->execute();
+                $old_image = $stmt->fetchColumn();
+
+                if (!empty($old_image)) {
+                    $old_image_path = $upload_dir . $old_image;
+                    if (file_exists($old_image_path)) {
+                        unlink($old_image_path);
                     }
-
-                    // Generate nama file unik
-                    $file_extension = strtolower(pathinfo($_FILES["link_gambar"]["name"], PATHINFO_EXTENSION));
-                    $new_filename = 'edukasi-' . time() . '-' . substr(md5(uniqid()), 0, 8) . '.jpg';
-                    $target_file = $upload_dir . $new_filename;
-
-                    // Buat instance Image Intervention
-                    $image = $manager->read($_FILES['link_gambar']['tmp_name']);
-
-                    // Resize dengan mempertahankan aspect ratio
-                    $image->scale(width: $image_config['max_dimension'], height: $image_config['max_dimension']);
-
-                    // Simpan gambar dengan kompresi
-                    $image->encode('jpg', $image_config['quality'])->save($target_file);
-
-                    // Set permission yang aman
-                    chmod($target_file, 0644);
-
-                    // Hapus gambar lama jika ada
-                    $stmt = $conn->prepare("SELECT link_gambar FROM edukasi WHERE id_edukasi = :id_edukasi");
-                    $stmt->bindParam(':id_edukasi', $id_edukasi);
-                    $stmt->execute();
-                    $old_image = $stmt->fetchColumn();
-
-                    if (!empty($old_image)) {
-                        $old_image_path = $upload_dir . $old_image;
-                        if (file_exists($old_image_path)) {
-                            unlink($old_image_path);
-                        }
-                    }
-
-                    // Update dengan gambar baru
-                    $stmt = $conn->prepare("UPDATE edukasi SET 
-                            judul = :judul,
-                            kategori = :kategori,
-                            isi_edukasi = :isi_edukasi,
-                            link_gambar = :link_gambar,
-                            link_video = :link_video,
-                            sumber = :sumber,
-                            tag = :tag,
-                            status_aktif = :status_aktif,
-                            ditampilkan_beranda = :ditampilkan_beranda,
-                            urutan_tampil = :urutan_tampil
-                            WHERE id_edukasi = :id_edukasi");
-                    $stmt->bindParam(':link_gambar', $new_filename);
-                } catch (Exception $e) {
-                    $error_message = "Error: Gagal mengupload file. " . $e->getMessage();
                 }
+
+                // Update dengan gambar baru
+                $stmt = $conn->prepare("UPDATE edukasi SET 
+                        judul = :judul,
+                        kategori = :kategori,
+                        isi_edukasi = :isi_edukasi,
+                        link_gambar = :link_gambar,
+                        link_video = :link_video,
+                        sumber = :sumber,
+                        tag = :tag,
+                        status_aktif = :status_aktif,
+                        ditampilkan_beranda = :ditampilkan_beranda,
+                        urutan_tampil = :urutan_tampil
+                        WHERE id_edukasi = :id_edukasi");
+                $stmt->bindParam(':link_gambar', $new_filename);
+            } else {
+                $error_message = "Error: " . $result;
+                // Update tanpa mengubah gambar jika terjadi error
+                $stmt = $conn->prepare("UPDATE edukasi SET 
+                        judul = :judul,
+                        kategori = :kategori,
+                        isi_edukasi = :isi_edukasi,
+                        link_video = :link_video,
+                        sumber = :sumber,
+                        tag = :tag,
+                        status_aktif = :status_aktif,
+                        ditampilkan_beranda = :ditampilkan_beranda,
+                        urutan_tampil = :urutan_tampil
+                        WHERE id_edukasi = :id_edukasi");
             }
         } else {
             // Update tanpa mengubah gambar
@@ -251,7 +351,9 @@ if (isset($_POST['edit'])) {
         $stmt->execute();
         $success_message = "Artikel edukasi berhasil diperbarui";
     } catch (PDOException $e) {
-        $error_message = "Error: " . $e->getMessage();
+        $error_message = "Error database: " . $e->getMessage();
+    } catch (Exception $e) {
+        $error_message = "Error umum: " . $e->getMessage();
     }
 }
 
@@ -267,9 +369,6 @@ if (isset($_GET['hapus'])) {
         $link_gambar = $stmt->fetchColumn();
 
         if (!empty($link_gambar)) {
-            // Definisikan direktori upload
-            $upload_dir = '../uploads/edukasi/';
-
             $image_path = $upload_dir . $link_gambar;
             if (file_exists($image_path)) {
                 unlink($image_path);
@@ -282,7 +381,9 @@ if (isset($_GET['hapus'])) {
         $stmt->execute();
         $success_message = "Artikel edukasi berhasil dihapus";
     } catch (PDOException $e) {
-        $error_message = "Error: " . $e->getMessage();
+        $error_message = "Error database: " . $e->getMessage();
+    } catch (Exception $e) {
+        $error_message = "Error umum: " . $e->getMessage();
     }
 }
 
