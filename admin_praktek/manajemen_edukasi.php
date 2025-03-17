@@ -47,7 +47,7 @@ if (!file_exists($upload_dir)) {
 }
 
 if (!is_writable($upload_dir)) {
-    die("Direktori upload tidak writable: $upload_dir");
+    die("Direktori upload tidak writable: $upload_dir silahkan coba secara online");
 }
 
 // Konfigurasi upload dan optimasi gambar

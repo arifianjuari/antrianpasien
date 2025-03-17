@@ -56,7 +56,7 @@ try {
         }
 
         .article-header {
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
             border-bottom: 1px solid #dee2e6;
             padding-bottom: 1rem;
         }
@@ -98,6 +98,24 @@ try {
         .back-button {
             margin-bottom: 1rem;
         }
+
+        .article-featured-image {
+            width: 100%;
+            max-height: 500px;
+            object-fit: contain;
+            margin-bottom: 2rem;
+            border-radius: 0.25rem;
+            background-color: #f8f9fa;
+            padding: 10px;
+        }
+
+        .image-container {
+            text-align: center;
+            margin-bottom: 2rem;
+            background-color: #f8f9fa;
+            border-radius: 0.25rem;
+            padding: 1rem;
+        }
     </style>
 </head>
 
@@ -131,6 +149,14 @@ try {
                             </span>
                         </div>
                     </div>
+
+                    <?php if (!empty($artikel['link_gambar'])): ?>
+                        <div class="image-container">
+                            <img src="<?= $base_url ?>/uploads/edukasi/<?= htmlspecialchars($artikel['link_gambar']) ?>"
+                                alt="<?= htmlspecialchars($artikel['judul']) ?>"
+                                class="article-featured-image">
+                        </div>
+                    <?php endif; ?>
 
                     <div class="article-content">
                         <?= $artikel['isi_edukasi'] ?>
