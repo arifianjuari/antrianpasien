@@ -33,6 +33,11 @@ class ComposerStaticInit2185d2f99bcd56787481d9357a5972d3
         array (
             'Monolog\\' => 8,
         ),
+        'I' => 
+        array (
+            'Intervention\\Image\\' => 19,
+            'Intervention\\Gif\\' => 17,
+        ),
         'G' => 
         array (
             'GuzzleHttp\\Psr7\\' => 16,
@@ -81,6 +86,14 @@ class ComposerStaticInit2185d2f99bcd56787481d9357a5972d3
         'Monolog\\' => 
         array (
             0 => __DIR__ . '/..' . '/monolog/monolog/src/Monolog',
+        ),
+        'Intervention\\Image\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/intervention/image/src',
+        ),
+        'Intervention\\Gif\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/intervention/gif/src',
         ),
         'GuzzleHttp\\Psr7\\' => 
         array (
