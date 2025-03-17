@@ -104,17 +104,16 @@ try {
             max-height: 500px;
             object-fit: contain;
             margin-bottom: 2rem;
-            border-radius: 0.25rem;
-            background-color: #f8f9fa;
-            padding: 10px;
+            border-radius: 0;
+            padding: 0;
         }
 
         .image-container {
             text-align: center;
             margin-bottom: 2rem;
-            background-color: #f8f9fa;
-            border-radius: 0.25rem;
-            padding: 1rem;
+            background-color: transparent;
+            padding: 0;
+            border-radius: 0;
         }
     </style>
 </head>
