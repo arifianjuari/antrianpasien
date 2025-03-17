@@ -23,3 +23,11 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./
           server-dir: /public_html/
+          timeout: 600000  # Menambah timeout menjadi 10 menit
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            README.md
+            **/tests/**
+            **/.env*
