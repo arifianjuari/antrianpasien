@@ -1,6 +1,7 @@
 # Aplikasi Antrian Pasien
 
 ## Panduan Migrasi dari Localhost ke Server Hosting
+(Terakhir diperbarui: 21 Juni 2024)
 
 ### Langkah-langkah Migrasi
 
