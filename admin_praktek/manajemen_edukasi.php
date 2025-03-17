@@ -357,6 +357,40 @@ if (isset($_POST['edit'])) {
     }
 }
 
+// Proses hapus gambar dari form edit
+if (isset($_POST['hapus_gambar'])) {
+    $id_edukasi = $_POST['id_edukasi'];
+
+    try {
+        // Ambil informasi gambar
+        $stmt = $conn->prepare("SELECT link_gambar FROM edukasi WHERE id_edukasi = :id_edukasi");
+        $stmt->bindParam(':id_edukasi', $id_edukasi);
+        $stmt->execute();
+        $link_gambar = $stmt->fetchColumn();
+
+        if (!empty($link_gambar)) {
+            // Hapus file gambar
+            $image_path = $upload_dir . $link_gambar;
+            if (file_exists($image_path)) {
+                unlink($image_path);
+            }
+
+            // Update database, set link_gambar menjadi kosong
+            $stmt = $conn->prepare("UPDATE edukasi SET link_gambar = '' WHERE id_edukasi = :id_edukasi");
+            $stmt->bindParam(':id_edukasi', $id_edukasi);
+            $stmt->execute();
+
+            $success_message = "Gambar berhasil dihapus";
+        } else {
+            $error_message = "Tidak ada gambar untuk dihapus";
+        }
+    } catch (PDOException $e) {
+        $error_message = "Error database: " . $e->getMessage();
+    } catch (Exception $e) {
+        $error_message = "Error umum: " . $e->getMessage();
+    }
+}
+
 // Proses hapus data
 if (isset($_GET['hapus'])) {
     $id_edukasi = $_GET['hapus'];
@@ -623,6 +657,12 @@ try {
                             <input type="file" class="form-control" id="edit_link_gambar" name="link_gambar" accept="image/*">
                             <small class="text-muted">Format: JPG, PNG, GIF. Maksimal 2MB</small>
                             <div id="preview_gambar" class="mt-2"></div>
+                            <div id="hapus_gambar_container" class="mt-2" style="display:none;">
+                                <button type="submit" class="btn btn-sm btn-danger" name="hapus_gambar"
+                                    onclick="return confirm('Yakin ingin menghapus gambar?')">
+                                    <i class="bi bi-trash"></i> Hapus Gambar
+                                </button>
+                            </div>
                         </div>
                         <div class="mb-3">
                             <label for="edit_sumber" class="form-label">Sumber</label>
@@ -745,12 +785,14 @@ try {
                 modal.find('#edit_ditampilkan_beranda').prop('checked', ditampilkan_beranda == 1);
                 modal.find('#edit_urutan_tampil').val(urutan_tampil);
 
-                // Tampilkan preview gambar jika ada
+                // Tampilkan preview gambar jika ada dan tombol hapus
                 if (link_gambar) {
                     var imgPreview = '<img src="<?= $base_url ?>/uploads/edukasi/' + link_gambar + '" class="article-image-preview">';
                     modal.find('#preview_gambar').html(imgPreview);
+                    modal.find('#hapus_gambar_container').show();
                 } else {
                     modal.find('#preview_gambar').empty();
+                    modal.find('#hapus_gambar_container').hide();
                 }
             });
 
