@@ -83,20 +83,22 @@ function is_current_module($module, $action = null)
     .nav-link {
         display: flex;
         align-items: center;
-        padding: 0.5rem 1rem;
+        padding: 0.35rem 1rem;
         color: var(--text-dark);
         text-decoration: none;
-        gap: 0.5rem;
+        gap: 0.4rem;
         border-radius: 0;
         white-space: nowrap;
         transition: all 0.2s ease;
         margin: 0;
         font-weight: 400;
         border-left: 3px solid transparent;
+        font-size: 0.875rem;
+        line-height: 1.2;
     }
 
     .nav-link i {
-        font-size: 1.1rem;
+        font-size: 1rem;
         min-width: 1.5rem;
         text-align: center;
         transition: all 0.2s ease;
@@ -137,10 +139,11 @@ function is_current_module($module, $action = null)
     }
 
     .submenu .nav-link {
-        padding: 0.4rem 1rem;
-        font-size: 0.875rem;
+        padding: 0.25rem 1rem;
+        font-size: 0.8125rem;
         margin: 0;
         color: var(--text-muted);
+        line-height: 1.2;
     }
 
     .submenu .nav-link.active {
@@ -360,11 +363,12 @@ function is_current_module($module, $action = null)
     /* Category headers */
     .category-header {
         text-transform: uppercase;
-        font-size: 0.75rem;
+        font-size: 0.7rem;
         font-weight: 600;
         color: var(--text-muted);
-        padding: 0.75rem 1rem 0.25rem;
+        padding: 0.5rem 1rem 0.25rem;
         letter-spacing: 0.5px;
+        line-height: 1.2;
     }
 
     /* Mobile Responsive */
@@ -1035,6 +1039,12 @@ function is_current_module($module, $action = null)
                             <a href="<?php echo $base_url; ?>/admin_praktek/dashboard_antrian.php" class="nav-link <?php echo is_current_page('/admin_praktek/dashboard_antrian.php') ? 'active' : ''; ?>">
                                 <i class="bi bi-display"></i>
                                 <span class="menu-text">Dashboard Antrian</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="<?php echo $base_url; ?>/admin_praktek/voucher.php" class="nav-link <?php echo is_current_page('/admin_praktek/voucher.php') ? 'active' : ''; ?>">
+                                <i class="bi bi-ticket-perforated"></i>
+                                <span class="menu-text">Manajemen Voucher</span>
                             </a>
                         </li>
                     </ul>

@@ -7,6 +7,11 @@ if (session_status() === PHP_SESSION_NONE) {
 // Memastikan variabel $base_url tersedia
 require_once __DIR__ . '/config.php';
 
+// Definisi role
+define('ROLE_SUPER_ADMIN', 'super_admin');
+define('ROLE_ADMIN', 'admin');
+define('ROLE_USER', 'user');
+
 /**
  * Fungsi untuk memeriksa apakah user sudah login
  * @return bool
@@ -90,4 +95,30 @@ function requireAccess($allowed_roles = [])
         header('Location: ' . $base_url . '/index.php?access_denied=1');
         exit;
     }
+}
+
+/**
+ * Memeriksa apakah pengguna memiliki otorisasi untuk mengakses fitur
+ * @param array $allowed_roles Array dari role yang diizinkan
+ * @return bool True jika pengguna memiliki otorisasi, false jika tidak
+ */
+function isAuthorized($allowed_roles = [])
+{
+    // Periksa apakah session sudah dimulai
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+
+    // Periksa apakah user sudah login
+    if (!isset($_SESSION['user_role'])) {
+        return false;
+    }
+
+    // Jika tidak ada role yang ditentukan, izinkan akses
+    if (empty($allowed_roles)) {
+        return true;
+    }
+
+    // Periksa apakah role user ada dalam daftar role yang diizinkan
+    return in_array($_SESSION['user_role'], $allowed_roles);
 }

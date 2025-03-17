@@ -73,6 +73,7 @@ try {
             p.Status_Pendaftaran,
             p.Waktu_Pendaftaran,
             p.Waktu_Perkiraan,
+            p.voucher_code,
             jr.Hari,
             jr.Jam_Mulai,
             jr.Jam_Selesai,
@@ -678,6 +679,7 @@ try {
                                                     <th class="text-center small fw-normal">No</th>
                                                     <th class="text-center small fw-normal">Nama Pasien</th>
                                                     <th class="text-center small fw-normal">Waktu Perkiraan</th>
+                                                    <th class="text-center small fw-normal">Kode Voucher</th>
                                                     <th class="text-center small fw-normal">Keluhan</th>
                                                     <th class="text-center small fw-normal">Status</th>
                                                 </tr>
@@ -770,6 +772,15 @@ try {
                                                             <button class="btn btn-sm btn-outline-primary edit-btn" style="display: none;">
                                                                 <i class="bi bi-check"></i>
                                                             </button>
+                                                        </td>
+                                                        <td class="text-center">
+                                                            <?php if (!empty($a['voucher_code'])): ?>
+                                                                <span class="badge bg-info">
+                                                                    <?= htmlspecialchars($a['voucher_code']) ?>
+                                                                </span>
+                                                            <?php else: ?>
+                                                                <span class="text-muted">-</span>
+                                                            <?php endif; ?>
                                                         </td>
                                                         <td><?= !empty($a['Keluhan']) ? htmlspecialchars($a['Keluhan']) : '-' ?></td>
                                                         <td>

@@ -324,8 +324,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         ID_Jadwal,
                         Status_Pendaftaran,
                         Waktu_Pendaftaran,
-                        Waktu_Perkiraan
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Menunggu Konfirmasi', ?, ?)";
+                        Waktu_Perkiraan,
+                        voucher_code
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Menunggu Konfirmasi', ?, ?, ?)";
 
             // Buat timestamp dengan zona waktu Asia/Jakarta
             $waktu_pendaftaran = date('Y-m-d H:i:s');
@@ -345,7 +346,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $id_dokter,
                 $id_jadwal,
                 $waktu_pendaftaran,
-                $waktu_perkiraan
+                $waktu_perkiraan,
+                !empty($_POST['voucher_code']) ? trim($_POST['voucher_code']) : null
             ]));
 
             $stmt = $conn->prepare($query);
@@ -362,10 +364,56 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $id_dokter,
                 $id_jadwal,
                 $waktu_pendaftaran,
-                $waktu_perkiraan
+                $waktu_perkiraan,
+                !empty($_POST['voucher_code']) ? trim($_POST['voucher_code']) : null
             ]);
 
             error_log("Data pendaftaran berhasil disimpan");
+
+            // Tambahkan setelah data pendaftaran berhasil disimpan
+            if (!empty($_POST['voucher_code'])) {
+                try {
+                    // Update status voucher menjadi terpakai
+                    $formData = [
+                        'voucher_code' => trim($_POST['voucher_code']),
+                        'mode' => 'use',
+                        'id_pendaftaran' => $id_pendaftaran
+                    ];
+
+                    // Buat context untuk HTTP request
+                    $options = [
+                        'http' => [
+                            'header' => "Content-type: application/x-www-form-urlencoded\r\n",
+                            'method' => 'POST',
+                            'content' => http_build_query($formData)
+                        ]
+                    ];
+
+                    $context = stream_context_create($options);
+
+                    // Tentukan URL berdasarkan environment
+                    $host = $_SERVER['HTTP_HOST'];
+                    if ($host === 'localhost' || strpos($host, 'localhost:') === 0) {
+                        $url = 'http://' . $host . '/antrian%20pasien/pendaftaran/check_voucher.php';
+                    } else {
+                        $url = 'https://' . $host . '/pendaftaran/check_voucher.php';
+                    }
+
+                    // Kirim request untuk update status voucher
+                    $result = file_get_contents($url, false, $context);
+
+                    if ($result === FALSE) {
+                        throw new Exception('Gagal mengupdate status voucher');
+                    }
+
+                    $response = json_decode($result, true);
+                    if (!$response['valid']) {
+                        error_log("Voucher update failed: " . $response['message']);
+                    }
+                } catch (Exception $e) {
+                    error_log("Error updating voucher status: " . $e->getMessage());
+                }
+            }
 
             // Commit transaction
             $conn->commit();
@@ -593,6 +641,14 @@ ob_start();
                                     <label for="keluhan" class="form-label">Keluhan</label>
                                     <textarea class="form-control" id="keluhan" name="keluhan" rows="3"></textarea>
                                 </div>
+                                <div class="mb-3">
+                                    <label for="voucher_code" class="form-label">Kode Voucher</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="voucher_code" name="voucher_code" placeholder="Masukkan kode voucher jika ada">
+                                        <button class="btn btn-outline-secondary" type="button" id="check_voucher">Cek Voucher</button>
+                                    </div>
+                                    <div id="voucher_feedback" class="form-text"></div>
+                                </div>
                             </div>
                         </div>
 
@@ -770,12 +826,44 @@ ob_start();
 
         // Form validation
         const form = document.getElementById('formPendaftaran');
-        form.addEventListener('submit', function(event) {
-            if (!form.checkValidity()) {
-                event.preventDefault();
+        form.addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            if (!this.checkValidity()) {
                 event.stopPropagation();
+                this.classList.add('was-validated');
+                return;
             }
-            form.classList.add('was-validated');
+
+            // Cek apakah ada voucher yang digunakan
+            const voucherCode = document.getElementById('voucher_code').value.trim();
+            if (voucherCode) {
+                try {
+                    const formData = new FormData();
+                    formData.append('voucher_code', voucherCode);
+                    formData.append('mode', 'use');
+                    formData.append('id_pendaftaran', 'TEMP'); // Akan diupdate setelah pendaftaran berhasil
+
+                    // Cek validitas voucher terakhir kali sebelum submit
+                    const response = await fetch('check_voucher.php', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const data = await response.json();
+                    if (!data.valid) {
+                        alert('Voucher tidak valid: ' + data.message);
+                        return;
+                    }
+                } catch (error) {
+                    console.error('Error checking voucher:', error);
+                    alert('Terjadi kesalahan saat memvalidasi voucher');
+                    return;
+                }
+            }
+
+            // Jika sampai di sini, lanjutkan dengan submit form
+            this.submit();
         });
 
         // Load jadwal when tempat or dokter changes
@@ -893,6 +981,79 @@ ob_start();
         if (tempatSelect.value && dokterSelect.value) {
             loadJadwal();
         }
+
+        // Fungsi untuk memeriksa validitas voucher
+        document.getElementById('check_voucher').addEventListener('click', function() {
+            const voucherCode = document.getElementById('voucher_code').value.trim();
+            const feedbackElement = document.getElementById('voucher_feedback');
+            const voucherInput = document.getElementById('voucher_code');
+
+            if (!voucherCode) {
+                feedbackElement.innerHTML = '<span class="text-danger">Silakan masukkan kode voucher</span>';
+                voucherInput.classList.add('is-invalid');
+                voucherInput.classList.remove('is-valid');
+                return;
+            }
+
+            // Tampilkan loading state
+            feedbackElement.innerHTML = '<span class="text-warning"><i class="bi bi-hourglass-split"></i> Memeriksa voucher...</span>';
+            voucherInput.classList.remove('is-valid', 'is-invalid');
+
+            // Buat URL untuk pengecekan voucher
+            const baseUrl = window.location.protocol + '//' + window.location.host;
+            let checkUrl;
+
+            if (window.location.host === 'praktekobgin.com' || window.location.host === 'www.praktekobgin.com') {
+                checkUrl = `${baseUrl}/pendaftaran/check_voucher.php`;
+            } else {
+                checkUrl = `${baseUrl}/antrian%20pasien/pendaftaran/check_voucher.php`;
+            }
+
+            // Log untuk debugging
+            console.log('Checking voucher at URL:', checkUrl);
+            console.log('Voucher code:', voucherCode);
+
+            fetch(checkUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: 'voucher_code=' + encodeURIComponent(voucherCode)
+                })
+                .then(response => {
+                    console.log('Response status:', response.status);
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Voucher check response:', data);
+
+                    if (data.valid) {
+                        feedbackElement.innerHTML = `
+                        <div class="text-success">
+                            <i class="bi bi-check-circle"></i> ${data.nama_voucher}<br>
+                            <small>${data.message}</small>
+                        </div>`;
+                        voucherInput.classList.add('is-valid');
+                        voucherInput.classList.remove('is-invalid');
+                    } else {
+                        feedbackElement.innerHTML = `
+                        <div class="text-danger">
+                            <i class="bi bi-x-circle"></i> ${data.message}
+                        </div>`;
+                        voucherInput.classList.add('is-invalid');
+                        voucherInput.classList.remove('is-valid');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error checking voucher:', error);
+                    feedbackElement.innerHTML = `
+                    <div class="text-danger">
+                        <i class="bi bi-exclamation-triangle"></i> Terjadi kesalahan saat memeriksa voucher
+                    </div>`;
+                    voucherInput.classList.add('is-invalid');
+                    voucherInput.classList.remove('is-valid');
+                });
+        });
     });
 </script>
 
