@@ -261,6 +261,47 @@ error_log("Data pasien: " . json_encode($pasien));
                 font-size: 0.85rem;
             }
         }
+
+        /* Update CSS untuk layout header */
+        .card-header {
+            border-bottom: 1px solid rgba(0, 0, 0, .125);
+            position: relative;
+        }
+
+        .voucher-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 35px;
+            height: 35px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .card-header .d-flex {
+            padding-right: 45px;
+            /* Memberikan ruang untuk tombol voucher */
+        }
+
+        @media (max-width: 768px) {
+            .card-header .d-flex {
+                flex-direction: column;
+                align-items: flex-start !important;
+                width: 100%;
+            }
+
+            .card-header .card-title {
+                margin-top: 5px;
+            }
+
+            .voucher-button {
+                top: 10px;
+                right: 10px;
+            }
+        }
     </style>
 
     <div class="container-fluid">
@@ -281,7 +322,7 @@ error_log("Data pasien: " . json_encode($pasien));
 
                 <div class="card">
                     <div class="card-header p-2">
-                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                        <div class="d-flex align-items-center gap-2">
                             <!-- Tombol Kembali di kiri -->
                             <a href="index.php?module=rekam_medis&action=manajemen_antrian" class="btn btn-light btn-sm">
                                 <i class="fas fa-arrow-left"></i> Kembali
@@ -289,44 +330,12 @@ error_log("Data pasien: " . json_encode($pasien));
 
                             <h5 class="card-title mb-0">Detail Rekam Medis Pasien</h5>
                         </div>
+
+                        <!-- Tombol Voucher di kanan -->
+                        <a href="../admin_praktek/voucher.php" class="btn btn-dark btn-sm rounded-circle voucher-button" title="Buat Voucher Baru">
+                            <i class="fas fa-tags text-white"></i>
+                        </a>
                     </div>
-
-                    <style>
-                        /* Update CSS untuk layout header */
-                        .card-header {
-                            border-bottom: 1px solid rgba(0, 0, 0, .125);
-                        }
-
-                        .download-buttons {
-                            display: flex;
-                            flex-wrap: wrap;
-                            gap: 8px;
-                            justify-content: flex-end;
-                        }
-
-                        @media (max-width: 768px) {
-                            .download-buttons {
-                                display: grid;
-                                grid-template-columns: repeat(2, 1fr);
-                                width: 100%;
-                            }
-
-                            .card-header .d-flex {
-                                flex-direction: column;
-                                align-items: stretch !important;
-                            }
-
-                            .card-header .btn-light {
-                                width: fit-content;
-                            }
-                        }
-
-                        @media (max-width: 400px) {
-                            .download-buttons {
-                                grid-template-columns: 1fr;
-                            }
-                        }
-                    </style>
 
                     <div class="card-body">
                         <?php if (isset($_SESSION['success'])): ?>
