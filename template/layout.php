@@ -41,12 +41,16 @@ if (!isset($conn)) {
         body {
             min-height: 100vh;
             background-color: #f5f5f5;
+            overflow-x: hidden; /* Mencegah scrollbar horizontal */
         }
-
+        
         .main-content {
             margin-left: 280px;
             padding: 20px;
-            transition: all 0.3s ease;
+            transition: margin-left 0.3s ease;
+            width: calc(100% - 280px); /* Lebar dikurangi margin sidebar */
+            max-width: 100%;
+            box-sizing: border-box;
         }
 
         @media (max-width: 991.98px) {
@@ -55,8 +59,10 @@ if (!isset($conn)) {
             }
         }
 
-        .sidebar.minimized+.main-content {
+        /* Perbaikan untuk sidebar collapse */
+        .sidebar.minimized ~ .main-content {
             margin-left: 60px;
+            width: calc(100% - 60px); /* Lebar dikurangi margin sidebar yang diminimalkan */
         }
 
         /* Perbaikan tampilan alert */
@@ -154,6 +160,70 @@ if (!isset($conn)) {
     <?php endif; ?>
 
     <?php echo isset($additional_scripts) ? $additional_scripts : ''; ?>
+    
+    <!-- Script untuk menangani sidebar collapse dengan benar -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Fungsi untuk memeriksa status sidebar dan menyesuaikan layout
+            function checkSidebarState() {
+                const sidebar = document.querySelector('.sidebar');
+                const mainContent = document.querySelector('.main-content');
+                
+                if (sidebar && mainContent) {
+                    // Tambahkan CSS inline untuk memastikan main-content menyesuaikan dengan benar
+                    if (sidebar.classList.contains('minimized')) {
+                        // Sidebar diminimalkan, sesuaikan margin-left dan width main-content
+                        mainContent.style.marginLeft = '60px';
+                        mainContent.style.width = 'calc(100% - 60px)';
+                    } else {
+                        // Sidebar normal, kembalikan margin-left dan width default
+                        if (window.innerWidth <= 991.98) {
+                            // Tampilan mobile
+                            mainContent.style.marginLeft = '0';
+                            mainContent.style.width = '100%';
+                        } else {
+                            // Tampilan desktop
+                            mainContent.style.marginLeft = '280px';
+                            mainContent.style.width = 'calc(100% - 280px)';
+                        }
+                    }
+                }
+            }
+            
+            // Periksa status sidebar saat halaman dimuat
+            checkSidebarState();
+            
+            // Tambahkan event listener untuk tombol toggle sidebar
+            const toggleButtons = document.querySelectorAll('#toggleSidebar, #toggleMobileSidebar');
+            toggleButtons.forEach(button => {
+                if (button) {
+                    button.addEventListener('click', function() {
+                        // Beri waktu untuk CSS transition
+                        setTimeout(checkSidebarState, 300);
+                    });
+                }
+            });
+            
+            // Tambahkan event listener untuk window resize
+            window.addEventListener('resize', checkSidebarState);
+            
+            // Tambahkan MutationObserver untuk memantau perubahan pada sidebar
+            const sidebar = document.querySelector('.sidebar');
+            if (sidebar) {
+                const observer = new MutationObserver(function(mutations) {
+                    mutations.forEach(function(mutation) {
+                        if (mutation.attributeName === 'class') {
+                            // Sidebar class berubah, periksa statusnya
+                            checkSidebarState();
+                        }
+                    });
+                });
+                
+                // Mulai observasi pada sidebar untuk perubahan atribut
+                observer.observe(sidebar, { attributes: true });
+            }
+        });
+    </script>
 </body>
 
 </html>

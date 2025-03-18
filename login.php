@@ -137,22 +137,25 @@ $csrf_token = $_SESSION['csrf_token'];
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary-color: #198754;
             --secondary-color: #0d6efd;
             --accent-color: #f8f9fa;
             --text-color: #333;
+            --border-radius: 12px;
         }
 
         body {
             background-color: #f5f5f5;
-            background-image: linear-gradient(135deg, #f5f5f5 0%, #e0f7fa 100%);
-            height: 100vh;
+            background-image: linear-gradient(135deg, #f8f9fa 0%, #d4edda 100%);
+            min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Roboto', Arial, sans-serif;
+            padding: 20px 0;
         }
 
         .container {
@@ -163,32 +166,59 @@ $csrf_token = $_SESSION['csrf_token'];
         }
 
         .login-container {
-            max-width: 420px;
+            max-width: 450px;
             width: 100%;
-            padding: 2.5rem;
+            padding: 2.8rem;
             background-color: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
-            transition: all 0.3s ease;
+            border-radius: var(--border-radius);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
         }
 
         .login-container:hover {
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
             transform: translateY(-5px);
+        }
+
+        .header-container {
+            text-align: center;
+            margin-bottom: 2rem;
         }
 
         h2 {
             color: var(--primary-color);
-            font-weight: 600;
-            margin-bottom: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
             text-align: center;
+            font-size: 2rem;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            color: #6c757d;
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
         }
 
         .form-control {
-            border-radius: 8px;
+            border-radius: var(--border-radius);
             padding: 12px 15px;
             border: 1px solid #e0e0e0;
             transition: all 0.3s;
+            font-size: 0.95rem;
         }
 
         .form-control:focus {
@@ -196,30 +226,45 @@ $csrf_token = $_SESSION['csrf_token'];
             box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.15);
         }
 
+        .input-group-text {
+            border-radius: var(--border-radius) 0 0 var(--border-radius);
+            background-color: #f8f9fa;
+        }
+
+        .form-control {
+            border-radius: 0 var(--border-radius) var(--border-radius) 0;
+        }
+
         .password-toggle {
             position: absolute;
             right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
+            top: 38px;
             cursor: pointer;
             color: #6c757d;
             z-index: 10;
+            transition: color 0.2s;
+        }
+
+        .password-toggle:hover {
+            color: var(--primary-color);
         }
 
         .btn-primary {
             background-color: var(--primary-color);
             border-color: var(--primary-color);
-            border-radius: 8px;
+            border-radius: var(--border-radius);
             padding: 12px;
             font-weight: 500;
             letter-spacing: 0.5px;
             transition: all 0.3s;
+            font-size: 1rem;
         }
 
         .btn-primary:hover {
             background-color: #146c43;
             border-color: #146c43;
             transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(20, 108, 67, 0.2);
         }
 
         .form-check-input:checked {
@@ -227,10 +272,15 @@ $csrf_token = $_SESSION['csrf_token'];
             border-color: var(--primary-color);
         }
 
+        .form-check-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+
         .links-container {
             display: flex;
             justify-content: space-between;
-            margin-top: 1.5rem;
+            margin-top: 1.8rem;
             font-size: 0.9rem;
         }
 
@@ -238,17 +288,43 @@ $csrf_token = $_SESSION['csrf_token'];
             color: var(--secondary-color);
             text-decoration: none;
             transition: all 0.3s;
+            position: relative;
+        }
+
+        .links-container a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 1px;
+            bottom: -2px;
+            left: 0;
+            background-color: var(--secondary-color);
+            transition: width 0.3s;
+        }
+
+        .links-container a:hover::after {
+            width: 100%;
         }
 
         .links-container a:hover {
             color: #0a58ca;
-            text-decoration: underline;
         }
 
         .alert {
-            border-radius: 8px;
+            border-radius: var(--border-radius);
             padding: 15px;
             margin-bottom: 20px;
+            border-left: 4px solid transparent;
+        }
+
+        .alert-danger {
+            border-left-color: #dc3545;
+            background-color: #f8d7da;
+        }
+
+        .alert-success {
+            border-left-color: var(--primary-color);
+            background-color: #d1e7dd;
         }
 
         /* Tombol Install PWA */
@@ -262,7 +338,7 @@ $csrf_token = $_SESSION['csrf_token'];
             background-color: var(--primary-color);
             color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: var(--border-radius);
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
             cursor: pointer;
             font-weight: 500;
@@ -272,6 +348,7 @@ $csrf_token = $_SESSION['csrf_token'];
         #install-button:hover {
             background-color: #146c43;
             transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
         }
 
         @media (max-width: 576px) {
@@ -283,7 +360,7 @@ $csrf_token = $_SESSION['csrf_token'];
             .links-container {
                 flex-direction: column;
                 align-items: center;
-                gap: 10px;
+                gap: 15px;
             }
         }
     </style>
@@ -292,47 +369,58 @@ $csrf_token = $_SESSION['csrf_token'];
 <body>
     <div class="container">
         <div class="login-container">
-            <h2>Login</h2>
+            <div class="header-container">
+                <h2>Selamat Datang</h2>
+                <p class="subtitle">Silakan login untuk melanjutkan</p>
+            </div>
 
             <?php if ($error): ?>
-                <div class="alert alert-danger"><?php echo htmlspecialchars($error); ?></div>
+                <div class="alert alert-danger">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    <?php echo htmlspecialchars($error); ?>
+                </div>
             <?php endif; ?>
             <?php if ($success): ?>
-                <div class="alert alert-success"><?php echo htmlspecialchars($success); ?></div>
+                <div class="alert alert-success">
+                    <i class="bi bi-check-circle-fill me-2"></i>
+                    <?php echo htmlspecialchars($success); ?>
+                </div>
             <?php endif; ?>
 
             <form method="POST" action="" autocomplete="off">
                 <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
 
                 <div class="mb-4">
-                    <label for="username" class="form-label">Username</label>
+                    <label for="username" class="form-label fw-medium">Username</label>
                     <div class="input-group">
                         <span class="input-group-text bg-light border-end-0"><i class="bi bi-person"></i></span>
-                        <input type="text" class="form-control border-start-0" id="username" name="username" placeholder="Masukkan username" required>
+                        <input type="text" class="form-control border-start-0" id="username" name="username" placeholder="Masukkan username" required autocomplete="username">
                     </div>
                 </div>
 
                 <div class="mb-4 position-relative">
-                    <label for="password" class="form-label">Password</label>
+                    <label for="password" class="form-label fw-medium">Password</label>
                     <div class="input-group">
                         <span class="input-group-text bg-light border-end-0"><i class="bi bi-lock"></i></span>
-                        <input type="password" class="form-control border-start-0" id="password" name="password" placeholder="Masukkan password" required>
+                        <input type="password" class="form-control border-start-0" id="password" name="password" placeholder="Masukkan password" required autocomplete="current-password">
                     </div>
                     <i class="bi bi-eye password-toggle" id="togglePassword"></i>
                 </div>
 
-                <div class="mb-4 form-check">
-                    <input type="checkbox" class="form-check-input" id="remember_me" name="remember_me">
-                    <label class="form-check-label" for="remember_me">Ingat saya</label>
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="remember_me" name="remember_me">
+                        <label class="form-check-label" for="remember_me">Ingat saya</label>
+                    </div>
+                    <a href="forgot_password.php" class="text-decoration-none" style="font-size: 0.9rem; color: var(--secondary-color);">Lupa password?</a>
                 </div>
 
-                <button type="submit" class="btn btn-primary w-100 mb-3">
+                <button type="submit" class="btn btn-primary w-100 mb-4 d-flex align-items-center justify-content-center">
                     <i class="bi bi-box-arrow-in-right me-2"></i>Login
                 </button>
 
-                <div class="links-container">
-                    <a href="register.php">Belum punya akun? Daftar</a>
-                    <a href="forgot_password.php">Lupa password?</a>
+                <div class="text-center">
+                    <p class="mb-0" style="color: #6c757d;">Belum punya akun? <a href="register.php" class="fw-medium">Daftar Sekarang</a></p>
                 </div>
             </form>
         </div>
@@ -367,6 +455,22 @@ $csrf_token = $_SESSION['csrf_token'];
                 loginContainer.style.opacity = '1';
                 loginContainer.style.transform = 'translateY(0)';
             }, 200);
+            
+            // Fokus ke field username setelah animasi
+            setTimeout(() => {
+                document.getElementById('username').focus();
+            }, 300);
+        });
+        
+        // Validasi form sederhana
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+            
+            if (username === '' || password === '') {
+                e.preventDefault();
+                alert('Mohon isi semua field yang diperlukan');
+            }
         });
     </script>
 </body>

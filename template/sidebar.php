@@ -77,6 +77,8 @@ function is_current_module($module, $action = null)
         z-index: 1050;
         background-color: var(--bg-light);
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+        display: flex;
+        flex-direction: column;
     }
 
     /* Base styles */
@@ -95,6 +97,7 @@ function is_current_module($module, $action = null)
         border-left: 3px solid transparent;
         font-size: 0.875rem;
         line-height: 1.2;
+        position: relative; /* Added for better positioning */
     }
 
     .nav-link i {
@@ -103,6 +106,15 @@ function is_current_module($module, $action = null)
         text-align: center;
         transition: all 0.2s ease;
         color: var(--text-muted);
+    }
+    
+    /* Adjust icon spacing in minimized submenu */
+    .sidebar.minimized .submenu.show .nav-link i {
+        min-width: 0.7rem;
+        margin-right: 0.1rem;
+        font-size: 0.75rem;
+        text-align: left;
+        padding-left: 0;
     }
 
     .nav-link:hover {
@@ -134,8 +146,27 @@ function is_current_module($module, $action = null)
         list-style: none;
         margin: 0;
         overflow: hidden;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        max-height: 0;
+        transition: max-height 0.3s ease-in-out, padding-top 0.2s ease, padding-bottom 0.2s ease;
         background-color: transparent;
+    }
+    
+    /* Ensure proper alignment in minimized mode */
+    .sidebar.minimized .submenu.show {
+        padding-left: 0;
+        width: auto;
+    }
+    
+    .submenu.show {
+        max-height: 1000px; /* Large enough to accommodate all items */
+        padding-top: 0.25rem;
+        padding-bottom: 0.25rem;
+    }
+    
+    /* Tighter spacing for submenu in minimized mode */
+    .sidebar.minimized .submenu.show {
+        padding-top: 0.15rem;
+        padding-bottom: 0.15rem;
     }
 
     .submenu .nav-link {
@@ -144,6 +175,26 @@ function is_current_module($module, $action = null)
         margin: 0;
         color: var(--text-muted);
         line-height: 1.2;
+        opacity: 0.9;
+        transition: all 0.2s ease;
+    }
+    
+    /* Smaller spacing for submenu items in minimized mode */
+    .sidebar.minimized .submenu.show .nav-link {
+        padding: 0.15rem 0.2rem;
+        font-size: 0.775rem;
+        line-height: 1.1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        width: 100%;
+        margin-left: 0;
+        padding-right: 0.5rem;
+    }
+    
+    .submenu .nav-link:hover {
+        opacity: 1;
+        transform: translateX(2px);
     }
 
     .submenu .nav-link.active {
@@ -151,6 +202,7 @@ function is_current_module($module, $action = null)
         color: var(--primary-color) !important;
         border-left: 3px solid var(--primary-color);
         font-weight: 500;
+        opacity: 1;
     }
 
     .submenu .nav-link.active i {
@@ -161,6 +213,7 @@ function is_current_module($module, $action = null)
     .has-submenu.open>.nav-link {
         color: var(--primary-color);
         font-weight: 500;
+        background-color: rgba(240, 128, 128, 0.08);
     }
 
     .has-submenu.open>.nav-link i {
@@ -194,6 +247,46 @@ function is_current_module($module, $action = null)
     .sidebar.minimized .submenu-arrow,
     .sidebar.minimized hr {
         display: none;
+    }
+    
+    /* Improved minimized state */
+    .sidebar.minimized .nav-link {
+        justify-content: center;
+        padding: 0.5rem;
+    }
+    
+    /* Ensure submenu icons are properly aligned in minimized mode */
+    .sidebar.minimized .submenu.show .nav-link {
+        justify-content: flex-start;
+        margin-left: 0;
+    }
+    
+    .sidebar.minimized .nav-link i {
+        margin-right: 0;
+        font-size: 1.25rem;
+        min-width: auto;
+    }
+    
+    /* Hide all submenus in minimized state by default */
+    .sidebar.minimized .submenu {
+        display: none;
+    }
+    
+    /* Special styling for submenus in minimized mode */
+    .sidebar.minimized .submenu.show {
+        display: block;
+        position: absolute;
+        left: 35px;
+        min-width: 240px;
+        background-color: var(--bg-light);
+        border-radius: 0 0.25rem 0.25rem 0;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        padding: 0.25rem 0;
+        z-index: 1060;
+        max-height: none;
+        overflow: visible;
+        margin-top: -5px;
+        top: 0;
     }
 
     /* Search box styling */
@@ -855,10 +948,83 @@ function is_current_module($module, $action = null)
         opacity: 0.65;
         pointer-events: none;
     }
+    /* Animation for submenu items */
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-5px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes fadeOut {
+        from { opacity: 1; transform: translateY(0); }
+        to { opacity: 0; transform: translateY(-5px); }
+    }
+    
+    /* Improved submenu toggle appearance */
+    .submenu-toggle .submenu-arrow {
+        transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    
+    .has-submenu.open .submenu-toggle .submenu-arrow {
+        transform: rotate(90deg);
+    }
+    
+    /* Hover effect for menu items */
+    .nav-link:hover {
+        transform: translateX(3px);
+    }
+    
+    /* Improved transition for sidebar */
+    .sidebar {
+        transition: width 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+    }
+    
+    /* Tooltip for minimized sidebar */
+    .sidebar.minimized .nav-link::after {
+        content: attr(data-title);
+        position: absolute;
+        left: 100%;
+        top: 50%;
+        transform: translateY(-50%);
+        background-color: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+        font-size: 0.75rem;
+        white-space: nowrap;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.2s ease;
+        pointer-events: none;
+        z-index: 1070;
+        margin-left: 10px;
+    }
+    
+    .sidebar.minimized .nav-link:hover::after {
+        opacity: 1;
+        visibility: visible;
+    }
+    
+    /* Fix for minimized sidebar icons */
+    .sidebar.minimized .nav-item {
+        display: flex;
+        justify-content: center;
+    }
+    
+    /* Clean up minimized sidebar appearance */
+    .sidebar.minimized .nav-link.active {
+        border-left: none;
+        border-right: 3px solid var(--primary-color);
+        background-color: rgba(240, 128, 128, 0.1);
+    }
+    
+    .sidebar.minimized .nav-link:hover {
+        border-left: none;
+        transform: none;
+        background-color: rgba(0, 0, 0, 0.05);
+    }
 </style>
 
 <div id="sidebar" class="sidebar">
-    <div class="d-flex flex-column flex-shrink-0 h-100">
         <div class="d-flex justify-content-between align-items-center py-3 px-3">
             <a href="<?php echo clean_url($base_url); ?>" class="d-flex align-items-center text-decoration-none">
                 <span class="fs-5 fw-semibold text-dark menu-text">Praktek Obgin</span>
@@ -884,21 +1050,21 @@ function is_current_module($module, $action = null)
             <?php if ($is_admin): ?>
                 <!-- Menu untuk Admin -->
                 <li class="nav-item">
-                    <a href="<?php echo clean_url($base_url); ?>/dashboard.php" class="nav-link <?php echo is_current_page('/dashboard.php') ? 'active' : ''; ?>">
+                    <a href="<?php echo clean_url($base_url); ?>/dashboard.php" class="nav-link <?php echo is_current_page('/dashboard.php') ? 'active' : ''; ?>" data-title="Dashboard">
                         <i class="bi bi-grid"></i>
                         <span class="menu-text">Dashboard</span>
                     </a>
                 </li>
 
                 <li class="nav-item has-submenu">
-                    <a href="#" class="nav-link submenu-toggle">
+                    <a href="#" class="nav-link submenu-toggle" data-title="Rawat Inap">
                         <i class="bi bi-hospital-fill"></i>
                         <span class="menu-text">Rawat Inap</span>
                         <i class="bi bi-chevron-right ms-auto submenu-arrow"></i>
                     </a>
                     <ul class="submenu collapse">
                         <li class="nav-item">
-                            <a href="<?php echo $base_url; ?>/daftar_ranap.php" class="nav-link <?php echo is_current_page('/daftar_ranap.php') ? 'active' : ''; ?>">
+                            <a href="<?php echo $base_url; ?>/daftar_ranap.php" class="nav-link <?php echo is_current_page('/daftar_ranap.php') ? 'active' : ''; ?>" data-title="Daftar Pasien">
                                 <i class="bi bi-list-ul"></i>
                                 <span class="menu-text">Daftar Pasien</span>
                             </a>
@@ -907,14 +1073,14 @@ function is_current_module($module, $action = null)
                 </li>
 
                 <li class="nav-item has-submenu">
-                    <a href="#" class="nav-link submenu-toggle">
+                    <a href="#" class="nav-link submenu-toggle" data-title="Rawat Jalan">
                         <i class="bi bi-person-walking"></i>
                         <span class="menu-text">Rawat Jalan</span>
                         <i class="bi bi-chevron-right ms-auto submenu-arrow"></i>
                     </a>
                     <ul class="submenu collapse">
                         <li class="nav-item">
-                            <a href="<?php echo $base_url; ?>/daftar_rajal_rs.php" class="nav-link <?php echo is_current_page('/daftar_rajal_rs.php') ? 'active' : ''; ?>">
+                            <a href="<?php echo $base_url; ?>/daftar_rajal_rs.php" class="nav-link <?php echo is_current_page('/daftar_rajal_rs.php') ? 'active' : ''; ?>" data-title="Daftar Rajal RS">
                                 <i class="bi bi-list-check"></i>
                                 <span class="menu-text">Daftar Rajal RS</span>
                             </a>
@@ -924,7 +1090,7 @@ function is_current_module($module, $action = null)
 
                 <!-- Menu Rekam Medis -->
                 <li class="nav-item has-submenu">
-                    <a href="#" class="nav-link submenu-toggle">
+                    <a href="#" class="nav-link submenu-toggle" data-title="Rekam Medis">
                         <i class="bi bi-journal-medical"></i>
                         <span class="menu-text">Rekam Medis</span>
                         <i class="bi bi-chevron-right ms-auto submenu-arrow"></i>
@@ -932,35 +1098,35 @@ function is_current_module($module, $action = null)
                     <ul class="submenu collapse">
                         <li class="nav-item">
                             <a href="<?php echo clean_url($base_url); ?>/index.php?module=rekam_medis&action=manajemen_antrian"
-                                class="nav-link <?php echo is_current_module('rekam_medis', 'manajemen_antrian') ? 'active' : ''; ?>">
+                                class="nav-link <?php echo is_current_module('rekam_medis', 'manajemen_antrian') ? 'active' : ''; ?>" data-title="Pasien Rawat Jalan">
                                 <i class="bi bi-people"></i>
                                 <span class="menu-text">Pasien Rawat Jalan</span>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="<?php echo clean_url($base_url); ?>/index.php?module=rekam_medis&action=data_pasien"
-                                class="nav-link <?php echo is_current_module('rekam_medis', 'data_pasien') ? 'active' : ''; ?>">
+                                class="nav-link <?php echo is_current_module('rekam_medis', 'data_pasien') ? 'active' : ''; ?>" data-title="Data Pasien">
                                 <i class="bi bi-person-vcard"></i>
                                 <span class="menu-text">Data Pasien</span>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="<?php echo clean_url($base_url); ?>/index.php?module=rekam_medis&action=daftar_atensi"
-                                class="nav-link <?php echo is_current_module('rekam_medis', 'daftar_atensi') ? 'active' : ''; ?>">
+                                class="nav-link <?php echo is_current_module('rekam_medis', 'daftar_atensi') ? 'active' : ''; ?>" data-title="Daftar Atensi">
                                 <i class="bi bi-exclamation-circle"></i>
                                 <span class="menu-text">Daftar Atensi</span>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="<?php echo clean_url($base_url); ?>/index.php?module=rekam_medis&action=template_tatalaksana"
-                                class="nav-link <?php echo is_current_module('rekam_medis', 'template_tatalaksana') ? 'active' : ''; ?>">
+                                class="nav-link <?php echo is_current_module('rekam_medis', 'template_tatalaksana') ? 'active' : ''; ?>" data-title="Template Tatalaksana">
                                 <i class="bi bi-file-text"></i>
                                 <span class="menu-text">Template Tatalaksana</span>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="<?php echo clean_url($base_url); ?>/index.php?module=rekam_medis&action=template_usg"
-                                class="nav-link <?php echo is_current_module('rekam_medis', 'template_usg') ? 'active' : ''; ?>">
+                                class="nav-link <?php echo is_current_module('rekam_medis', 'template_usg') ? 'active' : ''; ?>" data-title="Template USG">
                                 <i class="bi bi-image"></i>
                                 <span class="menu-text">Template USG</span>
                             </a>
@@ -969,80 +1135,80 @@ function is_current_module($module, $action = null)
                 </li>
 
                 <li class="nav-item has-submenu">
-                    <a href="#" class="nav-link submenu-toggle">
+                    <a href="#" class="nav-link submenu-toggle" data-title="Admin Praktek">
                         <i class="bi bi-gear"></i>
                         <span class="menu-text">Admin Praktek</span>
                         <i class="bi bi-chevron-right ms-auto submenu-arrow"></i>
                     </a>
                     <ul class="submenu collapse">
                         <li class="nav-item">
-                            <a href="<?php echo $base_url; ?>/admin_praktek/data_dokter.php" class="nav-link <?php echo is_current_page('/admin_praktek/data_dokter.php') ? 'active' : ''; ?>">
+                            <a href="<?php echo $base_url; ?>/admin_praktek/data_dokter.php" class="nav-link <?php echo is_current_page('/admin_praktek/data_dokter.php') ? 'active' : ''; ?>" data-title="Data Dokter">
                                 <i class="bi bi-person-vcard"></i>
                                 <span class="menu-text">Data Dokter</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="<?php echo $base_url; ?>/admin_praktek/tempat_praktek.php" class="nav-link <?php echo is_current_page('/admin_praktek/tempat_praktek.php') ? 'active' : ''; ?>">
+                            <a href="<?php echo $base_url; ?>/admin_praktek/tempat_praktek.php" class="nav-link <?php echo is_current_page('/admin_praktek/tempat_praktek.php') ? 'active' : ''; ?>" data-title="Tempat Praktek">
                                 <i class="bi bi-building"></i>
                                 <span class="menu-text">Tempat Praktek</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="<?php echo $base_url; ?>/admin_praktek/jadwal_rutin.php" class="nav-link <?php echo is_current_page('/admin_praktek/jadwal_rutin.php') ? 'active' : ''; ?>">
+                            <a href="<?php echo $base_url; ?>/admin_praktek/jadwal_rutin.php" class="nav-link <?php echo is_current_page('/admin_praktek/jadwal_rutin.php') ? 'active' : ''; ?>" data-title="Jadwal Rutin">
                                 <i class="bi bi-calendar-week"></i>
                                 <span class="menu-text">Jadwal Rutin</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="<?php echo $base_url; ?>/admin_praktek/pengumuman.php" class="nav-link <?php echo is_current_page('/admin_praktek/pengumuman.php') ? 'active' : ''; ?>">
+                            <a href="<?php echo $base_url; ?>/admin_praktek/pengumuman.php" class="nav-link <?php echo is_current_page('/admin_praktek/pengumuman.php') ? 'active' : ''; ?>" data-title="Pesan / Pengumuman">
                                 <i class="bi bi-megaphone"></i>
                                 <span class="menu-text">Pesan / Pengumuman</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="<?php echo $base_url; ?>/admin_praktek/manajemen_user.php" class="nav-link <?php echo is_current_page('/admin_praktek/manajemen_user.php') ? 'active' : ''; ?>">
+                            <a href="<?php echo $base_url; ?>/admin_praktek/manajemen_user.php" class="nav-link <?php echo is_current_page('/admin_praktek/manajemen_user.php') ? 'active' : ''; ?>" data-title="Manajemen User">
                                 <i class="bi bi-person-gear"></i>
                                 <span class="menu-text">Manajemen User</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="<?php echo $base_url; ?>/admin_praktek/manajemen_antrian.php" class="nav-link <?php echo is_current_page('/admin_praktek/manajemen_antrian.php') ? 'active' : ''; ?>">
+                            <a href="<?php echo $base_url; ?>/admin_praktek/manajemen_antrian.php" class="nav-link <?php echo is_current_page('/admin_praktek/manajemen_antrian.php') ? 'active' : ''; ?>" data-title="Manajemen Antrian">
                                 <i class="bi bi-list-check"></i>
                                 <span>Manajemen Antrian</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="<?php echo $base_url; ?>/admin_praktek/data_rujukan.php" class="nav-link <?php echo is_current_page('/admin_praktek/data_rujukan.php') ? 'active' : ''; ?>">
+                            <a href="<?php echo $base_url; ?>/admin_praktek/data_rujukan.php" class="nav-link <?php echo is_current_page('/admin_praktek/data_rujukan.php') ? 'active' : ''; ?>" data-title="Data Rujukan">
                                 <i class="bi bi-file-earmark-medical"></i>
                                 <span class="menu-text">Data Rujukan</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="<?php echo $base_url; ?>/admin_praktek/manajemen_layanan.php" class="nav-link <?php echo is_current_page('/admin_praktek/manajemen_layanan.php') ? 'active' : ''; ?>">
+                            <a href="<?php echo $base_url; ?>/admin_praktek/manajemen_layanan.php" class="nav-link <?php echo is_current_page('/admin_praktek/manajemen_layanan.php') ? 'active' : ''; ?>" data-title="Manajemen Layanan">
                                 <i class="bi bi-gear-wide-connected"></i>
                                 <span class="menu-text">Manajemen Layanan</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="<?php echo $base_url; ?>/admin_praktek/formularium.php" class="nav-link <?php echo is_current_page('/admin_praktek/formularium.php') ? 'active' : ''; ?>">
+                            <a href="<?php echo $base_url; ?>/admin_praktek/formularium.php" class="nav-link <?php echo is_current_page('/admin_praktek/formularium.php') ? 'active' : ''; ?>" data-title="Formularium">
                                 <i class="bi bi-capsule"></i>
                                 <span class="menu-text">Formularium</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="<?php echo $base_url; ?>/admin_praktek/manajemen_edukasi.php" class="nav-link <?php echo is_current_page('/admin_praktek/manajemen_edukasi.php') ? 'active' : ''; ?>">
+                            <a href="<?php echo $base_url; ?>/admin_praktek/manajemen_edukasi.php" class="nav-link <?php echo is_current_page('/admin_praktek/manajemen_edukasi.php') ? 'active' : ''; ?>" data-title="Manajemen Edukasi">
                                 <i class="bi bi-journal-text"></i>
                                 <span class="menu-text">Manajemen Edukasi</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="<?php echo $base_url; ?>/admin_praktek/dashboard_antrian.php" class="nav-link <?php echo is_current_page('/admin_praktek/dashboard_antrian.php') ? 'active' : ''; ?>">
+                            <a href="<?php echo $base_url; ?>/admin_praktek/dashboard_antrian.php" class="nav-link <?php echo is_current_page('/admin_praktek/dashboard_antrian.php') ? 'active' : ''; ?>" data-title="Dashboard Antrian">
                                 <i class="bi bi-display"></i>
                                 <span class="menu-text">Dashboard Antrian</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="<?php echo $base_url; ?>/admin_praktek/voucher.php" class="nav-link <?php echo is_current_page('/admin_praktek/voucher.php') ? 'active' : ''; ?>">
+                            <a href="<?php echo $base_url; ?>/admin_praktek/voucher.php" class="nav-link <?php echo is_current_page('/admin_praktek/voucher.php') ? 'active' : ''; ?>" data-title="Manajemen Voucher">
                                 <i class="bi bi-ticket-perforated"></i>
                                 <span class="menu-text">Manajemen Voucher</span>
                             </a>
@@ -1053,26 +1219,26 @@ function is_current_module($module, $action = null)
 
             <!-- Menu Pendaftaran - Selalu Tampil -->
             <li class="nav-item has-submenu">
-                <a href="#" class="nav-link submenu-toggle">
+                <a href="#" class="nav-link submenu-toggle" data-title="Pendaftaran">
                     <i class="bi bi-journal-plus"></i>
                     <span class="menu-text">Pendaftaran</span>
                     <i class="bi bi-chevron-right ms-auto submenu-arrow"></i>
                 </a>
                 <ul class="submenu collapse">
                     <li class="nav-item">
-                        <a href="<?php echo clean_url($base_url); ?>/pendaftaran/form_pendaftaran_pasien.php" class="nav-link <?php echo is_current_page('/pendaftaran/form_pendaftaran_pasien.php') ? 'active' : ''; ?>">
+                        <a href="<?php echo clean_url($base_url); ?>/pendaftaran/form_pendaftaran_pasien.php" class="nav-link <?php echo is_current_page('/pendaftaran/form_pendaftaran_pasien.php') ? 'active' : ''; ?>" data-title="Form Pendaftaran">
                             <i class="bi bi-file-earmark-text"></i>
                             <span class="menu-text">Form Pendaftaran</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="<?php echo clean_url($base_url); ?>/pendaftaran/antrian.php" class="nav-link <?php echo is_current_page('/pendaftaran/antrian.php') ? 'active' : ''; ?>">
+                        <a href="<?php echo clean_url($base_url); ?>/pendaftaran/antrian.php" class="nav-link <?php echo is_current_page('/pendaftaran/antrian.php') ? 'active' : ''; ?>" data-title="Daftar Antrian">
                             <i class="bi bi-list-ol"></i>
                             <span class="menu-text">Daftar Antrian</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="<?php echo clean_url($base_url); ?>/pendaftaran/jadwal.php" class="nav-link <?php echo is_current_page('/pendaftaran/jadwal.php') ? 'active' : ''; ?>">
+                        <a href="<?php echo clean_url($base_url); ?>/pendaftaran/jadwal.php" class="nav-link <?php echo is_current_page('/pendaftaran/jadwal.php') ? 'active' : ''; ?>" data-title="Jadwal Praktek">
                             <i class="bi bi-calendar2-week"></i>
                             <span class="menu-text">Jadwal Praktek</span>
                         </a>
@@ -1082,7 +1248,7 @@ function is_current_module($module, $action = null)
 
             <!-- Menu Pengumuman - Selalu Tampil -->
             <li class="nav-item">
-                <a href="<?php echo $base_url; ?>/pengumuman.php" class="nav-link <?php echo is_current_page('/pengumuman.php') ? 'active' : ''; ?>">
+                <a href="<?php echo $base_url; ?>/pengumuman.php" class="nav-link <?php echo is_current_page('/pengumuman.php') ? 'active' : ''; ?>" data-title="Pengumuman">
                     <i class="bi bi-megaphone"></i>
                     <span class="menu-text">Pengumuman</span>
                 </a>
@@ -1090,7 +1256,7 @@ function is_current_module($module, $action = null)
 
             <!-- Menu Layanan - Selalu Tampil -->
             <li class="nav-item">
-                <a href="<?php echo clean_url($base_url); ?>/layanan.php" class="nav-link <?php echo is_current_page('/layanan.php') ? 'active' : ''; ?>">
+                <a href="<?php echo clean_url($base_url); ?>/layanan.php" class="nav-link <?php echo is_current_page('/layanan.php') ? 'active' : ''; ?>" data-title="Layanan">
                     <i class="bi bi-heart-pulse"></i>
                     <span class="menu-text">Layanan</span>
                 </a>
@@ -1098,7 +1264,7 @@ function is_current_module($module, $action = null)
 
             <!-- Menu Edukasi - Selalu Tampil -->
             <li class="nav-item">
-                <a href="<?php echo clean_url($base_url); ?>/edukasi.php" class="nav-link <?php echo is_current_page('/edukasi.php') ? 'active' : ''; ?>">
+                <a href="<?php echo clean_url($base_url); ?>/edukasi.php" class="nav-link <?php echo is_current_page('/edukasi.php') ? 'active' : ''; ?>" data-title="Edukasi">
                     <i class="bi bi-journal-text"></i>
                     <span class="menu-text">Edukasi</span>
                 </a>
@@ -1109,7 +1275,7 @@ function is_current_module($module, $action = null)
         <div class="user-section">
             <?php if ($is_logged_in): ?>
                 <div class="dropdown">
-                    <a href="#" class="dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+                    <a href="#" class="dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false" data-title="User Profile">
                         <i class="bi bi-person-circle"></i>
                         <span class="menu-text"><?php echo htmlspecialchars($_SESSION['username'] ?? 'User'); ?></span>
                     </a>
@@ -1123,13 +1289,12 @@ function is_current_module($module, $action = null)
                     </ul>
                 </div>
             <?php else: ?>
-                <a href="<?= $base_url ?>/login.php" class="btn btn-primary w-100 mx-3">
+                <a href="<?= $base_url ?>/login.php" class="btn btn-primary w-100 mx-3" data-title="Login">
                     <i class="bi bi-box-arrow-in-right"></i>
                     <span class="menu-text ms-2">Login</span>
                 </a>
             <?php endif; ?>
         </div>
-    </div>
 </div>
 
 <script>
@@ -1148,34 +1313,48 @@ function is_current_module($module, $action = null)
             localStorage.setItem('openMenus', JSON.stringify(openMenus));
         }
 
-        // Fungsi untuk memulihkan status menu dari localStorage
+        // Fungsi untuk memulihkan status menu dari localStorage dengan peningkatan
         function restoreMenuState() {
             try {
                 // Pertama, buka submenu yang memiliki item aktif
                 const activeMenuItems = document.querySelectorAll('.submenu .nav-link.active');
-                activeMenuItems.forEach(activeItem => {
-                    const parentSubmenu = activeItem.closest('.submenu');
-                    if (parentSubmenu) {
-                        const parentItem = parentSubmenu.closest('.has-submenu');
-                        if (parentItem) {
-                            parentItem.classList.add('open');
-                            parentSubmenu.classList.add('show');
-                        }
-                    }
-                });
-
-                // Kemudian, pulihkan menu yang sebelumnya terbuka dari localStorage
-                const openMenus = JSON.parse(localStorage.getItem('openMenus')) || [];
-                if (openMenus.length > 0) {
-                    document.querySelectorAll('.submenu-toggle').forEach(toggle => {
-                        const menuText = toggle.textContent.trim();
-                        if (openMenus.includes(menuText)) {
-                            const parent = toggle.closest('.has-submenu');
-                            const submenu = parent.querySelector('.submenu');
-                            parent.classList.add('open');
-                            submenu.classList.add('show');
+                
+                // Jika ada item aktif, hanya buka submenu yang memiliki item aktif
+                if (activeMenuItems.length > 0) {
+                    activeMenuItems.forEach(activeItem => {
+                        const parentSubmenu = activeItem.closest('.submenu');
+                        if (parentSubmenu) {
+                            const parentItem = parentSubmenu.closest('.has-submenu');
+                            if (parentItem) {
+                                parentItem.classList.add('open');
+                                parentSubmenu.classList.add('show');
+                            }
                         }
                     });
+                } else {
+                    // Jika tidak ada item aktif, pulihkan menu yang sebelumnya terbuka dari localStorage
+                    const openMenus = JSON.parse(localStorage.getItem('openMenus')) || [];
+                    
+                    // Jika dalam mode desktop dan tidak diminimalkan, buka menu pertama jika tidak ada yang disimpan
+                    if (openMenus.length === 0 && !isMobile && !sidebar.classList.contains('minimized')) {
+                        const firstSubmenu = document.querySelector('.has-submenu');
+                        if (firstSubmenu) {
+                            const submenu = firstSubmenu.querySelector('.submenu');
+                            firstSubmenu.classList.add('open');
+                            submenu.classList.add('show');
+                        }
+                    } else if (openMenus.length > 0) {
+                        // Jika ada menu yang disimpan, buka menu tersebut
+                        document.querySelectorAll('.submenu-toggle').forEach(toggle => {
+                            const menuText = toggle.textContent.trim();
+                            if (openMenus.includes(menuText)) {
+                                const parent = toggle.closest('.has-submenu');
+                                const submenu = parent.querySelector('.submenu');
+                                parent.classList.add('open');
+                                submenu.classList.add('show');
+                            }
+                        });
+                    }
                 }
             } catch (e) {
                 console.error('Error restoring menu state:', e);
@@ -1272,22 +1451,87 @@ function is_current_module($module, $action = null)
                 });
             });
         }
+        
+        // Auto-hide submenu when a submenu item is clicked in minimized mode
+        document.querySelectorAll('.submenu .nav-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                if (sidebar.classList.contains('minimized')) {
+                    const submenu = this.closest('.submenu');
+                    const parentItem = submenu.closest('.has-submenu');
+                    
+                    // Immediately hide the submenu
+                    submenu.classList.remove('show');
+                    parentItem.classList.remove('open');
+                    
+                    // Reset currentOpenSubmenu
+                    if (currentOpenSubmenu === parentItem) {
+                        currentOpenSubmenu = null;
+                    }
+                    
+                    // Reset all styles
+                    submenu.style.position = '';
+                    submenu.style.left = '';
+                    submenu.style.top = '';
+                    submenu.style.width = '';
+                    submenu.style.maxHeight = '';
+                    submenu.style.overflowY = '';
+                    submenu.style.zIndex = '';
+                    submenu.style.boxShadow = '';
+                    submenu.style.backgroundColor = '';
+                    submenu.style.borderRadius = '';
+                    submenu.style.paddingTop = '';
+                    submenu.style.paddingBottom = '';
+                    
+                    // Force close all other submenus too
+                    document.querySelectorAll('.submenu.show').forEach(openSubmenu => {
+                        if (openSubmenu !== submenu) {
+                            openSubmenu.classList.remove('show');
+                            const openParent = openSubmenu.closest('.has-submenu');
+                            if (openParent) {
+                                openParent.classList.remove('open');
+                            }
+                        }
+                    });
+                    
+                    // Prevent event bubbling
+                    e.stopPropagation();
+                }
+            });
+        });
 
-        // Handle submenu toggles
+        // Handle submenu toggles with improved animation and behavior
         document.querySelectorAll('.submenu-toggle').forEach(toggle => {
             toggle.addEventListener('click', function(e) {
                 e.preventDefault();
                 const parent = this.closest('.has-submenu');
                 const submenu = parent.querySelector('.submenu');
-
-                // Jangan tutup submenu yang sudah terbuka
-                if (isMobile || !sidebar.classList.contains('minimized')) {
-                    parent.classList.toggle('open');
-                    submenu.classList.toggle('show');
-
-                    // Simpan status menu
-                    saveMenuState();
+                const isOpen = parent.classList.contains('open');
+                
+                // Close any other open menus if not in minimized mode
+                if (!isOpen && !sidebar.classList.contains('minimized') && !isMobile) {
+                    // Close other open menus
+                    document.querySelectorAll('.has-submenu.open').forEach(openMenu => {
+                        if (openMenu !== parent) {
+                            openMenu.classList.remove('open');
+                            openMenu.querySelector('.submenu').classList.remove('show');
+                        }
+                    });
                 }
+
+                // Toggle current menu
+                parent.classList.toggle('open');
+                submenu.classList.toggle('show');
+                
+                // Add a subtle animation effect
+                if (parent.classList.contains('open')) {
+                    // When opening, add a subtle highlight effect
+                    submenu.style.animation = 'fadeIn 0.3s ease';
+                } else {
+                    submenu.style.animation = 'fadeOut 0.2s ease';
+                }
+
+                // Simpan status menu
+                saveMenuState();
             });
         });
 
@@ -1303,36 +1547,149 @@ function is_current_module($module, $action = null)
             }
         });
 
-        // Handle hover states for minimized mode
+        // Handle hover states for minimized mode with completely revised popup behavior
         let currentOpenSubmenu = null;
+        let hoverTimeout = null;
 
         document.querySelectorAll('.has-submenu').forEach(item => {
             item.addEventListener('mouseenter', () => {
                 if (!isMobile && sidebar.classList.contains('minimized')) {
+                    // Clear any existing timeout
+                    if (hoverTimeout) {
+                        clearTimeout(hoverTimeout);
+                        hoverTimeout = null;
+                    }
+                    
+                    // Close any other open submenu
                     if (currentOpenSubmenu && currentOpenSubmenu !== item) {
                         currentOpenSubmenu.querySelector('.submenu').classList.remove('show');
+                        currentOpenSubmenu.classList.remove('open');
                     }
+                    
+                    // Open this submenu
                     const submenu = item.querySelector('.submenu');
                     submenu.classList.add('show');
+                    item.classList.add('open');
                     currentOpenSubmenu = item;
+                    
+                    // Calculate proper position for the submenu
+                    const itemRect = item.getBoundingClientRect();
+                    const sidebarRect = sidebar.getBoundingClientRect();
+                    const viewportHeight = window.innerHeight;
+                    
+                    // Default position at the same level as the menu item
+                    let topPosition = itemRect.top;
+                    
+                    // Check if submenu would go off the bottom of the screen
+                    const submenuHeight = submenu.scrollHeight;
+                    if (topPosition + submenuHeight > viewportHeight) {
+                        // If it would go off screen, align to bottom of viewport with padding
+                        topPosition = Math.max(0, viewportHeight - submenuHeight - 10);
+                    }
+                    
+                    // Set position relative to the viewport
+                    submenu.style.position = 'fixed';
+                    submenu.style.left = `${sidebarRect.right}px`;
+                    submenu.style.top = `${topPosition}px`;
+                    submenu.style.width = '200px';
+                    submenu.style.maxHeight = 'calc(100vh - 20px)';
+                    submenu.style.overflowY = 'auto';
+                    submenu.style.zIndex = '1060';
+                    submenu.style.boxShadow = '0 0.5rem 1rem rgba(0, 0, 0, 0.15)';
+                    submenu.style.backgroundColor = 'var(--bg-light)';
+                    submenu.style.borderRadius = '0 0.25rem 0.25rem 0';
+                    submenu.style.paddingTop = '0.5rem';
+                    submenu.style.paddingBottom = '0.5rem';
                 }
             });
 
             item.addEventListener('mouseleave', () => {
                 if (!isMobile && sidebar.classList.contains('minimized')) {
                     const submenu = item.querySelector('.submenu');
-                    setTimeout(() => {
-                        if (!item.matches(':hover')) {
+                    
+                    // Use timeout to prevent flickering when moving between items
+                    hoverTimeout = setTimeout(() => {
+                        // Check if either the menu item or its submenu is being hovered
+                        if (!item.matches(':hover') && !submenu.matches(':hover')) {
                             submenu.classList.remove('show');
+                            item.classList.remove('open');
                             if (currentOpenSubmenu === item) {
                                 currentOpenSubmenu = null;
                             }
                         }
-                    }, 100);
+                    }, 200);
                 }
             });
+            
+            // Add event listener to the submenu itself to handle mouse leave
+            const submenu = item.querySelector('.submenu');
+            if (submenu) {
+                submenu.addEventListener('mouseleave', () => {
+                    if (!isMobile && sidebar.classList.contains('minimized')) {
+                        // Use timeout to prevent flickering
+                        hoverTimeout = setTimeout(() => {
+                            // Only close if neither the item nor submenu is being hovered
+                            if (!item.matches(':hover') && !submenu.matches(':hover')) {
+                                submenu.classList.remove('show');
+                                item.classList.remove('open');
+                                if (currentOpenSubmenu === item) {
+                                    currentOpenSubmenu = null;
+                                }
+                                
+                                // Reset styles when closing
+                                submenu.style.position = '';
+                                submenu.style.left = '';
+                                submenu.style.top = '';
+                                submenu.style.width = '';
+                                submenu.style.maxHeight = '';
+                                submenu.style.overflowY = '';
+                                submenu.style.zIndex = '';
+                                submenu.style.boxShadow = '';
+                                submenu.style.backgroundColor = '';
+                                submenu.style.borderRadius = '';
+                                submenu.style.paddingTop = '';
+                                submenu.style.paddingBottom = '';
+                            }
+                        }, 200);
+                    }
+                });
+            }
         });
 
+        // Tambahkan event listener untuk document click untuk menutup submenu
+        document.addEventListener('click', function(e) {
+            if (sidebar.classList.contains('minimized')) {
+                // Jika klik terjadi di luar submenu, tutup semua submenu
+                if (!e.target.closest('.submenu') && !e.target.closest('.has-submenu')) {
+                    document.querySelectorAll('.submenu.show').forEach(submenu => {
+                        submenu.classList.remove('show');
+                        const parentItem = submenu.closest('.has-submenu');
+                        if (parentItem) {
+                            parentItem.classList.remove('open');
+                        }
+                        
+                        // Reset styles
+                        submenu.style.position = '';
+                        submenu.style.left = '';
+                        submenu.style.top = '';
+                        submenu.style.width = '';
+                        submenu.style.maxHeight = '';
+                        submenu.style.overflowY = '';
+                        submenu.style.zIndex = '';
+                        submenu.style.boxShadow = '';
+                        submenu.style.backgroundColor = '';
+                        submenu.style.borderRadius = '';
+                        submenu.style.paddingTop = '';
+                        submenu.style.paddingBottom = '';
+                    });
+                    
+                    if (currentOpenSubmenu) {
+                        currentOpenSubmenu = null;
+                    }
+                }
+            }
+        });
+        
         // Handle window resize
         window.addEventListener('resize', function() {
             const newIsMobile = window.innerWidth < 992;
