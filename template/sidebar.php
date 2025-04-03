@@ -97,7 +97,8 @@ function is_current_module($module, $action = null)
         border-left: 3px solid transparent;
         font-size: 0.875rem;
         line-height: 1.2;
-        position: relative; /* Added for better positioning */
+        position: relative;
+        /* Added for better positioning */
     }
 
     .nav-link i {
@@ -107,7 +108,7 @@ function is_current_module($module, $action = null)
         transition: all 0.2s ease;
         color: var(--text-muted);
     }
-    
+
     /* Adjust icon spacing in minimized submenu */
     .sidebar.minimized .submenu.show .nav-link i {
         min-width: 0.7rem;
@@ -150,19 +151,20 @@ function is_current_module($module, $action = null)
         transition: max-height 0.3s ease-in-out, padding-top 0.2s ease, padding-bottom 0.2s ease;
         background-color: transparent;
     }
-    
+
     /* Ensure proper alignment in minimized mode */
     .sidebar.minimized .submenu.show {
         padding-left: 0;
         width: auto;
     }
-    
+
     .submenu.show {
-        max-height: 1000px; /* Large enough to accommodate all items */
+        max-height: 1000px;
+        /* Large enough to accommodate all items */
         padding-top: 0.25rem;
         padding-bottom: 0.25rem;
     }
-    
+
     /* Tighter spacing for submenu in minimized mode */
     .sidebar.minimized .submenu.show {
         padding-top: 0.15rem;
@@ -178,7 +180,7 @@ function is_current_module($module, $action = null)
         opacity: 0.9;
         transition: all 0.2s ease;
     }
-    
+
     /* Smaller spacing for submenu items in minimized mode */
     .sidebar.minimized .submenu.show .nav-link {
         padding: 0.15rem 0.2rem;
@@ -191,7 +193,7 @@ function is_current_module($module, $action = null)
         margin-left: 0;
         padding-right: 0.5rem;
     }
-    
+
     .submenu .nav-link:hover {
         opacity: 1;
         transform: translateX(2px);
@@ -248,30 +250,30 @@ function is_current_module($module, $action = null)
     .sidebar.minimized hr {
         display: none;
     }
-    
+
     /* Improved minimized state */
     .sidebar.minimized .nav-link {
         justify-content: center;
         padding: 0.5rem;
     }
-    
+
     /* Ensure submenu icons are properly aligned in minimized mode */
     .sidebar.minimized .submenu.show .nav-link {
         justify-content: flex-start;
         margin-left: 0;
     }
-    
+
     .sidebar.minimized .nav-link i {
         margin-right: 0;
         font-size: 1.25rem;
         min-width: auto;
     }
-    
+
     /* Hide all submenus in minimized state by default */
     .sidebar.minimized .submenu {
         display: none;
     }
-    
+
     /* Special styling for submenus in minimized mode */
     .sidebar.minimized .submenu.show {
         display: block;
@@ -948,36 +950,51 @@ function is_current_module($module, $action = null)
         opacity: 0.65;
         pointer-events: none;
     }
+
     /* Animation for submenu items */
     @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(-5px); }
-        to { opacity: 1; transform: translateY(0); }
+        from {
+            opacity: 0;
+            transform: translateY(-5px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
-    
+
     @keyframes fadeOut {
-        from { opacity: 1; transform: translateY(0); }
-        to { opacity: 0; transform: translateY(-5px); }
+        from {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        to {
+            opacity: 0;
+            transform: translateY(-5px);
+        }
     }
-    
+
     /* Improved submenu toggle appearance */
     .submenu-toggle .submenu-arrow {
         transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
-    
+
     .has-submenu.open .submenu-toggle .submenu-arrow {
         transform: rotate(90deg);
     }
-    
+
     /* Hover effect for menu items */
     .nav-link:hover {
         transform: translateX(3px);
     }
-    
+
     /* Improved transition for sidebar */
     .sidebar {
         transition: width 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
     }
-    
+
     /* Tooltip for minimized sidebar */
     .sidebar.minimized .nav-link::after {
         content: attr(data-title);
@@ -998,25 +1015,25 @@ function is_current_module($module, $action = null)
         z-index: 1070;
         margin-left: 10px;
     }
-    
+
     .sidebar.minimized .nav-link:hover::after {
         opacity: 1;
         visibility: visible;
     }
-    
+
     /* Fix for minimized sidebar icons */
     .sidebar.minimized .nav-item {
         display: flex;
         justify-content: center;
     }
-    
+
     /* Clean up minimized sidebar appearance */
     .sidebar.minimized .nav-link.active {
         border-left: none;
         border-right: 3px solid var(--primary-color);
         background-color: rgba(240, 128, 128, 0.1);
     }
-    
+
     .sidebar.minimized .nav-link:hover {
         border-left: none;
         transform: none;
@@ -1025,276 +1042,276 @@ function is_current_module($module, $action = null)
 </style>
 
 <div id="sidebar" class="sidebar">
-        <div class="d-flex justify-content-between align-items-center py-3 px-3">
-            <a href="<?php echo clean_url($base_url); ?>" class="d-flex align-items-center text-decoration-none">
-                <span class="fs-5 fw-semibold text-dark menu-text">Praktek Obgin</span>
-            </a>
-            <?php if ($is_admin): ?>
-                <button id="toggleSidebar" class="btn btn-sm btn-light border d-none d-lg-block">
-                    <i class="bi bi-chevron-left"></i>
-                </button>
-                <button id="toggleMobileSidebar" class="btn btn-sm btn-light border d-lg-none">
-                    <i class="bi bi-chevron-left"></i>
-                </button>
-            <?php endif; ?>
+    <div class="d-flex justify-content-between align-items-center py-3 px-3">
+        <a href="<?php echo clean_url($base_url); ?>" class="d-flex align-items-center text-decoration-none">
+            <span class="fs-5 fw-semibold text-dark menu-text">Praktek Obgin</span>
+        </a>
+        <?php if ($is_admin): ?>
+            <button id="toggleSidebar" class="btn btn-sm btn-light border d-none d-lg-block">
+                <i class="bi bi-chevron-left"></i>
+            </button>
+            <button id="toggleMobileSidebar" class="btn btn-sm btn-light border d-lg-none">
+                <i class="bi bi-chevron-left"></i>
+            </button>
+        <?php endif; ?>
+    </div>
+
+    <div class="search-container">
+        <div class="search-input">
+            <i class="bi bi-search"></i>
+            <input type="text" placeholder="Search..." class="form-control">
         </div>
+    </div>
 
-        <div class="search-container">
-            <div class="search-input">
-                <i class="bi bi-search"></i>
-                <input type="text" placeholder="Search..." class="form-control">
-            </div>
-        </div>
+    <ul class="nav nav-pills flex-column">
+        <?php if ($is_admin): ?>
+            <!-- Menu untuk Admin -->
+            <li class="nav-item">
+                <a href="<?php echo clean_url($base_url); ?>/dashboard.php" class="nav-link <?php echo is_current_page('/dashboard.php') ? 'active' : ''; ?>" data-title="Dashboard">
+                    <i class="bi bi-grid"></i>
+                    <span class="menu-text">Dashboard</span>
+                </a>
+            </li>
 
-        <ul class="nav nav-pills flex-column">
-            <?php if ($is_admin): ?>
-                <!-- Menu untuk Admin -->
-                <li class="nav-item">
-                    <a href="<?php echo clean_url($base_url); ?>/dashboard.php" class="nav-link <?php echo is_current_page('/dashboard.php') ? 'active' : ''; ?>" data-title="Dashboard">
-                        <i class="bi bi-grid"></i>
-                        <span class="menu-text">Dashboard</span>
-                    </a>
-                </li>
-
-                <li class="nav-item has-submenu">
-                    <a href="#" class="nav-link submenu-toggle" data-title="Rawat Inap">
-                        <i class="bi bi-hospital-fill"></i>
-                        <span class="menu-text">Rawat Inap</span>
-                        <i class="bi bi-chevron-right ms-auto submenu-arrow"></i>
-                    </a>
-                    <ul class="submenu collapse">
-                        <li class="nav-item">
-                            <a href="<?php echo $base_url; ?>/daftar_ranap.php" class="nav-link <?php echo is_current_page('/daftar_ranap.php') ? 'active' : ''; ?>" data-title="Daftar Pasien">
-                                <i class="bi bi-list-ul"></i>
-                                <span class="menu-text">Daftar Pasien</span>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-
-                <li class="nav-item has-submenu">
-                    <a href="#" class="nav-link submenu-toggle" data-title="Rawat Jalan">
-                        <i class="bi bi-person-walking"></i>
-                        <span class="menu-text">Rawat Jalan</span>
-                        <i class="bi bi-chevron-right ms-auto submenu-arrow"></i>
-                    </a>
-                    <ul class="submenu collapse">
-                        <li class="nav-item">
-                            <a href="<?php echo $base_url; ?>/daftar_rajal_rs.php" class="nav-link <?php echo is_current_page('/daftar_rajal_rs.php') ? 'active' : ''; ?>" data-title="Daftar Rajal RS">
-                                <i class="bi bi-list-check"></i>
-                                <span class="menu-text">Daftar Rajal RS</span>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-
-                <!-- Menu Rekam Medis -->
-                <li class="nav-item has-submenu">
-                    <a href="#" class="nav-link submenu-toggle" data-title="Rekam Medis">
-                        <i class="bi bi-journal-medical"></i>
-                        <span class="menu-text">Rekam Medis</span>
-                        <i class="bi bi-chevron-right ms-auto submenu-arrow"></i>
-                    </a>
-                    <ul class="submenu collapse">
-                        <li class="nav-item">
-                            <a href="<?php echo clean_url($base_url); ?>/index.php?module=rekam_medis&action=manajemen_antrian"
-                                class="nav-link <?php echo is_current_module('rekam_medis', 'manajemen_antrian') ? 'active' : ''; ?>" data-title="Pasien Rawat Jalan">
-                                <i class="bi bi-people"></i>
-                                <span class="menu-text">Pasien Rawat Jalan</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="<?php echo clean_url($base_url); ?>/index.php?module=rekam_medis&action=data_pasien"
-                                class="nav-link <?php echo is_current_module('rekam_medis', 'data_pasien') ? 'active' : ''; ?>" data-title="Data Pasien">
-                                <i class="bi bi-person-vcard"></i>
-                                <span class="menu-text">Data Pasien</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="<?php echo clean_url($base_url); ?>/index.php?module=rekam_medis&action=daftar_atensi"
-                                class="nav-link <?php echo is_current_module('rekam_medis', 'daftar_atensi') ? 'active' : ''; ?>" data-title="Daftar Atensi">
-                                <i class="bi bi-exclamation-circle"></i>
-                                <span class="menu-text">Daftar Atensi</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="<?php echo clean_url($base_url); ?>/index.php?module=rekam_medis&action=template_tatalaksana"
-                                class="nav-link <?php echo is_current_module('rekam_medis', 'template_tatalaksana') ? 'active' : ''; ?>" data-title="Template Tatalaksana">
-                                <i class="bi bi-file-text"></i>
-                                <span class="menu-text">Template Tatalaksana</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="<?php echo clean_url($base_url); ?>/index.php?module=rekam_medis&action=template_usg"
-                                class="nav-link <?php echo is_current_module('rekam_medis', 'template_usg') ? 'active' : ''; ?>" data-title="Template USG">
-                                <i class="bi bi-image"></i>
-                                <span class="menu-text">Template USG</span>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-
-                <li class="nav-item has-submenu">
-                    <a href="#" class="nav-link submenu-toggle" data-title="Admin Praktek">
-                        <i class="bi bi-gear"></i>
-                        <span class="menu-text">Admin Praktek</span>
-                        <i class="bi bi-chevron-right ms-auto submenu-arrow"></i>
-                    </a>
-                    <ul class="submenu collapse">
-                        <li class="nav-item">
-                            <a href="<?php echo $base_url; ?>/admin_praktek/data_dokter.php" class="nav-link <?php echo is_current_page('/admin_praktek/data_dokter.php') ? 'active' : ''; ?>" data-title="Data Dokter">
-                                <i class="bi bi-person-vcard"></i>
-                                <span class="menu-text">Data Dokter</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="<?php echo $base_url; ?>/admin_praktek/tempat_praktek.php" class="nav-link <?php echo is_current_page('/admin_praktek/tempat_praktek.php') ? 'active' : ''; ?>" data-title="Tempat Praktek">
-                                <i class="bi bi-building"></i>
-                                <span class="menu-text">Tempat Praktek</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="<?php echo $base_url; ?>/admin_praktek/jadwal_rutin.php" class="nav-link <?php echo is_current_page('/admin_praktek/jadwal_rutin.php') ? 'active' : ''; ?>" data-title="Jadwal Rutin">
-                                <i class="bi bi-calendar-week"></i>
-                                <span class="menu-text">Jadwal Rutin</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="<?php echo $base_url; ?>/admin_praktek/pengumuman.php" class="nav-link <?php echo is_current_page('/admin_praktek/pengumuman.php') ? 'active' : ''; ?>" data-title="Pesan / Pengumuman">
-                                <i class="bi bi-megaphone"></i>
-                                <span class="menu-text">Pesan / Pengumuman</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="<?php echo $base_url; ?>/admin_praktek/manajemen_user.php" class="nav-link <?php echo is_current_page('/admin_praktek/manajemen_user.php') ? 'active' : ''; ?>" data-title="Manajemen User">
-                                <i class="bi bi-person-gear"></i>
-                                <span class="menu-text">Manajemen User</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="<?php echo $base_url; ?>/admin_praktek/manajemen_antrian.php" class="nav-link <?php echo is_current_page('/admin_praktek/manajemen_antrian.php') ? 'active' : ''; ?>" data-title="Manajemen Antrian">
-                                <i class="bi bi-list-check"></i>
-                                <span>Manajemen Antrian</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="<?php echo $base_url; ?>/admin_praktek/data_rujukan.php" class="nav-link <?php echo is_current_page('/admin_praktek/data_rujukan.php') ? 'active' : ''; ?>" data-title="Data Rujukan">
-                                <i class="bi bi-file-earmark-medical"></i>
-                                <span class="menu-text">Data Rujukan</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="<?php echo $base_url; ?>/admin_praktek/manajemen_layanan.php" class="nav-link <?php echo is_current_page('/admin_praktek/manajemen_layanan.php') ? 'active' : ''; ?>" data-title="Manajemen Layanan">
-                                <i class="bi bi-gear-wide-connected"></i>
-                                <span class="menu-text">Manajemen Layanan</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="<?php echo $base_url; ?>/admin_praktek/formularium.php" class="nav-link <?php echo is_current_page('/admin_praktek/formularium.php') ? 'active' : ''; ?>" data-title="Formularium">
-                                <i class="bi bi-capsule"></i>
-                                <span class="menu-text">Formularium</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="<?php echo $base_url; ?>/admin_praktek/manajemen_edukasi.php" class="nav-link <?php echo is_current_page('/admin_praktek/manajemen_edukasi.php') ? 'active' : ''; ?>" data-title="Manajemen Edukasi">
-                                <i class="bi bi-journal-text"></i>
-                                <span class="menu-text">Manajemen Edukasi</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="<?php echo $base_url; ?>/admin_praktek/dashboard_antrian.php" class="nav-link <?php echo is_current_page('/admin_praktek/dashboard_antrian.php') ? 'active' : ''; ?>" data-title="Dashboard Antrian">
-                                <i class="bi bi-display"></i>
-                                <span class="menu-text">Dashboard Antrian</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="<?php echo $base_url; ?>/admin_praktek/voucher.php" class="nav-link <?php echo is_current_page('/admin_praktek/voucher.php') ? 'active' : ''; ?>" data-title="Manajemen Voucher">
-                                <i class="bi bi-ticket-perforated"></i>
-                                <span class="menu-text">Manajemen Voucher</span>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-            <?php endif; ?>
-
-            <!-- Menu Pendaftaran - Selalu Tampil -->
             <li class="nav-item has-submenu">
-                <a href="#" class="nav-link submenu-toggle" data-title="Pendaftaran">
-                    <i class="bi bi-journal-plus"></i>
-                    <span class="menu-text">Pendaftaran</span>
+                <a href="#" class="nav-link submenu-toggle" data-title="Rawat Inap">
+                    <i class="bi bi-hospital-fill"></i>
+                    <span class="menu-text">Rawat Inap</span>
                     <i class="bi bi-chevron-right ms-auto submenu-arrow"></i>
                 </a>
                 <ul class="submenu collapse">
                     <li class="nav-item">
-                        <a href="<?php echo clean_url($base_url); ?>/pendaftaran/form_pendaftaran_pasien.php" class="nav-link <?php echo is_current_page('/pendaftaran/form_pendaftaran_pasien.php') ? 'active' : ''; ?>" data-title="Form Pendaftaran">
-                            <i class="bi bi-file-earmark-text"></i>
-                            <span class="menu-text">Form Pendaftaran</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="<?php echo clean_url($base_url); ?>/pendaftaran/antrian.php" class="nav-link <?php echo is_current_page('/pendaftaran/antrian.php') ? 'active' : ''; ?>" data-title="Daftar Antrian">
-                            <i class="bi bi-list-ol"></i>
-                            <span class="menu-text">Daftar Antrian</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="<?php echo clean_url($base_url); ?>/pendaftaran/jadwal.php" class="nav-link <?php echo is_current_page('/pendaftaran/jadwal.php') ? 'active' : ''; ?>" data-title="Jadwal Praktek">
-                            <i class="bi bi-calendar2-week"></i>
-                            <span class="menu-text">Jadwal Praktek</span>
+                        <a href="<?php echo $base_url; ?>/daftar_ranap.php" class="nav-link <?php echo is_current_page('/daftar_ranap.php') ? 'active' : ''; ?>" data-title="Daftar Pasien">
+                            <i class="bi bi-list-ul"></i>
+                            <span class="menu-text">Daftar Pasien</span>
                         </a>
                     </li>
                 </ul>
             </li>
 
-            <!-- Menu Pengumuman - Selalu Tampil -->
-            <li class="nav-item">
-                <a href="<?php echo $base_url; ?>/pengumuman.php" class="nav-link <?php echo is_current_page('/pengumuman.php') ? 'active' : ''; ?>" data-title="Pengumuman">
-                    <i class="bi bi-megaphone"></i>
-                    <span class="menu-text">Pengumuman</span>
+            <li class="nav-item has-submenu">
+                <a href="#" class="nav-link submenu-toggle" data-title="Rawat Jalan">
+                    <i class="bi bi-person-walking"></i>
+                    <span class="menu-text">Rawat Jalan</span>
+                    <i class="bi bi-chevron-right ms-auto submenu-arrow"></i>
                 </a>
+                <ul class="submenu collapse">
+                    <li class="nav-item">
+                        <a href="<?php echo $base_url; ?>/daftar_rajal_rs.php" class="nav-link <?php echo is_current_page('/daftar_rajal_rs.php') ? 'active' : ''; ?>" data-title="Daftar Rajal RS">
+                            <i class="bi bi-list-check"></i>
+                            <span class="menu-text">Daftar Rajal RS</span>
+                        </a>
+                    </li>
+                </ul>
             </li>
 
-            <!-- Menu Layanan - Selalu Tampil -->
-            <li class="nav-item">
-                <a href="<?php echo clean_url($base_url); ?>/layanan.php" class="nav-link <?php echo is_current_page('/layanan.php') ? 'active' : ''; ?>" data-title="Layanan">
-                    <i class="bi bi-heart-pulse"></i>
-                    <span class="menu-text">Layanan</span>
+            <!-- Menu Rekam Medis -->
+            <li class="nav-item has-submenu">
+                <a href="#" class="nav-link submenu-toggle" data-title="Rekam Medis">
+                    <i class="bi bi-journal-medical"></i>
+                    <span class="menu-text">Rekam Medis</span>
+                    <i class="bi bi-chevron-right ms-auto submenu-arrow"></i>
                 </a>
+                <ul class="submenu collapse">
+                    <li class="nav-item">
+                        <a href="<?php echo clean_url($base_url); ?>/index.php?module=rekam_medis&action=manajemen_antrian"
+                            class="nav-link <?php echo is_current_module('rekam_medis', 'manajemen_antrian') ? 'active' : ''; ?>" data-title="Pasien Rawat Jalan">
+                            <i class="bi bi-people"></i>
+                            <span class="menu-text">Pasien Rawat Jalan</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="<?php echo clean_url($base_url); ?>/index.php?module=rekam_medis&action=data_pasien"
+                            class="nav-link <?php echo is_current_module('rekam_medis', 'data_pasien') ? 'active' : ''; ?>" data-title="Data Pasien">
+                            <i class="bi bi-person-vcard"></i>
+                            <span class="menu-text">Data Pasien</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="<?php echo clean_url($base_url); ?>/index.php?module=rekam_medis&action=daftar_atensi"
+                            class="nav-link <?php echo is_current_module('rekam_medis', 'daftar_atensi') ? 'active' : ''; ?>" data-title="Daftar Atensi">
+                            <i class="bi bi-exclamation-circle"></i>
+                            <span class="menu-text">Daftar Atensi</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="<?php echo clean_url($base_url); ?>/index.php?module=rekam_medis&action=template_tatalaksana"
+                            class="nav-link <?php echo is_current_module('rekam_medis', 'template_tatalaksana') ? 'active' : ''; ?>" data-title="Template Tatalaksana">
+                            <i class="bi bi-file-text"></i>
+                            <span class="menu-text">Template Tatalaksana</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="<?php echo clean_url($base_url); ?>/index.php?module=rekam_medis&action=template_usg"
+                            class="nav-link <?php echo is_current_module('rekam_medis', 'template_usg') ? 'active' : ''; ?>" data-title="Template USG">
+                            <i class="bi bi-image"></i>
+                            <span class="menu-text">Template USG</span>
+                        </a>
+                    </li>
+                </ul>
             </li>
 
-            <!-- Menu Edukasi - Selalu Tampil -->
-            <li class="nav-item">
-                <a href="<?php echo clean_url($base_url); ?>/edukasi.php" class="nav-link <?php echo is_current_page('/edukasi.php') ? 'active' : ''; ?>" data-title="Edukasi">
-                    <i class="bi bi-journal-text"></i>
-                    <span class="menu-text">Edukasi</span>
+            <li class="nav-item has-submenu">
+                <a href="#" class="nav-link submenu-toggle" data-title="Admin Praktek">
+                    <i class="bi bi-gear"></i>
+                    <span class="menu-text">Admin Praktek</span>
+                    <i class="bi bi-chevron-right ms-auto submenu-arrow"></i>
                 </a>
+                <ul class="submenu collapse">
+                    <li class="nav-item">
+                        <a href="<?php echo $base_url; ?>/admin_praktek/data_dokter.php" class="nav-link <?php echo is_current_page('/admin_praktek/data_dokter.php') ? 'active' : ''; ?>" data-title="Data Dokter">
+                            <i class="bi bi-person-vcard"></i>
+                            <span class="menu-text">Data Dokter</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="<?php echo $base_url; ?>/admin_praktek/tempat_praktek.php" class="nav-link <?php echo is_current_page('/admin_praktek/tempat_praktek.php') ? 'active' : ''; ?>" data-title="Tempat Praktek">
+                            <i class="bi bi-building"></i>
+                            <span class="menu-text">Tempat Praktek</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="<?php echo $base_url; ?>/admin_praktek/jadwal_rutin.php" class="nav-link <?php echo is_current_page('/admin_praktek/jadwal_rutin.php') ? 'active' : ''; ?>" data-title="Jadwal Rutin">
+                            <i class="bi bi-calendar-week"></i>
+                            <span class="menu-text">Jadwal Rutin</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="<?php echo $base_url; ?>/admin_praktek/pengumuman.php" class="nav-link <?php echo is_current_page('/admin_praktek/pengumuman.php') ? 'active' : ''; ?>" data-title="Pesan / Pengumuman">
+                            <i class="bi bi-megaphone"></i>
+                            <span class="menu-text">Pesan / Pengumuman</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="<?php echo $base_url; ?>/admin_praktek/manajemen_user.php" class="nav-link <?php echo is_current_page('/admin_praktek/manajemen_user.php') ? 'active' : ''; ?>" data-title="Manajemen User">
+                            <i class="bi bi-person-gear"></i>
+                            <span class="menu-text">Manajemen User</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="<?php echo $base_url; ?>/admin_praktek/manajemen_antrian.php" class="nav-link <?php echo is_current_page('/admin_praktek/manajemen_antrian.php') ? 'active' : ''; ?>" data-title="Manajemen Antrian">
+                            <i class="bi bi-list-check"></i>
+                            <span>Manajemen Antrian</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="<?php echo $base_url; ?>/admin_praktek/data_rujukan.php" class="nav-link <?php echo is_current_page('/admin_praktek/data_rujukan.php') ? 'active' : ''; ?>" data-title="Data Rujukan">
+                            <i class="bi bi-file-earmark-medical"></i>
+                            <span class="menu-text">Data Rujukan</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="<?php echo $base_url; ?>/admin_praktek/manajemen_layanan.php" class="nav-link <?php echo is_current_page('/admin_praktek/manajemen_layanan.php') ? 'active' : ''; ?>" data-title="Manajemen Layanan">
+                            <i class="bi bi-gear-wide-connected"></i>
+                            <span class="menu-text">Manajemen Layanan</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="<?php echo $base_url; ?>/admin_praktek/formularium.php" class="nav-link <?php echo is_current_page('/admin_praktek/formularium.php') ? 'active' : ''; ?>" data-title="Formularium">
+                            <i class="bi bi-capsule"></i>
+                            <span class="menu-text">Formularium</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="<?php echo $base_url; ?>/admin_praktek/manajemen_edukasi.php" class="nav-link <?php echo is_current_page('/admin_praktek/manajemen_edukasi.php') ? 'active' : ''; ?>" data-title="Manajemen Edukasi">
+                            <i class="bi bi-journal-text"></i>
+                            <span class="menu-text">Manajemen Edukasi</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="<?php echo $base_url; ?>/admin_praktek/dashboard_antrian.php" class="nav-link <?php echo is_current_page('/admin_praktek/dashboard_antrian.php') ? 'active' : ''; ?>" data-title="Dashboard Antrian">
+                            <i class="bi bi-display"></i>
+                            <span class="menu-text">Dashboard Antrian</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="<?php echo $base_url; ?>/admin_praktek/voucher.php" class="nav-link <?php echo is_current_page('/admin_praktek/voucher.php') ? 'active' : ''; ?>" data-title="Manajemen Voucher">
+                            <i class="bi bi-ticket-perforated"></i>
+                            <span class="menu-text">Manajemen Voucher</span>
+                        </a>
+                    </li>
+                </ul>
             </li>
-        </ul>
+        <?php endif; ?>
 
-        <!-- User section at bottom -->
-        <div class="user-section">
-            <?php if ($is_logged_in): ?>
-                <div class="dropdown">
-                    <a href="#" class="dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false" data-title="User Profile">
-                        <i class="bi bi-person-circle"></i>
-                        <span class="menu-text"><?php echo htmlspecialchars($_SESSION['username'] ?? 'User'); ?></span>
+        <!-- Menu Pendaftaran - Selalu Tampil -->
+        <li class="nav-item has-submenu">
+            <a href="#" class="nav-link submenu-toggle" data-title="Pendaftaran">
+                <i class="bi bi-journal-plus"></i>
+                <span class="menu-text">Pendaftaran</span>
+                <i class="bi bi-chevron-right ms-auto submenu-arrow"></i>
+            </a>
+            <ul class="submenu collapse">
+                <li class="nav-item">
+                    <a href="<?php echo clean_url($base_url); ?>/pendaftaran/form_pendaftaran_pasien.php" class="nav-link <?php echo is_current_page('/pendaftaran/form_pendaftaran_pasien.php') ? 'active' : ''; ?>" data-title="Form Pendaftaran">
+                        <i class="bi bi-file-earmark-text"></i>
+                        <span class="menu-text">Form Pendaftaran</span>
                     </a>
-                    <ul class="dropdown-menu shadow" aria-labelledby="dropdownUser1">
-                        <li><a class="dropdown-item" href="profile.php"><i class="bi bi-person me-2"></i>Profile</a></li>
-                        <li><a class="dropdown-item" href="settings.php"><i class="bi bi-gear me-2"></i>Settings</a></li>
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-                        <li><a class="dropdown-item" href="logout.php"><i class="bi bi-box-arrow-right me-2"></i>Sign out</a></li>
-                    </ul>
-                </div>
-            <?php else: ?>
-                <a href="<?= $base_url ?>/login.php" class="btn btn-primary w-100 mx-3" data-title="Login">
-                    <i class="bi bi-box-arrow-in-right"></i>
-                    <span class="menu-text ms-2">Login</span>
+                </li>
+                <li class="nav-item">
+                    <a href="<?php echo clean_url($base_url); ?>/pendaftaran/antrian.php" class="nav-link <?php echo is_current_page('/pendaftaran/antrian.php') ? 'active' : ''; ?>" data-title="Daftar Antrian">
+                        <i class="bi bi-list-ol"></i>
+                        <span class="menu-text">Daftar Antrian</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="<?php echo clean_url($base_url); ?>/pendaftaran/jadwal.php" class="nav-link <?php echo is_current_page('/pendaftaran/jadwal.php') ? 'active' : ''; ?>" data-title="Jadwal Praktek">
+                        <i class="bi bi-calendar2-week"></i>
+                        <span class="menu-text">Jadwal Praktek</span>
+                    </a>
+                </li>
+            </ul>
+        </li>
+
+        <!-- Menu Pengumuman - Selalu Tampil -->
+        <li class="nav-item">
+            <a href="<?php echo $base_url; ?>/pengumuman.php" class="nav-link <?php echo is_current_page('/pengumuman.php') ? 'active' : ''; ?>" data-title="Pengumuman">
+                <i class="bi bi-megaphone"></i>
+                <span class="menu-text">Pengumuman</span>
+            </a>
+        </li>
+
+        <!-- Menu Layanan - Selalu Tampil -->
+        <li class="nav-item">
+            <a href="<?php echo clean_url($base_url); ?>/layanan.php" class="nav-link <?php echo is_current_page('/layanan.php') ? 'active' : ''; ?>" data-title="Layanan">
+                <i class="bi bi-heart-pulse"></i>
+                <span class="menu-text">Layanan</span>
+            </a>
+        </li>
+
+        <!-- Menu Edukasi - Selalu Tampil -->
+        <li class="nav-item">
+            <a href="<?php echo clean_url($base_url); ?>/edukasi.php" class="nav-link <?php echo is_current_page('/edukasi.php') ? 'active' : ''; ?>" data-title="Edukasi">
+                <i class="bi bi-journal-text"></i>
+                <span class="menu-text">Edukasi</span>
+            </a>
+        </li>
+    </ul>
+
+    <!-- User section at bottom -->
+    <div class="user-section">
+        <?php if ($is_logged_in): ?>
+            <div class="dropdown">
+                <a href="#" class="dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false" data-title="User Profile">
+                    <i class="bi bi-person-circle"></i>
+                    <span class="menu-text"><?php echo htmlspecialchars($_SESSION['username'] ?? 'User'); ?></span>
                 </a>
-            <?php endif; ?>
-        </div>
+                <ul class="dropdown-menu shadow" aria-labelledby="dropdownUser1">
+                    <li><a class="dropdown-item" href="profile.php"><i class="bi bi-person me-2"></i>Profile</a></li>
+                    <li><a class="dropdown-item" href="settings.php"><i class="bi bi-gear me-2"></i>Settings</a></li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+                    <li><a class="dropdown-item" href="logout.php"><i class="bi bi-box-arrow-right me-2"></i>Sign out</a></li>
+                </ul>
+            </div>
+        <?php else: ?>
+            <a href="<?= $base_url ?>/login.php" class="btn btn-primary w-100 mx-3" data-title="Login">
+                <i class="bi bi-box-arrow-in-right"></i>
+                <span class="menu-text ms-2">Login</span>
+            </a>
+        <?php endif; ?>
+    </div>
 </div>
 
 <script>
@@ -1318,7 +1335,7 @@ function is_current_module($module, $action = null)
             try {
                 // Pertama, buka submenu yang memiliki item aktif
                 const activeMenuItems = document.querySelectorAll('.submenu .nav-link.active');
-                
+
                 // Jika ada item aktif, hanya buka submenu yang memiliki item aktif
                 if (activeMenuItems.length > 0) {
                     activeMenuItems.forEach(activeItem => {
@@ -1334,7 +1351,7 @@ function is_current_module($module, $action = null)
                 } else {
                     // Jika tidak ada item aktif, pulihkan menu yang sebelumnya terbuka dari localStorage
                     const openMenus = JSON.parse(localStorage.getItem('openMenus')) || [];
-                    
+
                     // Jika dalam mode desktop dan tidak diminimalkan, buka menu pertama jika tidak ada yang disimpan
                     if (openMenus.length === 0 && !isMobile && !sidebar.classList.contains('minimized')) {
                         const firstSubmenu = document.querySelector('.has-submenu');
@@ -1448,27 +1465,113 @@ function is_current_module($module, $action = null)
                 link.addEventListener('click', function(e) {
                     // Pada mobile, kita tidak perlu menutup sidebar saat menu diklik
                     // Ini memungkinkan pengguna untuk melihat menu yang aktif
+                    // Cukup tutup overlay jika terbuka
+                    if (overlay.classList.contains('show')) {
+                        sidebar.classList.add('mobile-collapsed');
+                        overlay.classList.remove('show');
+                        mobileToggleContainer.classList.add('show');
+                        updateBodyClass();
+                    }
                 });
             });
         }
-        
-        // Auto-hide submenu when a submenu item is clicked in minimized mode
+
+        // Auto-hide submenu when a submenu item is clicked (global)
         document.querySelectorAll('.submenu .nav-link').forEach(link => {
             link.addEventListener('click', function(e) {
-                if (sidebar.classList.contains('minimized')) {
-                    const submenu = this.closest('.submenu');
-                    const parentItem = submenu.closest('.has-submenu');
-                    
-                    // Immediately hide the submenu
+                // Jika dalam mode minimized dan item submenu diklik, tutup semua popup submenu
+                if (sidebar.classList.contains('minimized') && !isMobile) {
+                    closeAllMinimizedSubmenus();
+                }
+                // Jika tidak dalam mode minimized, dan menu ini bukan bagian dari dropdown user
+                // Biarkan submenu terbuka (untuk melihat item aktif), 
+                // kecuali jika ini link navigasi biasa yang mengubah halaman
+                // Jika link ini mengarahkan ke halaman lain (bukan # atau javascript:void(0))
+                // maka tidak perlu tindakan khusus di sini, biarkan browser menavigasi.
+                // Jika ini link internal (misalnya #) atau hanya toggle, biarkan submenu terbuka
+
+                // Hentikan propagasi agar tidak memicu penutupan submenu lain secara tidak sengaja
+                // e.stopPropagation(); // <-- Mungkin tidak diperlukan lagi dengan logika baru
+            });
+        });
+
+        // Handle submenu toggles (klik)
+        document.querySelectorAll('.submenu-toggle').forEach(toggle => {
+            toggle.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                // Abaikan jika dalam mode minimized (hover yang menangani)
+                if (sidebar.classList.contains('minimized') && !isMobile) {
+                    return;
+                }
+
+                const parent = this.closest('.has-submenu');
+                const submenu = parent.querySelector('.submenu');
+                const isOpen = parent.classList.contains('open');
+
+                // Tutup semua menu lain yang terbuka (kecuali parent dari menu ini jika ada)
+                if (!isOpen) {
+                    document.querySelectorAll('.has-submenu.open').forEach(openMenu => {
+                        // Cek apakah openMenu adalah parent dari parent saat ini (untuk nested submenu jika ada)
+                        if (!parent.contains(openMenu) && !openMenu.contains(parent)) {
+                            closeSubmenu(openMenu);
+                        }
+                    });
+                }
+
+                // Toggle menu saat ini
+                if (isOpen) {
+                    closeSubmenu(parent);
+                } else {
+                    openSubmenu(parent);
+                }
+
+                // Simpan status menu hanya jika tidak mobile
+                if (!isMobile) {
+                    saveMenuState();
+                }
+            });
+        });
+
+        // Fungsi helper untuk membuka submenu
+        function openSubmenu(menuItem) {
+            const submenu = menuItem.querySelector('.submenu');
+            menuItem.classList.add('open');
+            submenu.classList.add('show');
+            // Apply animation (optional)
+            // submenu.style.animation = 'fadeIn 0.3s ease forwards'; 
+        }
+
+        // Fungsi helper untuk menutup submenu
+        function closeSubmenu(menuItem) {
+            const submenu = menuItem.querySelector('.submenu');
+            menuItem.classList.remove('open');
+            submenu.classList.remove('show');
+            // Apply animation (optional)
+            // submenu.style.animation = 'fadeOut 0.2s ease forwards';
+            // submenu.addEventListener('animationend', () => { submenu.style.animation = ''; }, { once: true });
+        }
+
+
+        // Buka submenu yang memiliki item aktif saat halaman dimuat
+        document.querySelectorAll('.submenu .nav-link.active').forEach(activeLink => {
+            const parentSubmenu = activeLink.closest('.submenu');
+            if (parentSubmenu && !sidebar.classList.contains('minimized')) { // Jangan buka otomatis jika minimized
+                const parentItem = parentSubmenu.closest('.has-submenu');
+                if (parentItem) {
+                    openSubmenu(parentItem);
+                }
+            }
+        });
+
+        // Fungsi untuk menutup semua submenu popup di mode minimized
+        function closeAllMinimizedSubmenus() {
+            document.querySelectorAll('.has-submenu.open').forEach(item => {
+                if (item.querySelector('.submenu').style.position === 'fixed') { // Hanya tutup yang popup (fixed)
+                    const submenu = item.querySelector('.submenu');
+                    item.classList.remove('open');
                     submenu.classList.remove('show');
-                    parentItem.classList.remove('open');
-                    
-                    // Reset currentOpenSubmenu
-                    if (currentOpenSubmenu === parentItem) {
-                        currentOpenSubmenu = null;
-                    }
-                    
-                    // Reset all styles
+                    // Reset style popup
                     submenu.style.position = '';
                     submenu.style.left = '';
                     submenu.style.top = '';
@@ -1481,215 +1584,103 @@ function is_current_module($module, $action = null)
                     submenu.style.borderRadius = '';
                     submenu.style.paddingTop = '';
                     submenu.style.paddingBottom = '';
-                    
-                    // Force close all other submenus too
-                    document.querySelectorAll('.submenu.show').forEach(openSubmenu => {
-                        if (openSubmenu !== submenu) {
-                            openSubmenu.classList.remove('show');
-                            const openParent = openSubmenu.closest('.has-submenu');
-                            if (openParent) {
-                                openParent.classList.remove('open');
-                            }
-                        }
-                    });
-                    
-                    // Prevent event bubbling
-                    e.stopPropagation();
                 }
             });
-        });
+        }
 
-        // Handle submenu toggles with improved animation and behavior
-        document.querySelectorAll('.submenu-toggle').forEach(toggle => {
-            toggle.addEventListener('click', function(e) {
-                e.preventDefault();
-                const parent = this.closest('.has-submenu');
-                const submenu = parent.querySelector('.submenu');
-                const isOpen = parent.classList.contains('open');
-                
-                // Close any other open menus if not in minimized mode
-                if (!isOpen && !sidebar.classList.contains('minimized') && !isMobile) {
-                    // Close other open menus
-                    document.querySelectorAll('.has-submenu.open').forEach(openMenu => {
-                        if (openMenu !== parent) {
-                            openMenu.classList.remove('open');
-                            openMenu.querySelector('.submenu').classList.remove('show');
-                        }
-                    });
-                }
-
-                // Toggle current menu
-                parent.classList.toggle('open');
-                submenu.classList.toggle('show');
-                
-                // Add a subtle animation effect
-                if (parent.classList.contains('open')) {
-                    // When opening, add a subtle highlight effect
-                    submenu.style.animation = 'fadeIn 0.3s ease';
-                } else {
-                    submenu.style.animation = 'fadeOut 0.2s ease';
-                }
-
-                // Simpan status menu
-                saveMenuState();
-            });
-        });
-
-        // Buka submenu yang memiliki item aktif saat halaman dimuat
-        document.querySelectorAll('.submenu .nav-link.active').forEach(activeLink => {
-            const parentSubmenu = activeLink.closest('.submenu');
-            if (parentSubmenu) {
-                parentSubmenu.classList.add('show');
-                const parentItem = parentSubmenu.closest('.has-submenu');
-                if (parentItem) {
-                    parentItem.classList.add('open');
-                }
-            }
-        });
-
-        // Handle hover states for minimized mode with completely revised popup behavior
-        let currentOpenSubmenu = null;
+        // Handle hover states for minimized mode - Revised Logic
         let hoverTimeout = null;
 
         document.querySelectorAll('.has-submenu').forEach(item => {
+            const submenu = item.querySelector('.submenu');
+
             item.addEventListener('mouseenter', () => {
                 if (!isMobile && sidebar.classList.contains('minimized')) {
-                    // Clear any existing timeout
-                    if (hoverTimeout) {
-                        clearTimeout(hoverTimeout);
-                        hoverTimeout = null;
-                    }
-                    
-                    // Close any other open submenu
-                    if (currentOpenSubmenu && currentOpenSubmenu !== item) {
-                        currentOpenSubmenu.querySelector('.submenu').classList.remove('show');
-                        currentOpenSubmenu.classList.remove('open');
-                    }
-                    
-                    // Open this submenu
-                    const submenu = item.querySelector('.submenu');
-                    submenu.classList.add('show');
-                    item.classList.add('open');
-                    currentOpenSubmenu = item;
-                    
-                    // Calculate proper position for the submenu
+                    clearTimeout(hoverTimeout); // Hapus timeout jika masuk lagi
+
+                    // Tutup submenu lain yang mungkin terbuka karena hover sebelumnya
+                    closeAllMinimizedSubmenus();
+
+                    // Tampilkan submenu ini sebagai popup
+                    item.classList.add('open'); // Tandai parent sebagai open (meskipun tidak expand visual)
+                    submenu.classList.add('show'); // Tampilkan submenu
+
+                    // Kalkulasi posisi popup
                     const itemRect = item.getBoundingClientRect();
                     const sidebarRect = sidebar.getBoundingClientRect();
                     const viewportHeight = window.innerHeight;
-                    
-                    // Default position at the same level as the menu item
+
                     let topPosition = itemRect.top;
-                    
-                    // Check if submenu would go off the bottom of the screen
-                    const submenuHeight = submenu.scrollHeight;
-                    if (topPosition + submenuHeight > viewportHeight) {
-                        // If it would go off screen, align to bottom of viewport with padding
-                        topPosition = Math.max(0, viewportHeight - submenuHeight - 10);
+                    const submenuHeight = submenu.scrollHeight; // Gunakan scrollHeight untuk tinggi sebenarnya
+
+                    // Penyesuaian posisi vertikal agar tidak keluar layar
+                    if (topPosition + submenuHeight > viewportHeight - 10) { // Beri sedikit margin
+                        topPosition = Math.max(10, viewportHeight - submenuHeight - 10);
                     }
-                    
-                    // Set position relative to the viewport
-                    submenu.style.position = 'fixed';
-                    submenu.style.left = `${sidebarRect.right}px`;
-                    submenu.style.top = `${topPosition}px`;
-                    submenu.style.width = '200px';
-                    submenu.style.maxHeight = 'calc(100vh - 20px)';
-                    submenu.style.overflowY = 'auto';
-                    submenu.style.zIndex = '1060';
-                    submenu.style.boxShadow = '0 0.5rem 1rem rgba(0, 0, 0, 0.15)';
-                    submenu.style.backgroundColor = 'var(--bg-light)';
-                    submenu.style.borderRadius = '0 0.25rem 0.25rem 0';
-                    submenu.style.paddingTop = '0.5rem';
-                    submenu.style.paddingBottom = '0.5rem';
+
+                    // Set style untuk popup
+                    Object.assign(submenu.style, {
+                        position: 'fixed',
+                        left: `${sidebarRect.right}px`,
+                        top: `${topPosition}px`,
+                        width: '200px', // Atau lebar yang diinginkan
+                        maxHeight: `calc(${viewportHeight}px - 20px)`, // Batasi tinggi maks
+                        overflowY: 'auto',
+                        zIndex: '1060',
+                        boxShadow: '0 0.5rem 1rem rgba(0, 0, 0, 0.15)',
+                        backgroundColor: 'var(--bg-light)',
+                        borderRadius: '0 0.25rem 0.25rem 0',
+                        padding: '0.5rem 0' // Padding atas/bawah untuk submenu popup
+                    });
                 }
             });
 
             item.addEventListener('mouseleave', () => {
                 if (!isMobile && sidebar.classList.contains('minimized')) {
-                    const submenu = item.querySelector('.submenu');
-                    
-                    // Use timeout to prevent flickering when moving between items
+                    // Gunakan timeout untuk memberi waktu mouse pindah ke submenu
                     hoverTimeout = setTimeout(() => {
-                        // Check if either the menu item or its submenu is being hovered
+                        // Periksa apakah mouse masih di atas item atau submenunya
                         if (!item.matches(':hover') && !submenu.matches(':hover')) {
-                            submenu.classList.remove('show');
-                            item.classList.remove('open');
-                            if (currentOpenSubmenu === item) {
-                                currentOpenSubmenu = null;
-                            }
+                            closeAllMinimizedSubmenus(); // Tutup semua jika mouse keluar
                         }
-                    }, 200);
+                    }, 150); // Waktu tunggu singkat (misal 150ms)
                 }
             });
-            
-            // Add event listener to the submenu itself to handle mouse leave
-            const submenu = item.querySelector('.submenu');
-            if (submenu) {
-                submenu.addEventListener('mouseleave', () => {
+
+            // Event listener untuk submenu itu sendiri (penting!)
+            submenu.addEventListener('mouseleave', () => {
+                if (!isMobile && sidebar.classList.contains('minimized')) {
+                    hoverTimeout = setTimeout(() => {
+                        if (!item.matches(':hover') && !submenu.matches(':hover')) {
+                            closeAllMinimizedSubmenus();
+                        }
+                    }, 150);
+                }
+            });
+            // Juga tutup saat item submenu diklik
+            submenu.querySelectorAll('.nav-link').forEach(subLink => {
+                subLink.addEventListener('click', () => {
                     if (!isMobile && sidebar.classList.contains('minimized')) {
-                        // Use timeout to prevent flickering
-                        hoverTimeout = setTimeout(() => {
-                            // Only close if neither the item nor submenu is being hovered
-                            if (!item.matches(':hover') && !submenu.matches(':hover')) {
-                                submenu.classList.remove('show');
-                                item.classList.remove('open');
-                                if (currentOpenSubmenu === item) {
-                                    currentOpenSubmenu = null;
-                                }
-                                
-                                // Reset styles when closing
-                                submenu.style.position = '';
-                                submenu.style.left = '';
-                                submenu.style.top = '';
-                                submenu.style.width = '';
-                                submenu.style.maxHeight = '';
-                                submenu.style.overflowY = '';
-                                submenu.style.zIndex = '';
-                                submenu.style.boxShadow = '';
-                                submenu.style.backgroundColor = '';
-                                submenu.style.borderRadius = '';
-                                submenu.style.paddingTop = '';
-                                submenu.style.paddingBottom = '';
-                            }
-                        }, 200);
+                        closeAllMinimizedSubmenus();
                     }
                 });
+            });
+        });
+
+
+        // Tambahkan event listener untuk document click untuk menutup submenu popup (minimized mode)
+        document.addEventListener('click', function(e) {
+            if (!isMobile && sidebar.classList.contains('minimized')) {
+                // Jika klik terjadi di luar sidebar ATAU di dalam sidebar tapi bukan di item submenu yg sedang popup
+                if (!sidebar.contains(e.target)) {
+                    closeAllMinimizedSubmenus();
+                } else if (!e.target.closest('.submenu.show') && !e.target.closest('.has-submenu.open')) {
+                    // Jika klik di dalam sidebar tapi bukan di submenu popup atau parentnya
+                    closeAllMinimizedSubmenus();
+                }
             }
         });
 
-        // Tambahkan event listener untuk document click untuk menutup submenu
-        document.addEventListener('click', function(e) {
-            if (sidebar.classList.contains('minimized')) {
-                // Jika klik terjadi di luar submenu, tutup semua submenu
-                if (!e.target.closest('.submenu') && !e.target.closest('.has-submenu')) {
-                    document.querySelectorAll('.submenu.show').forEach(submenu => {
-                        submenu.classList.remove('show');
-                        const parentItem = submenu.closest('.has-submenu');
-                        if (parentItem) {
-                            parentItem.classList.remove('open');
-                        }
-                        
-                        // Reset styles
-                        submenu.style.position = '';
-                        submenu.style.left = '';
-                        submenu.style.top = '';
-                        submenu.style.width = '';
-                        submenu.style.maxHeight = '';
-                        submenu.style.overflowY = '';
-                        submenu.style.zIndex = '';
-                        submenu.style.boxShadow = '';
-                        submenu.style.backgroundColor = '';
-                        submenu.style.borderRadius = '';
-                        submenu.style.paddingTop = '';
-                        submenu.style.paddingBottom = '';
-                    });
-                    
-                    if (currentOpenSubmenu) {
-                        currentOpenSubmenu = null;
-                    }
-                }
-            }
-        });
-        
         // Handle window resize
         window.addEventListener('resize', function() {
             const newIsMobile = window.innerWidth < 992;
