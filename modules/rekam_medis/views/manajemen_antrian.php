@@ -51,6 +51,10 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     exit;
 }
 
+// Cek apakah ada pendaftaran baru yang sukses
+$pendaftaran_sukses = isset($_GET['pendaftaran_sukses']) && $_GET['pendaftaran_sukses'] == 1;
+$id_pendaftaran_baru = isset($_GET['id']) ? $_GET['id'] : '';
+
 // Filter dan pengurutan
 $status_filter = isset($_GET['status']) ? $_GET['status'] : '';
 $sort_by = isset($_GET['sort']) ? $_GET['sort'] : 'waktu_asc';
@@ -218,7 +222,25 @@ try {
 <div class="container-fluid py-4">
     <div class="row">
         <div class="col-12">
+            <?php if ($pendaftaran_sukses): ?>
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <strong>Pendaftaran berhasil!</strong> Pendaftaran baru dengan ID: <?= htmlspecialchars($id_pendaftaran_baru) ?> telah berhasil ditambahkan.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <?php endif; ?>
+
             <div class="card shadow">
+                <div class="card-header py-2">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Manajemen Antrian Pasien</h5>
+                        <a href="<?= BASE_URL ?>/pendaftaran/form_pendaftaran_pasien.php?redirect=manajemen_antrian"
+                            class="btn btn-primary btn-sm"
+                            data-bs-toggle="tooltip"
+                            title="Tambah Pendaftaran">
+                            <i class="bi bi-plus-circle me-1"></i> Pendaftaran Baru
+                        </a>
+                    </div>
+                </div>
                 <div class="card-body">
                     <!-- Statistik Antrian dan Filter -->
                     <div class="row mb-4">
@@ -248,13 +270,6 @@ try {
                                 <div class="d-flex flex-column h-100">
                                     <!-- Action Buttons dan Search Box -->
                                     <div class="d-flex gap-1 mb-2 flex-wrap">
-                                        <a href="<?php echo $base_url; ?>/pendaftaran/form_pendaftaran_pasien.php"
-                                            class="btn btn-primary btn-sm btn-icon"
-                                            data-bs-toggle="tooltip"
-                                            title="Tambah Pendaftaran">
-                                            <i class="bi bi-plus-circle"></i>
-                                        </a>
-
                                         <button type="button"
                                             class="btn btn-success btn-sm btn-icon"
                                             onclick="refreshPage()"
@@ -835,7 +850,7 @@ try {
             formData.append('id_pendaftaran', id);
             formData.append('status', newStatus);
 
-            fetch('modules/rekam_medis/controllers/update_status.php', {
+            fetch('../modules/rekam_medis/controllers/update_status.php', {
                     method: 'POST',
                     body: formData
                 })
@@ -858,7 +873,7 @@ try {
         const detailModal = new bootstrap.Modal(document.getElementById('detailModal'));
         detailModal.show();
 
-        fetch(`modules/rekam_medis/controllers/get_pendaftaran_detail.php?id=${id}`)
+        fetch(`../modules/rekam_medis/controllers/get_pendaftaran_detail.php?id=${id}`)
             .then(response => response.text())
             .then(data => {
                 document.getElementById('detailContent').innerHTML = data;
@@ -906,7 +921,7 @@ try {
                 const newTime = input.value;
 
                 // Kirim update ke server
-                fetch('modules/rekam_medis/controllers/update_waktu_perkiraan.php', {
+                fetch('../modules/rekam_medis/controllers/update_waktu_perkiraan.php', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/x-www-form-urlencoded',

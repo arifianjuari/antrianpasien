@@ -21,9 +21,9 @@ RewriteEngine On
 RewriteCond %{HTTP:Authorization} .
 RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 
-# Redirect to HTTPS (uncomment if using SSL)
-RewriteCond %{HTTPS} off
-RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+# Redirect to HTTPS (uncomment if using SSL) - Dinonaktifkan untuk localhost
+# RewriteCond %{HTTPS} off
+# RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
 # Allow Cross-Origin Resource Sharing
 Header set Access-Control-Allow-Origin "*"
@@ -45,17 +45,17 @@ AddOutputFilterByType DEFLATE application/rss+xml
 AddOutputFilterByType DEFLATE application/javascript
 AddOutputFilterByType DEFLATE application/x-javascript
 
-# Redirect dari home.php ke form pendaftaran
-RewriteRule ^home\.php$ /pendaftaran/form_pendaftaran_pasien.php [R=301,L]
+# Redirect dari home.php ke form pendaftaran (Nonaktifkan jika home.php ada atau untuk debugging)
+# RewriteRule ^home\.php$ /pendaftaran/form_pendaftaran_pasien.php [R=301,L]
 
-# Redirect dari root ke form pendaftaran
-RewriteCond %{REQUEST_URI} ^/?$
-RewriteRule ^(.*)$ /pendaftaran/form_pendaftaran_pasien.php [R=301,L]
+# Redirect dari root ke form pendaftaran (Nonaktifkan untuk akses normal ke index.php utama)
+# RewriteCond %{REQUEST_URI} ^/?$
+# RewriteRule ^(.*)$ /pendaftaran/form_pendaftaran_pasien.php [R=301,L]
 
-# Jika file atau direktori tidak ada, arahkan ke form pendaftaran
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule . /pendaftaran/form_pendaftaran_pasien.php [L]
+# Jika file atau direktori tidak ada, arahkan ke form pendaftaran (Nonaktifkan untuk mencegah konflik path)
+# RewriteCond %{REQUEST_FILENAME} !-f
+# RewriteCond %{REQUEST_FILENAME} !-d
+# RewriteRule . /pendaftaran/form_pendaftaran_pasien.php [L]
 
 # Pastikan file PHP bisa diakses
 <FilesMatch "\.php$">

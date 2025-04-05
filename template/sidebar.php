@@ -270,25 +270,8 @@ function is_current_module($module, $action = null)
     }
 
     /* Hide all submenus in minimized state by default */
-    .sidebar.minimized .submenu {
+    .sidebar.minimized .has-submenu .submenu {
         display: none;
-    }
-
-    /* Special styling for submenus in minimized mode */
-    .sidebar.minimized .submenu.show {
-        display: block;
-        position: absolute;
-        left: 35px;
-        min-width: 240px;
-        background-color: var(--bg-light);
-        border-radius: 0 0.25rem 0.25rem 0;
-        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-        padding: 0.25rem 0;
-        z-index: 1060;
-        max-height: none;
-        overflow: visible;
-        margin-top: -5px;
-        top: 0;
     }
 
     /* Search box styling */
@@ -607,7 +590,7 @@ function is_current_module($module, $action = null)
 
     /* Fix submenu hover conflicts */
     .submenu.show {
-        display: block !important;
+        display: block;
     }
 
     .sidebar.minimized .submenu {
@@ -1418,6 +1401,17 @@ function is_current_module($module, $action = null)
                     sidebar.classList.toggle('minimized');
                     // Simpan status minimized di localStorage
                     localStorage.setItem('sidebarMinimized', sidebar.classList.contains('minimized'));
+
+                    // ADDED: Close all open submenus when minimizing
+                    if (sidebar.classList.contains('minimized')) {
+                        document.querySelectorAll('.has-submenu.open').forEach(openMenu => {
+                            closeSubmenu(openMenu); // Use existing helper function
+                        });
+                    }
+                    // END ADDED CODE
+
+                    // Jika sidebar BARU SAJA menjadi expanded, kita bisa memilih untuk memulihkan state
+                    // Tapi sepertinya logika restoreMenuState() sudah menangani ini saat load.
                 }
             });
         }

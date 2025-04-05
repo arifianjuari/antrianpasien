@@ -441,9 +441,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['success_message'] = "Pendaftaran berhasil dilakukan dengan ID: " . $id_pendaftaran;
             }
 
-            // Redirect ke halaman sukses
-            header("Location: pendaftaran_sukses.php?id=" . urlencode($id_pendaftaran));
-            exit;
+            // Redirect ke halaman sukses atau kembali ke manajemen antrian
+            if (isset($_GET['redirect']) && $_GET['redirect'] === 'manajemen_antrian') {
+                header("Location: ../index.php?module=rekam_medis&action=manajemen_antrian&pendaftaran_sukses=1&id=" . urlencode($id_pendaftaran));
+                exit;
+            } else {
+                header("Location: pendaftaran_sukses.php?id=" . urlencode($id_pendaftaran));
+                exit;
+            }
         } catch (PDOException $e) {
             // Rollback transaction
             $conn->rollBack();
