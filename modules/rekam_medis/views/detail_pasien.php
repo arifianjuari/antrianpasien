@@ -175,7 +175,8 @@ error_log("Data pasien: " . json_encode($pasien));
         /* Responsive fixes */
         @media (max-width: 767px) {
             .card-header {
-                padding-bottom: 40px !important;
+                padding-bottom: 45px !important;
+                /* Tambah padding untuk ruang tombol */
                 position: relative;
             }
 
@@ -183,20 +184,44 @@ error_log("Data pasien: " . json_encode($pasien));
                 position: absolute;
                 right: 10px;
                 top: auto;
-                bottom: 5px;
+                bottom: 10px;
                 transform: none;
-                width: 100%;
+                width: auto;
                 justify-content: flex-end;
+                gap: 5px;
             }
 
-            .card-header .d-flex {
-                flex-direction: column;
-                align-items: flex-start;
+            /* Pastikan tombol voucher tetap lingkaran */
+            .voucher-button-mobile {
+                flex-shrink: 0;
+                /* Mencegah tombol menyusut */
+                width: 25px !important;
+                height: 25px !important;
+                padding: 0 !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                border-radius: 50% !important;
             }
 
+            .voucher-button-mobile i {
+                font-size: 10px !important;
+            }
+
+            /* Sesuaikan ukuran teks status agar tidak terlalu besar */
             .gratis-status {
-                font-size: 0.6rem;
-                padding: 1px 4px;
+                font-size: 0.65rem;
+                padding: 1.5px 5px;
+            }
+
+            /* Pastikan tombol-tombol sejajar */
+            .header-toggle,
+            .header-buttons a {
+                margin-bottom: 0 !important;
+            }
+
+            .header-toggle .form-check-input {
+                margin-top: 0;
             }
         }
     </style>
@@ -497,7 +522,7 @@ error_log("Data pasien: " . json_encode($pasien));
                                 <i class="fas fa-arrow-left"></i> Kembali
                             </a>
 
-                            <h5 class="card-title mb-0">Detail Rekam Medis Pasien</h5>
+                            <h5 class="card-title mb-0 d-none d-md-inline-block">Detail Rekam Medis Pasien</h5>
                         </div>
 
                         <!-- Tombol Voucher dan Berikutnya Gratis di kanan -->
@@ -515,7 +540,7 @@ error_log("Data pasien: " . json_encode($pasien));
                                     </div>
                                 </div>
                             </div>
-                            <a href="../admin_praktek/voucher.php" class="btn btn-dark btn-sm rounded-circle" style="width: 25px; height: 25px; padding: 0; display: flex; align-items: center; justify-content: center;" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Buat Voucher">
+                            <a href="../admin_praktek/voucher.php" class="btn btn-dark btn-sm rounded-circle voucher-button-mobile" style="width: 25px; height: 25px; padding: 0; display: flex; align-items: center; justify-content: center;" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Buat Voucher">
                                 <i class="fas fa-tags text-white" style="font-size: 10px;"></i>
                             </a>
                         </div>
