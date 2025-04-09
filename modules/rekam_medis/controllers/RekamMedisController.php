@@ -3187,4 +3187,66 @@ class RekamMedisController
             exit;
         }
     }
+
+    // Toggle status berikutnya_gratis untuk pasien
+    public function toggleBerikutnyaGratis()
+    {
+        try {
+            error_log("toggleBerikutnyaGratis dipanggil");
+            error_log("POST data: " . json_encode($_POST));
+
+            // Periksa apakah kolom berikutnya_gratis sudah ada di tabel pasien
+            try {
+                $checkColumn = $this->pdo->query("SHOW COLUMNS FROM pasien LIKE 'berikutnya_gratis'");
+                $columnExists = $checkColumn->rowCount() > 0;
+
+                // Jika kolom belum ada, tambahkan kolom baru
+                if (!$columnExists) {
+                    error_log("Kolom berikutnya_gratis belum ada, membuat kolom baru");
+                    $this->pdo->exec("ALTER TABLE pasien ADD COLUMN berikutnya_gratis TINYINT(1) NOT NULL DEFAULT 0");
+                    error_log("Kolom berikutnya_gratis berhasil dibuat");
+                }
+            } catch (Exception $ex) {
+                error_log("Gagal memeriksa/membuat kolom berikutnya_gratis: " . $ex->getMessage());
+            }
+
+            // Validasi input
+            if (!isset($_POST['no_rkm_medis']) || empty($_POST['no_rkm_medis'])) {
+                error_log("Validasi gagal: no_rkm_medis kosong");
+                http_response_code(400);
+                echo json_encode(['status' => 'error', 'message' => 'No RM pasien tidak valid']);
+                exit;
+            }
+
+            $no_rkm_medis = $_POST['no_rkm_medis'];
+            $berikutnya_gratis = isset($_POST['berikutnya_gratis']) ? (int)$_POST['berikutnya_gratis'] : 0;
+
+            error_log("Data yang akan diupdate: no_rkm_medis = $no_rkm_medis, berikutnya_gratis = $berikutnya_gratis");
+
+            // Update status berikutnya_gratis
+            $query = "UPDATE pasien SET berikutnya_gratis = ? WHERE no_rkm_medis = ?";
+            $stmt = $this->pdo->prepare($query);
+            $result = $stmt->execute([$berikutnya_gratis, $no_rkm_medis]);
+
+            error_log("Result: " . ($result ? "success" : "failed") . ", affected rows: " . $stmt->rowCount());
+
+            if ($result) {
+                http_response_code(200);
+                echo json_encode([
+                    'status' => 'success',
+                    'message' => 'Status berhasil diperbarui',
+                    'berikutnya_gratis' => $berikutnya_gratis
+                ]);
+            } else {
+                error_log("Gagal update: " . json_encode($stmt->errorInfo()));
+                http_response_code(500);
+                echo json_encode(['status' => 'error', 'message' => 'Gagal memperbarui status']);
+            }
+        } catch (Exception $e) {
+            error_log("Error toggling berikutnya_gratis: " . $e->getMessage());
+            http_response_code(500);
+            echo json_encode(['status' => 'error', 'message' => 'Terjadi kesalahan: ' . $e->getMessage()]);
+        }
+        exit;
+    }
 }

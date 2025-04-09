@@ -53,6 +53,7 @@
                                     <th width="15%" class="d-none d-lg-table-cell">Kecamatan</th>
                                     <th width="15%" class="d-none d-md-table-cell">Pekerjaan</th>
                                     <th width="15%" class="d-none d-lg-table-cell">Nomor Telepon</th>
+                                    <th width="10%" class="text-center">Berikutnya Gratis</th>
                                     <th class="text-center pe-3" width="10%">Aksi</th>
                                 </tr>
                             </thead>
@@ -79,6 +80,19 @@
                                             <td class="d-none d-lg-table-cell"><?= htmlspecialchars($nama_kecamatan) ?></td>
                                             <td class="d-none d-md-table-cell"><?= htmlspecialchars($p['pekerjaan'] ?? '-') ?></td>
                                             <td class="d-none d-lg-table-cell"><?= htmlspecialchars($p['no_tlp'] ?? '-') ?></td>
+                                            <td class="text-center">
+                                                <div class="form-check form-switch d-flex justify-content-center position-relative">
+                                                    <input class="form-check-input toggle-gratis" type="checkbox" role="switch"
+                                                        data-no-rm="<?= $p['no_rkm_medis'] ?>"
+                                                        data-bs-toggle="tooltip" data-bs-placement="top" title="Klik untuk mengubah status"
+                                                        <?= !empty($p['berikutnya_gratis']) ? 'checked' : '' ?>>
+                                                    <div class="toggle-spinner position-absolute top-0 start-50 translate-middle-x d-none">
+                                                        <div class="spinner-border spinner-border-sm text-primary" role="status">
+                                                            <span class="visually-hidden">Loading...</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
                                             <td class="text-center pe-3">
                                                 <div class="d-inline-flex gap-1">
                                                     <a href="index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=<?= $p['no_rkm_medis'] ?>&source=data_pasien" class="btn btn-primary btn-sm" data-bs-toggle="tooltip" title="Lihat Rekam Medis">
@@ -101,7 +115,7 @@
                                     <?php endforeach; ?>
                                 <?php else: ?>
                                     <tr>
-                                        <td colspan="8" class="text-center py-5">
+                                        <td colspan="9" class="text-center py-5">
                                             <div class="d-flex flex-column align-items-center">
                                                 <i class="fas fa-folder-open fa-3x text-muted mb-3"></i>
                                                 <h5 class="text-muted">Tidak ada data pasien ditemukan</h5>
@@ -217,6 +231,52 @@
     </div>
 </div>
 
+<style>
+    .toggle-gratis:checked {
+        background-color: #198754;
+        border-color: #198754;
+    }
+
+    .toggle-gratis {
+        cursor: pointer;
+        width: 2.5rem;
+        height: 1.25rem;
+    }
+
+    .toast {
+        z-index: 9999;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    }
+
+    .form-check-input:focus {
+        box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.25);
+    }
+
+    .toggle-spinner {
+        top: 50% !important;
+        transform: translate(-50%, -50%) !important;
+    }
+
+    /* Buat efek pulse pada toggle saat terjadi perubahan */
+    @keyframes toggle-pulse {
+        0% {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.1);
+        }
+
+        100% {
+            transform: scale(1);
+        }
+    }
+
+    .toggle-success {
+        animation: toggle-pulse 0.5s;
+    }
+</style>
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Initialize tooltips
@@ -287,6 +347,90 @@
                     e.preventDefault();
                     alert('Nomor telepon tidak valid atau tidak lengkap.');
                 }
+            });
+        });
+
+        // Handler untuk toggle berikutnya_gratis
+        document.querySelectorAll('.toggle-gratis').forEach(function(checkbox) {
+            checkbox.addEventListener('change', function() {
+                const noRm = this.getAttribute('data-no-rm');
+                const isChecked = this.checked ? 1 : 0;
+                const checkboxElement = this; // Simpan referensi ke checkbox
+                const spinnerElement = this.parentNode.querySelector('.toggle-spinner');
+
+                // Tampilkan loading state
+                checkboxElement.disabled = true;
+                spinnerElement.classList.remove('d-none');
+
+                // Tambahkan log untuk debugging
+                console.log(`Mengirim request: no_rkm_medis=${noRm}, berikutnya_gratis=${isChecked}`);
+
+                // Kirim data ke server
+                fetch('index.php?module=rekam_medis&action=toggleBerikutnyaGratis', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: `no_rkm_medis=${noRm}&berikutnya_gratis=${isChecked}`
+                    })
+                    .then(response => {
+                        console.log('Response status:', response.status);
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log('Response data:', data);
+                        if (data.status === 'success') {
+                            // Tampilkan notifikasi kecil
+                            const toast = document.createElement('div');
+                            toast.classList.add('toast', 'position-fixed', 'bottom-0', 'end-0', 'm-3');
+                            toast.setAttribute('role', 'alert');
+                            toast.setAttribute('aria-live', 'assertive');
+                            toast.setAttribute('aria-atomic', 'true');
+                            toast.innerHTML = `
+                            <div class="toast-header ${isChecked ? 'bg-success' : 'bg-secondary'} text-white">
+                                <strong class="me-auto">Status Pasien</strong>
+                                <small>baru saja</small>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+                            </div>
+                            <div class="toast-body">
+                                Status "Berikutnya Gratis" untuk pasien 
+                                <strong>${noRm}</strong> telah diubah menjadi 
+                                <span class="badge ${isChecked ? 'bg-success' : 'bg-secondary'}">${isChecked ? 'AKTIF' : 'TIDAK AKTIF'}</span>
+                            </div>
+                        `;
+                            document.body.appendChild(toast);
+
+                            // Inisialisasi dan tampilkan toast
+                            const bsToast = new bootstrap.Toast(toast);
+                            bsToast.show();
+
+                            // Tambahkan efek pulse pada toggle
+                            checkboxElement.classList.add('toggle-success');
+                            setTimeout(() => {
+                                checkboxElement.classList.remove('toggle-success');
+                            }, 500);
+
+                            // Hapus toast setelah ditutup
+                            toast.addEventListener('hidden.bs.toast', function() {
+                                toast.remove();
+                            });
+                        } else {
+                            // Kembalikan checkbox ke status sebelumnya jika gagal
+                            checkboxElement.checked = !isChecked;
+                            alert('Gagal mengubah status: ' + data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        // Kembalikan checkbox ke status sebelumnya jika gagal
+                        checkboxElement.checked = !isChecked;
+                        alert('Terjadi kesalahan, silakan coba lagi');
+                    })
+                    .finally(() => {
+                        // Kembalikan state normal
+                        checkboxElement.disabled = false;
+                        spinnerElement.classList.add('d-none');
+                    });
             });
         });
     });

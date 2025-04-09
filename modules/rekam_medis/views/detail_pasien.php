@@ -30,11 +30,11 @@ error_log("Data pasien: " . json_encode($pasien));
         body .main-content {
             transition: margin-left 0.3s ease !important;
         }
-        
-        body .sidebar.minimized ~ .main-content {
+
+        body .sidebar.minimized~.main-content {
             margin-left: 60px !important;
         }
-        
+
         /* Gaya untuk tab panes dan konten lainnya */
         .tab-pane {
             transition: all 0.3s ease-in-out;
@@ -42,30 +42,165 @@ error_log("Data pasien: " . json_encode($pasien));
             font-size: 0.8rem;
             /* Mengurangi ukuran font secara global */
         }
-        
+
         .tab-pane:not(.active),
         .tab-pane:not(.show) {
             display: none;
         }
-        
+
         .alert {
             margin-bottom: 1rem;
         }
-        
+
         .alert-success {
             color: #0f5132;
             background-color: #d1e7dd;
             border-color: #badbcc;
         }
-        
+
         .alert-danger {
             color: #842029;
             background-color: #f8d7da;
             border-color: #f5c2c7;
         }
 
+        /* Tambahan style untuk toggle switch Berikutnya Gratis */
+        .toggle-gratis:checked {
+            background-color: #198754;
+            border-color: #198754;
+        }
+
+        .toggle-gratis {
+            cursor: pointer;
+            width: 2rem;
+            height: 1rem;
+        }
+
+        /* Style khusus untuk tombol toggle di header */
+        .header-toggle {
+            margin-top: 2px;
+        }
+
+        .header-toggle .form-check-input {
+            height: 15px;
+            width: 30px;
+        }
+
+        .header-toggle .toggle-spinner {
+            width: 12px;
+            height: 12px;
+        }
+
+        /* Toast notification */
+        .toast {
+            z-index: 9999;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        }
+
+        .form-check-input:focus {
+            box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.25);
+        }
+
+        .toggle-spinner {
+            top: 50% !important;
+            transform: translate(-50%, -50%) !important;
+        }
+
+        /* Buat efek pulse pada toggle saat terjadi perubahan */
+        @keyframes toggle-pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .toggle-success {
+            animation: toggle-pulse 0.5s;
+        }
+
+        /* Style untuk posisi tombol di header */
+        .header-buttons {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 100;
+        }
+
+        /* Style untuk status gratis text */
+        .gratis-status {
+            font-size: 0.7rem;
+            background-color: #198754;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 3px;
+            white-space: nowrap;
+            display: none;
+            margin-right: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .gratis-status.active {
+            display: inline-block;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Menyembunyikan tombol voucher lama */
+        .voucher-button {
+            display: none !important;
+        }
+
+        /* Responsive fixes */
+        @media (max-width: 767px) {
+            .card-header {
+                padding-bottom: 40px !important;
+                position: relative;
+            }
+
+            .header-buttons {
+                position: absolute;
+                right: 10px;
+                top: auto;
+                bottom: 5px;
+                transform: none;
+                width: 100%;
+                justify-content: flex-end;
+            }
+
+            .card-header .d-flex {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .gratis-status {
+                font-size: 0.6rem;
+                padding: 1px 4px;
+            }
+        }
     </style>
-    
+
     <style>
         .tab-pane:not(.show) {
             display: none;
@@ -365,10 +500,25 @@ error_log("Data pasien: " . json_encode($pasien));
                             <h5 class="card-title mb-0">Detail Rekam Medis Pasien</h5>
                         </div>
 
-                        <!-- Tombol Voucher di kanan -->
-                        <a href="../admin_praktek/voucher.php" class="btn btn-dark btn-sm rounded-circle voucher-button" title="Buat Voucher Baru">
-                            <i class="fas fa-tags text-white"></i>
-                        </a>
+                        <!-- Tombol Voucher dan Berikutnya Gratis di kanan -->
+                        <div class="header-buttons">
+                            <span class="gratis-status <?= !empty($pasien['berikutnya_gratis']) ? 'active' : '' ?>">
+                                <i class="fas fa-check-circle me-1"></i>Digratiskan untuk Kunjungan Berikutnya
+                            </span>
+                            <div class="form-check form-switch d-flex justify-content-center position-relative header-toggle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Kunjungan berikutnya gratis">
+                                <input class="form-check-input toggle-gratis" type="checkbox" role="switch"
+                                    data-no-rm="<?= $pasien['no_rkm_medis'] ?>"
+                                    <?= !empty($pasien['berikutnya_gratis']) ? 'checked' : '' ?>>
+                                <div class="toggle-spinner position-absolute top-0 start-50 translate-middle-x d-none">
+                                    <div class="spinner-border spinner-border-sm text-primary" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <a href="../admin_praktek/voucher.php" class="btn btn-dark btn-sm rounded-circle" style="width: 25px; height: 25px; padding: 0; display: flex; align-items: center; justify-content: center;" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Buat Voucher">
+                                <i class="fas fa-tags text-white" style="font-size: 10px;"></i>
+                            </a>
+                        </div>
                     </div>
 
                     <div class="card-body">
@@ -1165,65 +1315,171 @@ error_log("Data pasien: " . json_encode($pasien));
                 });
             });
         });
-    </script>
-    <!-- Script untuk mendeteksi perubahan status sidebar dan menyesuaikan tampilan -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Fungsi untuk memeriksa status sidebar dan menyesuaikan layout
-            function checkSidebarState() {
-                const sidebar = document.querySelector('.sidebar');
-                const mainContent = document.querySelector('.main-content');
-                
-                if (sidebar && mainContent) {
-                    // Tambahkan CSS inline untuk memastikan main-content menyesuaikan dengan benar
-                    if (sidebar.classList.contains('minimized')) {
-                        // Sidebar diminimalkan, sesuaikan margin-left main-content
-                        mainContent.style.marginLeft = '60px';
+
+        // Fungsi untuk memeriksa status sidebar dan menyesuaikan tampilan
+        function checkSidebarState() {
+            const sidebar = document.querySelector('.sidebar');
+            const mainContent = document.querySelector('.main-content');
+
+            if (sidebar && mainContent) {
+                // Tambahkan CSS inline untuk memastikan main-content menyesuaikan dengan benar
+                if (sidebar.classList.contains('minimized')) {
+                    // Sidebar diminimalkan, sesuaikan margin-left main-content
+                    mainContent.style.marginLeft = '60px';
+                } else {
+                    // Sidebar normal, kembalikan margin-left default
+                    if (window.innerWidth <= 991.98) {
+                        // Tampilan mobile
+                        mainContent.style.marginLeft = '0';
                     } else {
-                        // Sidebar normal, kembalikan margin-left default
-                        if (window.innerWidth <= 991.98) {
-                            // Tampilan mobile
-                            mainContent.style.marginLeft = '0';
-                        } else {
-                            // Tampilan desktop
-                            mainContent.style.marginLeft = '280px';
-                        }
+                        // Tampilan desktop
+                        mainContent.style.marginLeft = '280px';
                     }
                 }
             }
-            
-            // Periksa status sidebar saat halaman dimuat
-            checkSidebarState();
-            
-            // Tambahkan event listener untuk tombol toggle sidebar
-            const toggleButtons = document.querySelectorAll('#toggleSidebar, #toggleMobileSidebar');
-            toggleButtons.forEach(button => {
-                if (button) {
-                    button.addEventListener('click', function() {
-                        // Beri waktu untuk CSS transition
-                        setTimeout(checkSidebarState, 300);
-                    });
-                }
-            });
-            
-            // Tambahkan event listener untuk window resize
-            window.addEventListener('resize', checkSidebarState);
-            
-            // Tambahkan MutationObserver untuk memantau perubahan pada sidebar
-            const sidebar = document.querySelector('.sidebar');
-            if (sidebar) {
-                const observer = new MutationObserver(function(mutations) {
-                    mutations.forEach(function(mutation) {
-                        if (mutation.attributeName === 'class') {
-                            // Sidebar class berubah, periksa statusnya
-                            checkSidebarState();
-                        }
-                    });
+        }
+
+        // Periksa status sidebar saat halaman dimuat
+        checkSidebarState();
+
+        // Tambahkan event listener untuk tombol toggle sidebar
+        const toggleButtons = document.querySelectorAll('#toggleSidebar, #toggleMobileSidebar');
+        toggleButtons.forEach(button => {
+            if (button) {
+                button.addEventListener('click', function() {
+                    // Beri waktu untuk CSS transition
+                    setTimeout(checkSidebarState, 300);
                 });
-                
-                // Mulai observasi pada sidebar untuk perubahan atribut
-                observer.observe(sidebar, { attributes: true });
             }
+        });
+
+        // Tambahkan event listener untuk window resize
+        window.addEventListener('resize', checkSidebarState);
+
+        // Tambahkan MutationObserver untuk memantau perubahan pada sidebar
+        const sidebar = document.querySelector('.sidebar');
+        if (sidebar) {
+            const observer = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    if (mutation.attributeName === 'class') {
+                        // Sidebar class berubah, periksa statusnya
+                        checkSidebarState();
+                    }
+                });
+            });
+
+            // Mulai observasi pada sidebar untuk perubahan atribut
+            observer.observe(sidebar, {
+                attributes: true
+            });
+        }
+
+        // Handler untuk toggle berikutnya_gratis
+        document.querySelectorAll('.toggle-gratis').forEach(function(checkbox) {
+            checkbox.addEventListener('change', function() {
+                const noRm = this.getAttribute('data-no-rm');
+                const isChecked = this.checked ? 1 : 0;
+                const checkboxElement = this; // Simpan referensi ke checkbox
+                const spinnerElement = this.parentNode.querySelector('.toggle-spinner');
+                const statusTextElement = checkboxElement.closest('.header-buttons').querySelector('.gratis-status');
+
+                // Update tampilan status text
+                if (isChecked) {
+                    statusTextElement.classList.add('active');
+                } else {
+                    statusTextElement.classList.remove('active');
+                }
+
+                // Tampilkan loading state
+                checkboxElement.disabled = true;
+                spinnerElement.classList.remove('d-none');
+
+                // Tambahkan log untuk debugging
+                console.log(`Mengirim request: no_rkm_medis=${noRm}, berikutnya_gratis=${isChecked}`);
+
+                // Kirim data ke server
+                fetch('index.php?module=rekam_medis&action=toggleBerikutnyaGratis', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: `no_rkm_medis=${noRm}&berikutnya_gratis=${isChecked}`
+                    })
+                    .then(response => {
+                        console.log('Response status:', response.status);
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log('Response data:', data);
+                        if (data.status === 'success') {
+                            // Tampilkan notifikasi kecil
+                            const toast = document.createElement('div');
+                            toast.classList.add('toast', 'position-fixed', 'bottom-0', 'end-0', 'm-3');
+                            toast.setAttribute('role', 'alert');
+                            toast.setAttribute('aria-live', 'assertive');
+                            toast.setAttribute('aria-atomic', 'true');
+                            toast.innerHTML = `
+                            <div class="toast-header ${isChecked ? 'bg-success' : 'bg-secondary'} text-white">
+                                <strong class="me-auto">Status Pasien</strong>
+                                <small>baru saja</small>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+                            </div>
+                            <div class="toast-body">
+                                Status "Berikutnya Gratis" untuk pasien 
+                                <strong>${noRm}</strong> telah diubah menjadi 
+                                <span class="badge ${isChecked ? 'bg-success' : 'bg-secondary'}">${isChecked ? 'AKTIF' : 'TIDAK AKTIF'}</span>
+                            </div>
+                        `;
+                            document.body.appendChild(toast);
+
+                            // Inisialisasi dan tampilkan toast
+                            const bsToast = new bootstrap.Toast(toast);
+                            bsToast.show();
+
+                            // Tambahkan efek pulse pada toggle
+                            checkboxElement.classList.add('toggle-success');
+                            setTimeout(() => {
+                                checkboxElement.classList.remove('toggle-success');
+                            }, 500);
+
+                            // Hapus toast setelah ditutup
+                            toast.addEventListener('hidden.bs.toast', function() {
+                                toast.remove();
+                            });
+                        } else {
+                            // Kembalikan checkbox dan status text ke status sebelumnya jika gagal
+                            checkboxElement.checked = !isChecked;
+                            if (!isChecked) {
+                                statusTextElement.classList.add('active');
+                            } else {
+                                statusTextElement.classList.remove('active');
+                            }
+                            alert('Gagal mengubah status: ' + data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        // Kembalikan checkbox dan status text ke status sebelumnya jika gagal
+                        checkboxElement.checked = !isChecked;
+                        if (!isChecked) {
+                            statusTextElement.classList.add('active');
+                        } else {
+                            statusTextElement.classList.remove('active');
+                        }
+                        alert('Terjadi kesalahan, silakan coba lagi');
+                    })
+                    .finally(() => {
+                        // Kembalikan state normal
+                        checkboxElement.disabled = false;
+                        spinnerElement.classList.add('d-none');
+                    });
+            });
+        });
+
+        // Initialize tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
         });
     </script>
 </body>
