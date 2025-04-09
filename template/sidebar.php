@@ -1131,6 +1131,18 @@ function is_current_module($module, $action = null)
                             <span class="menu-text">Template USG</span>
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a href="<?php echo $base_url; ?>/admin_praktek/formularium.php" class="nav-link <?php echo is_current_page('/admin_praktek/formularium.php') ? 'active' : ''; ?>" data-title="Formularium">
+                            <i class="bi bi-capsule"></i>
+                            <span class="menu-text">Formularium</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="<?php echo $base_url; ?>/admin_praktek/manajemen_edukasi.php" class="nav-link <?php echo is_current_page('/admin_praktek/manajemen_edukasi.php') ? 'active' : ''; ?>" data-title="Manajemen Edukasi">
+                            <i class="bi bi-journal-text"></i>
+                            <span class="menu-text">Manajemen Edukasi</span>
+                        </a>
+                    </li>
                 </ul>
             </li>
 
@@ -1187,18 +1199,6 @@ function is_current_module($module, $action = null)
                         <a href="<?php echo $base_url; ?>/admin_praktek/manajemen_layanan.php" class="nav-link <?php echo is_current_page('/admin_praktek/manajemen_layanan.php') ? 'active' : ''; ?>" data-title="Manajemen Layanan">
                             <i class="bi bi-gear-wide-connected"></i>
                             <span class="menu-text">Manajemen Layanan</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="<?php echo $base_url; ?>/admin_praktek/formularium.php" class="nav-link <?php echo is_current_page('/admin_praktek/formularium.php') ? 'active' : ''; ?>" data-title="Formularium">
-                            <i class="bi bi-capsule"></i>
-                            <span class="menu-text">Formularium</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="<?php echo $base_url; ?>/admin_praktek/manajemen_edukasi.php" class="nav-link <?php echo is_current_page('/admin_praktek/manajemen_edukasi.php') ? 'active' : ''; ?>" data-title="Manajemen Edukasi">
-                            <i class="bi bi-journal-text"></i>
-                            <span class="menu-text">Manajemen Edukasi</span>
                         </a>
                     </li>
                     <li class="nav-item">
