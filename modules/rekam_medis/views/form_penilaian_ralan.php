@@ -114,16 +114,18 @@ $title = $is_edit ? 'Edit Penilaian Medis Ralan Kandungan' : 'Tambah Penilaian M
                                     <input type="text" class="form-control" name="rr" value="<?= $is_edit ? $penilaian_medis['rr'] : '' ?>">
                                 </div>
                             </div>
-                            <div class="col-md-2">
+                            <div class="col-md-4">
                                 <div class="form-group">
                                     <label>BB (kg)</label>
-                                    <input type="text" class="form-control" name="bb" value="<?= $is_edit ? $penilaian_medis['bb'] : '' ?>">
+                                    <input type="number" class="form-control" name="bb" value="<?= $is_edit ? $penilaian_medis['bb'] : '' ?>" step="0.01" min="0" max="500" placeholder="Gunakan titik untuk desimal" onkeypress="return (event.charCode >= 48 && event.charCode <= 57) || event.charCode == 46">
+                                    <small class="text-muted">Gunakan titik (.) untuk desimal, bukan koma</small>
                                 </div>
                             </div>
-                            <div class="col-md-2">
+                            <div class="col-md-4">
                                 <div class="form-group">
                                     <label>TB (cm)</label>
-                                    <input type="text" class="form-control" name="tb" value="<?= $is_edit ? $penilaian_medis['tb'] : '' ?>">
+                                    <input type="number" class="form-control" name="tb" value="<?= $is_edit ? $penilaian_medis['tb'] : '' ?>" step="0.1" min="0" max="300" placeholder="Gunakan titik untuk desimal" onkeypress="return (event.charCode >= 48 && event.charCode <= 57) || event.charCode == 46">
+                                    <small class="text-muted">Gunakan titik (.) untuk desimal, bukan koma</small>
                                 </div>
                             </div>
                         </div>

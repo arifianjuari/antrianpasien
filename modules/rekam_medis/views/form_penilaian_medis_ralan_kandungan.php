@@ -225,13 +225,15 @@ $conn->close();
                                                 </div>
                                             </div>
                                             <div class="col-4">
-                                                <div class="mb-2">
+                                                <div class="mb-3">
                                                     <label>BB (kg)</label>
-                                                    <input type="text" name="bb" class="form-control form-control-sm" value="<?= htmlspecialchars($bb_terakhir) ?>">
+                                                    <input type="number" name="bb" class="form-control form-control-sm" value="<?= htmlspecialchars($bb_terakhir) ?>" step="0.01" min="0" max="500" placeholder="Gunakan titik untuk desimal" onkeypress="return (event.charCode >= 48 && event.charCode <= 57) || event.charCode == 46">
+                                                    <small class="text-muted">Gunakan titik (.) untuk desimal, bukan koma</small>
                                                 </div>
-                                                <div class="mb-2">
+                                                <div class="mb-3">
                                                     <label>TB (cm)</label>
-                                                    <input type="text" name="tb" class="form-control form-control-sm" value="<?= htmlspecialchars($tb_terakhir) ?>">
+                                                    <input type="number" name="tb" class="form-control form-control-sm" value="<?= htmlspecialchars($tb_terakhir) ?>" step="0.1" min="0" max="300" placeholder="Gunakan titik untuk desimal" onkeypress="return (event.charCode >= 48 && event.charCode <= 57) || event.charCode == 46">
+                                                    <small class="text-muted">Gunakan titik (.) untuk desimal, bukan koma</small>
                                                 </div>
                                             </div>
                                         </div>

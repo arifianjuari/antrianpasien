@@ -139,16 +139,18 @@
                         </div>
 
                         <div class="row">
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <div class="form-group">
                                     <label for="bb">Berat Badan (kg)</label>
-                                    <input type="text" class="form-control" id="bb" name="bb">
+                                    <input type="number" class="form-control" id="bb" name="bb" step="0.01" min="0" max="500" placeholder="Gunakan titik untuk desimal" onkeypress="return (event.charCode >= 48 && event.charCode <= 57) || event.charCode == 46">
+                                    <small class="text-muted">Gunakan titik (.) untuk desimal, bukan koma</small>
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <div class="form-group">
                                     <label for="tb">Tinggi Badan (cm)</label>
-                                    <input type="text" class="form-control" id="tb" name="tb">
+                                    <input type="number" class="form-control" id="tb" name="tb" step="0.1" min="0" max="300" placeholder="Gunakan titik untuk desimal" onkeypress="return (event.charCode >= 48 && event.charCode <= 57) || event.charCode == 46">
+                                    <small class="text-muted">Gunakan titik (.) untuk desimal, bukan koma</small>
                                 </div>
                             </div>
                             <div class="col-md-4">

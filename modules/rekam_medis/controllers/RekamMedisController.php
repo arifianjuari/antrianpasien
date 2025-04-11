@@ -1464,6 +1464,7 @@ class RekamMedisController
                 'diagnosis' => $_POST['diagnosis'],
                 'tata' => $_POST['tata'],
                 'edukasi' => $_POST['edukasi'],
+                'resume' => $_POST['resume'],
                 'resep' => $_POST['resep'],
                 'tanggal_kontrol' => $_POST['tanggal_kontrol'] ?? null,
                 'atensi' => $_POST['atensi'] ?? '0'

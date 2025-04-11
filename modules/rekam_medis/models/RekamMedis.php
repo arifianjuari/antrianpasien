@@ -745,14 +745,14 @@ class RekamMedis
                         kepala, mata, gigi, tht, thoraks,
                         abdomen, genital, ekstremitas, kulit, ket_fisik,
                         ultra, lab, diagnosis, tata, edukasi,
-                        tanggal_kontrol, atensi, resep
+                        tanggal_kontrol, atensi, resume, resep
                     ) VALUES (
                         :no_rawat, NOW(), :keluhan_utama, :rps, :rpd, :alergi,
                         :gcs, :td, :nadi, :rr, :suhu, :spo, :bb, :tb,
                         :kepala, :mata, :gigi, :tht, :thoraks,
                         :abdomen, :genital, :ekstremitas, :kulit, :ket_fisik,
                         :ultra, :lab, :diagnosis, :tata, :edukasi,
-                        :tanggal_kontrol, :atensi, :resep
+                        :tanggal_kontrol, :atensi, :resume, :resep
                     )
                 ");
             } else {
@@ -786,6 +786,7 @@ class RekamMedis
                         diagnosis = :diagnosis,
                         tata = :tata,
                         edukasi = :edukasi,
+                        resume = :resume,
                         resep = :resep,
                         tanggal_kontrol = :tanggal_kontrol,
                         atensi = :atensi
@@ -822,6 +823,7 @@ class RekamMedis
                 ':diagnosis' => $data['diagnosis'],
                 ':tata' => $data['tata'],
                 ':edukasi' => $data['edukasi'],
+                ':resume' => $data['resume'],
                 ':resep' => $data['resep'],
                 ':tanggal_kontrol' => $data['tanggal_kontrol'],
                 ':atensi' => $data['atensi']
