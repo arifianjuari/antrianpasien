@@ -169,11 +169,20 @@ try {
 
                     <?php if (!empty($artikel['tag'])): ?>
                         <div class="article-tags mt-3">
-                            <?php foreach (explode(',', $artikel['tag']) as $tag): ?>
-                                <a href="<?= $base_url ?>/edukasi.php?search=<?= urlencode(trim($tag)) ?>" class="badge bg-secondary text-decoration-none me-1">
-                                    <?= htmlspecialchars(trim($tag)) ?>
-                                </a>
-                            <?php endforeach; ?>
+                            <strong>Tag:</strong>
+                            <?php
+                            $tags = explode(',', $artikel['tag']);
+                            foreach ($tags as $tag):
+                                $tag = trim($tag);
+                                if (!empty($tag)):
+                            ?>
+                                    <a href="<?= $base_url ?>/edukasi.php?tag=<?= urlencode($tag) ?>" class="badge bg-secondary text-decoration-none me-1">
+                                        #<?= htmlspecialchars($tag) ?>
+                                    </a>
+                            <?php
+                                endif;
+                            endforeach;
+                            ?>
                         </div>
                     <?php endif; ?>
                 </div>

@@ -325,8 +325,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         Status_Pendaftaran,
                         Waktu_Pendaftaran,
                         Waktu_Perkiraan,
-                        voucher_code
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Menunggu Konfirmasi', ?, ?, ?)";
+                        voucher_code,
+                        mohon_keringanan
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Menunggu Konfirmasi', ?, ?, ?, ?)";
 
             // Buat timestamp dengan zona waktu Asia/Jakarta
             $waktu_pendaftaran = date('Y-m-d H:i:s');
@@ -347,7 +348,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $id_jadwal,
                 $waktu_pendaftaran,
                 $waktu_perkiraan,
-                !empty($_POST['voucher_code']) ? trim($_POST['voucher_code']) : null
+                !empty($_POST['voucher_code']) ? trim($_POST['voucher_code']) : null,
+                !empty($_POST['mohon_keringanan']) ? trim($_POST['mohon_keringanan']) : null
             ]));
 
             $stmt = $conn->prepare($query);
@@ -365,7 +367,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $id_jadwal,
                 $waktu_pendaftaran,
                 $waktu_perkiraan,
-                !empty($_POST['voucher_code']) ? trim($_POST['voucher_code']) : null
+                !empty($_POST['voucher_code']) ? trim($_POST['voucher_code']) : null,
+                !empty($_POST['mohon_keringanan']) ? trim($_POST['mohon_keringanan']) : null
             ]);
 
             error_log("Data pendaftaran berhasil disimpan");
@@ -633,8 +636,6 @@ ob_start();
                                     </select>
                                     <div class="invalid-feedback">Dokter harus dipilih</div>
                                 </div>
-                            </div>
-                            <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="id_jadwal" class="form-label">Jadwal <span class="text-danger">*</span></label>
                                     <select class="form-select" id="id_jadwal" name="id_jadwal" required>
@@ -642,9 +643,15 @@ ob_start();
                                     </select>
                                     <div class="invalid-feedback">Jadwal harus dipilih</div>
                                 </div>
+                            </div>
+                            <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="keluhan" class="form-label">Keluhan</label>
-                                    <textarea class="form-control" id="keluhan" name="keluhan" rows="3"></textarea>
+                                    <textarea class="form-control" id="keluhan" name="keluhan" rows="2"></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="mohon_keringanan" class="form-label">Minta Keringanan</label>
+                                    <textarea class="form-control" id="mohon_keringanan" name="mohon_keringanan" rows="2" placeholder="Alasan permohonan keringanan"></textarea>
                                 </div>
                                 <div class="mb-3">
                                     <label for="voucher_code" class="form-label">Kode Voucher</label>

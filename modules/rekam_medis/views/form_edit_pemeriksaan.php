@@ -312,14 +312,20 @@ if (!isset($pemeriksaan) || !$pemeriksaan) {
                                             <textarea name="ultra" id="ultrasonografi" class="form-control" rows="10"><?= isset($pemeriksaan['ultra']) ? $pemeriksaan['ultra'] : '' ?></textarea>
                                         </div>
                                         <div class="col-md-4">
-                                            <div class="card border">
-                                                <div class="card-header py-1 bg-light">
-                                                    <h6 class="mb-0 small">Template USG</h6>
-                                                </div>
+                                            <div class="card border mb-2">
+
                                                 <div class="card-body p-2">
                                                     <button type="button" class="btn btn-sm btn-info w-100" data-bs-toggle="modal" data-bs-target="#modalDaftarTemplateUsg">
                                                         <i class="fas fa-list"></i> Lihat Template USG
                                                     </button>
+                                                </div>
+                                            </div>
+                                            <div class="card border">
+
+                                                <div class="card-body p-2">
+                                                    <a href="javascript:void(0)" onclick="printUsg()" class="btn btn-sm btn-success w-100">
+                                                        <i class="fas fa-print"></i> Cetak Hasil USG
+                                                    </a>
                                                 </div>
                                             </div>
                                         </div>
@@ -350,9 +356,7 @@ if (!isset($pemeriksaan) || !$pemeriksaan) {
                                         </div>
                                         <div class="col-md-4">
                                             <div class="card border">
-                                                <div class="card-header py-1 bg-light">
-                                                    <h6 class="mb-0 small">Riwayat Diagnosis</h6>
-                                                </div>
+
                                                 <div class="card-body p-2">
                                                     <button type="button" class="btn btn-sm btn-info w-100" data-bs-toggle="modal" data-bs-target="#modalRiwayatDiagnosis">
                                                         <i class="fas fa-history"></i> Lihat Riwayat
@@ -371,9 +375,7 @@ if (!isset($pemeriksaan) || !$pemeriksaan) {
                                         </div>
                                         <div class="col-md-4">
                                             <div class="card border">
-                                                <div class="card-header py-1 bg-light">
-                                                    <h6 class="mb-0 small">Template Tatalaksana</h6>
-                                                </div>
+
                                                 <div class="card-body p-2">
                                                     <button type="button" class="btn btn-sm btn-info w-100" data-bs-toggle="modal" data-bs-target="#modalDaftarTemplate">
                                                         <i class="fas fa-list"></i> Lihat Template
@@ -392,9 +394,7 @@ if (!isset($pemeriksaan) || !$pemeriksaan) {
                                         </div>
                                         <div class="col-md-4">
                                             <div class="card border">
-                                                <div class="card-header py-1 bg-light">
-                                                    <h6 class="mb-0 small">Template Edukasi</h6>
-                                                </div>
+
                                                 <div class="card-body p-2">
                                                     <button type="button" class="btn btn-sm btn-info w-100" data-bs-toggle="modal" data-bs-target="#modalDaftarEdukasi">
                                                         <i class="fas fa-list"></i> Lihat Template
@@ -412,14 +412,18 @@ if (!isset($pemeriksaan) || !$pemeriksaan) {
                                             <textarea name="resep" id="resep" class="form-control" rows="6"><?= isset($pemeriksaan['resep']) ? $pemeriksaan['resep'] : '' ?></textarea>
                                         </div>
                                         <div class="col-md-4">
-                                            <div class="card border">
-                                                <div class="card-header py-1 bg-light">
-                                                    <h6 class="mb-0 small">Formularium</h6>
-                                                </div>
+                                            <div class="card border mb-2">
                                                 <div class="card-body p-2">
                                                     <button type="button" class="btn btn-sm btn-info w-100" data-bs-toggle="modal" data-bs-target="#modalDaftarTemplateResep">
                                                         <i class="fas fa-list"></i> Lihat Daftar
                                                     </button>
+                                                </div>
+                                            </div>
+                                            <div class="card border">
+                                                <div class="card-body p-2">
+                                                    <a href="javascript:void(0)" onclick="printResep()" class="btn btn-sm btn-success w-100">
+                                                        <i class="fas fa-print"></i> Cetak Hasil Resep
+                                                    </a>
                                                 </div>
                                             </div>
                                         </div>
@@ -841,6 +845,30 @@ if (!isset($pemeriksaan) || !$pemeriksaan) {
         $('#modalDaftarTemplate').modal('hide');
     }
 
+    function printUsg() {
+        // Ambil isi dari textarea ultrasonografi
+        const isiUsg = document.getElementById('ultrasonografi').value.trim();
+
+        // Validasi isi USG
+        if (!isiUsg) {
+            alert('Mohon isi data hasil USG terlebih dahulu sebelum mencetak');
+            return;
+        }
+
+        const noRawat = '<?= $pemeriksaan['no_rawat'] ?>';
+        const namaPasien = '<?= $pasien['nm_pasien'] ?>';
+        const noRm = '<?= $pasien['no_rkm_medis'] ?>';
+
+        // Redirect ke halaman print dengan parameter
+        const url = 'modules/rekam_medis/print_usg.php?isi=' + encodeURIComponent(isiUsg) +
+            '&no_rawat=' + encodeURIComponent(noRawat) +
+            '&nama=' + encodeURIComponent(namaPasien) +
+            '&no_rm=' + encodeURIComponent(noRm);
+
+        // Buka di tab baru
+        window.open(url, '_blank');
+    }
+
     function gunakanTemplateUsg(isi) {
         const currentValue = document.getElementById('ultrasonografi').value;
         if (currentValue && currentValue.trim() !== '') {
@@ -899,28 +927,59 @@ if (!isset($pemeriksaan) || !$pemeriksaan) {
                 var namaObat = checkbox.getAttribute('data-nama');
                 var bentukDosis = checkbox.getAttribute('data-bentuk-dosis');
                 var catatan = checkbox.getAttribute('data-catatan');
+                var split = bentukDosis.split(' ');
+                var bentukSediaan = split[0];
+                var dosis = split.slice(1).join(' ');
 
-                var textObat = namaObat + ' - ' + bentukDosis;
+                // Format: [nama_obat] [bentuk_sediaan]     No.
+                //          [dosis]
+                var textObat = namaObat + ' ' + bentukSediaan + '     No.X';
+                textObat += '\n         ' + dosis;
 
                 if (catatan) {
-                    textObat += '\nCatatan: ' + catatan;
+                    textObat += '\n\tCatatan: ' + catatan;
                 }
+
                 obatTerpilih.push(textObat);
             }
         }
 
         if (obatTerpilih.length > 0) {
             var currentValue = resepField.value;
-            var newValue = obatTerpilih.join('\n');
+            var newValue = obatTerpilih.join('\n\n');
 
             if (currentValue && currentValue.trim() !== '') {
-                resepField.value = currentValue + '\n' + newValue;
+                resepField.value = currentValue + '\n\n' + newValue;
             } else {
                 resepField.value = newValue;
             }
         }
 
         $('#modalDaftarTemplateResep').modal('hide');
+    }
+
+    function printResep() {
+        // Ambil isi dari textarea resep
+        const isiResep = document.getElementById('resep').value.trim();
+
+        // Validasi isi resep
+        if (!isiResep) {
+            alert('Mohon isi data resep terlebih dahulu sebelum mencetak');
+            return;
+        }
+
+        const noRawat = '<?= $pemeriksaan['no_rawat'] ?>';
+        const namaPasien = '<?= $pasien['nm_pasien'] ?>';
+        const noRm = '<?= $pasien['no_rkm_medis'] ?>';
+
+        // Redirect ke halaman print dengan parameter
+        const url = 'modules/rekam_medis/print_resep.php?isi=' + encodeURIComponent(isiResep) +
+            '&no_rawat=' + encodeURIComponent(noRawat) +
+            '&nama=' + encodeURIComponent(namaPasien) +
+            '&no_rm=' + encodeURIComponent(noRm);
+
+        // Buka di tab baru
+        window.open(url, '_blank');
     }
 
     document.addEventListener('DOMContentLoaded', function() {

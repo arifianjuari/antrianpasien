@@ -13,6 +13,9 @@ $selected_kategori = isset($_GET['kategori']) ? $_GET['kategori'] : '';
 // Ambil parameter pencarian dari URL jika ada
 $search = isset($_GET['search']) ? $_GET['search'] : '';
 
+// Ambil parameter tag dari URL jika ada
+$selected_tag = isset($_GET['tag']) ? $_GET['tag'] : '';
+
 // Daftar kategori
 $kategori_list = [
     'onkogin' => 'Onkogin',
@@ -34,6 +37,12 @@ try {
         $params[':kategori'] = $selected_kategori;
     }
 
+    // Tambahkan filter tag jika ada
+    if (!empty($selected_tag)) {
+        $query .= " AND tag LIKE :tag";
+        $params[':tag'] = "%$selected_tag%";
+    }
+
     // Tambahkan pencarian jika ada
     if (!empty($search)) {
         $query .= " AND (judul LIKE :search OR isi_edukasi LIKE :search)";
@@ -46,6 +55,27 @@ try {
     $stmt = $conn->prepare($query);
     $stmt->execute($params);
     $artikels = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Ambil semua tag unik dari database
+    $tag_query = "SELECT DISTINCT tag FROM edukasi WHERE status_aktif = 1 AND tag IS NOT NULL AND tag != ''";
+    $tag_stmt = $conn->prepare($tag_query);
+    $tag_stmt->execute();
+    $all_tags = [];
+
+    while ($tag_row = $tag_stmt->fetch(PDO::FETCH_ASSOC)) {
+        if (!empty($tag_row['tag'])) {
+            $tags = explode(',', $tag_row['tag']);
+            foreach ($tags as $tag) {
+                $tag = trim($tag);
+                if (!empty($tag) && !in_array($tag, $all_tags)) {
+                    $all_tags[] = $tag;
+                }
+            }
+        }
+    }
+
+    // Urutkan tag
+    sort($all_tags);
 } catch (PDOException $e) {
     $error_message = "Error: " . $e->getMessage();
     $artikels = [];
@@ -150,6 +180,40 @@ try {
             margin-left: 1rem;
         }
 
+        .tag-search-container {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background-color: #f8f9fa;
+            border-radius: 0.5rem;
+        }
+
+        .tag-search-heading {
+            font-size: 1rem;
+            margin-bottom: 0.75rem;
+            color: #495057;
+        }
+
+        .tag-search-input {
+            position: relative;
+            margin-bottom: 0.5rem;
+        }
+
+        .tag-search-input input {
+            padding-left: 2.5rem;
+        }
+
+        .tag-search-input i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+        }
+
+        .popular-tags {
+            margin-top: 0.75rem;
+        }
+
         @media (max-width: 768px) {
             .page-header {
                 flex-direction: column;
@@ -164,6 +228,33 @@ try {
             .search-form {
                 max-width: 100% !important;
             }
+        }
+
+        .tag-filter {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .tag-badge {
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tag-badge:hover {
+            opacity: 0.8;
+        }
+
+        .tag-badge.active {
+            background-color: #0d6efd;
+            color: white;
+        }
+
+        .tag-heading {
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+            color: #495057;
         }
     </style>
 </head>
@@ -197,17 +288,42 @@ try {
 
             <!-- Kategori Filter -->
             <div class="category-filter mb-4">
-                <a href="<?= $base_url ?>/edukasi.php"
+                <a href="<?= $base_url ?>/edukasi.php<?= !empty($selected_tag) ? '?tag=' . urlencode($selected_tag) : '' ?>"
                     class="btn <?= empty($selected_kategori) ? 'btn-primary' : 'btn-outline-primary' ?>">
                     Semua
                 </a>
                 <?php foreach ($kategori_list as $key => $nama_kategori): ?>
-                    <a href="<?= $base_url ?>/edukasi.php?kategori=<?= urlencode($key) ?>"
+                    <a href="<?= $base_url ?>/edukasi.php?kategori=<?= urlencode($key) ?><?= !empty($selected_tag) ? '&tag=' . urlencode($selected_tag) : '' ?>"
                         class="btn <?= $selected_kategori === $key ? 'btn-primary' : 'btn-outline-primary' ?>">
                         <?= $nama_kategori ?>
                     </a>
                 <?php endforeach; ?>
             </div>
+
+            <!-- Tag Filter -->
+            <?php if (!empty($all_tags)): ?>
+                <div class="mb-4">
+                    <div class="tag-search-container">
+                        <h6 class="tag-search-heading">Cari berdasarkan tag:</h6>
+                        <div class="tag-search-input">
+                            <i class="bi bi-hash"></i>
+                            <input type="text" class="form-control" id="tagSearchInput" placeholder="Ketik untuk mencari tag..." list="tagSuggestions">
+                        </div>
+                        <div class="popular-tags">
+                            <small class="text-muted">Tag populer:</small>
+                            <?php
+                            // Ambil 5 tag populer atau acak jika jumlah tag lebih dari 5
+                            $popular_tags = count($all_tags) > 5 ? array_slice($all_tags, 0, 5) : $all_tags;
+                            foreach ($popular_tags as $tag):
+                            ?>
+                                <a href="<?= $base_url ?>/edukasi.php?tag=<?= urlencode($tag) ?>" class="badge bg-secondary me-1 mt-1 tag-badge">
+                                    #<?= htmlspecialchars($tag) ?>
+                                </a>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                </div>
+            <?php endif; ?>
 
             <?php if (isset($error_message)): ?>
                 <div class="alert alert-danger" role="alert">
@@ -238,6 +354,24 @@ try {
                                     <?= date('d F Y', strtotime($artikel['created_at'])) ?>
                                 </div>
 
+                                <?php if (!empty($artikel['tag'])): ?>
+                                    <div class="mt-2 mb-3">
+                                        <?php
+                                        $tags = explode(',', $artikel['tag']);
+                                        foreach ($tags as $tag):
+                                            $tag = trim($tag);
+                                            if (!empty($tag)):
+                                        ?>
+                                                <a href="<?= $base_url ?>/edukasi.php?tag=<?= urlencode($tag) ?>" class="badge bg-secondary text-decoration-none me-1">
+                                                    #<?= htmlspecialchars($tag) ?>
+                                                </a>
+                                        <?php
+                                            endif;
+                                        endforeach;
+                                        ?>
+                                    </div>
+                                <?php endif; ?>
+
                                 <div class="mt-3">
                                     <a href="<?= $base_url ?>/edukasi-detail.php?id=<?= htmlspecialchars($artikel['id_edukasi']) ?>"
                                         class="btn btn-outline-primary btn-sm">
@@ -263,6 +397,11 @@ try {
                         <a href="<?= $base_url ?>/edukasi.php" class="btn btn-primary mt-2">
                             Lihat Semua Artikel
                         </a>
+                    <?php elseif (!empty($selected_tag)): ?>
+                        <p class="text-muted">Tidak ditemukan artikel dengan tag: #<?= htmlspecialchars($selected_tag) ?></p>
+                        <a href="<?= $base_url ?>/edukasi.php" class="btn btn-primary mt-2">
+                            Lihat Semua Artikel
+                        </a>
                     <?php else: ?>
                         <p class="text-muted">Silakan cek kembali di lain waktu</p>
                     <?php endif; ?>
@@ -273,6 +412,46 @@ try {
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Script untuk pencarian tag -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Fungsi pencarian tag tidak diperlukan lagi
+        });
+    </script>
+
+    <!-- API endpoint untuk autocomplete tag -->
+    <script>
+        // Membuat endpoint JSON untuk autocomplete
+        <?php
+        // Buat array tag untuk digunakan oleh JavaScript
+        $tags_json = json_encode($all_tags);
+        echo "const availableTags = " . $tags_json . ";";
+        ?>
+
+        // Inisialisasi autocomplete untuk pencarian tag
+        document.addEventListener('DOMContentLoaded', function() {
+            // Buat datalist untuk autocomplete
+            const dataList = document.createElement('datalist');
+            dataList.id = 'tagSuggestions';
+
+            // Tambahkan semua tag ke datalist
+            availableTags.forEach(tag => {
+                const option = document.createElement('option');
+                option.value = tag;
+                dataList.appendChild(option);
+            });
+
+            // Tambahkan datalist ke DOM
+            document.body.appendChild(dataList);
+
+            // Terapkan datalist ke input sidebar
+            const sidebarTagInput = document.querySelector('.sidebar-tag-search-form input[name="tag"]');
+            if (sidebarTagInput) {
+                sidebarTagInput.setAttribute('list', 'tagSuggestions');
+            }
+        });
+    </script>
 </body>
 
 </html>

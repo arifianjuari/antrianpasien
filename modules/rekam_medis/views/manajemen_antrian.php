@@ -74,6 +74,7 @@ try {
             pas.no_rkm_medis,
             p.nm_pasien as Nama_Pasien,
             p.Keluhan,
+            p.mohon_keringanan,
             p.Status_Pendaftaran,
             p.Waktu_Pendaftaran,
             p.Waktu_Perkiraan,
@@ -222,13 +223,6 @@ try {
 <div class="container-fluid py-4">
     <div class="row">
         <div class="col-12">
-            <?php if ($pendaftaran_sukses): ?>
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    <strong>Pendaftaran berhasil!</strong> Pendaftaran baru dengan ID: <?= htmlspecialchars($id_pendaftaran_baru) ?> telah berhasil ditambahkan.
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            <?php endif; ?>
-
             <div class="card shadow">
                 <div class="card-header py-2">
                     <div class="d-flex justify-content-between align-items-center">
@@ -696,6 +690,7 @@ try {
                                                     <th class="text-center small fw-normal">Waktu Perkiraan</th>
                                                     <th class="text-center small fw-normal">Kode Voucher</th>
                                                     <th class="text-center small fw-normal">Keluhan</th>
+                                                    <th class="text-center small fw-normal">Mohon Keringanan</th>
                                                     <th class="text-center small fw-normal">Status</th>
                                                 </tr>
                                             </thead>
@@ -740,9 +735,9 @@ try {
 
                                                                 <?php if ($a['Status_Pendaftaran'] !== 'Dibatalkan'): ?>
                                                                     <button type="button" class="btn btn-sm btn-outline-danger btn-icon"
-                                                                        onclick="updateStatusDirect('<?= $a['ID_Pendaftaran'] ?>', 'Dibatalkan')"
-                                                                        data-bs-toggle="tooltip" title="Batalkan Pendaftaran">
-                                                                        <i class="bi bi-x-circle"></i>
+                                                                        onclick="deletePendaftaran('<?= $a['ID_Pendaftaran'] ?>')"
+                                                                        data-bs-toggle="tooltip" title="Hapus Pendaftaran">
+                                                                        <i class="bi bi-trash"></i>
                                                                     </button>
                                                                 <?php endif; ?>
 
@@ -798,6 +793,7 @@ try {
                                                             <?php endif; ?>
                                                         </td>
                                                         <td><?= !empty($a['Keluhan']) ? htmlspecialchars($a['Keluhan']) : '-' ?></td>
+                                                        <td><?= !empty($a['mohon_keringanan']) ? htmlspecialchars($a['mohon_keringanan']) : '-' ?></td>
                                                         <td>
                                                             <span class="badge <?= getStatusBadgeClass($a['Status_Pendaftaran']) ?>">
                                                                 <?= htmlspecialchars($a['Status_Pendaftaran']) ?>
@@ -957,6 +953,97 @@ try {
             });
         });
     });
+
+    function deletePendaftaran(id) {
+        if (confirm('Apakah Anda yakin ingin menghapus data pendaftaran ini? Tindakan ini tidak dapat dibatalkan.')) {
+            const formData = new FormData();
+            formData.append('id_pendaftaran', id);
+
+            // Tampilkan loading
+            const loadingMessage = document.createElement('div');
+            loadingMessage.className = 'alert alert-info alert-dismissible fade show';
+            loadingMessage.innerHTML = '<strong>Sedang memproses...</strong> Mohon tunggu sebentar.';
+            document.querySelector('.container-fluid').prepend(loadingMessage);
+
+            // Tentukan URL menggunakan berbagai cara untuk mengatasi masalah path
+            let deleteUrl;
+
+            // Metode 1: Gunakan path relatif dari lokasi saat ini (../../../)
+            // Metode 2: Gunakan path relatif dari root (/modules/...)
+            // Metode 3: Gunakan BASE_URL jika tersedia
+            deleteUrl = '/antrian%20pasien/modules/rekam_medis/controllers/delete_pendaftaran.php';
+
+            console.log('Mencoba mengakses URL:', deleteUrl);
+
+            fetch(deleteUrl, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => {
+                    // Log respons untuk debugging
+                    console.log('Response status:', response.status);
+                    console.log('Response URL:', response.url);
+
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok: ' + response.status);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Hapus loading message
+                    loadingMessage.remove();
+
+                    // Tampilkan alert berdasarkan hasil
+                    const alertDiv = document.createElement('div');
+                    alertDiv.className = 'alert alert-dismissible fade show';
+
+                    if (data.success) {
+                        if (data.action === 'deleted') {
+                            alertDiv.className += ' alert-success';
+                            alertDiv.innerHTML = '<strong>Berhasil!</strong> Data pendaftaran berhasil dihapus.';
+                        } else if (data.action === 'updated') {
+                            alertDiv.className += ' alert-warning';
+                            alertDiv.innerHTML = '<strong>Perhatian!</strong> ' + data.message;
+                        } else {
+                            alertDiv.className += ' alert-info';
+                            alertDiv.innerHTML = '<strong>Info!</strong> Data pendaftaran berhasil diproses.';
+                        }
+
+                        // Tambahkan tombol close
+                        alertDiv.innerHTML += '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
+
+                        // Tambahkan ke DOM
+                        document.querySelector('.container-fluid').prepend(alertDiv);
+
+                        // Refresh halaman setelah beberapa detik
+                        setTimeout(() => {
+                            location.reload();
+                        }, 2000);
+                    } else {
+                        alertDiv.className += ' alert-danger';
+                        alertDiv.innerHTML = '<strong>Error!</strong> ' + data.message;
+                        alertDiv.innerHTML += '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
+                        document.querySelector('.container-fluid').prepend(alertDiv);
+                    }
+                })
+                .catch(error => {
+                    // Hapus loading message
+                    loadingMessage.remove();
+
+                    console.error('Error:', error);
+
+                    // Tampilkan error
+                    const alertDiv = document.createElement('div');
+                    alertDiv.className = 'alert alert-danger alert-dismissible fade show';
+                    alertDiv.innerHTML = '<strong>Error!</strong> Terjadi kesalahan saat menghapus data. Detail: ' + error.message;
+                    alertDiv.innerHTML += '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
+                    document.querySelector('.container-fluid').prepend(alertDiv);
+                });
+        }
+    }
 </script>
 
 <?php
