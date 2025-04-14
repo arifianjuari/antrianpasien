@@ -1,4 +1,9 @@
 <?php
+// Redirect langsung ke halaman pendaftaran pasien
+header("Location: https://praktekobgin.com/pendaftaran/form_pendaftaran_pasien.php");
+exit;
+
+// Kode di bawah ini tidak akan dijalankan setelah redirect
 // Include error handler
 require_once 'error_handler.php';
 

@@ -392,15 +392,21 @@ if (!isset($pemeriksaan) || !$pemeriksaan) {
                                     <label>Edukasi</label>
                                     <div class="row">
                                         <div class="col-md-8">
-                                            <textarea name="edukasi" id="edukasi" class="form-control" rows="3"><?= isset($pemeriksaan['edukasi']) ? $pemeriksaan['edukasi'] : '' ?></textarea>
+                                            <textarea name="edukasi" id="edukasi" class="form-control" rows="6"><?= isset($pemeriksaan['edukasi']) ? $pemeriksaan['edukasi'] : '' ?></textarea>
                                         </div>
                                         <div class="col-md-4">
                                             <div class="card border">
-
                                                 <div class="card-body p-2">
                                                     <button type="button" class="btn btn-sm btn-info w-100" data-bs-toggle="modal" data-bs-target="#modalDaftarEdukasi">
                                                         <i class="fas fa-list"></i> Lihat Template
                                                     </button>
+                                                </div>
+                                            </div>
+                                            <div class="card border mt-2">
+                                                <div class="card-body p-2">
+                                                    <a href="javascript:void(0)" onclick="printEdukasi()" class="btn btn-sm btn-success w-100">
+                                                        <i class="fas fa-print"></i> Cetak Edukasi
+                                                    </a>
                                                 </div>
                                             </div>
                                         </div>
@@ -1558,6 +1564,30 @@ if (!isset($pemeriksaan) || !$pemeriksaan) {
             '&no_rm=' + encodeURIComponent(noRm);
 
         // Buka di tab baru
+        window.open(url, '_blank');
+    }
+
+    function printEdukasi() {
+        // Ambil isi dari textarea edukasi
+        const isiEdukasi = document.getElementById('edukasi').value.trim();
+
+        // Validasi isi edukasi
+        if (!isiEdukasi) {
+            alert('Mohon isi data edukasi terlebih dahulu sebelum mencetak');
+            return;
+        }
+
+        const noRawat = '<?= $pemeriksaan['no_rawat'] ?>';
+        const namaPasien = '<?= $pasien['nm_pasien'] ?>';
+        const noRm = '<?= $pasien['no_rkm_medis'] ?>';
+
+        // Redirect ke halaman print dengan parameter
+        const url = 'modules/rekam_medis/print_edukasi.php?isi=' + encodeURIComponent(isiEdukasi) +
+            '&no_rawat=' + encodeURIComponent(noRawat) +
+            '&nama=' + encodeURIComponent(namaPasien) +
+            '&no_rm=' + encodeURIComponent(noRm);
+
+        // Buka halaman print di tab baru
         window.open(url, '_blank');
     }
 
