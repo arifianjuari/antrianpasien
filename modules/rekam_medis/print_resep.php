@@ -74,12 +74,12 @@ class MYPDF extends TCPDF
 }
 
 // Tetapkan margin yang akan digunakan
-$leftMargin = 8;
-$topMargin = 8;
-$rightMargin = 8;
+$leftMargin = 1;
+$topMargin = 1;
+$rightMargin = 1;
 
 // Tetapkan lebar konten
-$contentWidth = 84; // 100mm - 8mm margin kiri - 8mm margin kanan
+$contentWidth = 98; // 100mm - 8mm margin kiri - 8mm margin kanan
 
 // Buat instance PDF sementara untuk menghitung tinggi konten
 $tempPdf = new TCPDF('P', 'mm', array(100, 297), true, 'UTF-8', false);
