@@ -21,6 +21,16 @@ require_once 'config/config.php';
 $error = '';
 $success = '';
 
+// Ambil pesan dari session jika ada
+if (isset($_SESSION['message'])) {
+    if ($_SESSION['message']['type'] === 'success') {
+        $success = $_SESSION['message']['text'];
+    } else {
+        $error = $_SESSION['message']['text'];
+    }
+    unset($_SESSION['message']);
+}
+
 // Check for remember me cookie
 if (!isset($_SESSION['user_id']) && isset($_COOKIE['remember_token']) && isset($_COOKIE['remember_user'])) {
     $remember_token = $_COOKIE['remember_token'];
@@ -370,24 +380,25 @@ $csrf_token = $_SESSION['csrf_token'];
     <div class="container">
         <div class="login-container">
             <div class="header-container">
-                <h2>Selamat Datang</h2>
-                <p class="subtitle">Silakan login untuk melanjutkan</p>
+                <h2>Login</h2>
+                <p>Silakan masuk ke akun Anda</p>
             </div>
 
-            <?php if ($error): ?>
-                <div class="alert alert-danger">
-                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                    <?php echo htmlspecialchars($error); ?>
-                </div>
-            <?php endif; ?>
             <?php if ($success): ?>
-                <div class="alert alert-success">
-                    <i class="bi bi-check-circle-fill me-2"></i>
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
                     <?php echo htmlspecialchars($success); ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             <?php endif; ?>
 
-            <form method="POST" action="" autocomplete="off">
+            <?php if ($error): ?>
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <?php echo htmlspecialchars($error); ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <?php endif; ?>
+
+            <form method="POST" action="" class="needs-validation" novalidate>
                 <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
 
                 <div class="mb-4">
@@ -455,18 +466,18 @@ $csrf_token = $_SESSION['csrf_token'];
                 loginContainer.style.opacity = '1';
                 loginContainer.style.transform = 'translateY(0)';
             }, 200);
-            
+
             // Fokus ke field username setelah animasi
             setTimeout(() => {
                 document.getElementById('username').focus();
             }, 300);
         });
-        
+
         // Validasi form sederhana
         document.querySelector('form').addEventListener('submit', function(e) {
             const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value.trim();
-            
+
             if (username === '' || password === '') {
                 e.preventDefault();
                 alert('Mohon isi semua field yang diperlukan');

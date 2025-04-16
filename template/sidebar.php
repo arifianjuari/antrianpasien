@@ -1323,16 +1323,16 @@ function is_current_module($module, $action = null)
                     <span class="menu-text"><?php echo htmlspecialchars($_SESSION['username'] ?? 'User'); ?></span>
                 </a>
                 <ul class="dropdown-menu shadow" aria-labelledby="dropdownUser1">
-                    <li><a class="dropdown-item" href="profile.php"><i class="bi bi-person me-2"></i>Profile</a></li>
-                    <li><a class="dropdown-item" href="settings.php"><i class="bi bi-gear me-2"></i>Settings</a></li>
+                    <li><a class="dropdown-item" href="<?= $base_url ?>/profile.php"><i class="bi bi-person me-2"></i>Profile</a></li>
+                    <li><a class="dropdown-item" href="<?= $base_url ?>/settings.php"><i class="bi bi-gear me-2"></i>Settings</a></li>
                     <li>
                         <hr class="dropdown-divider">
                     </li>
-                    <li><a class="dropdown-item" href="logout.php"><i class="bi bi-box-arrow-right me-2"></i>Sign out</a></li>
+                    <li><a class="dropdown-item" href="<?= $base_url ?>/logout.php"><i class="bi bi-box-arrow-right me-2"></i>Sign out</a></li>
                 </ul>
             </div>
         <?php else: ?>
-            <a href="<?= $base_url ?>/login.php" class="btn btn-primary w-100 mx-3" data-title="Login">
+            <a href="<?= $base_url ?>/login.php" class="btn btn-primary btn-sm mx-2" data-title="Login">
                 <i class="bi bi-box-arrow-in-right"></i>
                 <span class="menu-text ms-2">Login</span>
             </a>

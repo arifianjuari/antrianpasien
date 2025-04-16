@@ -16,10 +16,22 @@ php_value date.timezone "Asia/Jakarta"
 
 # Enable URL Rewriting
 RewriteEngine On
+RewriteBase /
 
 # Handle Authorization Header
 RewriteCond %{HTTP:Authorization} .
 RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+# Allow direct access to PHP files
+RewriteCond %{REQUEST_FILENAME} -f
+RewriteRule \.php$ - [L]
+
+# Redirect root domain and index.php to form pendaftaran
+RewriteCond %{HTTP_HOST} ^praktekobgin\.com$ [NC,OR]
+RewriteCond %{HTTP_HOST} ^www\.praktekobgin\.com$ [NC]
+RewriteRule ^$ /pendaftaran/form_pendaftaran_pasien.php [L,R=301]
+
+RewriteRule ^index\.php$ /pendaftaran/form_pendaftaran_pasien.php [L,R=301]
 
 # Redirect to HTTPS (uncomment if using SSL) - Dinonaktifkan untuk localhost
 # RewriteCond %{HTTPS} off
@@ -45,21 +57,11 @@ AddOutputFilterByType DEFLATE application/rss+xml
 AddOutputFilterByType DEFLATE application/javascript
 AddOutputFilterByType DEFLATE application/x-javascript
 
-# Redirect dari home.php ke form pendaftaran (Nonaktifkan jika home.php ada atau untuk debugging)
-# RewriteRule ^home\.php$ /pendaftaran/form_pendaftaran_pasien.php [R=301,L]
-
-# Redirect dari root ke form pendaftaran (Nonaktifkan untuk akses normal ke index.php utama)
-# RewriteCond %{REQUEST_URI} ^/?$
-# RewriteRule ^(.*)$ /pendaftaran/form_pendaftaran_pasien.php [R=301,L]
-
-# Jika file atau direktori tidak ada, arahkan ke form pendaftaran (Nonaktifkan untuk mencegah konflik path)
-# RewriteCond %{REQUEST_FILENAME} !-f
-# RewriteCond %{REQUEST_FILENAME} !-d
-# RewriteRule . /pendaftaran/form_pendaftaran_pasien.php [L]
-
 # Pastikan file PHP bisa diakses
 <FilesMatch "\.php$">
     Require all granted
+    Order allow,deny
+    Allow from all
 </FilesMatch>
 
 # Pengaturan header untuk PWA
