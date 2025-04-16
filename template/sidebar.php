@@ -1026,45 +1026,6 @@ function is_current_module($module, $action = null)
     .sidebar-profile .dropdown-menu {
         width: 200px;
     }
-
-    /* Tag search in sidebar */
-    .sidebar-tag-search {
-        padding: 0.75rem 1rem;
-        border-top: 1px solid var(--border-light);
-        margin-top: auto;
-    }
-
-    .sidebar-tag-search h6 {
-        font-size: 0.8rem;
-        color: var(--text-muted);
-        margin-bottom: 0.5rem;
-    }
-
-    .sidebar-tag-search-form {
-        position: relative;
-    }
-
-    .sidebar-tag-search-form input {
-        width: 100%;
-        padding: 0.4rem 0.75rem 0.4rem 2rem;
-        border-radius: 20px;
-        border: 1px solid var(--border-light);
-        background-color: #fff;
-        font-size: 0.8rem;
-    }
-
-    .sidebar-tag-search-form i {
-        position: absolute;
-        left: 0.75rem;
-        top: 50%;
-        transform: translateY(-50%);
-        color: var(--text-muted);
-        font-size: 0.8rem;
-    }
-
-    .sidebar.minimized .sidebar-tag-search {
-        display: none;
-    }
 </style>
 
 <div id="sidebar" class="sidebar">
@@ -1337,15 +1298,6 @@ function is_current_module($module, $action = null)
                 <span class="menu-text ms-2">Login</span>
             </a>
         <?php endif; ?>
-    </div>
-
-    <!-- Tag Search in Sidebar -->
-    <div class="sidebar-tag-search">
-        <h6>Cari Artikel berdasarkan Tag</h6>
-        <form action="<?= $base_url ?>/edukasi.php" method="GET" class="sidebar-tag-search-form">
-            <i class="bi bi-hash"></i>
-            <input type="text" name="tag" placeholder="Cari tag..." autocomplete="off">
-        </form>
     </div>
 </div>
 
