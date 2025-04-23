@@ -258,6 +258,35 @@ error_log("Data pasien: " . json_encode($pasien));
             transform: rotate(0deg);
         }
 
+        /* Style untuk tabel resizable columns */
+        .table-resizable {
+            table-layout: fixed;
+            width: 100%;
+        }
+
+        .table-resizable th {
+            position: relative;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .table-resizable th .resizer {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 8px;
+            height: 100%;
+            background-color: transparent;
+            cursor: col-resize;
+            z-index: 10;
+        }
+
+        .table-resizable th .resizer:hover,
+        .table-resizable th .resizing {
+            border-right: 2px solid #0d6efd;
+        }
+
         /* Style untuk riwayat pemeriksaan */
         .riwayat-item {
             border: 1px solid #dee2e6;
@@ -786,52 +815,40 @@ error_log("Data pasien: " . json_encode($pasien));
                                         <i class="fas fa-plus"></i> Tambah Riwayat
                                     </a>
                                 </div>
-                                <div class="table-responsive">
-                                    <table class="table table-sm table-bordered table-striped">
-                                        <thead>
-                                            <tr>
-                                                <th>No</th>
-                                                <th>Status</th>
-                                                <th>Jenis</th>
-                                                <th>Tempat</th>
-                                                <th>Penolong</th>
-                                                <th>Tahun</th>
-                                                <th>Jenis Kelamin</th>
-                                                <th>BB</th>
-                                                <th>Kondisi</th>
-                                                <th>Aksi</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <?php if (isset($riwayatKehamilan) && count($riwayatKehamilan) > 0): ?>
-                                                <?php foreach ($riwayatKehamilan as $rk): ?>
-                                                    <tr>
-                                                        <td><?= $rk['no_urut_kehamilan'] ?></td>
-                                                        <td><?= $rk['status_kehamilan'] ?></td>
-                                                        <td><?= $rk['jenis_persalinan'] ?? '-' ?></td>
-                                                        <td><?= $rk['tempat_persalinan'] ?? '-' ?></td>
-                                                        <td><?= $rk['penolong_persalinan'] ?? '-' ?></td>
-                                                        <td><?= $rk['tahun_persalinan'] ?? '-' ?></td>
-                                                        <td><?= $rk['jenis_kelamin_anak'] ?? '-' ?></td>
-                                                        <td><?= $rk['berat_badan_lahir'] ?? '-' ?></td>
-                                                        <td><?= $rk['kondisi_lahir'] ?? '-' ?></td>
-                                                        <td>
-                                                            <a href="index.php?module=rekam_medis&action=edit_riwayat_kehamilan&id=<?= $rk['id_riwayat_kehamilan'] ?>&source=<?= $_SESSION['source_page'] ?>" class="btn btn-warning btn-sm">
-                                                                <i class="fas fa-edit"></i>
-                                                            </a>
-                                                            <a href="index.php?module=rekam_medis&action=hapus_riwayat_kehamilan&id=<?= $rk['id_riwayat_kehamilan'] ?>&source=<?= $_SESSION['source_page'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
-                                                                <i class="fas fa-trash"></i>
-                                                            </a>
-                                                        </td>
-                                                    </tr>
-                                                <?php endforeach; ?>
-                                            <?php else: ?>
+                                <div id="riwayatKehamilanContent" class="position-relative">
+                                    <div class="table-responsive">
+                                        <table class="table table-sm table-bordered table-striped table-resizable">
+                                            <thead>
                                                 <tr>
-                                                    <td colspan="10" class="text-center">Tidak ada data riwayat kehamilan</td>
+                                                    <th>No<div class="resizer"></div>
+                                                    </th>
+                                                    <th>Status<div class="resizer"></div>
+                                                    </th>
+                                                    <th>Jenis<div class="resizer"></div>
+                                                    </th>
+                                                    <th>Tempat<div class="resizer"></div>
+                                                    </th>
+                                                    <th>Penolong<div class="resizer"></div>
+                                                    </th>
+                                                    <th>Tahun<div class="resizer"></div>
+                                                    </th>
+                                                    <th>Jenis Kelamin<div class="resizer"></div>
+                                                    </th>
+                                                    <th>BB<div class="resizer"></div>
+                                                    </th>
+                                                    <th>Kondisi<div class="resizer"></div>
+                                                    </th>
+                                                    <th>Aksi<div class="resizer"></div>
+                                                    </th>
                                                 </tr>
-                                            <?php endif; ?>
-                                        </tbody>
-                                    </table>
+                                            </thead>
+                                            <tbody id="riwayatKehamilanTableBody">
+                                                <tr>
+                                                    <td colspan="10" class="text-center">Memuat data riwayat kehamilan...</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
 
@@ -842,47 +859,27 @@ error_log("Data pasien: " . json_encode($pasien));
                                         <i class="fas fa-plus"></i> Tambah Status Ginekologi
                                     </a>
                                 </div>
-                                <div class="table-responsive">
-                                    <table class="table table-sm table-bordered table-striped">
-                                        <thead>
-                                            <tr>
-                                                <th>Tanggal</th>
-                                                <th>Parturien</th>
-                                                <th>Abortus</th>
-                                                <th>Hari Pertama Haid Terakhir</th>
-                                                <th>Kontrasepsi Terakhir</th>
-                                                <th>Lama Menikah (Tahun)</th>
-                                                <th>Aksi</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <?php if (isset($statusGinekologi) && count($statusGinekologi) > 0): ?>
-                                                <?php foreach ($statusGinekologi as $sg): ?>
-                                                    <tr>
-                                                        <td><?= date('d-m-Y', strtotime($sg['created_at'])) ?></td>
-                                                        <td><?= $sg['Parturien'] ?? '-' ?></td>
-                                                        <td><?= $sg['Abortus'] ?? '-' ?></td>
-                                                        <td><?= $sg['Hari_pertama_haid_terakhir'] ? date('d-m-Y', strtotime($sg['Hari_pertama_haid_terakhir'])) : '-' ?></td>
-                                                        <td><?= $sg['Kontrasepsi_terakhir'] ?? '-' ?></td>
-                                                        <td><?= $sg['lama_menikah_th'] ?? '-' ?></td>
-                                                        <td>
-                                                            <?php error_log("ID status ginekologi: " . $sg['id_status_ginekologi']); ?>
-                                                            <a href="index.php?module=rekam_medis&action=edit_status_ginekologi&id=<?= $sg['id_status_ginekologi'] ?>&source=<?= $_SESSION['source_page'] ?>" class="btn btn-warning btn-sm">
-                                                                <i class="fas fa-edit"></i>
-                                                            </a>
-                                                            <a href="index.php?module=rekam_medis&action=hapus_status_ginekologi&id=<?= $sg['id_status_ginekologi'] ?>&source=<?= $_SESSION['source_page'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
-                                                                <i class="fas fa-trash"></i>
-                                                            </a>
-                                                        </td>
-                                                    </tr>
-                                                <?php endforeach; ?>
-                                            <?php else: ?>
+                                <div id="statusGinekologiContent" class="position-relative">
+                                    <div class="table-responsive">
+                                        <table class="table table-sm table-bordered table-striped">
+                                            <thead>
                                                 <tr>
-                                                    <td colspan="7" class="text-center">Tidak ada data status ginekologi</td>
+                                                    <th>Tanggal</th>
+                                                    <th>Parturien</th>
+                                                    <th>Abortus</th>
+                                                    <th>Hari Pertama Haid Terakhir</th>
+                                                    <th>Kontrasepsi Terakhir</th>
+                                                    <th>Lama Menikah (Tahun)</th>
+                                                    <th>Aksi</th>
                                                 </tr>
-                                            <?php endif; ?>
-                                        </tbody>
-                                    </table>
+                                            </thead>
+                                            <tbody id="statusGinekologiTableBody">
+                                                <tr>
+                                                    <td colspan="7" class="text-center">Memuat data status ginekologi...</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
 
@@ -951,149 +948,180 @@ error_log("Data pasien: " . json_encode($pasien));
                             ?>
 
                             <?php if (isset($riwayatPemeriksaan) && count($riwayatPemeriksaan) > 0): ?>
-                                <?php foreach ($riwayatPemeriksaan as $index => $rp): ?>
-                                    <div class="riwayat-item">
-                                        <div class="riwayat-header" onclick="toggleRiwayat(<?= $index ?>)">
-                                            <div>
-                                                <strong><?= date('d-m-Y', strtotime($rp['tgl_registrasi'])) ?> <?= $rp['jam_reg'] ?></strong>
-                                                <?php if (!empty($rp['nm_dokter'])): ?>
-                                                    - Dr. <?= $rp['nm_dokter'] ?>
-                                                <?php endif; ?>
-                                            </div>
-                                            <div class="d-flex align-items-center">
-                                                <i class="fas fa-chevron-down riwayat-toggle" id="toggle-<?= $index ?>"></i>
-                                            </div>
-                                        </div>
-                                        <div class="riwayat-content" id="content-<?= $index ?>">
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <table class="table table-sm">
-                                                        <tr>
-                                                            <th width="150">No. Rawat</th>
-                                                            <td><?= $rp['no_rawat'] ?></td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th>Status Bayar</th>
-                                                            <td><?= $rp['status_bayar'] ?></td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th>Rincian</th>
-                                                            <td>
-                                                                <?php
-                                                                // Debug: tampilkan raw data
-                                                                if (isset($_GET['debug'])) {
-                                                                    echo '<pre class="text-muted small">';
-                                                                    echo "Raw rincian data: ";
-                                                                    var_dump($rp['rincian']);
-                                                                    echo '</pre>';
-                                                                }
-                                                                // Tampilkan data rincian dengan format yang lebih baik
-                                                                if (!empty($rp['rincian'])) {
-                                                                    echo nl2br(htmlspecialchars($rp['rincian']));
-                                                                } else {
-                                                                    echo '-';
-                                                                }
-                                                                ?>
-                                                            </td>
-                                                        </tr>
-                                                    </table>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <table class="table table-sm">
-                                                        <tr>
-                                                            <th width="150">Keluhan Utama</th>
-                                                            <td><?= $rp['keluhan_utama'] ?: '-' ?></td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th>Riwayat Penyakit Sekarang</th>
-                                                            <td><?= $rp['rps'] ?: '-' ?></td>
-                                                        </tr>
-                                                    </table>
-                                                </div>
-                                            </div>
-                                            <div class="mt-3">
-                                                <h6 class="mb-2">Hasil Pemeriksaan<?= $rp['tgl_pemeriksaan'] ? ': ' . date('d-m-Y H:i:s', strtotime($rp['tgl_pemeriksaan'])) : '' ?></h6>
-                                                <!-- Debug info -->
-                                                <?php if (isset($_GET['debug'])): ?>
-                                                    <div class="alert alert-info">
-                                                        <pre><?php print_r($rp); ?></pre>
-                                                    </div>
-                                                <?php endif; ?>
-                                                <div class="row">
-                                                    <div class="col-md-4">
-                                                        <table class="table table-sm">
-                                                            <tr>
-                                                                <th width="150">BB/TB</th>
-                                                                <td><?= ($rp['bb'] || $rp['tb']) ? ($rp['bb'] ?: '-') . ' kg / ' . ($rp['tb'] ?: '-') . ' cm' : '-' ?></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <th>BMI</th>
-                                                                <td><?= $rp['bmi'] ? $rp['bmi'] . ' kg/m² (' . $rp['interpretasi_bmi'] . ')' : '-' ?></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <th>Tekanan Darah</th>
-                                                                <td><?= $rp['td'] ? $rp['td'] . ' mmHg' : '-' ?></td>
-                                                            </tr>
-                                                        </table>
-                                                    </div>
-                                                    <div class="col-md-4">
-                                                        <table class="table table-sm">
-                                                            <tr>
-                                                                <th width="150">Ultrasonografi</th>
-                                                                <td><?= $rp['ultra'] ?: '-' ?></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <th>Keterangan Fisik</th>
-                                                                <td><?= $rp['ket_fisik'] ?: '-' ?></td>
-                                                            </tr>
-                                                        </table>
-                                                    </div>
-                                                    <div class="col-md-4">
-                                                        <table class="table table-sm">
-                                                            <tr>
-                                                                <th width="150">Laboratorium</th>
-                                                                <td><?= $rp['lab'] ?: '-' ?></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <th>Diagnosis</th>
-                                                                <td><?= $rp['diagnosis'] ?: '-' ?></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <th>Tatalaksana</th>
-                                                                <td><?= $rp['tata'] ?: '-' ?></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <th>Resep</th>
-                                                                <td><?= $rp['resep'] ?: '-' ?></td>
-                                                            </tr>
-                                                        </table>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="mt-2 d-flex justify-content-between">
-                                                <div>
-                                                    <a href="index.php?module=rekam_medis&action=edit_kunjungan&no_rawat=<?= $rp['no_rawat'] ?>&source=<?= $_SESSION['source_page'] ?>" class="btn btn-warning btn-sm">
-                                                        <i class="fas fa-edit"></i> Edit Kunjungan
-                                                    </a>
-                                                    <a href="index.php?module=rekam_medis&action=hapus_kunjungan&no_rawat=<?= $rp['no_rawat'] ?>&source=<?= $_SESSION['source_page'] ?>" class="btn btn-danger btn-sm ms-1" onclick="return confirm('Apakah Anda yakin ingin menghapus kunjungan ini?')">
-                                                        <i class="fas fa-trash"></i> Hapus
-                                                    </a>
-                                                </div>
-                                                <div>
-                                                    <?php if (empty($rp['keluhan_utama'])): ?>
-                                                        <a href="index.php?module=rekam_medis&action=form_penilaian_medis_ralan_kandungan&no_rawat=<?= $rp['no_rawat'] ?>&source=<?= $_SESSION['source_page'] ?>" class="btn btn-add btn-sm">
-                                                            <i class="fas fa-plus"></i> Tambah Pemeriksaan
-                                                        </a>
-                                                    <?php else: ?>
-                                                        <a href="index.php?module=rekam_medis&action=edit_pemeriksaan&id=<?= $rp['no_rawat'] ?>&source=<?= $_SESSION['source_page'] ?>" class="btn btn-warning btn-sm">
-                                                            <i class="fas fa-edit"></i> Edit Pemeriksaan
-                                                        </a>
-                                                    <?php endif; ?>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                <?php endforeach; ?>
+                                <div class="table-responsive">
+                                    <table class="table table-sm table-bordered table-striped table-resizable">
+                                        <thead>
+                                            <tr>
+                                                <th>Waktu Pemeriksaan<div class="resizer"></div>
+                                                </th>
+                                                <th>Keluhan Utama<div class="resizer"></div>
+                                                </th>
+                                                <th>Diagnosis<div class="resizer"></div>
+                                                </th>
+                                                <th>Tatalaksana<div class="resizer"></div>
+                                                </th>
+                                                <th>Resep<div class="resizer"></div>
+                                                </th>
+                                                <th width="120">Aksi<div class="resizer"></div>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php foreach ($riwayatPemeriksaan as $rp): ?>
+                                                <tr>
+                                                    <td>
+                                                        <strong><?= date('d-m-Y', strtotime($rp['tgl_registrasi'])) ?> <?= $rp['jam_reg'] ?></strong>
+                                                        <?php if (!empty($rp['nm_dokter'])): ?>
+                                                            <br><small>Dr. <?= $rp['nm_dokter'] ?></small>
+                                                        <?php endif; ?>
+                                                        <div class="small text-muted"><?= $rp['no_rawat'] ?></div>
+                                                    </td>
+                                                    <td><?= $rp['keluhan_utama'] ?: '-' ?></td>
+                                                    <td><?= $rp['diagnosis'] ?: '-' ?></td>
+                                                    <td><?= $rp['tata'] ?: '-' ?></td>
+                                                    <td><?= $rp['resep'] ?: '-' ?></td>
+                                                    <td>
+                                                        <div class="btn-group">
+                                                            <button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#modalDetail<?= str_replace('/', '', $rp['no_rawat']) ?>">
+                                                                <i class="fas fa-eye"></i>
+                                                            </button>
+                                                            <a href="index.php?module=rekam_medis&action=edit_kunjungan&no_rawat=<?= $rp['no_rawat'] ?>&source=<?= $_SESSION['source_page'] ?>" class="btn btn-warning btn-sm">
+                                                                <i class="fas fa-edit"></i>
+                                                            </a>
+                                                            <a href="index.php?module=rekam_medis&action=hapus_kunjungan&no_rawat=<?= $rp['no_rawat'] ?>&source=<?= $_SESSION['source_page'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus kunjungan ini?')">
+                                                                <i class="fas fa-trash"></i>
+                                                            </a>
+                                                        </div>
+
+                                                        <!-- Modal Detail Pemeriksaan -->
+                                                        <div class="modal fade" id="modalDetail<?= str_replace('/', '', $rp['no_rawat']) ?>" tabindex="-1" aria-labelledby="modalDetailLabel<?= str_replace('/', '', $rp['no_rawat']) ?>" aria-hidden="true">
+                                                            <div class="modal-dialog modal-lg">
+                                                                <div class="modal-content">
+                                                                    <div class="modal-header">
+                                                                        <h5 class="modal-title" id="modalDetailLabel<?= str_replace('/', '', $rp['no_rawat']) ?>">Detail Pemeriksaan</h5>
+                                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                    </div>
+                                                                    <div class="modal-body">
+                                                                        <div class="row">
+                                                                            <div class="col-md-6">
+                                                                                <table class="table table-sm">
+                                                                                    <tr>
+                                                                                        <th width="150">No. Rawat</th>
+                                                                                        <td><?= $rp['no_rawat'] ?></td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <th>Tanggal/Jam</th>
+                                                                                        <td><?= date('d-m-Y', strtotime($rp['tgl_registrasi'])) ?> <?= $rp['jam_reg'] ?></td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <th>Dokter</th>
+                                                                                        <td><?= !empty($rp['nm_dokter']) ? 'Dr. ' . $rp['nm_dokter'] : '-' ?></td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <th>Status Bayar</th>
+                                                                                        <td><?= $rp['status_bayar'] ?></td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <th>Rincian</th>
+                                                                                        <td>
+                                                                                            <?php
+                                                                                            if (!empty($rp['rincian'])) {
+                                                                                                echo nl2br(htmlspecialchars($rp['rincian']));
+                                                                                            } else {
+                                                                                                echo '-';
+                                                                                            }
+                                                                                            ?>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                </table>
+                                                                            </div>
+                                                                            <div class="col-md-6">
+                                                                                <table class="table table-sm">
+                                                                                    <tr>
+                                                                                        <th width="150">Keluhan Utama</th>
+                                                                                        <td><?= $rp['keluhan_utama'] ?: '-' ?></td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <th>Riwayat Penyakit Sekarang</th>
+                                                                                        <td><?= $rp['rps'] ?: '-' ?></td>
+                                                                                    </tr>
+                                                                                </table>
+                                                                            </div>
+                                                                        </div>
+
+                                                                        <h6 class="mb-2 mt-3">Hasil Pemeriksaan<?= $rp['tgl_pemeriksaan'] ? ': ' . date('d-m-Y H:i:s', strtotime($rp['tgl_pemeriksaan'])) : '' ?></h6>
+                                                                        <div class="row">
+                                                                            <div class="col-md-4">
+                                                                                <table class="table table-sm">
+                                                                                    <tr>
+                                                                                        <th width="150">BB/TB</th>
+                                                                                        <td><?= ($rp['bb'] || $rp['tb']) ? ($rp['bb'] ?: '-') . ' kg / ' . ($rp['tb'] ?: '-') . ' cm' : '-' ?></td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <th>BMI</th>
+                                                                                        <td><?= $rp['bmi'] ? $rp['bmi'] . ' kg/m² (' . $rp['interpretasi_bmi'] . ')' : '-' ?></td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <th>Tekanan Darah</th>
+                                                                                        <td><?= $rp['td'] ? $rp['td'] . ' mmHg' : '-' ?></td>
+                                                                                    </tr>
+                                                                                </table>
+                                                                            </div>
+                                                                            <div class="col-md-4">
+                                                                                <table class="table table-sm">
+                                                                                    <tr>
+                                                                                        <th width="150">Ultrasonografi</th>
+                                                                                        <td><?= $rp['ultra'] ?: '-' ?></td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <th>Keterangan Fisik</th>
+                                                                                        <td><?= $rp['ket_fisik'] ?: '-' ?></td>
+                                                                                    </tr>
+                                                                                </table>
+                                                                            </div>
+                                                                            <div class="col-md-4">
+                                                                                <table class="table table-sm">
+                                                                                    <tr>
+                                                                                        <th width="150">Laboratorium</th>
+                                                                                        <td><?= $rp['lab'] ?: '-' ?></td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <th>Diagnosis</th>
+                                                                                        <td><?= $rp['diagnosis'] ?: '-' ?></td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <th>Tatalaksana</th>
+                                                                                        <td><?= $rp['tata'] ?: '-' ?></td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <th>Resep</th>
+                                                                                        <td><?= $rp['resep'] ?: '-' ?></td>
+                                                                                    </tr>
+                                                                                </table>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="modal-footer">
+                                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                                                                        <?php if (empty($rp['keluhan_utama'])): ?>
+                                                                            <a href="index.php?module=rekam_medis&action=form_penilaian_medis_ralan_kandungan&no_rawat=<?= $rp['no_rawat'] ?>&source=<?= $_SESSION['source_page'] ?>" class="btn btn-primary">
+                                                                                <i class="fas fa-plus"></i> Tambah Pemeriksaan
+                                                                            </a>
+                                                                        <?php else: ?>
+                                                                            <a href="index.php?module=rekam_medis&action=edit_pemeriksaan&id=<?= $rp['no_rawat'] ?>&source=<?= $_SESSION['source_page'] ?>" class="btn btn-warning">
+                                                                                <i class="fas fa-edit"></i> Edit Pemeriksaan
+                                                                            </a>
+                                                                        <?php endif; ?>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            <?php endforeach; ?>
+                                        </tbody>
+                                    </table>
+                                </div>
                             <?php else: ?>
                                 <div class="alert alert-info">
                                     Belum ada riwayat kunjungan.
@@ -1215,30 +1243,6 @@ error_log("Data pasien: " . json_encode($pasien));
                 }
             });
         }
-
-        // Tambahkan fungsi untuk toggle riwayat
-        function toggleRiwayat(index) {
-            const content = document.getElementById(`content-${index}`);
-            const toggle = document.getElementById(`toggle-${index}`);
-
-            if (content.style.display === 'block') {
-                content.style.display = 'none';
-                toggle.classList.remove('active');
-            } else {
-                content.style.display = 'block';
-                toggle.classList.add('active');
-            }
-        }
-
-        // Tampilkan riwayat pertama saat halaman dimuat
-        document.addEventListener('DOMContentLoaded', function() {
-            const firstContent = document.getElementById('content-0');
-            const firstToggle = document.getElementById('toggle-0');
-            if (firstContent && firstToggle) {
-                firstContent.style.display = 'block';
-                firstToggle.classList.add('active');
-            }
-        });
 
         // Fungsi untuk mengubah status
         document.querySelectorAll('.btn-status').forEach(button => {
@@ -1506,6 +1510,260 @@ error_log("Data pasien: " . json_encode($pasien));
         var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
             return new bootstrap.Tooltip(tooltipTriggerEl);
         });
+
+        // Fungsi untuk memuat data Riwayat Kehamilan menggunakan AJAX
+        function loadRiwayatKehamilanData() {
+            const noRkmMedis = '<?= $pasien['no_rkm_medis'] ?>';
+            const riwayatKehamilanTableBody = document.getElementById('riwayatKehamilanTableBody');
+
+            // Tampilkan loading
+            riwayatKehamilanTableBody.innerHTML = '<tr><td colspan="10" class="text-center"><i class="fas fa-spinner fa-spin me-2"></i>Memuat data riwayat kehamilan...</td></tr>';
+
+            console.log('Memuat data riwayat kehamilan untuk: ' + noRkmMedis);
+
+            // Buat AJAX request
+            fetch('index.php?module=rekam_medis&action=get_riwayat_kehamilan_ajax&no_rkm_medis=' + encodeURIComponent(noRkmMedis))
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Data riwayat kehamilan berhasil dimuat:', data);
+
+                    if (data.status === 'success' && data.data && data.data.length > 0) {
+                        let tableHtml = '';
+
+                        data.data.forEach(function(rk) {
+                            tableHtml += `
+                                <tr>
+                                    <td>${rk.no_urut_kehamilan || '-'}</td>
+                                    <td>${rk.status_kehamilan || '-'}</td>
+                                    <td>${rk.jenis_persalinan || '-'}</td>
+                                    <td>${rk.tempat_persalinan || '-'}</td>
+                                    <td>${rk.penolong_persalinan || '-'}</td>
+                                    <td>${rk.tahun_persalinan || '-'}</td>
+                                    <td>${rk.jenis_kelamin_anak || '-'}</td>
+                                    <td>${rk.berat_badan_lahir || '-'}</td>
+                                    <td>${rk.kondisi_lahir || '-'}</td>
+                                    <td>
+                                        <a href="index.php?module=rekam_medis&action=edit_riwayat_kehamilan&id=${rk.id_riwayat_kehamilan}&source=<?= $_SESSION['source_page'] ?>" class="btn btn-warning btn-sm">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a href="index.php?module=rekam_medis&action=hapus_riwayat_kehamilan&id=${rk.id_riwayat_kehamilan}&source=<?= $_SESSION['source_page'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            `;
+                        });
+
+                        riwayatKehamilanTableBody.innerHTML = tableHtml;
+                    } else {
+                        riwayatKehamilanTableBody.innerHTML = '<tr><td colspan="10" class="text-center">Tidak ada data riwayat kehamilan</td></tr>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error saat memuat data riwayat kehamilan:', error);
+                    riwayatKehamilanTableBody.innerHTML = '<tr><td colspan="10" class="text-center text-danger">Error: Gagal memuat data riwayat kehamilan</td></tr>';
+                });
+        }
+
+        // Fungsi untuk memuat data Status Ginekologi menggunakan AJAX
+        function loadStatusGinekologiData() {
+            const noRkmMedis = '<?= $pasien['no_rkm_medis'] ?>';
+            const statusGinekologiTableBody = document.getElementById('statusGinekologiTableBody');
+
+            // Tampilkan loading
+            statusGinekologiTableBody.innerHTML = '<tr><td colspan="7" class="text-center"><i class="fas fa-spinner fa-spin me-2"></i>Memuat data status ginekologi...</td></tr>';
+
+            console.log('Memuat data status ginekologi untuk: ' + noRkmMedis);
+
+            // Buat AJAX request
+            fetch('index.php?module=rekam_medis&action=get_status_ginekologi_ajax&no_rkm_medis=' + encodeURIComponent(noRkmMedis))
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Data status ginekologi berhasil dimuat:', data);
+
+                    if (data.status === 'success' && data.data && data.data.length > 0) {
+                        let tableHtml = '';
+
+                        data.data.forEach(function(sg) {
+                            const tanggalCreated = new Date(sg.created_at).toLocaleDateString('id-ID', {
+                                day: '2-digit',
+                                month: '2-digit',
+                                year: 'numeric'
+                            });
+
+                            const hphtDate = sg.Hari_pertama_haid_terakhir ? new Date(sg.Hari_pertama_haid_terakhir).toLocaleDateString('id-ID', {
+                                day: '2-digit',
+                                month: '2-digit',
+                                year: 'numeric'
+                            }) : '-';
+
+                            tableHtml += `
+                                <tr>
+                                    <td>${tanggalCreated}</td>
+                                    <td>${sg.Parturien || '-'}</td>
+                                    <td>${sg.Abortus || '-'}</td>
+                                    <td>${hphtDate}</td>
+                                    <td>${sg.Kontrasepsi_terakhir || '-'}</td>
+                                    <td>${sg.lama_menikah_th || '-'}</td>
+                                    <td>
+                                        <a href="index.php?module=rekam_medis&action=edit_status_ginekologi&id=${sg.id_status_ginekologi}&source=<?= $_SESSION['source_page'] ?>" class="btn btn-warning btn-sm">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a href="index.php?module=rekam_medis&action=hapus_status_ginekologi&id=${sg.id_status_ginekologi}&source=<?= $_SESSION['source_page'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            `;
+                        });
+
+                        statusGinekologiTableBody.innerHTML = tableHtml;
+                    } else {
+                        statusGinekologiTableBody.innerHTML = '<tr><td colspan="7" class="text-center">Tidak ada data status ginekologi</td></tr>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error saat memuat data status ginekologi:', error);
+                    statusGinekologiTableBody.innerHTML = '<tr><td colspan="7" class="text-center text-danger">Error: Gagal memuat data status ginekologi</td></tr>';
+                });
+        }
+
+        // Muat data saat tab dibuka
+        document.addEventListener('DOMContentLoaded', function() {
+            // Modify tab click handlers to load data
+            const tabToggles = document.querySelectorAll('[data-toggle="collapse"]');
+
+            tabToggles.forEach(toggle => {
+                toggle.addEventListener('click', function(e) {
+                    const targetId = this.getAttribute('href');
+
+                    // Jika tab terbuka dan adalah tab yang kita ingin load datanya
+                    if (!this.classList.contains('collapsed')) {
+                        if (targetId === '#riwayat-kehamilan') {
+                            loadRiwayatKehamilanData();
+                        } else if (targetId === '#status-ginekologi') {
+                            loadStatusGinekologiData();
+                        }
+                    }
+                });
+            });
+
+            // Jika ada hash di URL (contoh: #riwayat-kehamilan), buka tab yang sesuai dan muat datanya
+            if (window.location.hash) {
+                const targetTab = document.querySelector(`a[href="${window.location.hash}"]`);
+                if (targetTab) {
+                    // Klik tab secara programatis untuk membukanya
+                    targetTab.click();
+
+                    // Muat data untuk tab yang ditargetkan
+                    if (window.location.hash === '#riwayat-kehamilan') {
+                        setTimeout(loadRiwayatKehamilanData, 300); // Delay sebentar agar tab selesai dibuka
+                    } else if (window.location.hash === '#status-ginekologi') {
+                        setTimeout(loadStatusGinekologiData, 300); // Delay sebentar agar tab selesai dibuka
+                    }
+                }
+            }
+
+            // Inisialisasi kolom tabel resizable
+            initResizableTable();
+        });
+
+        // Fungsi untuk membuat semua tabel menjadi resizable
+        function makeAllTablesResizable() {
+            // Pilih tabel yang belum memiliki class table-resizable
+            const regularTables = document.querySelectorAll('.table:not(.table-resizable)');
+
+            regularTables.forEach(table => {
+                // Tambahkan class
+                table.classList.add('table-resizable');
+
+                // Tambahkan div.resizer ke setiap header tabel
+                const headers = table.querySelectorAll('th');
+                headers.forEach(th => {
+                    // Periksa apakah sudah memiliki resizer
+                    if (!th.querySelector('.resizer')) {
+                        const resizer = document.createElement('div');
+                        resizer.className = 'resizer';
+                        th.appendChild(resizer);
+                    }
+                });
+            });
+        }
+
+        // Fungsi untuk membuat kolom tabel dapat diubah ukurannya
+        function initResizableTable() {
+            const tables = document.querySelectorAll('.table-resizable');
+
+            // Juga buat tabel lainnya menjadi resizable
+            makeAllTablesResizable();
+
+            tables.forEach(table => {
+                const resizers = table.querySelectorAll('th .resizer');
+
+                let startX, startWidth, currentTh, index;
+
+                // Untuk setiap resizer di tabel
+                resizers.forEach((resizer, i) => {
+                    resizer.addEventListener('mousedown', function(e) {
+                        e.preventDefault();
+
+                        // Simpan referensi ke th saat ini dan indeksnya
+                        currentTh = this.parentElement;
+                        index = i;
+
+                        // Catat posisi awal dan lebar awal
+                        startX = e.pageX;
+                        startWidth = currentTh.offsetWidth;
+
+                        // Tambahkan class untuk styling saat mengubah ukuran
+                        resizer.classList.add('resizing');
+
+                        // Tambahkan event untuk gerakan mouse
+                        document.addEventListener('mousemove', resize);
+                        document.addEventListener('mouseup', stopResize);
+                    });
+                });
+
+                // Fungsi untuk mengubah ukuran kolom
+                function resize(e) {
+                    if (!currentTh) return;
+
+                    // Hitung lebar baru berdasarkan gerakan mouse
+                    const diffX = e.pageX - startX;
+                    const newWidth = Math.max(50, startWidth + diffX); // Minimal 50px lebar
+
+                    // Ubah lebar kolom
+                    currentTh.style.width = newWidth + 'px';
+
+                    // Perbarui lebar kolom pada semua baris tabel
+                    const allRows = table.querySelectorAll('tr');
+                    allRows.forEach(row => {
+                        const cell = row.cells[index];
+                        if (cell) {
+                            cell.style.width = newWidth + 'px';
+                        }
+                    });
+                }
+
+                // Fungsi untuk berhenti mengubah ukuran
+                function stopResize() {
+                    if (!currentTh) return;
+
+                    // Hapus class untuk styling
+                    const resizer = currentTh.querySelector('.resizer');
+                    if (resizer) {
+                        resizer.classList.remove('resizing');
+                    }
+
+                    // Bersihkan event listener
+                    document.removeEventListener('mousemove', resize);
+                    document.removeEventListener('mouseup', stopResize);
+
+                    // Reset variabel
+                    currentTh = null;
+                }
+            });
+        }
     </script>
 </body>
 

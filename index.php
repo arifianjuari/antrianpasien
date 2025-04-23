@@ -272,6 +272,39 @@ try {
                 error_log("Routing to generate_edukasi_pdf");
                 $rekamMedisController->generate_edukasi_pdf();
                 break;
+            case 'get_status_obstetri_ajax':
+                // Mengambil data status obstetri via AJAX
+                error_log("Routing to get_status_obstetri_ajax for no_rkm_medis: " . ($_GET['no_rkm_medis'] ?? 'not set'));
+                // Tetapkan header untuk JSON
+                header('Content-Type: application/json');
+
+                // Langsung include file action untuk menghindari overhead controller
+                include 'modules/rekam_medis/actions/get_status_obstetri_ajax.php';
+                // Penting: exit setelah include untuk mencegah layout dimuat
+                exit;
+                break;
+            case 'get_riwayat_kehamilan_ajax':
+                // Mengambil data riwayat kehamilan via AJAX
+                error_log("Routing to get_riwayat_kehamilan_ajax for no_rkm_medis: " . ($_GET['no_rkm_medis'] ?? 'not set'));
+                // Tetapkan header untuk JSON
+                header('Content-Type: application/json');
+
+                // Langsung include file action untuk menghindari overhead controller
+                include 'modules/rekam_medis/actions/get_riwayat_kehamilan_ajax.php';
+                // Penting: exit setelah include untuk mencegah layout dimuat
+                exit;
+                break;
+            case 'get_status_ginekologi_ajax':
+                // Mengambil data status ginekologi via AJAX
+                error_log("Routing to get_status_ginekologi_ajax for no_rkm_medis: " . ($_GET['no_rkm_medis'] ?? 'not set'));
+                // Tetapkan header untuk JSON
+                header('Content-Type: application/json');
+
+                // Langsung include file action untuk menghindari overhead controller
+                include 'modules/rekam_medis/actions/get_status_ginekologi_ajax.php';
+                // Penting: exit setelah include untuk mencegah layout dimuat
+                exit;
+                break;
             default:
                 if (empty($action)) {
                     $rekamMedisController->index();

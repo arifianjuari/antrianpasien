@@ -60,6 +60,81 @@ if (!isset($pemeriksaan) || !$pemeriksaan) {
     .btn-info:hover {
         color: #fff !important;
     }
+
+    /* Style untuk tab */
+    .tab-pane {
+        transition: all 0.3s ease-in-out;
+        overflow: hidden;
+        font-size: 0.8rem;
+        padding: 15px;
+        border: 1px solid #dee2e6;
+        border-top: none;
+        border-radius: 0 0 0.25rem 0.25rem;
+    }
+
+    .tab-pane:not(.active) {
+        display: none;
+    }
+
+    .nav-tabs {
+        border-bottom: 1px solid #dee2e6;
+        margin-bottom: 0;
+    }
+
+    .nav-tabs .nav-link {
+        display: flex;
+        align-items: center;
+        font-size: 0.85rem;
+        cursor: pointer;
+        padding: 0.75rem 1rem;
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        margin-right: 0.25rem;
+        border-radius: 0.25rem 0.25rem 0 0;
+    }
+
+    .nav-tabs .nav-link.active {
+        background-color: #fff;
+        border-bottom-color: #fff;
+    }
+
+    .nav-tabs .nav-link i {
+        margin-left: 5px;
+        transition: transform 0.3s;
+    }
+
+    /* Style untuk tabel status obstetri */
+    .table-responsive {
+        margin-top: 1rem;
+    }
+
+    .table-sm {
+        font-size: 0.85rem;
+    }
+
+    .btn-add {
+        background-color: #28a745;
+        color: white;
+    }
+
+    .btn-add:hover {
+        background-color: #218838;
+        color: white;
+    }
+
+    /* Loading spinner style */
+    .loading-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(255, 255, 255, 0.8);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    }
 </style>
 
 <div class="container-fluid">
@@ -84,6 +159,203 @@ if (!isset($pemeriksaan) || !$pemeriksaan) {
                     <?php unset($_SESSION['success']) ?>
                 </div>
             <?php endif; ?>
+
+            <!-- Tab Navigasi -->
+            <ul class="nav nav-tabs mb-0" id="myTab" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="identitas-tab" data-bs-toggle="tab" href="#identitas" role="tab" aria-controls="identitas" aria-selected="true">
+                        <i class="fas fa-user-circle mr-1"></i> Data Pasien <i class="fas fa-chevron-down ml-1"></i>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="skrining-tab" data-bs-toggle="tab" href="#skrining" role="tab" aria-controls="skrining" aria-selected="false">
+                        <i class="fas fa-clipboard-check mr-1"></i> Status Obstetri <i class="fas fa-chevron-down ml-1"></i>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="riwayat-kehamilan-tab" data-bs-toggle="tab" href="#riwayat-kehamilan" role="tab" aria-controls="riwayat-kehamilan" aria-selected="false">
+                        <i class="fas fa-baby mr-1"></i> Riwayat Kehamilan <i class="fas fa-chevron-down ml-1"></i>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="status-ginekologi-tab" data-bs-toggle="tab" href="#status-ginekologi" role="tab" aria-controls="status-ginekologi" aria-selected="false">
+                        <i class="fas fa-venus mr-1"></i> Status Ginekologi <i class="fas fa-chevron-down ml-1"></i>
+                    </a>
+                </li>
+            </ul>
+
+            <!-- Tab Content -->
+            <div class="tab-content" id="myTabContent">
+                <!-- Tab Data Pasien -->
+                <div class="tab-pane fade show active" id="identitas" role="tabpanel" aria-labelledby="identitas-tab">
+                    <div class="py-3">
+                        <div class="row">
+                            <!-- Kolom Kiri - Data Pasien -->
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header bg-light">
+                                        <h6 class="card-title mb-0" style="font-size: 0.9rem;">Informasi Pasien</h6>
+                                    </div>
+                                    <div class="card-body p-0">
+                                        <table class="table table-sm table-hover" style="font-size: 0.85rem;">
+                                            <tr>
+                                                <th width="140" class="text-muted px-3">No. Rekam Medis</th>
+                                                <td class="px-3"><?= $pasien['no_rkm_medis'] ?></td>
+                                            </tr>
+                                            <tr>
+                                                <th class="text-muted px-3">Nama Pasien</th>
+                                                <td class="px-3"><?= $pasien['nm_pasien'] ?></td>
+                                            </tr>
+                                            <tr>
+                                                <th class="text-muted px-3">Tanggal Lahir</th>
+                                                <td class="px-3"><?= date('d-m-Y', strtotime($pasien['tgl_lahir'])) ?></td>
+                                            </tr>
+                                            <tr>
+                                                <th class="text-muted px-3">Tanggal Pemeriksaan</th>
+                                                <td class="px-3"><?= date('d-m-Y H:i', strtotime($pemeriksaan['tanggal'])) ?></td>
+                                            </tr>
+                                            <tr>
+                                                <th class="text-muted px-3">No. Rawat</th>
+                                                <td class="px-3"><?= $pemeriksaan['no_rawat'] ?></td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Kolom Kanan - Data Tambahan -->
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header bg-light">
+                                        <h6 class="card-title mb-0" style="font-size: 0.9rem;">Informasi Tambahan</h6>
+                                    </div>
+                                    <div class="card-body p-0">
+                                        <table class="table table-sm table-hover" style="font-size: 0.85rem;">
+                                            <tr>
+                                                <th width="140" class="text-muted px-3">Alamat</th>
+                                                <td class="px-3"><?= $pasien['alamat'] ?? '-' ?></td>
+                                            </tr>
+                                            <tr>
+                                                <th class="text-muted px-3">No. Telepon</th>
+                                                <td class="px-3"><?= $pasien['no_tlp'] ?? '-' ?></td>
+                                            </tr>
+                                            <tr>
+                                                <th class="text-muted px-3">Pekerjaan</th>
+                                                <td class="px-3"><?= $pasien['pekerjaan'] ?? '-' ?></td>
+                                            </tr>
+                                            <tr>
+                                                <th class="text-muted px-3">Status Nikah</th>
+                                                <td class="px-3"><?= $pasien['stts_nikah'] ?? '-' ?></td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab Status Obstetri -->
+                <div class="tab-pane fade" id="skrining" role="tabpanel" aria-labelledby="skrining-tab">
+                    <div class="mb-3 d-flex justify-content-between">
+                        <h6 class="font-weight-bold">Status Obstetri</h6>
+                        <a href="index.php?module=rekam_medis&action=tambah_status_obstetri&no_rkm_medis=<?= $pasien['no_rkm_medis'] ?>&source=form_edit_pemeriksaan" class="btn btn-primary btn-sm">
+                            <i class="fas fa-plus"></i> Tambah Data
+                        </a>
+                    </div>
+                    <div id="statusObstetriContent">
+                        <div class="table-responsive">
+                            <table class="table table-sm table-bordered table-striped">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Tanggal</th>
+                                        <th>G-P-A</th>
+                                        <th>HPHT</th>
+                                        <th>TP</th>
+                                        <th>TP Penyesuaian</th>
+                                        <th>Faktor Risiko</th>
+                                        <th width="100">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="statusObstetriTableBody">
+                                    <tr>
+                                        <td colspan="7" class="text-center">Memuat data status obstetri...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab Riwayat Kehamilan -->
+                <div class="tab-pane fade" id="riwayat-kehamilan" role="tabpanel" aria-labelledby="riwayat-kehamilan-tab">
+                    <div class="mb-3 d-flex justify-content-between">
+                        <h6 class="font-weight-bold">Riwayat Kehamilan</h6>
+                        <a href="index.php?module=rekam_medis&action=tambah_riwayat_kehamilan&no_rkm_medis=<?= $pasien['no_rkm_medis'] ?>&source=form_edit_pemeriksaan" class="btn btn-primary btn-sm">
+                            <i class="fas fa-plus"></i> Tambah Data
+                        </a>
+                    </div>
+                    <div id="riwayatKehamilanContent">
+                        <div class="table-responsive">
+                            <table class="table table-sm table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>No</th>
+                                        <th>Status</th>
+                                        <th>Jenis</th>
+                                        <th>Tempat</th>
+                                        <th>Penolong</th>
+                                        <th>Tahun</th>
+                                        <th>Jenis Kelamin</th>
+                                        <th>BB</th>
+                                        <th>Kondisi</th>
+                                        <th>Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="riwayatKehamilanTableBody">
+                                    <!-- Data riwayat kehamilan akan dimuat melalui AJAX -->
+                                    <tr>
+                                        <td colspan="10" class="text-center">Memuat data riwayat kehamilan...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab Status Ginekologi -->
+                <div class="tab-pane fade" id="status-ginekologi" role="tabpanel" aria-labelledby="status-ginekologi-tab">
+                    <div class="mb-3 d-flex justify-content-between">
+                        <h6 class="font-weight-bold">Status Ginekologi</h6>
+                        <a href="index.php?module=rekam_medis&action=tambah_status_ginekologi&no_rkm_medis=<?= $pasien['no_rkm_medis'] ?>&source=form_edit_pemeriksaan" class="btn btn-primary btn-sm">
+                            <i class="fas fa-plus"></i> Tambah Data
+                        </a>
+                    </div>
+                    <div id="statusGinekologiContent">
+                        <div class="table-responsive">
+                            <table class="table table-sm table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Tanggal</th>
+                                        <th>Parturien</th>
+                                        <th>Abortus</th>
+                                        <th>Hari Pertama Haid Terakhir</th>
+                                        <th>Kontrasepsi Terakhir</th>
+                                        <th>Lama Menikah (Tahun)</th>
+                                        <th>Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="statusGinekologiTableBody">
+                                    <!-- Data status ginekologi akan dimuat melalui AJAX -->
+                                    <tr>
+                                        <td colspan="7" class="text-center">Memuat data status ginekologi...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <form action="index.php?module=rekam_medis&action=update_pemeriksaan" method="post">
                 <input type="hidden" name="no_rawat" value="<?= $pemeriksaan['no_rawat'] ?>">
@@ -960,6 +1232,86 @@ if (!isset($pemeriksaan) || !$pemeriksaan) {
     </div>
 </div>
 
+<!-- Pastikan jQuery dan Bootstrap JS dimuat -->
+<script>
+    // Periksa jika jQuery belum dimuat
+    if (typeof jQuery === 'undefined') {
+        console.error('jQuery tidak ditemukan. Memuat dari CDN...');
+        const jqueryScript = document.createElement('script');
+        jqueryScript.src = 'https://code.jquery.com/jquery-3.6.0.min.js';
+        jqueryScript.integrity = 'sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=';
+        jqueryScript.crossOrigin = 'anonymous';
+        document.head.appendChild(jqueryScript);
+    }
+
+    // Periksa jika Bootstrap JS belum dimuat
+    if (typeof bootstrap === 'undefined') {
+        console.error('Bootstrap JS tidak ditemukan. Memuat dari CDN...');
+        const bootstrapScript = document.createElement('script');
+        bootstrapScript.src = 'https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js';
+        bootstrapScript.integrity = 'sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4';
+        bootstrapScript.crossOrigin = 'anonymous';
+        bootstrapScript.onload = function() {
+            console.log('Bootstrap JS berhasil dimuat. Menginisialisasi tab...');
+            // Inisialisasi tab secara langsung setelah Bootstrap dimuat
+            initializeTabs();
+        };
+        document.head.appendChild(bootstrapScript);
+    }
+
+    // Fungsi untuk menginisialisasi tab
+    function initializeTabs() {
+        if (typeof bootstrap !== 'undefined') {
+            // Inisialisasi semua tab
+            const tabElements = document.querySelectorAll('#myTab a');
+            tabElements.forEach(tabElement => {
+                try {
+                    // Coba instansiasi Tab
+                    const tabInstance = new bootstrap.Tab(tabElement);
+                    console.log('Tab berhasil dibuat untuk:', tabElement.id);
+
+                    // Tambahkan event listener
+                    tabElement.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        tabInstance.show();
+                    });
+                } catch (error) {
+                    console.error('Gagal menginisialisasi tab untuk element', tabElement.id, error);
+                }
+            });
+
+            // Setup event listener untuk tab yang ditampilkan
+            const myTabs = document.getElementById('myTab');
+            if (myTabs) {
+                myTabs.addEventListener('shown.bs.tab', function(event) {
+                    const activeTab = event.target;
+                    const tabId = activeTab.getAttribute('href').substring(1);
+                    console.log('Tab aktif:', tabId);
+
+                    // Load data berdasarkan tab yang aktif
+                    if (tabId === 'skrining') {
+                        refreshStatusObstetriData();
+                    } else if (tabId === 'riwayat-kehamilan') {
+                        refreshRiwayatKehamilanData();
+                    } else if (tabId === 'status-ginekologi') {
+                        refreshStatusGinekologiData();
+                    }
+                });
+            }
+
+            console.log('Semua tab berhasil diinisialisasi');
+        } else {
+            console.error('Bootstrap JS belum tersedia. Tab tidak dapat diinisialisasi');
+        }
+    }
+
+    // Inisialisasi tab jika bootstrap sudah tersedia
+    if (typeof bootstrap !== 'undefined') {
+        document.addEventListener('DOMContentLoaded', initializeTabs);
+    }
+</script>
+
+<!-- Script utama aplikasi -->
 <script>
     function gunakanTemplate(isi) {
         const currentValue = document.getElementById('tatalaksana').value;
@@ -1781,5 +2133,466 @@ if (!isset($pemeriksaan) || !$pemeriksaan) {
 
         document.getElementById('filter_kategori_resume').addEventListener('change', filterTemplateResume);
         document.getElementById('search_resume').addEventListener('input', filterTemplateResume);
+    });
+
+    // Fungsi untuk debugging Status Obstetri
+    function debugStatusObstetri(message) {
+        console.log('DEBUG StatusObstetri: ' + message);
+    }
+
+    // Fungsi untuk refresh data status obstetri
+    function refreshStatusObstetriData() {
+        const noRkmMedis = '<?= $pasien['no_rkm_medis'] ?>';
+        const statusObstetriContent = document.getElementById('statusObstetriContent');
+
+        if (!statusObstetriContent) {
+            console.error('Element statusObstetriContent tidak ditemukan');
+            return;
+        }
+
+        debugStatusObstetri('Refreshing Status Obstetri data for: ' + noRkmMedis);
+
+        // Buat element untuk loading overlay
+        const loadingOverlay = document.createElement('div');
+        loadingOverlay.className = 'loading-overlay';
+        loadingOverlay.innerHTML = '<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>';
+        loadingOverlay.style.position = 'absolute';
+        loadingOverlay.style.top = '0';
+        loadingOverlay.style.left = '0';
+        loadingOverlay.style.width = '100%';
+        loadingOverlay.style.height = '100%';
+        loadingOverlay.style.backgroundColor = 'rgba(255, 255, 255, 0.7)';
+        loadingOverlay.style.display = 'flex';
+        loadingOverlay.style.justifyContent = 'center';
+        loadingOverlay.style.alignItems = 'center';
+        loadingOverlay.style.zIndex = '1000';
+
+        // Tambahkan loading overlay ke content
+        statusObstetriContent.style.position = 'relative';
+        statusObstetriContent.appendChild(loadingOverlay);
+
+        debugStatusObstetri('Loading status ditampilkan');
+
+        // Log URL yang akan diakses
+        const ajaxUrl = 'index.php?module=rekam_medis&action=get_status_obstetri_ajax&no_rkm_medis=' + encodeURIComponent(noRkmMedis);
+        debugStatusObstetri('AJAX URL: ' + ajaxUrl);
+
+        // Buat objek AJAX request
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', ajaxUrl, true);
+
+        xhr.onload = function() {
+            debugStatusObstetri('AJAX onload triggered with status: ' + this.status);
+            if (this.status === 200) {
+                try {
+                    // Tampilkan respons mentah untuk debugging
+                    const rawResponse = this.responseText;
+                    debugStatusObstetri('Response received (RAW):');
+
+                    // Coba deteksi jika ini adalah HTML bukan JSON
+                    if (rawResponse.trim().startsWith('<')) {
+                        debugStatusObstetri('ERROR: Respons berisi HTML, bukan JSON. Endpoint mungkin tidak benar.');
+
+                        // Tampilkan pesan kesalahan tentang endpoint
+                        const errorAlert = document.createElement('div');
+                        errorAlert.className = 'alert alert-danger alert-dismissible fade show';
+                        errorAlert.innerHTML = `
+                            <strong>Error!</strong> Endpoint AJAX mengembalikan HTML, bukan JSON. Ini mungkin karena:
+                            <ul>
+                                <li>File get_status_obstetri_ajax.php tidak ditemukan atau bermasalah</li>
+                                <li>Session habis dan halaman dialihkan ke login</li>
+                                <li>Ada error PHP pada endpoint</li>
+                            </ul>
+                            <p>Silakan periksa endpoint AJAX: <code>index.php?module=rekam_medis&action=get_status_obstetri_ajax</code></p>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        `;
+
+                        statusObstetriContent.insertBefore(errorAlert, statusObstetriContent.firstChild);
+                        throw new Error('Respons berisi HTML, bukan JSON');
+                    }
+
+                    // Kurangi output debug - hanya log ke console, jangan tampilkan raw response lengkap
+                    debugStatusObstetri('Response received and being processed');
+                    const response = JSON.parse(rawResponse);
+                    debugStatusObstetri('JSON parsed successfully, status: ' + response.status);
+
+                    if (response.status === 'success') {
+                        // Update tabel dengan data baru
+                        const tableBody = document.getElementById('statusObstetriTableBody');
+                        if (tableBody) {
+                            debugStatusObstetri('Data count: ' + response.data.length);
+                            if (response.data.length > 0) {
+                                let tableHtml = '';
+
+                                response.data.forEach(function(so) {
+                                    const formattedDate = new Date(so.updated_at).toLocaleDateString('id-ID', {
+                                        day: '2-digit',
+                                        month: '2-digit',
+                                        year: 'numeric'
+                                    });
+
+                                    const hphtDate = so.tanggal_hpht ? new Date(so.tanggal_hpht).toLocaleDateString('id-ID', {
+                                        day: '2-digit',
+                                        month: '2-digit',
+                                        year: 'numeric'
+                                    }) : '-';
+
+                                    const tpDate = so.tanggal_tp ? new Date(so.tanggal_tp).toLocaleDateString('id-ID', {
+                                        day: '2-digit',
+                                        month: '2-digit',
+                                        year: 'numeric'
+                                    }) : '-';
+
+                                    const tpPenyesuaianDate = so.tanggal_tp_penyesuaian ? new Date(so.tanggal_tp_penyesuaian).toLocaleDateString('id-ID', {
+                                        day: '2-digit',
+                                        month: '2-digit',
+                                        year: 'numeric'
+                                    }) : '-';
+
+                                    // Bangun faktor risiko
+                                    let faktorRisiko = [];
+                                    if (so.faktor_risiko_umum) {
+                                        faktorRisiko.push('Umum: ' + so.faktor_risiko_umum.replace(/,/g, ', '));
+                                    }
+                                    if (so.faktor_risiko_obstetri) {
+                                        faktorRisiko.push('Obstetri: ' + so.faktor_risiko_obstetri.replace(/,/g, ', '));
+                                    }
+                                    if (so.faktor_risiko_preeklampsia) {
+                                        faktorRisiko.push('Preeklampsia: ' + so.faktor_risiko_preeklampsia.replace(/,/g, ', '));
+                                    }
+
+                                    const faktorRisikoHtml = faktorRisiko.length > 0 ? faktorRisiko.join('<br>') : '-';
+
+                                    tableHtml += `
+                                        <tr>
+                                            <td>${formattedDate}</td>
+                                            <td>${so.gravida}-${so.paritas}-${so.abortus}</td>
+                                            <td>${hphtDate}</td>
+                                            <td>${tpDate}</td>
+                                            <td>${tpPenyesuaianDate}</td>
+                                            <td>${faktorRisikoHtml}</td>
+                                            <td>
+                                                <a href="index.php?module=rekam_medis&action=edit_status_obstetri&id=${so.id_status_obstetri}&source=form_edit_pemeriksaan" class="btn btn-warning btn-sm">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <a href="index.php?module=rekam_medis&action=hapus_status_obstetri&id=${so.id_status_obstetri}&source=form_edit_pemeriksaan" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
+                                                    <i class="fas fa-trash"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    `;
+                                });
+
+                                tableBody.innerHTML = tableHtml;
+                            } else {
+                                tableBody.innerHTML = '<tr><td colspan="7" class="text-center">Tidak ada data status obstetri</td></tr>';
+                            }
+                            debugStatusObstetri('Table body updated with new data');
+                        } else {
+                            debugStatusObstetri('ERROR: Table body element not found');
+                        }
+                    } else {
+                        debugStatusObstetri('Error response: ' + response.message);
+                        alert('Error: ' + response.message);
+                    }
+                } catch (error) {
+                    debugStatusObstetri('Error parsing JSON: ' + error.message);
+                    console.error('Error parsing JSON:', error);
+                    document.getElementById('statusObstetriTableBody').innerHTML =
+                        '<tr><td colspan="7" class="text-center text-danger">Error: Gagal memuat data status obstetri</td></tr>';
+                }
+            } else {
+                debugStatusObstetri('HTTP error: ' + this.status);
+                console.error('HTTP Error:', this.status);
+                document.getElementById('statusObstetriTableBody').innerHTML =
+                    '<tr><td colspan="7" class="text-center text-danger">Error: Gagal memuat data status obstetri</td></tr>';
+            }
+
+            // Hapus loading overlay
+            if (statusObstetriContent.contains(loadingOverlay)) {
+                statusObstetriContent.removeChild(loadingOverlay);
+            }
+        };
+
+        xhr.onerror = function() {
+            debugStatusObstetri('Request failed');
+            console.error('Request Failed');
+            document.getElementById('statusObstetriTableBody').innerHTML =
+                '<tr><td colspan="7" class="text-center text-danger">Error: Gagal terhubung ke server</td></tr>';
+
+            // Hapus loading overlay
+            if (statusObstetriContent.contains(loadingOverlay)) {
+                statusObstetriContent.removeChild(loadingOverlay);
+            }
+        };
+
+        xhr.send();
+    }
+
+    // Fungsi untuk refresh data riwayat kehamilan
+    function refreshRiwayatKehamilanData() {
+        const noRkmMedis = '<?= $pasien['no_rkm_medis'] ?>';
+        const riwayatKehamilanContent = document.getElementById('riwayatKehamilanContent');
+
+        if (!riwayatKehamilanContent) {
+            console.error('Element riwayatKehamilanContent tidak ditemukan');
+            return;
+        }
+
+        // Buat element untuk loading overlay
+        const loadingOverlay = document.createElement('div');
+        loadingOverlay.className = 'loading-overlay';
+        loadingOverlay.innerHTML = '<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>';
+        loadingOverlay.style.position = 'absolute';
+        loadingOverlay.style.top = '0';
+        loadingOverlay.style.left = '0';
+        loadingOverlay.style.width = '100%';
+        loadingOverlay.style.height = '100%';
+        loadingOverlay.style.backgroundColor = 'rgba(255, 255, 255, 0.7)';
+        loadingOverlay.style.display = 'flex';
+        loadingOverlay.style.justifyContent = 'center';
+        loadingOverlay.style.alignItems = 'center';
+        loadingOverlay.style.zIndex = '1000';
+
+        // Tambahkan loading overlay ke content
+        riwayatKehamilanContent.style.position = 'relative';
+        riwayatKehamilanContent.appendChild(loadingOverlay);
+
+        console.log('Refreshing Riwayat Kehamilan data for: ' + noRkmMedis);
+
+        // AJAX request untuk riwayat kehamilan
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', 'index.php?module=rekam_medis&action=get_riwayat_kehamilan_ajax&no_rkm_medis=' + encodeURIComponent(noRkmMedis), true);
+
+        xhr.onload = function() {
+            if (this.status === 200) {
+                try {
+                    const rawResponse = this.responseText;
+
+                    // Coba deteksi jika ini adalah HTML bukan JSON
+                    if (rawResponse.trim().startsWith('<')) {
+                        console.error('ERROR: Respons berisi HTML, bukan JSON. Endpoint mungkin tidak benar.');
+
+                        // Tampilkan pesan kesalahan tentang endpoint
+                        const errorAlert = document.createElement('div');
+                        errorAlert.className = 'alert alert-danger alert-dismissible fade show';
+                        errorAlert.innerHTML = `
+                            <strong>Error!</strong> Endpoint AJAX mengembalikan HTML, bukan JSON. Ini mungkin karena:
+                            <ul>
+                                <li>File get_riwayat_kehamilan_ajax.php tidak ditemukan atau bermasalah</li>
+                                <li>Session habis dan halaman dialihkan ke login</li>
+                                <li>Ada error PHP pada endpoint</li>
+                            </ul>
+                            <p>Silakan periksa endpoint AJAX: <code>index.php?module=rekam_medis&action=get_riwayat_kehamilan_ajax</code></p>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        `;
+
+                        riwayatKehamilanContent.insertBefore(errorAlert, riwayatKehamilanContent.firstChild);
+                        throw new Error('Respons berisi HTML, bukan JSON');
+                    }
+
+                    const response = JSON.parse(rawResponse);
+                    console.log('Riwayat kehamilan data received:', response);
+
+                    const tableBody = document.getElementById('riwayatKehamilanTableBody');
+                    if (tableBody) {
+                        if (response.status === 'success' && response.data && response.data.length > 0) {
+                            let tableHtml = '';
+
+                            response.data.forEach(function(rk) {
+                                tableHtml += `
+                                    <tr>
+                                        <td>${rk.no_urut_kehamilan || '-'}</td>
+                                        <td>${rk.status_kehamilan || '-'}</td>
+                                        <td>${rk.jenis_persalinan || '-'}</td>
+                                        <td>${rk.tempat_persalinan || '-'}</td>
+                                        <td>${rk.penolong_persalinan || '-'}</td>
+                                        <td>${rk.tahun_persalinan || '-'}</td>
+                                        <td>${rk.jenis_kelamin_anak || '-'}</td>
+                                        <td>${rk.berat_badan_lahir || '-'}</td>
+                                        <td>${rk.kondisi_lahir || '-'}</td>
+                                        <td>
+                                            <a href="index.php?module=rekam_medis&action=edit_riwayat_kehamilan&id=${rk.id_riwayat_kehamilan}&source=form_edit_pemeriksaan" class="btn btn-warning btn-sm">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a href="index.php?module=rekam_medis&action=hapus_riwayat_kehamilan&id=${rk.id_riwayat_kehamilan}&source=form_edit_pemeriksaan" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                `;
+                            });
+
+                            tableBody.innerHTML = tableHtml;
+                        } else {
+                            tableBody.innerHTML = '<tr><td colspan="10" class="text-center">Tidak ada data riwayat kehamilan</td></tr>';
+                        }
+                    } else {
+                        console.error('ERROR: Table body element riwayatKehamilanTableBody not found');
+                    }
+                } catch (error) {
+                    console.error('Error parsing JSON:', error);
+                    document.getElementById('riwayatKehamilanTableBody').innerHTML =
+                        '<tr><td colspan="10" class="text-center text-danger">Error: Gagal memuat data riwayat kehamilan</td></tr>';
+                }
+            } else {
+                console.error('HTTP Error:', this.status);
+                document.getElementById('riwayatKehamilanTableBody').innerHTML =
+                    '<tr><td colspan="10" class="text-center text-danger">Error: Gagal memuat data riwayat kehamilan</td></tr>';
+            }
+
+            // Hapus loading overlay
+            if (riwayatKehamilanContent.contains(loadingOverlay)) {
+                riwayatKehamilanContent.removeChild(loadingOverlay);
+            }
+        };
+
+        xhr.onerror = function() {
+            console.error('Request Failed');
+            document.getElementById('riwayatKehamilanTableBody').innerHTML =
+                '<tr><td colspan="10" class="text-center text-danger">Error: Gagal terhubung ke server</td></tr>';
+
+            // Hapus loading overlay
+            if (riwayatKehamilanContent.contains(loadingOverlay)) {
+                riwayatKehamilanContent.removeChild(loadingOverlay);
+            }
+        };
+
+        xhr.send();
+    }
+
+    // Fungsi untuk refresh data status ginekologi
+    function refreshStatusGinekologiData() {
+        const noRkmMedis = '<?= $pasien['no_rkm_medis'] ?>';
+        const statusGinekologiContent = document.getElementById('statusGinekologiContent');
+
+        if (!statusGinekologiContent) {
+            console.error('Element statusGinekologiContent tidak ditemukan');
+            return;
+        }
+
+        // Buat loading overlay
+        const loadingOverlay = document.createElement('div');
+        loadingOverlay.className = 'loading-overlay';
+        loadingOverlay.innerHTML = '<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>';
+
+        // Tambahkan loading overlay ke content
+        statusGinekologiContent.style.position = 'relative';
+        statusGinekologiContent.appendChild(loadingOverlay);
+
+        console.log('Refreshing Status Ginekologi data for: ' + noRkmMedis);
+
+        // AJAX request untuk status ginekologi
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', 'index.php?module=rekam_medis&action=get_status_ginekologi_ajax&no_rkm_medis=' + encodeURIComponent(noRkmMedis), true);
+
+        xhr.onload = function() {
+            if (this.status === 200) {
+                try {
+                    const response = JSON.parse(this.responseText);
+                    console.log('Status ginekologi data received:', response);
+
+                    const tableBody = document.getElementById('statusGinekologiTableBody');
+                    if (tableBody) {
+                        if (response.status === 'success' && response.data && response.data.length > 0) {
+                            let tableHtml = '';
+
+                            response.data.forEach(function(sg) {
+                                const tanggalCreated = new Date(sg.created_at).toLocaleDateString('id-ID', {
+                                    day: '2-digit',
+                                    month: '2-digit',
+                                    year: 'numeric'
+                                });
+
+                                const hphtDate = sg.Hari_pertama_haid_terakhir ? new Date(sg.Hari_pertama_haid_terakhir).toLocaleDateString('id-ID', {
+                                    day: '2-digit',
+                                    month: '2-digit',
+                                    year: 'numeric'
+                                }) : '-';
+
+                                tableHtml += `
+                                    <tr>
+                                        <td>${tanggalCreated}</td>
+                                        <td>${sg.Parturien || '-'}</td>
+                                        <td>${sg.Abortus || '-'}</td>
+                                        <td>${hphtDate}</td>
+                                        <td>${sg.Kontrasepsi_terakhir || '-'}</td>
+                                        <td>${sg.lama_menikah_th || '-'}</td>
+                                        <td>
+                                            <a href="index.php?module=rekam_medis&action=edit_status_ginekologi&id=${sg.id_status_ginekologi}&source=<?= $_SESSION['source_page'] ?? 'form_edit_pemeriksaan' ?>" class="btn btn-warning btn-sm">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a href="index.php?module=rekam_medis&action=hapus_status_ginekologi&id=${sg.id_status_ginekologi}&source=<?= $_SESSION['source_page'] ?? 'form_edit_pemeriksaan' ?>" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                `;
+                            });
+
+                            tableBody.innerHTML = tableHtml;
+                        } else {
+                            tableBody.innerHTML = '<tr><td colspan="7" class="text-center">Tidak ada data status ginekologi</td></tr>';
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error parsing JSON:', error);
+                    document.getElementById('statusGinekologiTableBody').innerHTML =
+                        '<tr><td colspan="7" class="text-center text-danger">Error: Gagal memuat data status ginekologi</td></tr>';
+                }
+            } else {
+                console.error('HTTP Error:', this.status);
+                document.getElementById('statusGinekologiTableBody').innerHTML =
+                    '<tr><td colspan="7" class="text-center text-danger">Error: Gagal memuat data status ginekologi</td></tr>';
+            }
+
+            // Hapus loading overlay
+            if (statusGinekologiContent.contains(loadingOverlay)) {
+                statusGinekologiContent.removeChild(loadingOverlay);
+            }
+        };
+
+        xhr.onerror = function() {
+            console.error('Request Failed');
+            document.getElementById('statusGinekologiTableBody').innerHTML =
+                '<tr><td colspan="7" class="text-center text-danger">Error: Gagal terhubung ke server</td></tr>';
+
+            // Hapus loading overlay
+            if (statusGinekologiContent.contains(loadingOverlay)) {
+                statusGinekologiContent.removeChild(loadingOverlay);
+            }
+        };
+
+        xhr.send();
+    }
+
+    // Memuat data saat halaman dimuat
+    document.addEventListener('DOMContentLoaded', () => {
+        // Inisialisasi tab melalui fungsi yang telah didefinisikan di script sebelumnya
+        if (typeof initializeTabs === 'function') {
+            initializeTabs();
+        }
+
+        // Buat IntersectionObserver untuk setiap konten tab sebagai fallback
+        const setupObserver = (elementId, callbackFn) => {
+            const element = document.getElementById(elementId);
+            if (element) {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            console.log(`Tab ${elementId} terlihat, memanggil callback via IntersectionObserver`);
+                            callbackFn();
+                            observer.disconnect();
+                        }
+                    });
+                });
+                observer.observe(element);
+            }
+        };
+
+        // Set up observers untuk setiap tab content
+        setupObserver('skrining', refreshStatusObstetriData);
+        setupObserver('riwayat-kehamilan', refreshRiwayatKehamilanData);
+        setupObserver('status-ginekologi', refreshStatusGinekologiData);
     });
 </script>
