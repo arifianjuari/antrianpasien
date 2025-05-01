@@ -2073,9 +2073,19 @@ $conn->close();
         // Set judul modal
         document.getElementById('gambarEdukasiModalLabel').textContent = 'Gambar: ' + judul;
 
-        // Set gambar ke dalam modal
+        // Log untuk debugging
+        console.log('Opening image URL:', url);
+
+        // Use Hostinger URL as the base path for images
+        if (url && url.trim() !== '' && !url.startsWith('http') && !url.startsWith('https://')) {
+            url = 'https://srv1151-files.hstgr.io/37b1269c3c524999/files/public_html/uploads/edukasi/' + url;
+        }
+
+        console.log('Final image URL:', url);
+
+        // Set gambar ke dalam modal with error handling
         document.getElementById('gambarEdukasiContent').innerHTML =
-            '<img src="' + url + '" class="img-fluid" alt="Gambar Edukasi">';
+            '<img src="' + url + '" class="img-fluid" alt="Gambar Edukasi" onerror="this.onerror=null; this.src=\'https://via.placeholder.com/400x300?text=Gambar+Tidak+Ditemukan\'; console.log(\'Failed to load image: ' + url + '\');">';
 
         // Tampilkan modal
         var modal = new bootstrap.Modal(document.getElementById('gambarEdukasiModal'));
