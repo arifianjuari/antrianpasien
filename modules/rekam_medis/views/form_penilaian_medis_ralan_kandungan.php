@@ -241,6 +241,13 @@ $conn->close();
 <!-- Load Status Obstetri Helper -->
 <script src="<?= BASE_URL ?>/assets/js/status_obstetri_helper.js"></script>
 
+<!-- Initialize BASE_URL variable for JavaScript -->
+<script>
+    // Make BASE_URL available to JavaScript
+    var BASE_URL = '<?= BASE_URL ?>';
+    console.log('BASE_URL initialized as:', BASE_URL);
+</script>
+
 <!-- Modal untuk menampilkan gambar edukasi -->
 <div class="modal fade" id="gambarEdukasiModal" tabindex="-1" aria-labelledby="gambarEdukasiModalLabel" aria-hidden="true" style="z-index: 1060;">
     <div class="modal-dialog modal-lg">
@@ -2074,18 +2081,34 @@ $conn->close();
         document.getElementById('gambarEdukasiModalLabel').textContent = 'Gambar: ' + judul;
 
         // Log untuk debugging
-        console.log('Opening image URL:', url);
+        console.log('Original image URL:', url);
 
-        // Use Hostinger URL as the base path for images
-        if (url && url.trim() !== '' && !url.startsWith('http') && !url.startsWith('https://')) {
-            url = 'https://srv1151-files.hstgr.io/37b1269c3c524999/files/public_html/uploads/edukasi/' + url;
+        // Set base path untuk gambar
+        const basePath = BASE_URL ? BASE_URL + '/uploads/edukasi/' : 'https://srv1151-files.hstgr.io/37b1269c3c524999/files/public_html/uploads/edukasi/';
+
+        // Periksa dan format URL gambar
+        if (url && url.trim() !== '') {
+            // Jika URL tidak dimulai dengan http/https dan bukan placeholder
+            if (!url.startsWith('http') && !url.startsWith('https://') && url !== "https://via.placeholder.com/400x300?text=No+Image") {
+                url = basePath + url;
+            }
+        } else {
+            // Jika URL kosong, gunakan placeholder
+            url = 'https://via.placeholder.com/400x300?text=Gambar+Tidak+Tersedia';
         }
 
         console.log('Final image URL:', url);
 
-        // Set gambar ke dalam modal with error handling
-        document.getElementById('gambarEdukasiContent').innerHTML =
-            '<img src="' + url + '" class="img-fluid" alt="Gambar Edukasi" onerror="this.onerror=null; this.src=\'https://via.placeholder.com/400x300?text=Gambar+Tidak+Ditemukan\'; console.log(\'Failed to load image: ' + url + '\');">';
+        // Set gambar ke dalam modal
+        const imgHtml = `
+            <div class="text-center">
+                <img src="${url}" 
+                     class="img-fluid" 
+                     alt="Gambar Edukasi" 
+                     onerror="this.onerror=null; this.src='https://via.placeholder.com/400x300?text=Gambar+Tidak+Ditemukan'; console.log('Failed to load image: ${url}');">
+            </div>`;
+
+        document.getElementById('gambarEdukasiContent').innerHTML = imgHtml;
 
         // Tampilkan modal
         var modal = new bootstrap.Modal(document.getElementById('gambarEdukasiModal'));
