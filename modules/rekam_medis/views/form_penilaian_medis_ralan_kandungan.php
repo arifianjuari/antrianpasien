@@ -241,6 +241,24 @@ $conn->close();
 <!-- Load Status Obstetri Helper -->
 <script src="<?= BASE_URL ?>/assets/js/status_obstetri_helper.js"></script>
 
+<!-- Modal untuk menampilkan gambar edukasi -->
+<div class="modal fade" id="gambarEdukasiModal" tabindex="-1" aria-labelledby="gambarEdukasiModalLabel" aria-hidden="true" style="z-index: 1060;">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="gambarEdukasiModalLabel">Gambar Edukasi</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center" id="gambarEdukasiContent">
+                <!-- Gambar akan dimuat di sini -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="container-fluid">
     <div class="row">
         <div class="col-12">
@@ -1161,7 +1179,7 @@ $conn->close();
                             }
 
                             // Query untuk mendapatkan semua template edukasi
-                            $sql = "SELECT * FROM edukasi WHERE status_aktif = 1 ORDER BY kategori ASC, judul ASC";
+                            $sql = "SELECT id_edukasi, judul, isi_edukasi, kategori, tag, link_gambar, status_aktif FROM edukasi WHERE status_aktif = 1 ORDER BY kategori ASC, judul ASC";
                             $result = $conn->query($sql);
 
                             if ($result->num_rows > 0) {
@@ -1173,7 +1191,15 @@ $conn->close();
                                     echo "<td><div style='max-height: 100px; overflow-y: auto;'>" . $row['isi_edukasi'] . "</div></td>";
                                     echo "<td>" . ucwords($row['kategori']) . "</td>";
                                     echo "<td>" . htmlspecialchars($row['tag'] ?? '-') . "</td>";
-                                    echo "<td><button type='button' class='btn btn-sm btn-primary w-100' onclick='gunakanTemplateEdukasi(" . json_encode($row['isi_edukasi']) . ")'><i class='fas fa-check'></i> Gunakan</button></td>";
+                                    echo "<td>
+                                        <button type='button' class='btn btn-sm btn-primary mb-1 w-100' onclick='gunakanTemplateEdukasi(" . json_encode($row['isi_edukasi']) . ")'>
+                                            <i class='fas fa-check'></i> Gunakan
+                                        </button>";
+                                    // Debugging to check if link_gambar exists and has values
+                                    echo "<button type='button' class='btn btn-sm btn-info w-100 mt-1' onclick='lihatGambarEdukasi(\"" . (isset($row['link_gambar']) ? htmlspecialchars($row['link_gambar']) : "https://via.placeholder.com/400x300?text=No+Image") . "\", \"" . htmlspecialchars($row['judul']) . "\")'>
+                                        <i class='fas fa-image'></i> Lihat Gambar
+                                    </button>";
+                                    echo "</td>";
                                     echo "</tr>";
                                 }
                             } else {
@@ -2040,6 +2066,20 @@ $conn->close();
         };
 
         xhr.send();
+    }
+
+    // Fungsi untuk melihat gambar edukasi
+    function lihatGambarEdukasi(url, judul) {
+        // Set judul modal
+        document.getElementById('gambarEdukasiModalLabel').textContent = 'Gambar: ' + judul;
+
+        // Set gambar ke dalam modal
+        document.getElementById('gambarEdukasiContent').innerHTML =
+            '<img src="' + url + '" class="img-fluid" alt="Gambar Edukasi">';
+
+        // Tampilkan modal
+        var modal = new bootstrap.Modal(document.getElementById('gambarEdukasiModal'));
+        modal.show();
     }
 
     // Memuat Status Obstetri Pertama Kali
