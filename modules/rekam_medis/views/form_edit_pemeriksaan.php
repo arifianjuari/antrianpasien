@@ -163,7 +163,7 @@ if (!isset($pemeriksaan) || !$pemeriksaan) {
         opacity: 0.5;
         z-index: 1040;
     }
-    
+
     .modal {
         z-index: 1050;
     }
@@ -186,7 +186,7 @@ if (!isset($pemeriksaan) || !$pemeriksaan) {
         background: white;
         padding: 20px;
         border-radius: 8px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     }
 
     .spinner-border {
@@ -674,6 +674,37 @@ if (!isset($pemeriksaan) || !$pemeriksaan) {
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Tombol Pilih Gambar Edukasi -->
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                <h6 class="m-0 font-weight-bold text-primary">Gambar Edukasi</h6>
+                            </div>
+                            <div class="card-body">
+                                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalPilihGambarEdukasi">
+                                    <i class="fas fa-images"></i> Pilih Gambar Edukasi
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Gambar Edukasi Terpilih -->
+                        <div class="card mb-3" id="cardGambarEdukasi" style="display: none;">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h6 class="m-0 font-weight-bold text-primary">Gambar Edukasi Terpilih</h6>
+                                <button type="button" class="btn btn-sm btn-danger" onclick="hapusGambarTerpilih()">
+                                    <i class="fas fa-trash"></i> Hapus
+                                </button>
+                            </div>
+                            <div class="card-body">
+                                <input type="hidden" name="gambar_edukasi" id="gambarEdukasiInput">
+                                <input type="hidden" name="judul_gambar_edukasi" id="judulGambarEdukasiInput">
+                                <div class="text-center">
+                                    <img id="gambarEdukasiTerpilih" src="" class="img-fluid" style="max-height: 300px;" alt="Gambar Edukasi">
+                                    <p class="mt-2" id="judulGambarEdukasiTerpilih"></p>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
 
                     <!-- Kolom 3 -->
@@ -1294,6 +1325,68 @@ if (!isset($pemeriksaan) || !$pemeriksaan) {
     </div>
 </div>
 
+<!-- Modal Pilih Gambar Edukasi -->
+<div class="modal fade" id="modalPilihGambarEdukasi" tabindex="-1" aria-labelledby="modalPilihGambarEdukasiLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalPilihGambarEdukasiLabel">Pilih Gambar Edukasi</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Filter Kategori dan Pencarian -->
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <select id="filter_kategori_gambar" class="form-select me-2">
+                            <option value="">Semua Kategori</option>
+                            <option value="fetomaternal">Fetomaternal</option>
+                            <option value="ginekologi umum">Ginekologi Umum</option>
+                            <option value="onkogin">Onkogin</option>
+                            <option value="fertilitas">Fertilitas</option>
+                            <option value="uroginekologi">Uroginekologi</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <input type="text" id="search_gambar" class="form-control" placeholder="Cari judul gambar...">
+                    </div>
+                </div>
+
+                <!-- Grid Gambar -->
+                <div class="row" id="gridGambarEdukasi">
+                    <?php
+                    // Koneksi ke database
+                    global $conn;
+
+                    // Query untuk mendapatkan semua gambar edukasi
+                    $sql = "SELECT * FROM edukasi WHERE status_aktif = 1 AND link_gambar IS NOT NULL ORDER BY kategori ASC, judul ASC";
+                    $stmt = $conn->query($sql);
+
+                    if ($stmt->rowCount() > 0) {
+                        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                            echo '<div class="col-md-4 mb-3 gambar-item" data-kategori="' . htmlspecialchars($row['kategori']) . '" data-judul="' . htmlspecialchars($row['judul']) . '">';
+                            echo '<div class="card h-100">';
+                            echo '<img src="uploads/edukasi/' . htmlspecialchars($row['link_gambar']) . '" class="card-img-top" alt="' . htmlspecialchars($row['judul']) . '" style="height: 200px; object-fit: contain;">';
+                            echo '<div class="card-body">';
+                            echo '<h6 class="card-title">' . htmlspecialchars($row['judul']) . '</h6>';
+                            echo '<p class="card-text small">' . htmlspecialchars($row['kategori']) . '</p>';
+                            echo '<button type="button" class="btn btn-primary btn-sm w-100" onclick="pilihGambar(\'' . htmlspecialchars($row['link_gambar']) . '\', \'' . htmlspecialchars($row['judul']) . '\')"><i class="fas fa-check"></i> Pilih</button>';
+                            echo '</div>';
+                            echo '</div>';
+                            echo '</div>';
+                        }
+                    } else {
+                        echo '<div class="col-12 text-center">Tidak ada gambar edukasi tersedia</div>';
+                    }
+                    ?>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Pastikan jQuery dan Bootstrap JS dimuat -->
 <script>
     // Periksa jika jQuery belum dimuat
@@ -1378,11 +1471,11 @@ if (!isset($pemeriksaan) || !$pemeriksaan) {
     const loadingManager = {
         overlay: null,
         timeoutId: null,
-        
+
         init() {
             this.overlay = document.getElementById('globalLoadingOverlay');
         },
-        
+
         show() {
             if (this.overlay) {
                 clearTimeout(this.timeoutId);
@@ -1390,7 +1483,7 @@ if (!isset($pemeriksaan) || !$pemeriksaan) {
                 document.body.style.overflow = 'hidden';
             }
         },
-        
+
         hide() {
             if (this.overlay) {
                 // Tambah delay kecil untuk memastikan transisi modal selesai
@@ -1405,14 +1498,14 @@ if (!isset($pemeriksaan) || !$pemeriksaan) {
     // Inisialisasi saat dokumen dimuat
     document.addEventListener('DOMContentLoaded', () => {
         loadingManager.init();
-        
+
         // Event listener untuk modal
         const modals = document.querySelectorAll('.modal');
         modals.forEach(modal => {
             modal.addEventListener('show.bs.modal', () => {
                 loadingManager.hide(); // Pastikan loading hilang saat modal muncul
             });
-            
+
             modal.addEventListener('hidden.bs.modal', () => {
                 loadingManager.hide(); // Pastikan loading hilang saat modal tertutup
             });
@@ -2735,64 +2828,64 @@ if (!isset($pemeriksaan) || !$pemeriksaan) {
     });
 
     // Tambahkan di bagian awal script, setelah definisi loadingManager
-const modalCleanup = {
-    cleanup() {
-        // Hapus semua overlay yang mungkin tertinggal
-        const overlays = document.querySelectorAll('.loading-overlay');
-        overlays.forEach(overlay => overlay.remove());
-        
-        // Reset scroll
-        document.body.style.overflow = '';
-        
-        // Hapus semua modal backdrop yang mungkin tertinggal
-        const backdrops = document.querySelectorAll('.modal-backdrop');
-        backdrops.forEach(backdrop => backdrop.remove());
-        
-        // Tutup semua modal yang masih terbuka
-        const openModals = document.querySelectorAll('.modal.show');
-        openModals.forEach(modal => {
-            const modalInstance = bootstrap.Modal.getInstance(modal);
-            if (modalInstance) {
-                modalInstance.hide();
+    const modalCleanup = {
+        cleanup() {
+            // Hapus semua overlay yang mungkin tertinggal
+            const overlays = document.querySelectorAll('.loading-overlay');
+            overlays.forEach(overlay => overlay.remove());
+
+            // Reset scroll
+            document.body.style.overflow = '';
+
+            // Hapus semua modal backdrop yang mungkin tertinggal
+            const backdrops = document.querySelectorAll('.modal-backdrop');
+            backdrops.forEach(backdrop => backdrop.remove());
+
+            // Tutup semua modal yang masih terbuka
+            const openModals = document.querySelectorAll('.modal.show');
+            openModals.forEach(modal => {
+                const modalInstance = bootstrap.Modal.getInstance(modal);
+                if (modalInstance) {
+                    modalInstance.hide();
+                }
+                modal.classList.remove('show');
+                modal.style.display = 'none';
+            });
+
+            // Reset loading manager
+            if (loadingManager && loadingManager.overlay) {
+                loadingManager.hide();
             }
-            modal.classList.remove('show');
-            modal.style.display = 'none';
-        });
-
-        // Reset loading manager
-        if (loadingManager && loadingManager.overlay) {
-            loadingManager.hide();
         }
-    }
-};
+    };
 
-// Tambahkan event listener untuk tombol close modal
-document.querySelectorAll('.modal .btn-close, .modal .close').forEach(button => {
-    button.addEventListener('click', () => {
-        setTimeout(modalCleanup.cleanup, 300);
+    // Tambahkan event listener untuk tombol close modal
+    document.querySelectorAll('.modal .btn-close, .modal .close').forEach(button => {
+        button.addEventListener('click', () => {
+            setTimeout(modalCleanup.cleanup, 300);
+        });
     });
-});
 
-// Tambahkan event listener untuk klik di luar modal
-document.addEventListener('click', (e) => {
-    if (e.target.classList.contains('modal')) {
-        setTimeout(modalCleanup.cleanup, 300);
-    }
-});
+    // Tambahkan event listener untuk klik di luar modal
+    document.addEventListener('click', (e) => {
+        if (e.target.classList.contains('modal')) {
+            setTimeout(modalCleanup.cleanup, 300);
+        }
+    });
 
-// Override fungsi hide loading untuk selalu membersihkan modal
-const originalHide = loadingManager.hide;
-loadingManager.hide = function() {
-    originalHide.call(this);
-    modalCleanup.cleanup();
-};
+    // Override fungsi hide loading untuk selalu membersihkan modal
+    const originalHide = loadingManager.hide;
+    loadingManager.hide = function() {
+        originalHide.call(this);
+        modalCleanup.cleanup();
+    };
 
     // Tambahkan di bagian script, setelah DOMContentLoaded event listener yang ada
     document.addEventListener('keydown', function(e) {
         // Jika tombol Escape ditekan
         if (e.key === 'Escape') {
             loadingManager.hide();
-            
+
             // Cari semua modal yang terbuka
             const openModals = document.querySelectorAll('.modal.show');
             openModals.forEach(modal => {
@@ -2812,7 +2905,7 @@ loadingManager.hide = function() {
             loadingManager.hide();
             document.body.style.overflow = '';
         });
-        
+
         // Tambahkan error handler untuk modal
         modal.addEventListener('show.bs.modal', function(event) {
             try {
@@ -2833,7 +2926,7 @@ loadingManager.hide = function() {
     function handleTemplateError(error, modalId) {
         console.error('Error saat menggunakan template:', error);
         loadingManager.hide();
-        
+
         // Tutup modal jika masih terbuka
         const modal = document.getElementById(modalId);
         if (modal) {
@@ -2842,10 +2935,10 @@ loadingManager.hide = function() {
                 modalInstance.hide();
             }
         }
-        
+
         // Reset scroll
         document.body.style.overflow = '';
-        
+
         // Tampilkan pesan error ke user
         alert('Terjadi kesalahan saat menggunakan template. Silakan coba lagi.');
     }
@@ -2872,5 +2965,80 @@ loadingManager.hide = function() {
                 document.body.style.overflow = '';
             }, 300);
         }
+    }
+
+    // Fungsi untuk filter gambar
+    function filterGambar() {
+        var kategori = document.getElementById('filter_kategori_gambar').value;
+        var searchText = document.getElementById('search_gambar').value.toLowerCase();
+        var items = document.querySelectorAll('.gambar-item');
+        var hasVisibleItems = false;
+
+        items.forEach(function(item) {
+            var itemKategori = item.getAttribute('data-kategori');
+            var itemJudul = item.getAttribute('data-judul').toLowerCase();
+
+            var matchesKategori = kategori === '' || itemKategori === kategori;
+            var matchesSearch = searchText === '' || itemJudul.includes(searchText);
+
+            if (matchesKategori && matchesSearch) {
+                item.style.display = '';
+                hasVisibleItems = true;
+            } else {
+                item.style.display = 'none';
+            }
+        });
+
+        // Tampilkan pesan jika tidak ada item yang sesuai
+        var noDataMessage = document.querySelector('.no-data-message');
+        if (!hasVisibleItems) {
+            if (!noDataMessage) {
+                noDataMessage = document.createElement('div');
+                noDataMessage.className = 'col-12 text-center no-data-message';
+                noDataMessage.innerHTML = 'Tidak ada gambar yang sesuai dengan kriteria pencarian';
+                document.getElementById('gridGambarEdukasi').appendChild(noDataMessage);
+            }
+            noDataMessage.style.display = '';
+        } else if (noDataMessage) {
+            noDataMessage.style.display = 'none';
+        }
+    }
+
+    // Event listener untuk filter
+    document.getElementById('filter_kategori_gambar').addEventListener('change', filterGambar);
+    document.getElementById('search_gambar').addEventListener('input', filterGambar);
+
+    // Fungsi untuk memilih gambar
+    function pilihGambar(namaFile, judul) {
+        // Simpan data gambar ke input hidden
+        document.getElementById('gambarEdukasiInput').value = namaFile;
+        document.getElementById('judulGambarEdukasiInput').value = judul;
+
+        // Tampilkan gambar dengan path yang benar
+        document.getElementById('gambarEdukasiTerpilih').src = 'uploads/edukasi/' + namaFile;
+        document.getElementById('judulGambarEdukasiTerpilih').textContent = judul;
+
+        // Tampilkan card gambar
+        document.getElementById('cardGambarEdukasi').style.display = 'block';
+
+        // Tutup modal
+        const modal = bootstrap.Modal.getInstance(document.getElementById('modalPilihGambarEdukasi'));
+        if (modal) {
+            modal.hide();
+        }
+    }
+
+    // Fungsi untuk menghapus gambar terpilih
+    function hapusGambarTerpilih() {
+        // Reset input hidden
+        document.getElementById('gambarEdukasiInput').value = '';
+        document.getElementById('judulGambarEdukasiInput').value = '';
+
+        // Reset gambar
+        document.getElementById('gambarEdukasiTerpilih').src = '';
+        document.getElementById('judulGambarEdukasiTerpilih').textContent = '';
+
+        // Sembunyikan card
+        document.getElementById('cardGambarEdukasi').style.display = 'none';
     }
 </script>
