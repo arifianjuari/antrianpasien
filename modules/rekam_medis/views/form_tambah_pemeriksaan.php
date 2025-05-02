@@ -115,20 +115,6 @@ error_log("Form tambah pemeriksaan - no_reg yang digenerate: " . $no_reg);
                     </div>
                 </div>
 
-                <div class="row mb-3">
-                    <div class="col-md-4">
-                        <div class="mb-2">
-                            <label>BB (kg)</label>
-                            <input type="number" name="bb" class="form-control form-control-sm" step="0.01" min="0" max="500" placeholder="Gunakan titik untuk desimal" onkeypress="return (event.charCode >= 48 && event.charCode <= 57) || event.charCode == 46">
-                            <small class="text-muted">Gunakan titik (.) untuk desimal, bukan koma</small>
-                        </div>
-                        <div class="mb-2">
-                            <label>TB (cm)</label>
-                            <input type="number" name="tb" class="form-control form-control-sm" step="0.1" min="0" max="300" placeholder="Gunakan titik untuk desimal" onkeypress="return (event.charCode >= 48 && event.charCode <= 57) || event.charCode == 46">
-                            <small class="text-muted">Gunakan titik (.) untuk desimal, bukan koma</small>
-                        </div>
-                    </div>
-                </div>
 
                 <div class="form-group mt-4">
                     <button type="submit" class="btn btn-primary" id="btnSimpan">

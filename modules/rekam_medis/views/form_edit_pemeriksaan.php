@@ -124,18 +124,80 @@ if (!isset($pemeriksaan) || !$pemeriksaan) {
 
     /* Loading spinner style */
     .loading-overlay {
-        position: absolute;
+        position: fixed;
+        /* Changed from absolute to fixed */
+        top: 0;
+        left: 0;
+        width: 100vw;
+        /* Changed from 100% to 100vw */
+        height: 100vh;
+        /* Changed from 100% to 100vh */
+        background-color: rgba(255, 255, 255, 0.8);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        /* Increased z-index */
+    }
+
+    .loading-spinner {
+        width: 50px;
+        height: 50px;
+        border: 5px solid #f3f3f3;
+        border-radius: 50%;
+        border-top: 5px solid #3498db;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    .modal-backdrop {
+        opacity: 0.5;
+        z-index: 1040;
+    }
+    
+    .modal {
+        z-index: 1050;
+    }
+
+    #globalLoadingOverlay {
+        position: fixed;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
-        background-color: rgba(255, 255, 255, 0.8);
-        display: flex;
+        background: rgba(255, 255, 255, 0.8);
+        display: none;
         justify-content: center;
         align-items: center;
-        z-index: 1000;
+        z-index: 9999;
+    }
+
+    .loading-content {
+        text-align: center;
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .spinner-border {
+        width: 3rem;
+        height: 3rem;
     }
 </style>
+
+<div id="globalLoadingOverlay" class="loading-overlay">
+    <div class="loading-spinner"></div>
+</div>
 
 <div class="container-fluid">
     <div class="card shadow mb-4">
@@ -1313,14 +1375,66 @@ if (!isset($pemeriksaan) || !$pemeriksaan) {
 
 <!-- Script utama aplikasi -->
 <script>
-    function gunakanTemplate(isi) {
-        const currentValue = document.getElementById('tatalaksana').value;
-        if (currentValue && currentValue.trim() !== '') {
-            document.getElementById('tatalaksana').value = currentValue + '\n\n' + isi;
-        } else {
-            document.getElementById('tatalaksana').value = isi;
+    const loadingManager = {
+        overlay: null,
+        timeoutId: null,
+        
+        init() {
+            this.overlay = document.getElementById('globalLoadingOverlay');
+        },
+        
+        show() {
+            if (this.overlay) {
+                clearTimeout(this.timeoutId);
+                this.overlay.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            }
+        },
+        
+        hide() {
+            if (this.overlay) {
+                // Tambah delay kecil untuk memastikan transisi modal selesai
+                this.timeoutId = setTimeout(() => {
+                    this.overlay.style.display = 'none';
+                    document.body.style.overflow = '';
+                }, 300);
+            }
         }
-        $('#modalDaftarTemplate').modal('hide');
+    };
+
+    // Inisialisasi saat dokumen dimuat
+    document.addEventListener('DOMContentLoaded', () => {
+        loadingManager.init();
+        
+        // Event listener untuk modal
+        const modals = document.querySelectorAll('.modal');
+        modals.forEach(modal => {
+            modal.addEventListener('show.bs.modal', () => {
+                loadingManager.hide(); // Pastikan loading hilang saat modal muncul
+            });
+            
+            modal.addEventListener('hidden.bs.modal', () => {
+                loadingManager.hide(); // Pastikan loading hilang saat modal tertutup
+            });
+        });
+    });
+
+    function gunakanTemplate(isi) {
+        try {
+            loadingManager.show();
+            const currentValue = document.getElementById('tatalaksana').value;
+            if (currentValue && currentValue.trim() !== '') {
+                document.getElementById('tatalaksana').value = currentValue + '\n\n' + isi;
+            } else {
+                document.getElementById('tatalaksana').value = isi;
+            }
+            const modal = bootstrap.Modal.getInstance(document.getElementById('modalDaftarTemplate'));
+            if (modal) {
+                modal.hide();
+            }
+        } finally {
+            loadingManager.hide();
+        }
     }
 
     function printUsg() {
@@ -1372,13 +1486,21 @@ if (!isset($pemeriksaan) || !$pemeriksaan) {
     }
 
     function gunakanTemplateUsg(isi) {
-        const currentValue = document.getElementById('ultrasonografi').value;
-        if (currentValue && currentValue.trim() !== '') {
-            document.getElementById('ultrasonografi').value = currentValue + '\n\n' + isi;
-        } else {
-            document.getElementById('ultrasonografi').value = isi;
+        try {
+            loadingManager.show();
+            const currentValue = document.getElementById('ultrasonografi').value;
+            if (currentValue && currentValue.trim() !== '') {
+                document.getElementById('ultrasonografi').value = currentValue + '\n\n' + isi;
+            } else {
+                document.getElementById('ultrasonografi').value = isi;
+            }
+            const modal = bootstrap.Modal.getInstance(document.getElementById('modalDaftarTemplateUsg'));
+            if (modal) {
+                modal.hide();
+            }
+        } finally {
+            loadingManager.hide();
         }
-        $('#modalDaftarTemplateUsg').modal('hide');
     }
 
     function gunakanDiagnosis(isi) {
@@ -1387,51 +1509,67 @@ if (!isset($pemeriksaan) || !$pemeriksaan) {
     }
 
     function gunakanTemplateEdukasi(isi) {
-        const currentValue = document.getElementById('edukasi').value;
+        try {
+            loadingManager.show();
+            const currentValue = document.getElementById('edukasi').value;
 
-        // Hapus escape karakter yang mungkin ada
-        const cleanedIsi = isi.replace(/\\n/g, '\n').replace(/\\"/g, '"').replace(/\\'/g, "'");
+            // Hapus escape karakter yang mungkin ada
+            const cleanedIsi = isi.replace(/\\n/g, '\n').replace(/\\"/g, '"').replace(/\\'/g, "'");
 
-        // Konversi HTML ke teks biasa
-        const tempDiv = document.createElement('div');
-        tempDiv.innerHTML = cleanedIsi;
-        const textContent = tempDiv.textContent || tempDiv.innerText || '';
+            // Konversi HTML ke teks biasa
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = cleanedIsi;
+            const textContent = tempDiv.textContent || tempDiv.innerText || '';
 
-        // Bersihkan spasi dan baris kosong berlebihan
-        const cleanedContent = textContent
-            .replace(/^\s+|\s+$/g, '') // Hapus whitespace di awal dan akhir
-            .replace(/\n\s*\n\s*\n/g, '\n\n'); // Ubah 3 atau lebih baris kosong menjadi 2
+            // Bersihkan spasi dan baris kosong berlebihan
+            const cleanedContent = textContent
+                .replace(/^\s+|\s+$/g, '') // Hapus whitespace di awal dan akhir
+                .replace(/\n\s*\n\s*\n/g, '\n\n'); // Ubah 3 atau lebih baris kosong menjadi 2
 
-        if (currentValue && currentValue.trim() !== '') {
-            document.getElementById('edukasi').value = currentValue + '\n\n' + cleanedContent;
-        } else {
-            document.getElementById('edukasi').value = cleanedContent;
+            if (currentValue && currentValue.trim() !== '') {
+                document.getElementById('edukasi').value = currentValue + '\n\n' + cleanedContent;
+            } else {
+                document.getElementById('edukasi').value = cleanedContent;
+            }
+            const modal = bootstrap.Modal.getInstance(document.getElementById('modalDaftarEdukasi'));
+            if (modal) {
+                modal.hide();
+            }
+        } finally {
+            loadingManager.hide();
         }
-        $('#modalDaftarEdukasi').modal('hide');
     }
 
     function gunakanTemplateResume(isi) {
-        const currentValue = document.getElementById('resume').value;
+        try {
+            loadingManager.show();
+            const currentValue = document.getElementById('resume').value;
 
-        // Hapus escape karakter yang mungkin ada
-        const cleanedIsi = isi.replace(/\\n/g, '\n').replace(/\\"/g, '"').replace(/\\'/g, "'");
+            // Hapus escape karakter yang mungkin ada
+            const cleanedIsi = isi.replace(/\\n/g, '\n').replace(/\\"/g, '"').replace(/\\'/g, "'");
 
-        // Konversi HTML ke teks biasa
-        const tempDiv = document.createElement('div');
-        tempDiv.innerHTML = cleanedIsi;
-        const textContent = tempDiv.textContent || tempDiv.innerText || '';
+            // Konversi HTML ke teks biasa
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = cleanedIsi;
+            const textContent = tempDiv.textContent || tempDiv.innerText || '';
 
-        // Bersihkan spasi dan baris kosong berlebihan
-        const cleanedContent = textContent
-            .replace(/^\s+|\s+$/g, '') // Hapus whitespace di awal dan akhir
-            .replace(/\n\s*\n\s*\n/g, '\n\n'); // Ubah 3 atau lebih baris kosong menjadi 2
+            // Bersihkan spasi dan baris kosong berlebihan
+            const cleanedContent = textContent
+                .replace(/^\s+|\s+$/g, '') // Hapus whitespace di awal dan akhir
+                .replace(/\n\s*\n\s*\n/g, '\n\n'); // Ubah 3 atau lebih baris kosong menjadi 2
 
-        if (currentValue && currentValue.trim() !== '') {
-            document.getElementById('resume').value = currentValue + '\n\n' + cleanedContent;
-        } else {
-            document.getElementById('resume').value = cleanedContent;
+            if (currentValue && currentValue.trim() !== '') {
+                document.getElementById('resume').value = currentValue + '\n\n' + cleanedContent;
+            } else {
+                document.getElementById('resume').value = cleanedContent;
+            }
+            const modal = bootstrap.Modal.getInstance(document.getElementById('modalDaftarTemplateResume'));
+            if (modal) {
+                modal.hide();
+            }
+        } finally {
+            loadingManager.hide();
         }
-        $('#modalDaftarTemplateResume').modal('hide');
     }
 
     // Fungsi untuk menangani checkbox "Pilih Semua"
@@ -2595,4 +2733,144 @@ if (!isset($pemeriksaan) || !$pemeriksaan) {
         setupObserver('riwayat-kehamilan', refreshRiwayatKehamilanData);
         setupObserver('status-ginekologi', refreshStatusGinekologiData);
     });
+
+    // Tambahkan di bagian awal script, setelah definisi loadingManager
+const modalCleanup = {
+    cleanup() {
+        // Hapus semua overlay yang mungkin tertinggal
+        const overlays = document.querySelectorAll('.loading-overlay');
+        overlays.forEach(overlay => overlay.remove());
+        
+        // Reset scroll
+        document.body.style.overflow = '';
+        
+        // Hapus semua modal backdrop yang mungkin tertinggal
+        const backdrops = document.querySelectorAll('.modal-backdrop');
+        backdrops.forEach(backdrop => backdrop.remove());
+        
+        // Tutup semua modal yang masih terbuka
+        const openModals = document.querySelectorAll('.modal.show');
+        openModals.forEach(modal => {
+            const modalInstance = bootstrap.Modal.getInstance(modal);
+            if (modalInstance) {
+                modalInstance.hide();
+            }
+            modal.classList.remove('show');
+            modal.style.display = 'none';
+        });
+
+        // Reset loading manager
+        if (loadingManager && loadingManager.overlay) {
+            loadingManager.hide();
+        }
+    }
+};
+
+// Tambahkan event listener untuk tombol close modal
+document.querySelectorAll('.modal .btn-close, .modal .close').forEach(button => {
+    button.addEventListener('click', () => {
+        setTimeout(modalCleanup.cleanup, 300);
+    });
+});
+
+// Tambahkan event listener untuk klik di luar modal
+document.addEventListener('click', (e) => {
+    if (e.target.classList.contains('modal')) {
+        setTimeout(modalCleanup.cleanup, 300);
+    }
+});
+
+// Override fungsi hide loading untuk selalu membersihkan modal
+const originalHide = loadingManager.hide;
+loadingManager.hide = function() {
+    originalHide.call(this);
+    modalCleanup.cleanup();
+};
+
+    // Tambahkan di bagian script, setelah DOMContentLoaded event listener yang ada
+    document.addEventListener('keydown', function(e) {
+        // Jika tombol Escape ditekan
+        if (e.key === 'Escape') {
+            loadingManager.hide();
+            
+            // Cari semua modal yang terbuka
+            const openModals = document.querySelectorAll('.modal.show');
+            openModals.forEach(modal => {
+                const modalInstance = bootstrap.Modal.getInstance(modal);
+                if (modalInstance) {
+                    modalInstance.hide();
+                }
+            });
+        }
+    });
+
+    // Tambahkan event handler untuk semua modal
+    const allModals = document.querySelectorAll('.modal');
+    allModals.forEach(modal => {
+        modal.addEventListener('hidden.bs.modal', function() {
+            // Pastikan loading overlay hilang ketika modal ditutup
+            loadingManager.hide();
+            document.body.style.overflow = '';
+        });
+        
+        // Tambahkan error handler untuk modal
+        modal.addEventListener('show.bs.modal', function(event) {
+            try {
+                // Reset modal state
+                const modalBody = this.querySelector('.modal-body');
+                if (modalBody) {
+                    const loadingOverlays = modalBody.querySelectorAll('.loading-overlay');
+                    loadingOverlays.forEach(overlay => overlay.remove());
+                }
+            } catch (error) {
+                console.error('Error saat membuka modal:', error);
+                loadingManager.hide();
+            }
+        });
+    });
+
+    // Perbaiki fungsi gunakanTemplate untuk menangani error dengan lebih baik
+    function handleTemplateError(error, modalId) {
+        console.error('Error saat menggunakan template:', error);
+        loadingManager.hide();
+        
+        // Tutup modal jika masih terbuka
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            const modalInstance = bootstrap.Modal.getInstance(modal);
+            if (modalInstance) {
+                modalInstance.hide();
+            }
+        }
+        
+        // Reset scroll
+        document.body.style.overflow = '';
+        
+        // Tampilkan pesan error ke user
+        alert('Terjadi kesalahan saat menggunakan template. Silakan coba lagi.');
+    }
+
+    // Update semua fungsi template untuk menggunakan error handler
+    function gunakanTemplate(isi) {
+        try {
+            loadingManager.show();
+            const currentValue = document.getElementById('tatalaksana').value;
+            if (currentValue && currentValue.trim() !== '') {
+                document.getElementById('tatalaksana').value = currentValue + '\n\n' + isi;
+            } else {
+                document.getElementById('tatalaksana').value = isi;
+            }
+            const modal = bootstrap.Modal.getInstance(document.getElementById('modalDaftarTemplate'));
+            if (modal) {
+                modal.hide();
+            }
+        } catch (error) {
+            handleTemplateError(error, 'modalDaftarTemplate');
+        } finally {
+            setTimeout(() => {
+                loadingManager.hide();
+                document.body.style.overflow = '';
+            }, 300);
+        }
+    }
 </script>
