@@ -699,8 +699,11 @@ if (!isset($pemeriksaan) || !$pemeriksaan) {
                                 <input type="hidden" name="gambar_edukasi" id="gambarEdukasiInput">
                                 <input type="hidden" name="judul_gambar_edukasi" id="judulGambarEdukasiInput">
                                 <div class="text-center">
-                                    <img id="gambarEdukasiTerpilih" src="" class="img-fluid" style="max-height: 300px;" alt="Gambar Edukasi">
+                                    <a href="#" onclick="bukaGambarDiTabBaru(); return false;" style="cursor: pointer;" title="Klik untuk membuka gambar di tab baru">
+                                        <img id="gambarEdukasiTerpilih" src="" class="img-fluid" style="max-height: 300px;" alt="Gambar Edukasi">
+                                    </a>
                                     <p class="mt-2" id="judulGambarEdukasiTerpilih"></p>
+                                    <small class="text-muted">(Klik gambar untuk membuka di tab baru)</small>
                                 </div>
                             </div>
                         </div>
@@ -3015,7 +3018,8 @@ if (!isset($pemeriksaan) || !$pemeriksaan) {
         document.getElementById('judulGambarEdukasiInput').value = judul;
 
         // Tampilkan gambar dengan path yang benar
-        document.getElementById('gambarEdukasiTerpilih').src = 'uploads/edukasi/' + namaFile;
+        const gambarPath = 'uploads/edukasi/' + namaFile;
+        document.getElementById('gambarEdukasiTerpilih').src = gambarPath;
         document.getElementById('judulGambarEdukasiTerpilih').textContent = judul;
 
         // Tampilkan card gambar
@@ -3040,5 +3044,12 @@ if (!isset($pemeriksaan) || !$pemeriksaan) {
 
         // Sembunyikan card
         document.getElementById('cardGambarEdukasi').style.display = 'none';
+    }
+
+    function bukaGambarDiTabBaru() {
+        const gambarSrc = document.getElementById('gambarEdukasiTerpilih').src;
+        if (gambarSrc) {
+            window.open(gambarSrc, '_blank');
+        }
     }
 </script>
