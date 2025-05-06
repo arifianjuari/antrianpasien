@@ -85,7 +85,8 @@ try {
             jr.Jenis_Layanan,
             tp.Nama_Tempat,
             d.Nama_Dokter,
-            pas.no_tlp
+            pas.no_tlp,
+            pas.berikutnya_gratis
         FROM 
             pendaftaran p
         JOIN pasien pas ON p.no_ktp = pas.no_ktp
@@ -691,6 +692,7 @@ try {
                                                     <th class="text-center small fw-normal">Kode Voucher</th>
                                                     <th class="text-center small fw-normal">Keluhan</th>
                                                     <th class="text-center small fw-normal">Mohon Keringanan</th>
+                                                    <th class="text-center small fw-normal">Gratis</th>
                                                     <th class="text-center small fw-normal">Status</th>
                                                 </tr>
                                             </thead>
@@ -794,6 +796,13 @@ try {
                                                         </td>
                                                         <td><?= !empty($a['Keluhan']) ? htmlspecialchars($a['Keluhan']) : '-' ?></td>
                                                         <td><?= !empty($a['mohon_keringanan']) ? htmlspecialchars($a['mohon_keringanan']) : '-' ?></td>
+                                                        <td class="text-center">
+                                                            <?php if ($a['berikutnya_gratis'] == 1): ?>
+                                                                <span class="badge bg-success">Ya</span>
+                                                            <?php else: ?>
+                                                                <span class="badge bg-secondary">Tidak</span>
+                                                            <?php endif; ?>
+                                                        </td>
                                                         <td>
                                                             <span class="badge <?= getStatusBadgeClass($a['Status_Pendaftaran']) ?>">
                                                                 <?= htmlspecialchars($a['Status_Pendaftaran']) ?>
