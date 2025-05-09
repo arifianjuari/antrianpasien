@@ -305,6 +305,26 @@ try {
                 // Penting: exit setelah include untuk mencegah layout dimuat
                 exit;
                 break;
+            case 'get_surat_ajax':
+                // Mengambil data surat via AJAX
+                error_log("Routing to get_surat_ajax for no_rkm_medis: " . ($_GET['no_rkm_medis'] ?? 'not set'));
+                // Tetapkan header untuk JSON
+                header('Content-Type: application/json');
+                // Panggil method controller
+                $rekamMedisController->get_surat_ajax();
+                // Penting: exit setelah include untuk mencegah layout dimuat
+                exit;
+                break;
+            case 'tambahSurat':
+                // Menambah data surat via AJAX
+                error_log("Routing to tambahSurat");
+                // Tetapkan header untuk JSON
+                header('Content-Type: application/json');
+                // Panggil method controller
+                $rekamMedisController->tambahSurat();
+                // Penting: exit setelah include untuk mencegah layout dimuat
+                exit;
+                break;
             default:
                 if (empty($action)) {
                     $rekamMedisController->index();

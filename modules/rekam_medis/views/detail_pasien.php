@@ -634,6 +634,11 @@ error_log("Data pasien: " . json_encode($pasien));
                                 </a>
                             </li>
                             <li class="nav-item">
+                                <a class="nav-link collapsed" id="surat-tab" data-toggle="collapse" href="#surat" role="tab">
+                                    Surat <i class="fas fa-chevron-down"></i>
+                                </a>
+                            </li>
+                            <li class="nav-item">
                                 <a class="nav-link collapsed" id="download-tab" data-toggle="collapse" href="#download" role="tab">
                                     Download <i class="fas fa-chevron-down"></i>
                                 </a>
@@ -876,6 +881,35 @@ error_log("Data pasien: " . json_encode($pasien));
                                             <tbody id="statusGinekologiTableBody">
                                                 <tr>
                                                     <td colspan="7" class="text-center">Memuat data status ginekologi...</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Tab Surat -->
+                            <div class="tab-pane fade" id="surat" role="tabpanel">
+                                <div class="d-flex justify-content-end mb-3">
+                                    <button id="tambahSurat" class="btn btn-primary btn-sm">
+                                        <i class="fas fa-plus"></i> Tambah Surat
+                                    </button>
+                                </div>
+                                <div id="suratContent" class="position-relative">
+                                    <div class="table-responsive">
+                                        <table class="table table-sm table-bordered table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>Tanggal</th>
+                                                    <th>Jenis Surat</th>
+                                                    <th>Diagnosa</th>
+                                                    <th>Dokter Pemeriksa</th>
+                                                    <th>Aksi</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="suratTableBody">
+                                                <tr>
+                                                    <td colspan="5" class="text-center">Memuat data surat...</td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -1174,6 +1208,77 @@ error_log("Data pasien: " . json_encode($pasien));
                         <div class="mb-3">
                             <label class="form-label">Lama Menikah (Tahun)</label>
                             <input type="number" name="lama_menikah" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-primary">Simpan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Tambah Surat -->
+    <div class="modal fade" id="modalSurat" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Tambah Surat</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="formSurat" method="post" onsubmit="return false;">
+                    <div class="modal-body">
+                        <input type="hidden" name="no_rkm_medis" value="<?= $pasien['no_rkm_medis'] ?>">
+
+                        <div class="mb-3">
+                            <label class="form-label">Tanggal Surat</label>
+                            <input type="date" name="tanggal_surat" class="form-control" value="<?= date('Y-m-d') ?>" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Jenis Surat</label>
+                            <select name="jenis_surat" class="form-select" id="jenisSurat" required>
+                                <option value="">-- Pilih Jenis Surat --</option>
+                                <option value="skd">Surat Keterangan Dokter</option>
+                                <option value="sakit">Surat Sakit</option>
+                                <option value="rujukan">Surat Rujukan</option>
+                            </select>
+                        </div>
+
+                        <!-- Field khusus untuk surat sakit -->
+                        <div id="fieldSuratSakit" style="display: none;">
+                            <div class="mb-3">
+                                <label class="form-label">Mulai Sakit</label>
+                                <input type="date" name="mulai_sakit" class="form-control">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Selesai Sakit</label>
+                                <input type="date" name="selesai_sakit" class="form-control">
+                            </div>
+                        </div>
+
+                        <!-- Field khusus untuk surat dokter umum -->
+                        <div id="fieldSuratDokter" style="display: none;">
+                            <div class="mb-3">
+                                <label class="form-label">Keperluan</label>
+                                <input type="text" name="keperluan" class="form-control" placeholder="Keperluan dibuatnya surat">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Diagnosa</label>
+                            <input type="text" name="diagnosa" class="form-control" placeholder="Diagnosa pasien (opsional)">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Catatan</label>
+                            <textarea name="catatan" class="form-control" rows="3" placeholder="Catatan tambahan di surat"></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Dokter Pemeriksa</label>
+                            <input type="text" name="dokter_pemeriksa" class="form-control" required>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -1628,22 +1733,194 @@ error_log("Data pasien: " . json_encode($pasien));
                 });
         }
 
+        // Fungsi untuk memuat data Surat menggunakan AJAX
+        function loadSuratData() {
+            const noRkmMedis = '<?= $pasien['no_rkm_medis'] ?>';
+            const suratTableBody = document.getElementById('suratTableBody');
+
+            // Tampilkan loading
+            suratTableBody.innerHTML = '<tr><td colspan="5" class="text-center"><i class="fas fa-spinner fa-spin me-2"></i>Memuat data surat...</td></tr>';
+
+            console.log('Memuat data surat untuk: ' + noRkmMedis);
+
+            // Buat AJAX request
+            fetch('index.php?module=rekam_medis&action=get_surat_ajax&no_rkm_medis=' + encodeURIComponent(noRkmMedis))
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Data surat berhasil dimuat:', data);
+
+                    if (data.status === 'success' && data.data && data.data.length > 0) {
+                        let tableHtml = '';
+
+                        data.data.forEach(function(surat) {
+                            const tanggalSurat = new Date(surat.tanggal_surat).toLocaleDateString('id-ID', {
+                                day: '2-digit',
+                                month: '2-digit',
+                                year: 'numeric'
+                            });
+
+                            // Format jenis surat untuk tampilan
+                            let jenisSuratText = '';
+                            switch(surat.jenis_surat) {
+                                case 'skd':
+                                    jenisSuratText = 'Surat Keterangan Dokter';
+                                    break;
+                                case 'sakit':
+                                    jenisSuratText = 'Surat Sakit';
+                                    break;
+                                case 'rujukan':
+                                    jenisSuratText = 'Surat Rujukan';
+                                    break;
+                                default:
+                                    jenisSuratText = surat.jenis_surat;
+                            }
+
+                            tableHtml += `
+                                <tr>
+                                    <td>${tanggalSurat}</td>
+                                    <td>${jenisSuratText}</td>
+                                    <td>${surat.diagnosa || '-'}</td>
+                                    <td>${surat.dokter_pemeriksa || '-'}</td>
+                                    <td>
+                                        <a href="index.php?module=rekam_medis&action=edit_surat&id=${surat.id_surat}&source=<?= $_SESSION['source_page'] ?>" class="btn btn-warning btn-sm">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a href="index.php?module=rekam_medis&action=hapus_surat&id=${surat.id_surat}&source=<?= $_SESSION['source_page'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus surat ini?')">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                        <a href="index.php?module=rekam_medis&action=cetak_surat&id=${surat.id_surat}" class="btn btn-primary btn-sm" target="_blank">
+                                            <i class="fas fa-print"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            `;
+                        });
+
+                        suratTableBody.innerHTML = tableHtml;
+                    } else {
+                        suratTableBody.innerHTML = '<tr><td colspan="5" class="text-center">Tidak ada data surat</td></tr>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error saat memuat data surat:', error);
+                    suratTableBody.innerHTML = '<tr><td colspan="5" class="text-center text-danger">Error: Gagal memuat data surat</td></tr>';
+                });
+        }
+
         // Muat data saat tab dibuka
         document.addEventListener('DOMContentLoaded', function() {
             // Modify tab click handlers to load data
-            const tabToggles = document.querySelectorAll('[data-toggle="collapse"]');
+            document.getElementById('status-ginekologi-tab').addEventListener('click', function() {
+                loadStatusGinekologiData();
+            });
 
-            tabToggles.forEach(toggle => {
-                toggle.addEventListener('click', function(e) {
-                    const targetId = this.getAttribute('href');
+            document.getElementById('riwayat-kehamilan-tab').addEventListener('click', function() {
+                loadRiwayatKehamilanData();
+            });
 
-                    // Jika tab terbuka dan adalah tab yang kita ingin load datanya
-                    if (!this.classList.contains('collapsed')) {
-                        if (targetId === '#riwayat-kehamilan') {
-                            loadRiwayatKehamilanData();
-                        } else if (targetId === '#status-ginekologi') {
-                            loadStatusGinekologiData();
+            document.getElementById('surat-tab').addEventListener('click', function() {
+                loadSuratData();
+            });
+
+            // Handler untuk tombol Tambah Surat
+            document.getElementById('tambahSurat').addEventListener('click', function() {
+                $('#modalSurat').modal('show');
+            });
+
+            // Handler untuk perubahan jenis surat
+            document.getElementById('jenisSurat').addEventListener('change', function() {
+                const jenisSurat = this.value;
+                const fieldSuratSakit = document.getElementById('fieldSuratSakit');
+                const fieldSuratDokter = document.getElementById('fieldSuratDokter');
+
+                // Sembunyikan semua field khusus
+                fieldSuratSakit.style.display = 'none';
+                fieldSuratDokter.style.display = 'none';
+
+                // Tampilkan field sesuai jenis surat
+                if (jenisSurat === 'sakit') {
+                    fieldSuratSakit.style.display = 'block';
+                } else if (jenisSurat === 'skd') {
+                    fieldSuratDokter.style.display = 'block';
+                }
+            });
+
+            // Handler untuk submit form surat
+            $('#formSurat').on('submit', function(e) {
+                e.preventDefault();
+
+                // Debug: Log the form data before submitting
+                console.log('Form data:', $(this).serialize());
+                
+                $.ajax({
+                    url: 'index.php?module=rekam_medis&action=tambahSurat',
+                    type: 'POST',
+                    data: $(this).serialize(),
+                    dataType: 'json',
+                    beforeSend: function() {
+                        console.log('Submitting form to:', 'index.php?module=rekam_medis&action=tambahSurat');
+                        $('.modal-footer button').prop('disabled', true);
+                        $('.modal-footer button[type="submit"]').html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Menyimpan...');
+                    },
+                    success: function(response) {
+                        console.log('Success response:', response);
+                        if (response.status == 'success') {
+                            $('#modalSurat').modal('hide');
+                            $('#formSurat')[0].reset();
+
+                            // Tampilkan alert sukses
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil',
+                                text: 'Data surat berhasil disimpan',
+                                allowOutsideClick: false
+                            }).then((result) => {
+                                // Refresh halaman dengan mempertahankan tab yang aktif
+                                window.location.href = 'index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=<?= $pasien["no_rkm_medis"] ?>#surat';
+                                location.reload();
+                            });
+                        } else {
+                            // Tampilkan alert error
+                            console.error('Error in response:', response);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal',
+                                text: response.message || 'Terjadi kesalahan saat menyimpan data'
+                            });
                         }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('AJAX Error:', {
+                            status: status,
+                            error: error,
+                            responseText: xhr.responseText,
+                            statusCode: xhr.status,
+                            statusText: xhr.statusText
+                        });
+                        
+                        // Try to parse response if available
+                        let errorMessage = 'Terjadi kesalahan saat menyimpan data';
+                        try {
+                            if (xhr.responseText) {
+                                const errorResponse = JSON.parse(xhr.responseText);
+                                if (errorResponse.message) {
+                                    errorMessage = errorResponse.message;
+                                }
+                            }
+                        } catch (e) {
+                            console.error('Error parsing response:', e);
+                        }
+                        
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Gagal',
+                            text: errorMessage
+                        });
+                    },
+                    complete: function() {
+                        console.log('Request completed');
+                        $('.modal-footer button').prop('disabled', false);
+                        $('.modal-footer button[type="submit"]').html('Simpan');
                     }
                 });
             });
@@ -1660,6 +1937,8 @@ error_log("Data pasien: " . json_encode($pasien));
                         setTimeout(loadRiwayatKehamilanData, 300); // Delay sebentar agar tab selesai dibuka
                     } else if (window.location.hash === '#status-ginekologi') {
                         setTimeout(loadStatusGinekologiData, 300); // Delay sebentar agar tab selesai dibuka
+                    } else if (window.location.hash === '#surat') {
+                        setTimeout(loadSuratData, 300); // Delay sebentar agar tab selesai dibuka
                     }
                 }
             }

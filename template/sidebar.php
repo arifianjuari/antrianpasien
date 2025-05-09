@@ -1217,6 +1217,12 @@ function is_current_module($module, $action = null)
                             <span class="menu-text">Manajemen Voucher</span>
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a href="<?php echo $base_url; ?>/admin_praktek/statistik_laporan.php" class="nav-link <?php echo is_current_page('/admin_praktek/statistik_laporan.php') ? 'active' : ''; ?>" data-title="Statistik dan Laporan">
+                            <i class="bi bi-graph-up"></i>
+                            <span class="menu-text">Statistik dan Laporan</span>
+                        </a>
+                    </li>
                 </ul>
             </li>
         <?php endif; ?>

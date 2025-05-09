@@ -72,12 +72,13 @@ if (isset($_POST['tambah'])) {
     $kategori = $_POST['kategori'] ?? '';
     $catatan_obat = $_POST['catatan_obat'] ?? '';
     $harga = $_POST['harga'];
+    $farmasi = $_POST['farmasi'] ?? '';
+    $ed = !empty($_POST['ed']) ? $_POST['ed'] : null;
     $status_aktif = isset($_POST['status_aktif']) ? 1 : 0;
 
     try {
-        $stmt = $conn->prepare("INSERT INTO formularium (id_obat, nama_obat, nama_generik, bentuk_sediaan, dosis, kategori, catatan_obat, harga, status_aktif) 
-                VALUES (:id_obat, :nama_obat, :nama_generik, :bentuk_sediaan, :dosis, :kategori, :catatan_obat, :harga, :status_aktif)");
-
+        $stmt = $conn->prepare("INSERT INTO formularium (id_obat, nama_obat, nama_generik, bentuk_sediaan, dosis, kategori, catatan_obat, harga, farmasi, ed, status_aktif) 
+            VALUES (:id_obat, :nama_obat, :nama_generik, :bentuk_sediaan, :dosis, :kategori, :catatan_obat, :harga, :farmasi, :ed, :status_aktif)");
         $stmt->bindParam(':id_obat', $id_obat);
         $stmt->bindParam(':nama_obat', $nama_obat);
         $stmt->bindParam(':nama_generik', $nama_generik);
@@ -86,8 +87,13 @@ if (isset($_POST['tambah'])) {
         $stmt->bindParam(':kategori', $kategori);
         $stmt->bindParam(':catatan_obat', $catatan_obat);
         $stmt->bindParam(':harga', $harga);
+        $stmt->bindParam(':farmasi', $farmasi);
+        if ($ed === null) {
+            $stmt->bindValue(':ed', null, PDO::PARAM_NULL);
+        } else {
+            $stmt->bindParam(':ed', $ed);
+        }
         $stmt->bindParam(':status_aktif', $status_aktif);
-
         $stmt->execute();
         $success_message = "Data obat berhasil ditambahkan";
     } catch (PDOException $e) {
@@ -105,6 +111,9 @@ if (isset($_POST['edit'])) {
     $kategori = $_POST['kategori'] ?? '';
     $catatan_obat = $_POST['catatan_obat'] ?? '';
     $harga = $_POST['harga'];
+    $farmasi = $_POST['farmasi'] ?? '';
+    // Determine ED: null if empty to allow proper NULL binding
+    $ed = !empty($_POST['ed']) ? $_POST['ed'] : null;
     $status_aktif = isset($_POST['status_aktif']) ? 1 : 0;
 
     try {
@@ -116,6 +125,8 @@ if (isset($_POST['edit'])) {
                 kategori = :kategori,
                 catatan_obat = :catatan_obat,
                 harga = :harga,
+                farmasi = :farmasi,
+                ed = :ed,
                 status_aktif = :status_aktif
                 WHERE id_obat = :id_obat");
 
@@ -127,6 +138,13 @@ if (isset($_POST['edit'])) {
         $stmt->bindParam(':kategori', $kategori);
         $stmt->bindParam(':catatan_obat', $catatan_obat);
         $stmt->bindParam(':harga', $harga);
+        $stmt->bindParam(':farmasi', $farmasi);
+        // Bind ED: set as NULL if not provided
+        if ($ed === null) {
+            $stmt->bindValue(':ed', null, PDO::PARAM_NULL);
+        } else {
+            $stmt->bindParam(':ed', $ed);
+        }
         $stmt->bindParam(':status_aktif', $status_aktif);
 
         $stmt->execute();
@@ -199,6 +217,10 @@ try {
             margin-right: 5px;
             margin-bottom: 5px;
         }
+        /* Perkecil font tabel formularium */
+        #tabelFormularium th, #tabelFormularium td {
+            font-size: 0.85rem;
+        }
     </style>
 </head>
 
@@ -255,15 +277,18 @@ try {
                             </div>
 
                             <div class="table-responsive">
-                                <table id="tabelFormularium" class="table table-striped table-hover">
+                                <table id="tabelFormularium" class="table table-striped table-hover table-sm">
                                     <thead>
                                         <tr>
                                             <th>No</th>
                                             <th>Nama Obat</th>
-                                            <th>Nama Generik</th>
                                             <th>Bentuk Sediaan</th>
                                             <th>Dosis</th>
                                             <th>Harga</th>
+                                            <th>Farmasi</th>
+                                            <th>Catatan</th>
+                                            <th>ED</th>
+                                            <th>Kategori</th>
                                             <th>Status</th>
                                             <th>Aksi</th>
                                         </tr>
@@ -276,27 +301,32 @@ try {
                                             <tr>
                                                 <td><?= $no++ ?></td>
                                                 <td><?= htmlspecialchars($row['nama_obat']) ?></td>
-                                                <td><?= htmlspecialchars($row['nama_generik']) ?></td>
                                                 <td><?= htmlspecialchars($row['bentuk_sediaan']) ?></td>
-                                                <td><?= htmlspecialchars($row['dosis']) ?></td>
-                                                <td><?= formatRupiah($row['harga']) ?></td>
-                                                <td>
-                                                    <span class="badge <?= $row['status_aktif'] ? 'bg-success' : 'bg-danger' ?>">
-                                                        <?= $row['status_aktif'] ? 'Aktif' : 'Nonaktif' ?>
-                                                    </span>
-                                                </td>
-                                                <td>
+                                                <td><?= htmlspecialchars($row['dosis'] ?? '') ?></td>
+                                            <td><?= formatRupiah($row['harga']) ?></td>
+                                            <td><?= htmlspecialchars($row['farmasi'] ?? '') ?></td>
+                                            <td><?= htmlspecialchars($row['catatan_obat'] ?? '') ?></td>
+                                            <td><?= htmlspecialchars(!empty($row['ed']) ? date('d-m-Y', strtotime($row['ed'])) : '-') ?></td>
+                                            <td><?= htmlspecialchars($row['kategori'] ?? '-') ?></td>
+                                            <td>
+                                                <span class="badge <?= $row['status_aktif'] ? 'bg-success' : 'bg-danger' ?>">
+                                                    <?= $row['status_aktif'] ? 'Aktif' : 'Nonaktif' ?>
+                                                </span>
+                                            </td>
+                                            <td>
                                                     <button type="button" class="btn btn-sm btn-info"
                                                         data-bs-toggle="modal"
                                                         data-bs-target="#modalEdit"
                                                         data-id="<?= $row['id_obat'] ?>"
                                                         data-nama="<?= htmlspecialchars($row['nama_obat']) ?>"
-                                                        data-generik="<?= htmlspecialchars($row['nama_generik']) ?>"
+                                                        data-generik="<?= htmlspecialchars($row['nama_generik'] ?? '') ?>"
                                                         data-bentuk="<?= htmlspecialchars($row['bentuk_sediaan']) ?>"
-                                                        data-dosis="<?= htmlspecialchars($row['dosis']) ?>"
+                                                        data-dosis="<?= htmlspecialchars($row['dosis'] ?? '') ?>"
                                                         data-kategori="<?= htmlspecialchars($row['kategori']) ?>"
                                                         data-catatan="<?= htmlspecialchars($row['catatan_obat']) ?>"
                                                         data-harga="<?= $row['harga'] ?>"
+                                                        data-farmasi="<?= htmlspecialchars($row['farmasi'] ?? '') ?>"
+                                                        data-ed="<?= (isset($row['ed']) && $row['ed'] != '0000-00-00' ? htmlspecialchars($row['ed']) : '') ?>"
                                                         data-status="<?= $row['status_aktif'] ?>">
                                                         <i class="bi bi-pencil-square"></i>
                                                     </button>
@@ -338,12 +368,7 @@ try {
                         </div>
                         <div class="mb-3">
                             <label for="bentuk_sediaan" class="form-label">Bentuk Sediaan</label>
-                            <select class="form-select" id="bentuk_sediaan" name="bentuk_sediaan">
-                                <option value="">Pilih Bentuk Sediaan</option>
-                                <?php foreach ($bentuk_sediaan_list as $bentuk): ?>
-                                    <option value="<?= $bentuk ?>"><?= $bentuk ?></option>
-                                <?php endforeach; ?>
-                            </select>
+                            <input type="text" class="form-control" id="bentuk_sediaan" name="bentuk_sediaan" placeholder="Masukkan Bentuk Sediaan">
                         </div>
                         <div class="mb-3">
                             <label for="dosis" class="form-label">Dosis</label>
@@ -364,6 +389,14 @@ try {
                                 <span class="input-group-text">Rp</span>
                                 <input type="number" class="form-control" id="harga" name="harga" min="0" required>
                             </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="farmasi" class="form-label">Farmasi</label>
+                            <input type="text" class="form-control" id="farmasi" name="farmasi">
+                        </div>
+                        <div class="mb-3">
+                            <label for="ed" class="form-label">ED</label>
+                            <input type="date" class="form-control" id="ed" name="ed">
                         </div>
                         <div class="mb-3">
                             <label for="catatan_obat" class="form-label">Catatan</label>
@@ -406,12 +439,7 @@ try {
                         </div>
                         <div class="mb-3">
                             <label for="edit_bentuk_sediaan" class="form-label">Bentuk Sediaan</label>
-                            <select class="form-select" id="edit_bentuk_sediaan" name="bentuk_sediaan">
-                                <option value="">Pilih Bentuk Sediaan</option>
-                                <?php foreach ($bentuk_sediaan_list as $bentuk): ?>
-                                    <option value="<?= $bentuk ?>"><?= $bentuk ?></option>
-                                <?php endforeach; ?>
-                            </select>
+                            <input type="text" class="form-control" id="edit_bentuk_sediaan" name="bentuk_sediaan" placeholder="Masukkan Bentuk Sediaan">
                         </div>
                         <div class="mb-3">
                             <label for="edit_dosis" class="form-label">Dosis</label>
@@ -432,6 +460,14 @@ try {
                                 <span class="input-group-text">Rp</span>
                                 <input type="number" class="form-control" id="edit_harga" name="harga" min="0" required>
                             </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit_farmasi" class="form-label">Farmasi</label>
+                            <input type="text" class="form-control" id="edit_farmasi" name="farmasi">
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit_ed" class="form-label">ED</label>
+                            <input type="date" class="form-control" id="edit_ed" name="ed">
                         </div>
                         <div class="mb-3">
                             <label for="edit_catatan_obat" class="form-label">Catatan</label>
@@ -476,16 +512,19 @@ try {
             });
 
             // Mengisi data ke modal edit
-            $('#modalEdit').on('show.bs.modal', function(event) {
-                var button = $(event.relatedTarget);
-                var id = button.data('id');
-                var nama = button.data('nama');
-                var generik = button.data('generik');
-                var bentuk = button.data('bentuk');
-                var dosis = button.data('dosis');
-                var kategori = button.data('kategori');
-                var catatan = button.data('catatan');
-                var harga = button.data('harga');
+                $('#modalEdit').on('show.bs.modal', function(event) {
+                    var button = $(event.relatedTarget);
+                    var id = button.data('id');
+                    var nama = button.data('nama');
+                    var generik = button.data('generik');
+                    var bentuk = button.data('bentuk');
+                    var dosis = button.data('dosis');
+                    var kategori = button.data('kategori');
+                    var catatan = button.data('catatan');
+                    var harga = button.data('harga');
+                    var farmasi = button.data('farmasi');
+                    // Use attribute to preserve empty string
+                    var ed = button.attr('data-ed');
                 var status = button.data('status');
 
                 var modal = $(this);
@@ -497,6 +536,9 @@ try {
                 modal.find('#edit_kategori').val(kategori);
                 modal.find('#edit_catatan_obat').val(catatan);
                 modal.find('#edit_harga').val(harga);
+                modal.find('#edit_farmasi').val(farmasi);
+                // Set ED value or clear if empty
+                modal.find('#edit_ed').val(ed ? ed : '');
                 modal.find('#edit_status_aktif').prop('checked', status == 1);
             });
 

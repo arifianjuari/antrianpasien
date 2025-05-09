@@ -1116,7 +1116,7 @@ if (!isset($pemeriksaan) || !$pemeriksaan) {
                         </select>
                     </div>
                     <div class="col-md-4">
-                        <input type="text" id="search_generik" class="form-control" placeholder="Cari nama generik...">
+                        <input type="text" id="search_generik" class="form-control" placeholder="Cari...">
                     </div>
                 </div>
 
@@ -1129,11 +1129,12 @@ if (!isset($pemeriksaan) || !$pemeriksaan) {
                                     <input type="checkbox" id="checkAll" class="form-check-input">
                                 </th>
                                 <th width="20%">Nama Obat</th>
-                                <th width="15%">Nama Generik</th>
                                 <th width="15%">Bentuk & Dosis</th>
-                                <th width="15%">Kategori</th>
+                                <th width="15%">Harga</th>
+                                <th width="15%">Farmasi</th>
                                 <th width="15%">Catatan</th>
-                                <th width="15%">Status</th>
+                                <th width="15%">ED</th>
+                                <th width="15%">Kategori</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -1141,25 +1142,26 @@ if (!isset($pemeriksaan) || !$pemeriksaan) {
                             // Koneksi ke database
                             global $conn;
 
-                            // Query untuk mendapatkan semua data formularium
-                            $sql = "SELECT * FROM formularium WHERE status_aktif = 1 ORDER BY nama_obat ASC";
+                            // Query untuk mendapatkan semua data formularium, sorted by ED date (non-empty first), then by ED ascending, then by name
+                            $sql = "SELECT * FROM formularium WHERE status_aktif = 1 ORDER BY (ed IS NULL OR ed = '') ASC, ed ASC, nama_obat ASC";
                             $stmt = $conn->query($sql);
 
                             if ($stmt->rowCount() > 0) {
                                 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                                     $bentuk_dosis = $row['bentuk_sediaan'] . ' ' . $row['dosis'];
                                     echo "<tr class='obat-row' data-kategori='" . htmlspecialchars($row['kategori']) . "'>";
-                                    echo "<td><input type='checkbox' class='form-check-input obat-checkbox' data-nama='" . htmlspecialchars($row['nama_obat']) . "' data-bentuk-dosis='" . htmlspecialchars($bentuk_dosis) . "' data-catatan='" . htmlspecialchars($row['catatan_obat']) . "' data-generik='" . htmlspecialchars($row['nama_generik']) . "'></td>";
+                                    echo "<td><input type='checkbox' class='form-check-input obat-checkbox' data-nama='" . htmlspecialchars($row['nama_obat']) . "' data-bentuk-dosis='" . htmlspecialchars($bentuk_dosis) . "' data-catatan='" . htmlspecialchars($row['catatan_obat']) . "'></td>";
                                     echo "<td>" . htmlspecialchars($row['nama_obat']) . "</td>";
-                                    echo "<td>" . htmlspecialchars($row['nama_generik']) . "</td>";
                                     echo "<td>" . htmlspecialchars($bentuk_dosis) . "</td>";
-                                    echo "<td>" . htmlspecialchars($row['kategori']) . "</td>";
+                                    echo "<td>" . htmlspecialchars($row['harga']) . "</td>";
+                                    echo "<td>" . htmlspecialchars($row['farmasi']) . "</td>";
                                     echo "<td>" . htmlspecialchars($row['catatan_obat']) . "</td>";
-                                    echo "<td><span class='badge bg-success'>Aktif</span></td>";
+                                    echo "<td>" . htmlspecialchars($row['ed']) . "</td>";
+                                    echo "<td>" . htmlspecialchars($row['kategori']) . "</td>";
                                     echo "</tr>";
                                 }
                             } else {
-                                echo "<tr><td colspan='7' class='text-center'>Tidak ada data obat</td></tr>";
+                                    echo "<tr><td colspan='8' class='text-center'>Tidak ada data obat</td></tr>";
                             }
                             ?>
                         </tbody>
@@ -3010,6 +3012,46 @@ if (!isset($pemeriksaan) || !$pemeriksaan) {
     // Event listener untuk filter
     document.getElementById('filter_kategori_gambar').addEventListener('change', filterGambar);
     document.getElementById('search_gambar').addEventListener('input', filterGambar);
+
+    // Event listener untuk filter formularium (resep)
+    document.getElementById('search_generik').addEventListener('input', filterFormularium);
+    document.getElementById('filter_kategori_obat').addEventListener('change', filterFormularium);
+
+    function filterFormularium() {
+        var kategori = document.getElementById('filter_kategori_obat').value.toLowerCase();
+        var searchText = document.getElementById('search_generik').value.toLowerCase();
+        var rows = document.querySelectorAll('#tabelFormularium tbody tr.obat-row');
+        var hasVisible = false;
+        rows.forEach(function(row) {
+            var rowKategori = row.getAttribute('data-kategori').toLowerCase();
+            // gabungkan teks dari kolom untuk pencarian
+            var text = Array.from(row.cells).slice(1, 6).map(function(cell) {
+                return cell.textContent.toLowerCase();
+            }).join(' ');
+            var matchesKategori = kategori === '' || rowKategori === kategori;
+            var matchesSearch = searchText === '' || text.includes(searchText);
+            if (matchesKategori && matchesSearch) {
+                row.style.display = '';
+                hasVisible = true;
+            } else {
+                row.style.display = 'none';
+            }
+        });
+        var tbody = document.querySelector('#tabelFormularium tbody');
+        var noData = document.querySelector('#tabelFormularium tbody tr.no-data-row');
+        if (!hasVisible) {
+            if (!noData) {
+                var tr = document.createElement('tr');
+                tr.className = 'no-data-row';
+                tr.innerHTML = '<td colspan="7" class="text-center">Tidak ada data obat yang sesuai dengan kriteria pencarian</td>';
+                tbody.appendChild(tr);
+            } else {
+                noData.style.display = '';
+            }
+        } else if (noData) {
+            noData.style.display = 'none';
+        }
+    }
 
     // Fungsi untuk memilih gambar
     function pilihGambar(namaFile, judul) {

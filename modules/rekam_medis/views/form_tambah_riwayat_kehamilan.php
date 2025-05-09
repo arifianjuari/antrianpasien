@@ -1,22 +1,23 @@
 <?php
+// Pastikan session sudah dimulai
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 // Pastikan user sudah login
 if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php");
+    header('Location: index.php');
     exit;
 }
 
-// Pastikan parameter no_rkm_medis ada
-if (!isset($_GET['no_rkm_medis'])) {
-    $_SESSION['error_message'] = "Nomor rekam medis tidak ditemukan";
-    header("Location: index.php?module=rekam_medis&action=data_pasien");
+// Pastikan $data berisi informasi pasien
+if (!isset($data) || !isset($data['pasien'])) {
+    $_SESSION['error'] = "Data pasien tidak tersedia";
+    header('Location: index.php?module=rekam_medis');
     exit;
 }
 
-$no_rkm_medis = $_GET['no_rkm_medis'];
-$page_title = "Tambah Riwayat Kehamilan";
-
-// Siapkan konten untuk layout
-ob_start();
+$page_title = "Form Tambah Riwayat Kehamilan";
 ?>
 
 <div class="container-fluid">
@@ -24,131 +25,156 @@ ob_start();
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h5 class="card-title"><?= $page_title ?></h5>
+                    <h3 class="card-title"><?= $page_title ?></h3>
                 </div>
                 <div class="card-body">
+                    <?php if (isset($_SESSION['error_message'])): ?>
+                        <div class="alert alert-danger alert-dismissible fade show">
+                            <?= $_SESSION['error_message'] ?>
+                            <button type="button" class="close" data-dismiss="alert">&times;</button>
+                        </div>
+                        <?php unset($_SESSION['error_message']); ?>
+                    <?php endif; ?>
+
+                    <?php if (isset($_SESSION['success_message'])): ?>
+                        <div class="alert alert-success alert-dismissible fade show">
+                            <?= $_SESSION['success_message'] ?>
+                            <button type="button" class="close" data-dismiss="alert">&times;</button>
+                        </div>
+                        <?php unset($_SESSION['success_message']); ?>
+                    <?php endif; ?>
+
+                    <!-- Form Riwayat Kehamilan -->
                     <form action="index.php?module=rekam_medis&action=simpan_riwayat_kehamilan" method="POST" class="needs-validation" novalidate>
-                        <input type="hidden" name="no_rkm_medis" value="<?= $no_rkm_medis ?>">
+                        <input type="hidden" name="no_rkm_medis" value="<?= htmlspecialchars($data['no_rkm_medis']) ?>">
 
-                        <div class="mb-3">
-                            <label for="no_urut_kehamilan" class="form-label required-field">Urutan Kehamilan</label>
-                            <input type="number" class="form-control" id="no_urut_kehamilan" name="no_urut_kehamilan" required min="1">
-                            <div class="invalid-feedback">
-                                Silakan masukkan urutan kehamilan.
+                        <!-- Informasi Pasien -->
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">No. Rekam Medis:</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control-plaintext" value="<?= htmlspecialchars($data['no_rkm_medis']) ?>" readonly>
                             </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="status_kehamilan" class="form-label required-field">Status Kehamilan</label>
-                            <select class="form-select" id="status_kehamilan" name="status_kehamilan" required>
-                                <option value="" selected disabled>Pilih Status Kehamilan</option>
-                                <option value="Sedang Hamil">Sedang Hamil</option>
-                                <option value="Lahir Hidup">Lahir Hidup</option>
-                                <option value="Lahir Mati">Lahir Mati</option>
-                                <option value="Abortus">Abortus</option>
-                                <option value="Ektopik">Ektopik</option>
-                            </select>
-                            <div class="invalid-feedback">
-                                Silakan pilih status kehamilan.
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Nama Pasien:</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control-plaintext" value="<?= htmlspecialchars($data['pasien']['nm_pasien']) ?>" readonly>
                             </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="komplikasi_kehamilan" class="form-label">Komplikasi Kehamilan</label>
-                            <textarea class="form-control" id="komplikasi_kehamilan" name="komplikasi_kehamilan" rows="3" placeholder="Masukkan komplikasi kehamilan jika ada"></textarea>
+                        <!-- Form Input Riwayat Kehamilan -->
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label required-field">No. Urut Kehamilan</label>
+                            <div class="col-sm-9">
+                                <input type="number" class="form-control" name="no_urut_kehamilan" required min="1">
+                                <div class="invalid-feedback">Silakan masukkan nomor urut kehamilan</div>
+                            </div>
                         </div>
 
-                        <!-- Fields for all status except "Sedang Hamil" -->
-                        <div id="persalinanFields" style="display: none;">
-                            <div class="mb-3">
-                                <label for="tahun_persalinan" class="form-label">Tahun Persalinan</label>
-                                <input type="number" class="form-control" id="tahun_persalinan" name="tahun_persalinan" min="1900" max="<?= date('Y') ?>" placeholder="Masukkan tahun persalinan">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label required-field">Status Kehamilan</label>
+                            <div class="col-sm-9">
+                                <select class="form-control" name="status_kehamilan" required>
+                                    <option value="">Pilih Status Kehamilan</option>
+                                    <option value="Aterm">Aterm</option>
+                                    <option value="Prematur">Prematur</option>
+                                    <option value="Postmatur">Postmatur</option>
+                                    <option value="Abortus">Abortus</option>
+                                </select>
+                                <div class="invalid-feedback">Silakan pilih status kehamilan</div>
                             </div>
+                        </div>
 
-                            <div class="mb-3">
-                                <label for="jenis_persalinan" class="form-label">Jenis Persalinan</label>
-                                <select class="form-select" id="jenis_persalinan" name="jenis_persalinan">
-                                    <option value="" selected disabled>Pilih Jenis Persalinan</option>
-                                    <option value="Spontan">Spontan</option>
-                                    <option value="Sectio Caesaria">Sectio Caesaria</option>
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Jenis Persalinan</label>
+                            <div class="col-sm-9">
+                                <select class="form-control" name="jenis_persalinan">
+                                    <option value="">Pilih Jenis Persalinan</option>
+                                    <option value="Normal">Normal</option>
+                                    <option value="SC">SC</option>
                                     <option value="Vakum">Vakum</option>
-                                    <option value="Forceps">Forceps</option>
-                                    <option value="Tidak Relevan">Tidak Relevan</option>
+                                    <option value="Forcep">Forcep</option>
                                 </select>
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="tempat_persalinan" class="form-label">Tempat Persalinan</label>
-                                <select class="form-select" id="tempat_persalinan" name="tempat_persalinan">
-                                    <option value="" selected disabled>Pilih Tempat Persalinan</option>
-                                    <option value="Rumah Sakit">Rumah Sakit</option>
-                                    <option value="Puskesmas">Puskesmas</option>
-                                    <option value="Klinik">Klinik</option>
-                                    <option value="Bidan">Bidan</option>
-                                    <option value="Rumah">Rumah</option>
-                                    <option value="Lainnya">Lainnya</option>
-                                    <option value="Tidak Relevan">Tidak Relevan</option>
-                                </select>
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="penolong_persalinan" class="form-label">Penolong Persalinan</label>
-                                <select class="form-select" id="penolong_persalinan" name="penolong_persalinan">
-                                    <option value="" selected disabled>Pilih Penolong Persalinan</option>
-                                    <option value="Dokter SpOG">Dokter SpOG</option>
-                                    <option value="Dokter Umum">Dokter Umum</option>
-                                    <option value="Bidan">Bidan</option>
-                                    <option value="Dukun">Dukun</option>
-                                    <option value="Lainnya">Lainnya</option>
-                                    <option value="Tidak Relevan">Tidak Relevan</option>
-                                </select>
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="komplikasi_persalinan" class="form-label">Komplikasi Persalinan</label>
-                                <textarea class="form-control" id="komplikasi_persalinan" name="komplikasi_persalinan" rows="3" placeholder="Masukkan komplikasi persalinan jika ada"></textarea>
                             </div>
                         </div>
 
-                        <!-- Fields for "Lahir Hidup" and "Lahir Mati" -->
-                        <div id="bayiFields" style="display: none;">
-                            <div class="mb-3">
-                                <label for="jenis_kelamin_anak" class="form-label">Jenis Kelamin Anak</label>
-                                <select class="form-select" id="jenis_kelamin_anak" name="jenis_kelamin_anak">
-                                    <option value="" selected disabled>Pilih Jenis Kelamin</option>
-                                    <option value="Laki-laki">Laki-laki</option>
-                                    <option value="Perempuan">Perempuan</option>
-                                    <option value="Tidak Diketahui">Tidak Diketahui</option>
-                                    <option value="Tidak Relevan">Tidak Relevan</option>
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Tempat Persalinan</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" name="tempat_persalinan">
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Penolong Persalinan</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" name="penolong_persalinan">
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Tahun Persalinan</label>
+                            <div class="col-sm-9">
+                                <input type="number" class="form-control" name="tahun_persalinan" min="1900" max="<?= date('Y') ?>">
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Jenis Kelamin Anak</label>
+                            <div class="col-sm-9">
+                                <select class="form-control" name="jenis_kelamin_anak">
+                                    <option value="">Pilih Jenis Kelamin</option>
+                                    <option value="L">Laki-laki</option>
+                                    <option value="P">Perempuan</option>
                                 </select>
                             </div>
+                        </div>
 
-                            <div class="mb-3">
-                                <label for="berat_badan_lahir" class="form-label">Berat Badan Lahir (gram)</label>
-                                <input type="number" class="form-control" id="berat_badan_lahir" name="berat_badan_lahir" step="1" min="0" placeholder="Masukkan berat badan lahir dalam gram">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Berat Badan Lahir (gram)</label>
+                            <div class="col-sm-9">
+                                <input type="number" class="form-control" name="berat_badan_lahir" min="0" step="1">
                             </div>
+                        </div>
 
-                            <div class="mb-3">
-                                <label for="kondisi_lahir" class="form-label">Kondisi Lahir</label>
-                                <select class="form-select" id="kondisi_lahir" name="kondisi_lahir">
-                                    <option value="" selected disabled>Pilih Kondisi Lahir</option>
-                                    <option value="Sehat">Sehat</option>
-                                    <option value="Cacat">Cacat</option>
-                                    <option value="Sakit">Sakit</option>
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Kondisi Lahir</label>
+                            <div class="col-sm-9">
+                                <select class="form-control" name="kondisi_lahir">
+                                    <option value="">Pilih Kondisi</option>
+                                    <option value="Hidup">Hidup</option>
                                     <option value="Meninggal">Meninggal</option>
-                                    <option value="Tidak Relevan">Tidak Relevan</option>
                                 </select>
                             </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="catatan" class="form-label">Catatan</label>
-                            <textarea class="form-control" id="catatan" name="catatan" rows="3" placeholder="Masukkan catatan tambahan jika ada"></textarea>
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Komplikasi Kehamilan</label>
+                            <div class="col-sm-9">
+                                <textarea class="form-control" name="komplikasi_kehamilan" rows="2"></textarea>
+                            </div>
                         </div>
 
-                        <div class="d-flex justify-content-between">
-                            <a href="index.php?module=rekam_medis&action=detail_pasien&no_rkm_medis=<?= $no_rkm_medis ?>" class="btn btn-secondary">Kembali</a>
-                            <button type="submit" class="btn btn-primary">Simpan</button>
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Komplikasi Persalinan</label>
+                            <div class="col-sm-9">
+                                <textarea class="form-control" name="komplikasi_persalinan" rows="2"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Catatan</label>
+                            <div class="col-sm-9">
+                                <textarea class="form-control" name="catatan" rows="2"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <div class="col-sm-9 offset-sm-3">
+                                <button type="submit" class="btn btn-primary">Simpan</button>
+                                <a href="index.php?module=rekam_medis&action=detail_pasien&no_rkm_medis=<?= htmlspecialchars($data['no_rkm_medis']) ?>" class="btn btn-secondary">Kembali</a>
+                            </div>
                         </div>
                     </form>
                 </div>
@@ -157,55 +183,38 @@ ob_start();
     </div>
 </div>
 
-<?php
-$content = ob_get_clean();
-
-// Tambahkan CSS khusus
-$additional_css = "
-    .required-field::after {
-        content: ' *';
-        color: red;
-    }
-";
-
-// Tambahkan JavaScript khusus
-$additional_js = "
+<script>
     // Form validation
     (function() {
         'use strict';
-        var forms = document.querySelectorAll('.needs-validation');
-        Array.prototype.slice.call(forms).forEach(function(form) {
-            form.addEventListener('submit', function(event) {
-                if (!form.checkValidity()) {
-                    event.preventDefault();
-                    event.stopPropagation();
-                }
-                form.classList.add('was-validated');
-            }, false);
-        });
+        window.addEventListener('load', function() {
+            var forms = document.getElementsByClassName('needs-validation');
+            var validation = Array.prototype.filter.call(forms, function(form) {
+                form.addEventListener('submit', function(event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        }, false);
     })();
 
-    // Toggle fields based on status kehamilan
-    document.getElementById('status_kehamilan').addEventListener('change', function() {
-        var status = this.value;
-        var persalinanFields = document.getElementById('persalinanFields');
-        var bayiFields = document.getElementById('bayiFields');
-        
-        if (status === 'Sedang Hamil') {
-            persalinanFields.style.display = 'none';
-            bayiFields.style.display = 'none';
-        } else {
-            persalinanFields.style.display = 'block';
-            
-            if (status === 'Lahir Hidup' || status === 'Lahir Mati') {
-                bayiFields.style.display = 'block';
-            } else {
-                bayiFields.style.display = 'none';
+    // Dynamically show/hide fields based on status kehamilan
+    document.querySelector('select[name="status_kehamilan"]').addEventListener('change', function() {
+        const abortusFields = document.querySelectorAll(
+            'select[name="jenis_persalinan"],' +
+            'input[name="tempat_persalinan"],' +
+            'input[name="penolong_persalinan"],' +
+            'input[name="berat_badan_lahir"],' +
+            'select[name="jenis_kelamin_anak"],' +
+            'select[name="kondisi_lahir"]'
+        ).forEach(field => {
+            field.closest('.form-group').style.display = this.value === 'Abortus' ? 'none' : 'flex';
+            if (this.value === 'Abortus') {
+                field.value = '';
             }
-        }
+        });
     });
-";
-
-// Include layout
-require_once __DIR__ . '/../../../template/layout.php';
-?>
+</script>

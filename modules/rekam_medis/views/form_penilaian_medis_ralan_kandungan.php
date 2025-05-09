@@ -368,7 +368,7 @@ $conn->close();
                         <div class="tab-pane fade" id="skrining" role="tabpanel">
                             <div class="mb-3 d-flex justify-content-between">
                                 <h6 class="font-weight-bold">Status Obstetri</h6>
-                                <a href="index.php?module=rekam_medis&action=tambah_status_obstetri&no_rkm_medis=<?= $pasien['no_rkm_medis'] ?>&source=form_edit_pemeriksaan" class="btn btn-primary btn-sm">
+                                <a href="index.php?module=rekam_medis&action=tambah_status_obstetri&no_rkm_medis=<?= $data['no_rkm_medis'] ?>&source=form_penilaian_medis_ralan_kandungan" class="btn btn-primary btn-sm">
                                     <i class="fas fa-plus"></i> Tambah Data
                                 </a>
                             </div>
@@ -434,6 +434,12 @@ $conn->close();
 
                         <!-- Tab Status Ginekologi -->
                         <div class="tab-pane fade" id="status-ginekologi" role="tabpanel">
+                            <div class="mb-3 d-flex justify-content-between">
+                                <h6 class="font-weight-bold">Status Ginekologi</h6>
+                                <a href="index.php?module=rekam_medis&action=tambah_status_ginekologi&no_rkm_medis=<?= $data['no_rkm_medis'] ?>&source=form_penilaian_medis_ralan_kandungan" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-plus"></i> Tambah Data
+                                </a>
+                            </div>
                             <div id="statusGinekologiContent">
                                 <div class="table-responsive">
                                     <table class="table table-sm table-bordered table-striped">
@@ -1622,15 +1628,15 @@ $conn->close();
             var kategori = document.getElementById('filter_kategori_edukasi').value;
             var searchText = document.getElementById('search_edukasi').value.toLowerCase();
             var rows = document.querySelectorAll('#tabelTemplateEdukasi tbody tr.template-row');
-            var hasVisibleRows = false;
+
+            var hasVisibleRows = false; // Flag untuk mengecek apakah ada baris yang terlihat
 
             rows.forEach(function(row) {
-                var rowKategori = row.getAttribute('data-kategori');
-                var rowJudul = row.getAttribute('data-judul').toLowerCase();
+                var rowJudul = row.cells[1].textContent.toLowerCase();
                 var rowIsi = row.cells[2].textContent.toLowerCase();
                 var rowTags = row.cells[4].textContent.toLowerCase();
 
-                var matchesKategori = kategori === '' || rowKategori === kategori;
+                var matchesKategori = kategori === '' || row.getAttribute('data-kategori') === kategori;
                 var matchesSearch = searchText === '' ||
                     rowJudul.includes(searchText) ||
                     rowIsi.includes(searchText) ||

@@ -8,6 +8,14 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+// Get project root directory
+$root_dir = dirname(dirname(dirname(__DIR__)));
+
+// Include base URL configuration if not already included
+if (!defined('BASE_URL')) {
+    require_once $root_dir . '/config/config.php';
+}
+
 // Declare global connection variable
 global $conn;
 
@@ -17,11 +25,6 @@ $root_dir = dirname(dirname(dirname(__DIR__)));
 // Include database configuration if not already included
 if (!isset($conn) || !($conn instanceof PDO)) {
     require_once $root_dir . '/config/database.php';
-}
-
-// Include base URL configuration if not already included
-if (!isset($base_url)) {
-    require_once $root_dir . '/config/config.php';
 }
 
 // Log status koneksi
