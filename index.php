@@ -325,6 +325,28 @@ try {
                 // Penting: exit setelah include untuk mencegah layout dimuat
                 exit;
                 break;
+            case 'hapus_surat':
+                // Menghapus data surat
+                error_log("Routing to hapus_surat");
+                // Panggil method controller
+                $rekamMedisController->hapus_surat();
+                // Penting: exit setelah include untuk mencegah layout dimuat
+                exit;
+                break;
+            case 'edit_surat':
+                // Edit data surat
+                error_log("Routing to edit_surat");
+                // Panggil method controller
+                $rekamMedisController->edit_surat();
+                exit;
+                break;
+            case 'cetak_surat':
+                // Cetak surat
+                error_log("Routing to cetak_surat");
+                // Panggil method controller
+                $rekamMedisController->cetak_surat();
+                exit;
+                break;
             default:
                 if (empty($action)) {
                     $rekamMedisController->index();

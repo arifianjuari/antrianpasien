@@ -1118,6 +1118,10 @@ if (!isset($pemeriksaan) || !$pemeriksaan) {
                     <div class="col-md-4">
                         <input type="text" id="search_generik" class="form-control" placeholder="Cari...">
                     </div>
+                    <div class="col-md-4 text-end">
+                        <button type="button" class="btn btn-primary btn-sm" onclick="tambahkanObatTerpilih()">Tambahkan Obat Terpilih</button>
+                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Tutup</button>
+                    </div>
                 </div>
 
                 <!-- Tabel Formularium -->
@@ -1128,13 +1132,14 @@ if (!isset($pemeriksaan) || !$pemeriksaan) {
                                 <th width="5%">
                                     <input type="checkbox" id="checkAll" class="form-check-input">
                                 </th>
-                                <th width="20%">Nama Obat</th>
-                                <th width="15%">Bentuk & Dosis</th>
-                                <th width="15%">Harga</th>
+                                <th width="15%">Nama Obat</th>
+                                <th width="10%">Bentuk Sediaan</th>
+                                <th width="10%">Dosis</th>
+                                <th width="10%">Harga</th>
                                 <th width="15%">Farmasi</th>
                                 <th width="15%">Catatan</th>
-                                <th width="15%">ED</th>
-                                <th width="15%">Kategori</th>
+                                <th width="10%">ED</th>
+                                <th width="10%">Kategori</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -1150,9 +1155,10 @@ if (!isset($pemeriksaan) || !$pemeriksaan) {
                                 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                                     $bentuk_dosis = $row['bentuk_sediaan'] . ' ' . $row['dosis'];
                                     echo "<tr class='obat-row' data-kategori='" . htmlspecialchars($row['kategori']) . "'>";
-                                    echo "<td><input type='checkbox' class='form-check-input obat-checkbox' data-nama='" . htmlspecialchars($row['nama_obat']) . "' data-bentuk-dosis='" . htmlspecialchars($bentuk_dosis) . "' data-catatan='" . htmlspecialchars($row['catatan_obat']) . "'></td>";
+                                    echo "<td><input type='checkbox' class='form-check-input obat-checkbox' data-nama='" . htmlspecialchars($row['nama_obat']) . "' data-bentuk-sediaan='" . htmlspecialchars($row['bentuk_sediaan']) . "' data-dosis='" . htmlspecialchars($row['dosis']) . "' data-catatan='" . htmlspecialchars($row['catatan_obat']) . "'></td>";
                                     echo "<td>" . htmlspecialchars($row['nama_obat']) . "</td>";
-                                    echo "<td>" . htmlspecialchars($bentuk_dosis) . "</td>";
+                                    echo "<td>" . htmlspecialchars($row['bentuk_sediaan']) . "</td>";
+                                    echo "<td>" . htmlspecialchars($row['dosis']) . "</td>";
                                     echo "<td>" . htmlspecialchars($row['harga']) . "</td>";
                                     echo "<td>" . htmlspecialchars($row['farmasi']) . "</td>";
                                     echo "<td>" . htmlspecialchars($row['catatan_obat']) . "</td>";
@@ -1161,17 +1167,15 @@ if (!isset($pemeriksaan) || !$pemeriksaan) {
                                     echo "</tr>";
                                 }
                             } else {
-                                    echo "<tr><td colspan='8' class='text-center'>Tidak ada data obat</td></tr>";
+                                    echo "<tr><td colspan='9' class='text-center'>Tidak ada data obat</td></tr>";
                             }
                             ?>
                         </tbody>
                     </table>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                <button type="button" class="btn btn-primary" onclick="tambahkanObatTerpilih()">Tambahkan Obat Terpilih</button>
-            </div>
+            <!-- Modal footer dihapus karena tombol sudah dipindahkan ke atas -->
+
         </div>
     </div>
 </div>
@@ -1687,20 +1691,16 @@ if (!isset($pemeriksaan) || !$pemeriksaan) {
         for (var checkbox of checkboxes) {
             if (checkbox.checked) {
                 var namaObat = checkbox.getAttribute('data-nama');
-                var bentukDosis = checkbox.getAttribute('data-bentuk-dosis');
-                var catatan = checkbox.getAttribute('data-catatan');
-                var split = bentukDosis.split(' ');
-                var bentukSediaan = split[0];
-                var dosis = split.slice(1).join(' ');
+                var bentukSediaan = checkbox.getAttribute('data-bentuk-sediaan');
+                var dosis = checkbox.getAttribute('data-dosis');
+                // Menghilangkan pengambilan data-catatan
 
-                // Format: [nama_obat] [bentuk_sediaan]     No.
+                // Format: [nama_obat]     No.
                 //          [dosis]
-                var textObat = namaObat + ' ' + bentukSediaan + '     No.X';
+                var textObat = namaObat + '     No.X';
                 textObat += '\n         ' + dosis;
 
-                if (catatan) {
-                    textObat += '\n\tCatatan: ' + catatan;
-                }
+                // Menghilangkan penambahan catatan ke teks obat
 
                 obatTerpilih.push(textObat);
             }
@@ -1717,7 +1717,15 @@ if (!isset($pemeriksaan) || !$pemeriksaan) {
             }
         }
 
-        $('#modalDaftarTemplateResep').modal('hide');
+        // Tutup modal menggunakan Bootstrap 5 API
+        const modalElement = document.getElementById('modalDaftarTemplateResep');
+        const modalInstance = bootstrap.Modal.getInstance(modalElement);
+        if (modalInstance) {
+            modalInstance.hide();
+        } else {
+            // Fallback ke jQuery jika instance tidak ditemukan
+            $('#modalDaftarTemplateResep').modal('hide');
+        }
     }
 
     function hitungUmur(tanggalLahir) {

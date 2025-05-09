@@ -317,7 +317,7 @@ try {
                             foreach ($popular_tags as $tag):
                             ?>
                                 <a href="<?= $base_url ?>/edukasi.php?tag=<?= urlencode($tag) ?>" class="badge bg-secondary me-1 mt-1 tag-badge">
-                                    #<?= htmlspecialchars($tag) ?>
+                                    #<?= htmlspecialchars($tag ?? '') ?>
                                 </a>
                             <?php endforeach; ?>
                         </div>
@@ -337,15 +337,15 @@ try {
                         <div class="card article-card">
                             <div class="card-body">
                                 <h5 class="card-title mb-3">
-                                    <a href="<?= $base_url ?>/edukasi/<?= htmlspecialchars($artikel['slug']) ?>"
+                                    <a href="<?= $base_url ?>/edukasi/<?= htmlspecialchars($artikel['slug'] ?? '') ?>"
                                         class="text-decoration-none text-dark">
-                                        <?= htmlspecialchars($artikel['judul']) ?>
+                                        <?= htmlspecialchars($artikel['judul'] ?? '') ?>
                                     </a>
                                 </h5>
 
                                 <?php if (!empty($artikel['isi_edukasi'])): ?>
                                     <p class="article-summary mb-3">
-                                        <?= htmlspecialchars(substr(strip_tags($artikel['isi_edukasi']), 0, 150)) . '...' ?>
+                                        <?= htmlspecialchars(substr(strip_tags($artikel['isi_edukasi'] ?? ''), 0, 150)) . '...' ?>
                                     </p>
                                 <?php endif; ?>
 
@@ -363,7 +363,7 @@ try {
                                             if (!empty($tag)):
                                         ?>
                                                 <a href="<?= $base_url ?>/edukasi.php?tag=<?= urlencode($tag) ?>" class="badge bg-secondary text-decoration-none me-1">
-                                                    #<?= htmlspecialchars($tag) ?>
+                                                    #<?= htmlspecialchars($tag ?? '') ?>
                                                 </a>
                                         <?php
                                             endif;
@@ -373,14 +373,14 @@ try {
                                 <?php endif; ?>
 
                                 <div class="mt-3">
-                                    <a href="<?= $base_url ?>/edukasi-detail.php?id=<?= htmlspecialchars($artikel['id_edukasi']) ?>"
+                                    <a href="<?= $base_url ?>/edukasi-detail.php?id=<?= htmlspecialchars($artikel['id_edukasi'] ?? '') ?>"
                                         class="btn btn-outline-primary btn-sm">
                                         Baca Selengkapnya
                                     </a>
                                 </div>
 
                                 <span class="badge bg-primary article-category">
-                                    <?= htmlspecialchars($artikel['kategori']) ?>
+                                    <?= htmlspecialchars($artikel['kategori'] ?? '') ?>
                                 </span>
                             </div>
                         </div>
@@ -398,7 +398,7 @@ try {
                             Lihat Semua Artikel
                         </a>
                     <?php elseif (!empty($selected_tag)): ?>
-                        <p class="text-muted">Tidak ditemukan artikel dengan tag: #<?= htmlspecialchars($selected_tag) ?></p>
+                        <p class="text-muted">Tidak ditemukan artikel dengan tag: #<?= htmlspecialchars($selected_tag ?? '') ?></p>
                         <a href="<?= $base_url ?>/edukasi.php" class="btn btn-primary mt-2">
                             Lihat Semua Artikel
                         </a>

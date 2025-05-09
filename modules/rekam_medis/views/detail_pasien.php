@@ -900,6 +900,7 @@ error_log("Data pasien: " . json_encode($pasien));
                                         <table class="table table-sm table-bordered table-striped">
                                             <thead>
                                                 <tr>
+                                                    <th>Nomor Surat</th>
                                                     <th>Tanggal</th>
                                                     <th>Jenis Surat</th>
                                                     <th>Diagnosa</th>
@@ -909,7 +910,7 @@ error_log("Data pasien: " . json_encode($pasien));
                                             </thead>
                                             <tbody id="suratTableBody">
                                                 <tr>
-                                                    <td colspan="5" class="text-center">Memuat data surat...</td>
+                                                    <td colspan="6" class="text-center">Memuat data surat...</td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -1777,6 +1778,7 @@ error_log("Data pasien: " . json_encode($pasien));
 
                             tableHtml += `
                                 <tr>
+                                    <td>${surat.nomor_surat || '-'}</td>
                                     <td>${tanggalSurat}</td>
                                     <td>${jenisSuratText}</td>
                                     <td>${surat.diagnosa || '-'}</td>
