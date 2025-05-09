@@ -112,6 +112,38 @@ $status_filter = isset($_GET['status_atensi']) ? $_GET['status_atensi'] : '';
                                                     onclick="return confirm('Apakah Anda yakin ingin menandai data ini sebagai selesai?');">
                                                     <i class="bi bi-check-square"></i>
                                                 </a>
+                                                <!-- Tombol WhatsApp -->
+                                                <?php if (!empty($row['no_tlp'])): ?>
+                                                    <?php
+                                                    // Format nomor telepon untuk WhatsApp
+                                                    $no_tlp_clean = preg_replace('/[^0-9]/', '', $row['no_tlp']);
+                                                    if (substr($no_tlp_clean, 0, 1) === '0') {
+                                                        $no_tlp_clean = '62' . substr($no_tlp_clean, 1);
+                                                    } elseif (substr($no_tlp_clean, 0, 2) !== '62') {
+                                                        $no_tlp_clean = '62' . $no_tlp_clean;
+                                                    }
+
+                                                    // Buat pesan untuk WhatsApp
+                                                    $pesan = "Salam sehat, Ibu " . $row['nama_pasien'] . ",\n\n";
+                                                    if ($row['atensi'] == 1) {
+                                                        $pesan .= "Kami dari praktek dokter ingin mengingatkan tentang...... .\n\n";
+                                                    } elseif (!empty($row['tanggal_kontrol']) && $row['tanggal_kontrol'] != '0000-00-00') {
+                                                        $tanggal_kontrol_format = date('d-m-Y', strtotime($row['tanggal_kontrol']));
+                                                        $pesan .= "Kami dari praktek dokter ingin mengingatkan jadwal kontrol Anda pada tanggal " . $tanggal_kontrol_format . ".\n\n";
+                                                    }
+                                                    $pesan .= "Terima kasih.";
+                                                    $pesan_encoded = urlencode($pesan);
+
+                                                    // Buat URL WhatsApp
+                                                    $whatsapp_url = "https://wa.me/" . $no_tlp_clean . "?text=" . $pesan_encoded;
+                                                    ?>
+                                                    <a href="<?= $whatsapp_url ?>" target="_blank"
+                                                        class="btn btn-success btn-sm btn-icon"
+                                                        data-bs-toggle="tooltip"
+                                                        title="Hubungi via WhatsApp">
+                                                        <i class="bi bi-whatsapp"></i>
+                                                    </a>
+                                                <?php endif; ?>
                                             </div>
                                         </td>
                                     </tr>
