@@ -521,7 +521,7 @@ try {
                                                         <?= $row['status_aktif'] ? 'Aktif' : 'Nonaktif' ?>
                                                     </span>
                                                 </td>
-                                                <td><?= date('d/m/Y H:i', strtotime($row['created_at'])) ?></td>
+                                                <td><?= !empty($row['created_at']) ? date('d/m/Y H:i', strtotime($row['created_at'])) : '-' ?></td>
                                                 <td>
                                                     <button type="button" class="btn btn-sm btn-info"
                                                         data-bs-toggle="modal"

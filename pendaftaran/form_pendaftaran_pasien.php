@@ -425,6 +425,57 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Set pesan sukses
             $success = true;
 
+            // Kirim notifikasi WhatsApp
+            try {
+                // Siapkan pesan WhatsApp
+                $message = "Pendaftaran pasien baru berhasil!\n";
+                $message .= "ID Pendaftaran: {$id_pendaftaran}\n";
+                $message .= "Nama: {$nama_pasien}\n";
+                $message .= "NIK: {$no_ktp}\n";
+                $message .= "Tanggal Lahir: {$tanggal_lahir}\n";
+                $message .= "Waktu Pendaftaran: " . date('Y-m-d H:i:s');
+
+                // Parameter untuk API UltraMsg
+                $params = array(
+                    'token' => '15suezbff95b7xzn',
+                    'to' => '+6285190086842',
+                    'body' => $message
+                );
+
+                // Inisialisasi cURL
+                $curl = curl_init();
+                curl_setopt_array($curl, array(
+                    CURLOPT_URL => "https://api.ultramsg.com/instance119166/messages/chat",
+                    CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_ENCODING => "",
+                    CURLOPT_MAXREDIRS => 10,
+                    CURLOPT_TIMEOUT => 30,
+                    CURLOPT_SSL_VERIFYHOST => 0,
+                    CURLOPT_SSL_VERIFYPEER => 0,
+                    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                    CURLOPT_CUSTOMREQUEST => "POST",
+                    CURLOPT_POSTFIELDS => http_build_query($params),
+                    CURLOPT_HTTPHEADER => array(
+                        "content-type: application/x-www-form-urlencoded"
+                    ),
+                ));
+
+                // Eksekusi request
+                $response = curl_exec($curl);
+                $err = curl_error($curl);
+
+                curl_close($curl);
+
+                if ($err) {
+                    error_log("WhatsApp Notification Error: " . $err);
+                } else {
+                    error_log("WhatsApp Notification Sent: " . $response);
+                }
+            } catch (Exception $e) {
+                error_log("WhatsApp Notification Exception: " . $e->getMessage());
+                // Tidak menghentikan proses pendaftaran jika notifikasi gagal
+            }
+
             // Simpan pesan sukses dalam session
             if (!isset($_SESSION)) {
                 if (function_exists('session_status')) {
