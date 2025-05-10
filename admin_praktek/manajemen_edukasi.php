@@ -52,10 +52,10 @@ if (!is_writable($upload_dir)) {
 
 // Konfigurasi upload dan optimasi gambar
 $image_config = [
-    'max_size' => 2 * 1024 * 1024, // 2MB
+    'max_size' => 5 * 1024 * 1024, // 5MB
     'allowed_types' => ['image/jpeg', 'image/png', 'image/gif'],
-    'max_dimension' => 800,
-    'quality' => 85,
+    'max_dimension' => 1920, // Mendukung resolusi Full HD
+    'quality' => 95, // Kualitas kompresi yang lebih tinggi
     'output_format' => 'jpg'
 ];
 
@@ -76,7 +76,7 @@ function processImageUpload($image_file, $image_config, $upload_dir)
     }
 
     if ($file_size > $image_config['max_size']) {
-        return [false, "Ukuran file tidak boleh lebih dari 2MB."];
+        return [false, "Ukuran file tidak boleh lebih dari 5MB."];
     }
 
     try {
@@ -583,7 +583,7 @@ try {
                         <div class="mb-3">
                             <label for="gambar" class="form-label">Gambar</label>
                             <input type="file" class="form-control" id="link_gambar" name="link_gambar" accept="image/*">
-                            <small class="text-muted">Format: JPG, PNG, GIF. Maksimal 2MB</small>
+                            <small class="text-muted">Format: JPG, PNG, GIF. Maksimal 5MB</small>
                         </div>
                         <div class="mb-3">
                             <label for="sumber" class="form-label">Sumber</label>
@@ -655,7 +655,7 @@ try {
                         <div class="mb-3">
                             <label for="edit_gambar" class="form-label">Gambar</label>
                             <input type="file" class="form-control" id="edit_link_gambar" name="link_gambar" accept="image/*">
-                            <small class="text-muted">Format: JPG, PNG, GIF. Maksimal 2MB</small>
+                            <small class="text-muted">Format: JPG, PNG, GIF. Maksimal 5MB</small>
                             <div id="preview_gambar" class="mt-2"></div>
                             <div id="hapus_gambar_container" class="mt-2" style="display:none;">
                                 <button type="submit" class="btn btn-sm btn-danger" name="hapus_gambar"
