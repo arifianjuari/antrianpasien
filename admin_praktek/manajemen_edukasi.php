@@ -231,8 +231,8 @@ if (isset($_POST['tambah'])) {
 
     if (!isset($error_message)) {
         try {
-            $stmt = $conn->prepare("INSERT INTO edukasi (id_edukasi, judul, kategori, isi_edukasi, link_gambar, link_video, sumber, tag, status_aktif, ditampilkan_beranda, urutan_tampil, dibuat_oleh) 
-                    VALUES (:id_edukasi, :judul, :kategori, :isi_edukasi, :link_gambar, :link_video, :sumber, :tag, :status_aktif, :ditampilkan_beranda, :urutan_tampil, :dibuat_oleh)");
+            $stmt = $conn->prepare("INSERT INTO edukasi (id_edukasi, judul, kategori, isi_edukasi, link_gambar, link_video, sumber, tag, status_aktif, ditampilkan_beranda, urutan_tampil, dibuat_oleh, created_at) 
+                    VALUES (:id_edukasi, :judul, :kategori, :isi_edukasi, :link_gambar, :link_video, :sumber, :tag, :status_aktif, :ditampilkan_beranda, :urutan_tampil, :dibuat_oleh, NOW())");
 
             $stmt->bindParam(':id_edukasi', $id_edukasi);
             $stmt->bindParam(':judul', $judul);
@@ -333,7 +333,8 @@ if (isset($_POST['edit'])) {
                     tag = :tag,
                     status_aktif = :status_aktif,
                     ditampilkan_beranda = :ditampilkan_beranda,
-                    urutan_tampil = :urutan_tampil
+                    urutan_tampil = :urutan_tampil,
+                    created_at = COALESCE(created_at, NOW())
                     WHERE id_edukasi = :id_edukasi");
         }
 

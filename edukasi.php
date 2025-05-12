@@ -351,7 +351,7 @@ try {
 
                                 <div class="article-meta">
                                     <i class="bi bi-calendar3"></i>
-                                    <?= date('d F Y', strtotime($artikel['created_at'])) ?>
+                                    <?= !empty($artikel['created_at']) ? date('d F Y', strtotime($artikel['created_at'])) : 'Tanggal tidak tersedia' ?>
                                 </div>
 
                                 <?php if (!empty($artikel['tag'])): ?>

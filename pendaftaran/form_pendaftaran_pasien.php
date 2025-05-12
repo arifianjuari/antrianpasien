@@ -44,12 +44,21 @@ try {
     $tempat_praktek = array();
 }
 
+// Set default dokter Arifian
+$default_dokter_id = 'b81a5b13-1bd4-4298-b294-285735630c0d';
+
 // Ambil data dokter
 try {
-    $query = "SELECT * FROM dokter WHERE Status_Aktif = 1 ORDER BY Nama_Dokter ASC";
+    // Untuk sementara hanya tampilkan dokter Arifian
+    $query = "SELECT * FROM dokter WHERE ID_Dokter = :id_dokter AND Status_Aktif = 1";
     $stmt = $conn->prepare($query);
-    $stmt->execute();
+    $stmt->execute(['id_dokter' => $default_dokter_id]);
     $dokter = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    // Set default value untuk id_dokter jika belum diset
+    if (empty($id_dokter)) {
+        $id_dokter = $default_dokter_id;
+    }
 } catch (PDOException $e) {
     error_log("Database Error: " . $e->getMessage());
     $dokter = [];
@@ -435,41 +444,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $message .= "Tanggal Lahir: {$tanggal_lahir}\n";
                 $message .= "Waktu Pendaftaran: " . date('Y-m-d H:i:s');
 
-                // Parameter untuk API UltraMsg
-                $params = array(
-                    'token' => '15suezbff95b7xzn',
-                    'to' => '+6285190086842',
-                    'body' => $message
+                // Daftar nomor WhatsApp yang akan menerima notifikasi
+                $whatsapp_numbers = array(
+                    '+6285190086842',  // Nomor pertama
+                    '+6281334179767'   // Ganti dengan nomor kedua yang dituju
                 );
 
-                // Inisialisasi cURL
-                $curl = curl_init();
-                curl_setopt_array($curl, array(
-                    CURLOPT_URL => "https://api.ultramsg.com/instance119166/messages/chat",
-                    CURLOPT_RETURNTRANSFER => true,
-                    CURLOPT_ENCODING => "",
-                    CURLOPT_MAXREDIRS => 10,
-                    CURLOPT_TIMEOUT => 30,
-                    CURLOPT_SSL_VERIFYHOST => 0,
-                    CURLOPT_SSL_VERIFYPEER => 0,
-                    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-                    CURLOPT_CUSTOMREQUEST => "POST",
-                    CURLOPT_POSTFIELDS => http_build_query($params),
-                    CURLOPT_HTTPHEADER => array(
-                        "content-type: application/x-www-form-urlencoded"
-                    ),
-                ));
+                // Kirim pesan ke setiap nomor
+                foreach ($whatsapp_numbers as $number) {
+                    // Parameter untuk API UltraMsg
+                    $params = array(
+                        'token' => '15suezbff95b7xzn',
+                        'to' => $number,
+                        'body' => $message
+                    );
 
-                // Eksekusi request
-                $response = curl_exec($curl);
-                $err = curl_error($curl);
+                    // Inisialisasi cURL
+                    $curl = curl_init();
+                    curl_setopt_array($curl, array(
+                        CURLOPT_URL => "https://api.ultramsg.com/instance119166/messages/chat",
+                        CURLOPT_RETURNTRANSFER => true,
+                        CURLOPT_ENCODING => "",
+                        CURLOPT_MAXREDIRS => 10,
+                        CURLOPT_TIMEOUT => 30,
+                        CURLOPT_SSL_VERIFYHOST => 0,
+                        CURLOPT_SSL_VERIFYPEER => 0,
+                        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                        CURLOPT_CUSTOMREQUEST => "POST",
+                        CURLOPT_POSTFIELDS => http_build_query($params),
+                        CURLOPT_HTTPHEADER => array(
+                            "content-type: application/x-www-form-urlencoded"
+                        ),
+                    ));
 
-                curl_close($curl);
+                    // Eksekusi request
+                    $response = curl_exec($curl);
+                    $err = curl_error($curl);
 
-                if ($err) {
-                    error_log("WhatsApp Notification Error: " . $err);
-                } else {
-                    error_log("WhatsApp Notification Sent: " . $response);
+                    curl_close($curl);
+
+                    if ($err) {
+                        error_log("WhatsApp Notification Error for {$number}: " . $err);
+                    } else {
+                        error_log("WhatsApp Notification Sent to {$number}: " . $response);
+                    }
                 }
             } catch (Exception $e) {
                 error_log("WhatsApp Notification Exception: " . $e->getMessage());
@@ -678,9 +696,8 @@ ob_start();
                                 <div class="mb-3">
                                     <label for="id_dokter" class="form-label">Dokter <span class="text-danger">*</span></label>
                                     <select class="form-select" id="id_dokter" name="id_dokter" required>
-                                        <option value="">Pilih Dokter</option>
                                         <?php foreach ($dokter as $d): ?>
-                                            <option value="<?php echo htmlspecialchars($d['ID_Dokter']); ?>" <?php echo $id_dokter == $d['ID_Dokter'] ? 'selected' : ''; ?>>
+                                            <option value="<?php echo htmlspecialchars($d['ID_Dokter']); ?>" selected>
                                                 <?php echo htmlspecialchars($d['Nama_Dokter']); ?> (<?php echo htmlspecialchars($d['Spesialisasi']); ?>)
                                             </option>
                                         <?php endforeach; ?>
