@@ -1104,56 +1104,66 @@ class RekamMedisController
     {
         try {
             error_log("=== MULAI PROSES SIMPAN PENILAIAN MEDIS RALAN KANDUNGAN ===");
-            error_log("Raw POST Data: " . file_get_contents('php://input'));
             error_log("POST Array: " . print_r($_POST, true));
-            error_log("Request Method: " . $_SERVER['REQUEST_METHOD']);
-            error_log("Content Type: " . $_SERVER['CONTENT_TYPE']);
 
             // Validasi data yang diperlukan
             if (empty($_POST['no_rawat'])) {
-                error_log("no_rawat kosong");
                 throw new Exception('No rawat tidak boleh kosong');
             }
 
             if (empty($_POST['keluhan_utama'])) {
-                error_log("keluhan_utama kosong");
                 throw new Exception('Keluhan utama tidak boleh kosong');
             }
 
             // Siapkan data sesuai struktur tabel
             $data = [
-                'no_rawat' => $_POST['no_rkm_medis'] . '/' . date('Ymd'),
-                'no_rkm_medis' => $_POST['no_rkm_medis'],
-                'tanggal' => date('Y-m-d'),
-                'jam' => date('H:i:s'),
-                'kd_dokter' => $_SESSION['user_id'], // Sesuaikan dengan ID dokter yang login
+                'no_rawat' => $_POST['no_rawat'],
+                'tanggal' => $_POST['tanggal'] ?? date('Y-m-d H:i:s'),
+                'kd_dokter' => $_SESSION['user_id'],
                 'anamnesis' => $_POST['anamnesis'] ?? 'Autoanamnesis',
                 'hubungan' => $_POST['hubungan'] ?? '-',
                 'keluhan_utama' => $_POST['keluhan_utama'],
-                $_POST['rps'] ?? '',
-                $_POST['rpd'] ?? '',
-                $_POST['rpk'] ?? '',
-                $_POST['rpo'] ?? '',
-                $_POST['alergi'] ?? '',
-                $_POST['keadaan'] ?? 'Sehat',
-                $_POST['kesadaran'] ?? 'Compos Mentis',
-                $_POST['td'] ?? '',
-                $_POST['nadi'] ?? '',
-                $_POST['suhu'] ?? '',
-                $_POST['rr'] ?? '',
-                $_POST['bb'] ?? '',
-                $_POST['tb'] ?? '',
-                $_POST['tfu'] ?? '',
-                $_POST['tbj'] ?? '',
-                $_POST['his'] ?? '',
-                $_POST['kontraksi'] ?? 'Tidak',
-                $_POST['djj'] ?? '',
-                $_POST['inspeksi'] ?? '',
-                $_POST['inspekulo'] ?? '',
-                $_POST['diagnosis'] ?? '',
-                $_POST['tata'] ?? '',
-                $_POST['tanggal_kontrol'] ?? null,
-                $_POST['atensi'] ?? '0'
+                'rps' => $_POST['rps'] ?? '',
+                'rpd' => $_POST['rpd'] ?? '',
+                'rpk' => $_POST['rpk'] ?? '',
+                'rpo' => $_POST['rpo'] ?? '',
+                'alergi' => $_POST['alergi'] ?? '',
+                'keadaan' => $_POST['keadaan'] ?? 'Sehat',
+                'kesadaran' => $_POST['kesadaran'] ?? 'Compos Mentis',
+                'td' => $_POST['td'] ?? '',
+                'nadi' => $_POST['nadi'] ?? '',
+                'suhu' => $_POST['suhu'] ?? '',
+                'rr' => $_POST['rr'] ?? '',
+                'bb' => $_POST['bb'] ?? '',
+                'tb' => $_POST['tb'] ?? '',
+                'tfu' => $_POST['tfu'] ?? '',
+                'tbj' => $_POST['tbj'] ?? '',
+                'his' => $_POST['his'] ?? '',
+                'kontraksi' => $_POST['kontraksi'] ?? 'Tidak',
+                'djj' => $_POST['djj'] ?? '',
+                'inspeksi' => $_POST['inspeksi'] ?? '',
+                'inspekulo' => $_POST['inspekulo'] ?? '',
+                'vt' => $_POST['vt'] ?? '',
+                'rt' => $_POST['rt'] ?? '',
+                'ultra' => $_POST['ultra'] ?? '',
+                'kardio' => $_POST['kardio'] ?? '',
+                'lab' => $_POST['lab'] ?? '',
+                'diagnosis' => $_POST['diagnosis'] ?? '',
+                'tata' => $_POST['tata'] ?? '',
+                'edukasi' => $_POST['edukasi'] ?? '',
+                'resep' => $_POST['resep'] ?? '',
+                'kepala' => $_POST['kepala'] ?? 'Normal',
+                'mata' => $_POST['mata'] ?? 'Normal',
+                'gigi' => $_POST['gigi'] ?? 'Normal',
+                'tht' => $_POST['tht'] ?? 'Normal',
+                'thoraks' => $_POST['thoraks'] ?? 'Normal',
+                'abdomen' => $_POST['abdomen'] ?? 'Normal',
+                'genital' => $_POST['genital'] ?? 'Normal',
+                'ekstremitas' => $_POST['ekstremitas'] ?? 'Normal',
+                'kulit' => $_POST['kulit'] ?? 'Normal',
+                'ket_fisik' => $_POST['ket_fisik'] ?? '',
+                'tanggal_kontrol' => $_POST['tanggal_kontrol'] ?? null,
+                'atensi' => $_POST['atensi'] ?? '0'
             ];
 
             error_log("Data yang akan disimpan: " . print_r($data, true));
