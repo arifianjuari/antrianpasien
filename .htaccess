@@ -16,7 +16,7 @@ php_value date.timezone "Asia/Jakarta"
 
 # Enable URL Rewriting
 RewriteEngine On
-RewriteBase /
+RewriteBase "/antrian pasien"
 
 # Handle Authorization Header
 RewriteCond %{HTTP:Authorization} .

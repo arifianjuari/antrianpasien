@@ -3,14 +3,27 @@
 $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https://' : 'http://';
 $host = $_SERVER['HTTP_HOST'];
 
+// Get current directory name regardless of spaces or special characters
+$current_dir = basename(dirname(__DIR__));
+
+// Debug current directory
+error_log('Current directory name: ' . $current_dir);
+
 if ($host === 'localhost' || strpos($host, 'localhost:') === 0) {
-    $base_url = $protocol . $host . '/antrian_pasien';
+    // Use the exact folder name from the filesystem
+    $base_url = $protocol . $host . '/' . rawurlencode($current_dir);
+    error_log('Using local environment path: ' . $base_url);
 } else if ($host === 'www.praktekobgin.com' || $host === 'praktekobgin.com') {
     // Untuk domain produksi, selalu gunakan HTTPS
     $base_url = 'https://' . $host;
+    error_log('Using production environment path: ' . $base_url);
 } else {
     $base_url = $protocol . $host;
+    error_log('Using fallback environment path: ' . $base_url);
 }
+
+// Debug current directory structure
+error_log('Full directory path: ' . dirname(__DIR__));
 
 // Pastikan tidak ada trailing slash di akhir URL
 $base_url = rtrim($base_url, '/');
