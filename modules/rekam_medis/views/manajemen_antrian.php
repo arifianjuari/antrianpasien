@@ -971,89 +971,41 @@ try {
             const formData = new FormData();
             formData.append('id_pendaftaran', id);
 
-            // Tampilkan loading
             const loadingMessage = document.createElement('div');
             loadingMessage.className = 'alert alert-info alert-dismissible fade show';
             loadingMessage.innerHTML = '<strong>Sedang memproses...</strong> Mohon tunggu sebentar.';
             document.querySelector('.container-fluid').prepend(loadingMessage);
 
-            // Tentukan URL menggunakan berbagai cara untuk mengatasi masalah path
-            let deleteUrl;
-
-            // Metode 1: Gunakan path relatif dari lokasi saat ini (../../../)
-            // Metode 2: Gunakan path relatif dari root (/modules/...)
-            // Metode 3: Gunakan BASE_URL jika tersedia
-            deleteUrl = '/antrian%20pasien/modules/rekam_medis/controllers/delete_pendaftaran.php';
-
-            console.log('Mencoba mengakses URL:', deleteUrl);
+            const deleteUrl = `${BASE_URL}/modules/rekam_medis/controllers/delete_pendaftaran.php`;
 
             fetch(deleteUrl, {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                })
-                .then(response => {
-                    // Log respons untuk debugging
-                    console.log('Response status:', response.status);
-                    console.log('Response URL:', response.url);
-
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok: ' + response.status);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    // Hapus loading message
-                    loadingMessage.remove();
-
-                    // Tampilkan alert berdasarkan hasil
-                    const alertDiv = document.createElement('div');
-                    alertDiv.className = 'alert alert-dismissible fade show';
-
-                    if (data.success) {
-                        if (data.action === 'deleted') {
-                            alertDiv.className += ' alert-success';
-                            alertDiv.innerHTML = '<strong>Berhasil!</strong> Data pendaftaran berhasil dihapus.';
-                        } else if (data.action === 'updated') {
-                            alertDiv.className += ' alert-warning';
-                            alertDiv.innerHTML = '<strong>Perhatian!</strong> ' + data.message;
-                        } else {
-                            alertDiv.className += ' alert-info';
-                            alertDiv.innerHTML = '<strong>Info!</strong> Data pendaftaran berhasil diproses.';
-                        }
-
-                        // Tambahkan tombol close
-                        alertDiv.innerHTML += '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
-
-                        // Tambahkan ke DOM
-                        document.querySelector('.container-fluid').prepend(alertDiv);
-
-                        // Refresh halaman setelah beberapa detik
-                        setTimeout(() => {
-                            location.reload();
-                        }, 2000);
-                    } else {
-                        alertDiv.className += ' alert-danger';
-                        alertDiv.innerHTML = '<strong>Error!</strong> ' + data.message;
-                        alertDiv.innerHTML += '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
-                        document.querySelector('.container-fluid').prepend(alertDiv);
-                    }
-                })
-                .catch(error => {
-                    // Hapus loading message
-                    loadingMessage.remove();
-
-                    console.error('Error:', error);
-
-                    // Tampilkan error
-                    const alertDiv = document.createElement('div');
-                    alertDiv.className = 'alert alert-danger alert-dismissible fade show';
-                    alertDiv.innerHTML = '<strong>Error!</strong> Terjadi kesalahan saat menghapus data. Detail: ' + error.message;
-                    alertDiv.innerHTML += '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
-                    document.querySelector('.container-fluid').prepend(alertDiv);
-                });
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                loadingMessage.remove(); // Hapus pesan loading
+                if (data.success) {
+                    alert('Data pendaftaran berhasil dihapus');
+                    location.reload();
+                } else {
+                    throw new Error(data.message || 'Gagal menghapus data');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                loadingMessage.remove(); // Hapus pesan loading jika terjadi error
+                const alertDiv = document.createElement('div');
+                alertDiv.className = 'alert alert-danger alert-dismissible fade show';
+                alertDiv.innerHTML = '<strong>Error!</strong> Terjadi kesalahan saat menghapus data. Detail: ' + error.message;
+                alertDiv.innerHTML += '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
+                document.querySelector('.container-fluid').prepend(alertDiv);
+            });
         }
     }
 </script>

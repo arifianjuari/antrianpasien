@@ -4,7 +4,7 @@ $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https://' 
 $host = $_SERVER['HTTP_HOST'];
 
 if ($host === 'localhost' || strpos($host, 'localhost:') === 0) {
-    $base_url = $protocol . $host . '/antrian%20pasien';
+    $base_url = $protocol . $host . '/antrian_pasien';
 } else if ($host === 'www.praktekobgin.com' || $host === 'praktekobgin.com') {
     // Untuk domain produksi, selalu gunakan HTTPS
     $base_url = 'https://' . $host;
