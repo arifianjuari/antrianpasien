@@ -1104,22 +1104,26 @@ class RekamMedisController
     {
         try {
             error_log("=== MULAI PROSES SIMPAN PENILAIAN MEDIS RALAN KANDUNGAN ===");
+            error_log("Raw POST Data: " . file_get_contents('php://input'));
             error_log("POST Array: " . print_r($_POST, true));
+            error_log("Request Method: " . $_SERVER['REQUEST_METHOD']);
+            error_log("Content Type: " . $_SERVER['CONTENT_TYPE']);
 
             // Validasi data yang diperlukan
             if (empty($_POST['no_rawat'])) {
+                error_log("no_rawat kosong");
                 throw new Exception('No rawat tidak boleh kosong');
             }
 
             if (empty($_POST['keluhan_utama'])) {
+                error_log("keluhan_utama kosong");
                 throw new Exception('Keluhan utama tidak boleh kosong');
             }
 
-            // Siapkan data sesuai struktur tabel
+            // Siapkan data sesuai struktur tabel aktual di database
             $data = [
                 'no_rawat' => $_POST['no_rawat'],
                 'tanggal' => $_POST['tanggal'] ?? date('Y-m-d H:i:s'),
-                'kd_dokter' => $_SESSION['user_id'],
                 'anamnesis' => $_POST['anamnesis'] ?? 'Autoanamnesis',
                 'hubungan' => $_POST['hubungan'] ?? '-',
                 'keluhan_utama' => $_POST['keluhan_utama'],
@@ -1129,29 +1133,15 @@ class RekamMedisController
                 'rpo' => $_POST['rpo'] ?? '',
                 'alergi' => $_POST['alergi'] ?? '',
                 'keadaan' => $_POST['keadaan'] ?? 'Sehat',
+                'gcs' => $_POST['gcs'] ?? '15',
                 'kesadaran' => $_POST['kesadaran'] ?? 'Compos Mentis',
                 'td' => $_POST['td'] ?? '',
                 'nadi' => $_POST['nadi'] ?? '',
-                'suhu' => $_POST['suhu'] ?? '',
                 'rr' => $_POST['rr'] ?? '',
+                'suhu' => $_POST['suhu'] ?? '',
+                'spo' => $_POST['spo'] ?? '',
                 'bb' => $_POST['bb'] ?? '',
                 'tb' => $_POST['tb'] ?? '',
-                'tfu' => $_POST['tfu'] ?? '',
-                'tbj' => $_POST['tbj'] ?? '',
-                'his' => $_POST['his'] ?? '',
-                'kontraksi' => $_POST['kontraksi'] ?? 'Tidak',
-                'djj' => $_POST['djj'] ?? '',
-                'inspeksi' => $_POST['inspeksi'] ?? '',
-                'inspekulo' => $_POST['inspekulo'] ?? '',
-                'vt' => $_POST['vt'] ?? '',
-                'rt' => $_POST['rt'] ?? '',
-                'ultra' => $_POST['ultra'] ?? '',
-                'kardio' => $_POST['kardio'] ?? '',
-                'lab' => $_POST['lab'] ?? '',
-                'diagnosis' => $_POST['diagnosis'] ?? '',
-                'tata' => $_POST['tata'] ?? '',
-                'edukasi' => $_POST['edukasi'] ?? '',
-                'resep' => $_POST['resep'] ?? '',
                 'kepala' => $_POST['kepala'] ?? 'Normal',
                 'mata' => $_POST['mata'] ?? 'Normal',
                 'gigi' => $_POST['gigi'] ?? 'Normal',
@@ -1162,8 +1152,14 @@ class RekamMedisController
                 'ekstremitas' => $_POST['ekstremitas'] ?? 'Normal',
                 'kulit' => $_POST['kulit'] ?? 'Normal',
                 'ket_fisik' => $_POST['ket_fisik'] ?? '',
-                'tanggal_kontrol' => $_POST['tanggal_kontrol'] ?? null,
-                'atensi' => $_POST['atensi'] ?? '0'
+                'ultra' => $_POST['ultra'] ?? '',
+                'lab' => $_POST['lab'] ?? '',
+                'diagnosis' => $_POST['diagnosis'] ?? '',
+                'tata' => $_POST['tatalaksana'] ?? '',
+                'edukasi' => $_POST['edukasi'] ?? '',
+                'resep' => $_POST['resep'] ?? '',
+                'atensi' => $_POST['atensi'] ?? '0',
+                'tanggal_kontrol' => $_POST['tanggal_kontrol'] ?? null
             ];
 
             error_log("Data yang akan disimpan: " . print_r($data, true));
