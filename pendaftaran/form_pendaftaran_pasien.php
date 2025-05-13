@@ -54,7 +54,7 @@ try {
     $stmt = $conn->prepare($query);
     $stmt->execute(['id_dokter' => $default_dokter_id]);
     $dokter = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    
+
     // Set default value untuk id_dokter jika belum diset
     if (empty($id_dokter)) {
         $id_dokter = $default_dokter_id;
@@ -104,6 +104,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $kd_kec = trim($_POST['kd_kec'] ?? '');
     $pekerjaan = trim($_POST['pekerjaan'] ?? '');
     $keluhan = trim($_POST['keluhan'] ?? '');
+    $yang_menyarankan = trim($_POST['yang_menyarankan'] ?? '');
     $id_tempat_praktek = trim($_POST['id_tempat_praktek'] ?? '');
     $id_dokter = trim($_POST['id_dokter'] ?? '');
     $id_jadwal = trim($_POST['id_jadwal'] ?? '');
@@ -328,6 +329,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         no_tlp,
                         alamat,
                         Keluhan,
+                        yang_menyarankan,
                         ID_Tempat_Praktek,
                         ID_Dokter,
                         ID_Jadwal,
@@ -336,7 +338,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         Waktu_Perkiraan,
                         voucher_code,
                         mohon_keringanan
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Menunggu Konfirmasi', ?, ?, ?, ?)";
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Menunggu Konfirmasi', ?, ?, ?, ?)";
 
             // Buat timestamp dengan zona waktu Asia/Jakarta
             $waktu_pendaftaran = date('Y-m-d H:i:s');
@@ -371,6 +373,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $nomor_telepon,
                 $alamat,
                 $keluhan,
+                $yang_menyarankan,
                 $id_tempat_praktek,
                 $id_dokter,
                 $id_jadwal,
@@ -715,7 +718,11 @@ ob_start();
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="keluhan" class="form-label">Keluhan</label>
-                                    <textarea class="form-control" id="keluhan" name="keluhan" rows="2"></textarea>
+                                    <textarea class="form-control" id="keluhan" name="keluhan" rows="3"></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="yang_menyarankan" class="form-label">Yang menyarankan periksa kesini</label>
+                                    <input type="text" class="form-control" id="yang_menyarankan" name="yang_menyarankan" maxlength="50">
                                 </div>
                                 <div class="mb-3">
                                     <label for="mohon_keringanan" class="form-label">Minta Keringanan</label>
@@ -736,8 +743,19 @@ ob_start();
                             <div class="col-md-12">
                                 <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                                     <button type="reset" class="btn btn-secondary me-md-2">Reset</button>
-                                    <button type="submit" class="btn btn-primary">Daftar</button>
+                                    <button type="submit" class="btn btn-primary" id="submitBtn">Daftar</button>
                                 </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Loading Overlay -->
+                        <div id="loadingOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 9999;">
+                            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: white;">
+                                <div class="spinner-border text-light" role="status" style="width: 3rem; height: 3rem;">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <h4 class="mt-3">Sedang memproses pendaftaran...</h4>
+                                <p>Mohon tunggu sebentar</p>
                             </div>
                         </div>
                     </form>
@@ -749,6 +767,9 @@ ob_start();
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        const formElement = document.getElementById('formPendaftaran');
+        const submitBtn = document.getElementById('submitBtn');
+        const loadingOverlay = document.getElementById('loadingOverlay');
         const nikInput = document.getElementById('no_ktp');
         const formFields = {
             nama_pasien: document.getElementById('nama_pasien'),
@@ -758,7 +779,9 @@ ob_start();
             nomor_telepon: document.getElementById('nomor_telepon'),
             alamat: document.getElementById('alamat'),
             kd_kec: document.getElementById('kd_kec'),
-            pekerjaan: document.getElementById('pekerjaan')
+            pekerjaan: document.getElementById('pekerjaan'),
+            keluhan: document.getElementById('keluhan'),
+            yang_menyarankan: document.getElementById('yang_menyarankan')
         };
 
         // Semua field form selain NIK
@@ -835,6 +858,8 @@ ob_start();
                         formFields.alamat.value = data.patient.alamat;
                         formFields.kd_kec.value = data.patient.kd_kec;
                         formFields.pekerjaan.value = data.patient.pekerjaan;
+                        formFields.keluhan.value = '';
+                        formFields.yang_menyarankan.value = '';
 
                         // Aktifkan semua field agar bisa diedit
                         allFormFields.forEach(field => {
@@ -1057,6 +1082,31 @@ ob_start();
 
         tempatSelect.addEventListener('change', loadJadwal);
         dokterSelect.addEventListener('change', loadJadwal);
+        
+        // Prevent multiple form submissions
+        formElement.addEventListener('submit', function(e) {
+            // Check if form is already being submitted
+            if (formElement.classList.contains('is-submitting')) {
+                e.preventDefault();
+                return false;
+            }
+            
+            // Check form validity
+            if (!formElement.checkValidity()) {
+                return;
+            }
+            
+            // Mark form as being submitted
+            formElement.classList.add('is-submitting');
+            
+            // Disable submit button and show loading overlay
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Memproses...';
+            loadingOverlay.style.display = 'block';
+            
+            // Allow form submission to continue
+            return true;
+        });
 
         if (tempatSelect.value && dokterSelect.value) {
             loadJadwal();
