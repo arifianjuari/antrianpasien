@@ -297,24 +297,43 @@ try {
                                         <?php
                                         $no = 1;
                                         foreach ($result as $row):
+                                            $raw_harga = $row['harga'];
+                                            $ed_formatted = !empty($row['ed']) ? date('d-m-Y', strtotime($row['ed'])) : '';
+                                            $ed_raw = !empty($row['ed']) ? $row['ed'] : '';
                                         ?>
-                                            <tr>
+                                            <tr data-id="<?= $row['id_obat'] ?>">
                                                 <td><?= $no++ ?></td>
-                                                <td><?= htmlspecialchars($row['nama_obat']) ?></td>
-                                                <td><?= htmlspecialchars($row['bentuk_sediaan']) ?></td>
-                                                <td><?= htmlspecialchars($row['dosis'] ?? '') ?></td>
-                                            <td><?= formatRupiah($row['harga']) ?></td>
-                                            <td><?= htmlspecialchars($row['farmasi'] ?? '') ?></td>
-                                            <td><?= htmlspecialchars($row['catatan_obat'] ?? '') ?></td>
-                                            <td><?= htmlspecialchars(!empty($row['ed']) ? date('d-m-Y', strtotime($row['ed'])) : '-') ?></td>
-                                            <td><?= htmlspecialchars($row['kategori'] ?? '-') ?></td>
-                                            <td>
-                                                <span class="badge <?= $row['status_aktif'] ? 'bg-success' : 'bg-danger' ?>">
-                                                    <?= $row['status_aktif'] ? 'Aktif' : 'Nonaktif' ?>
-                                                </span>
-                                            </td>
-                                            <td>
-                                                    <button type="button" class="btn btn-sm btn-info"
+                                                <td class="editable" data-field="nama_obat"><?= htmlspecialchars($row['nama_obat']) ?></td>
+                                                <td class="editable" data-field="bentuk_sediaan"><?= htmlspecialchars($row['bentuk_sediaan']) ?></td>
+                                                <td class="editable" data-field="dosis"><?= htmlspecialchars($row['dosis'] ?? '') ?></td>
+                                                <td class="editable" data-field="harga" data-value="<?= $raw_harga ?>"><?= formatRupiah($row['harga']) ?></td>
+                                                <td class="editable" data-field="farmasi"><?= htmlspecialchars($row['farmasi'] ?? '') ?></td>
+                                                <td class="editable" data-field="catatan_obat"><?= htmlspecialchars($row['catatan_obat'] ?? '') ?></td>
+                                                <td class="editable date-field" data-field="ed" data-value="<?= $ed_raw ?>">
+                                                    <span class="editable-text"><?= $ed_formatted ?: '-' ?></span>
+                                                    <input type="date" class="form-control form-control-sm editable-date" style="display:none;" value="<?= $ed_raw ?>">
+                                                </td>
+                                                <td class="editable" data-field="kategori">
+                                                    <select class="form-select form-select-sm editable-select" data-field="kategori" style="display:none;">
+                                                        <?php foreach ($kategori_list as $kategori): ?>
+                                                            <option value="<?= $kategori ?>" <?= $kategori == $row['kategori'] ? 'selected' : '' ?>>
+                                                                <?= $kategori ?>
+                                                            </option>
+                                                        <?php endforeach; ?>
+                                                    </select>
+                                                    <span class="editable-text"><?= htmlspecialchars($row['kategori'] ?? '-') ?></span>
+                                                </td>
+                                                <td class="editable" data-field="status_aktif" data-value="<?= $row['status_aktif'] ?>">
+                                                    <select class="form-select form-select-sm editable-select" data-field="status_aktif" style="display:none;">
+                                                        <option value="1" <?= $row['status_aktif'] == 1 ? 'selected' : '' ?>>Aktif</option>
+                                                        <option value="0" <?= $row['status_aktif'] == 0 ? 'selected' : '' ?>>Nonaktif</option>
+                                                    </select>
+                                                    <span class="badge <?= $row['status_aktif'] ? 'bg-success' : 'bg-danger' ?>">
+                                                        <?= $row['status_aktif'] ? 'Aktif' : 'Nonaktif' ?>
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <button type="button" class="btn btn-sm btn-info btn-edit-modal"
                                                         data-bs-toggle="modal"
                                                         data-bs-target="#modalEdit"
                                                         data-id="<?= $row['id_obat'] ?>"
@@ -502,29 +521,56 @@ try {
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+    <style>
+        .editable {
+            position: relative;
+            cursor: pointer;
+        }
+        .editable:hover {
+            background-color: #f8f9fa;
+        }
+        .editable input, .editable select {
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .editable-active {
+            background-color: #e9ecef;
+        }
+        .save-indicator {
+            position: absolute;
+            top: 0;
+            right: 0;
+            font-size: 12px;
+            color: green;
+            display: none;
+        }
+    </style>
+
     <script>
         $(document).ready(function() {
-            // Inisialisasi DataTables
-            $('#tabelFormularium').DataTable({
+            // Inisialisasi DataTables tanpa pagination
+            var table = $('#tabelFormularium').DataTable({
                 language: {
                     url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/id.json'
-                }
+                },
+                paging: false,
+                info: false // Menghilangkan informasi "Showing X of Y entries"
             });
 
             // Mengisi data ke modal edit
-                $('#modalEdit').on('show.bs.modal', function(event) {
-                    var button = $(event.relatedTarget);
-                    var id = button.data('id');
-                    var nama = button.data('nama');
-                    var generik = button.data('generik');
-                    var bentuk = button.data('bentuk');
-                    var dosis = button.data('dosis');
-                    var kategori = button.data('kategori');
-                    var catatan = button.data('catatan');
-                    var harga = button.data('harga');
-                    var farmasi = button.data('farmasi');
-                    // Use attribute to preserve empty string
-                    var ed = button.attr('data-ed');
+            $('#modalEdit').on('show.bs.modal', function(event) {
+                var button = $(event.relatedTarget);
+                var id = button.data('id');
+                var nama = button.data('nama');
+                var generik = button.data('generik');
+                var bentuk = button.data('bentuk');
+                var dosis = button.data('dosis');
+                var kategori = button.data('kategori');
+                var catatan = button.data('catatan');
+                var harga = button.data('harga');
+                var farmasi = button.data('farmasi');
+                // Use attribute to preserve empty string
+                var ed = button.attr('data-ed');
                 var status = button.data('status');
 
                 var modal = $(this);
@@ -568,6 +614,227 @@ try {
             setTimeout(function() {
                 $('.alert').alert('close');
             }, 5000);
+
+            // Inline editing functionality
+            $('.editable').on('click', function(e) {
+                // Don't trigger if clicking on a select or input
+                if ($(e.target).is('select, input')) {
+                    return;
+                }
+                
+                var $cell = $(this);
+                var field = $cell.data('field');
+                var currentValue = $cell.data('value') || $cell.text().trim();
+                
+                // Handle different field types
+                if (field === 'kategori' || field === 'status_aktif') {
+                    // For select fields
+                    $cell.addClass('editable-active');
+                    $cell.find('.editable-text').hide();
+                    $cell.find('.editable-select').show().focus();
+                } else if (field === 'ed') {
+                    // For date fields
+                    $cell.addClass('editable-active');
+                    $cell.find('.editable-text').hide();
+                    $cell.find('.editable-date').show().focus();
+                } else {
+                    // For text fields
+                    var inputType = field === 'harga' ? 'number' : 'text';
+                    var inputValue = field === 'harga' ? currentValue : $cell.text().trim();
+                    
+                    $cell.addClass('editable-active');
+                    $cell.html(`<input type="${inputType}" class="form-control form-control-sm" value="${inputValue}">
+                                <span class="save-indicator"><i class="bi bi-check-circle"></i></span>`);
+                    $cell.find('input').focus().select();
+                }
+            });
+
+            // Handle blur event for text inputs
+            $(document).on('blur', '.editable-active input[type="text"], .editable-active input[type="number"]', function() {
+                var $input = $(this);
+                var $cell = $input.closest('.editable');
+                var newValue = $input.val().trim();
+                var field = $cell.data('field');
+                var rowId = $cell.closest('tr').data('id');
+                
+                // Save the value
+                saveInlineEdit(rowId, field, newValue, $cell);
+            });
+
+            // Handle change event for selects
+            $(document).on('change', '.editable-select', function() {
+                var $select = $(this);
+                var $cell = $select.closest('.editable');
+                var newValue = $select.val();
+                var field = $cell.data('field');
+                var rowId = $cell.closest('tr').data('id');
+                
+                // Save the value
+                saveInlineEdit(rowId, field, newValue, $cell);
+            });
+
+            // Handle change event for date inputs
+            $(document).on('change', '.editable-date', function() {
+                var $input = $(this);
+                var $cell = $input.closest('.editable');
+                var newValue = $input.val();
+                var field = $cell.data('field');
+                var rowId = $cell.closest('tr').data('id');
+                
+                // Save the value
+                saveInlineEdit(rowId, field, newValue, $cell);
+            });
+
+            // Handle Enter key for text inputs
+            $(document).on('keydown', '.editable-active input', function(e) {
+                if (e.keyCode === 13) { // Enter key
+                    $(this).blur();
+                }
+            });
+
+            // Function to save inline edits
+            function saveInlineEdit(id, field, value, $cell) {
+                // Store original value for rollback if needed
+                var originalValue = $cell.data('original-value') || $cell.text().trim();
+                $cell.data('original-value', originalValue);
+                
+                // Show loading indicator
+                var $indicator = $('<div class="spinner-border spinner-border-sm text-primary" role="status"><span class="visually-hidden">Loading...</span></div>');
+                $cell.append($indicator);
+                
+                $.ajax({
+                    url: 'update_formularium.php',
+                    type: 'POST',
+                    data: {
+                        id: id,
+                        field: field,
+                        value: value
+                    },
+                    success: function(response) {
+                        // Remove loading indicator
+                        $indicator.remove();
+                        
+                        var result;
+                        
+                        // Try to parse the response as JSON
+                        try {
+                            // If response is already an object, use it directly
+                            if (typeof response === 'object') {
+                                result = response;
+                            } else {
+                                // Try to parse string response as JSON
+                                result = JSON.parse(response);
+                            }
+                            
+                            if (result.success) {
+                                // Update the cell display
+                                updateCellDisplay($cell, field, value, result.formatted);
+                                
+                                // Show success indicator briefly
+                                $cell.find('.save-indicator').show().delay(1000).fadeOut();
+                            } else {
+                                // Show error
+                                Swal.fire({
+                                    title: 'Error',
+                                    text: result.message || 'Gagal menyimpan perubahan',
+                                    icon: 'error'
+                                });
+                                // Revert to original value
+                                updateCellDisplay($cell, field, originalValue, null);
+                            }
+                        } catch (e) {
+                            console.error('Error parsing response:', e);
+                            console.log('Raw response:', response);
+                            
+                            // Even though there was an error, the update might have succeeded
+                            // So we'll update the display but show a warning
+                            updateCellDisplay($cell, field, value, null);
+                            
+                            // Show a warning toast instead of an error dialog
+                            const Toast = Swal.mixin({
+                                toast: true,
+                                position: 'top-end',
+                                showConfirmButton: false,
+                                timer: 3000,
+                                timerProgressBar: true
+                            });
+                            
+                            Toast.fire({
+                                icon: 'warning',
+                                title: 'Peringatan',
+                                text: 'Respons server tidak valid, tetapi data mungkin sudah tersimpan'
+                            });
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        // Remove loading indicator
+                        $indicator.remove();
+                        
+                        console.error('AJAX Error:', status, error);
+                        
+                        // Even though there was an error, the update might have succeeded
+                        // So we'll update the display but show a warning
+                        updateCellDisplay($cell, field, value, null);
+                        
+                        // Show a warning toast instead of an error dialog
+                        const Toast = Swal.mixin({
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true
+                        });
+                        
+                        Toast.fire({
+                            icon: 'warning',
+                            title: 'Peringatan',
+                            text: 'Koneksi server bermasalah, tetapi data mungkin sudah tersimpan'
+                        });
+                    }
+                });
+            }
+
+            // Function to update cell display after edit
+            function updateCellDisplay($cell, field, value, formatted) {
+                $cell.removeClass('editable-active');
+                
+                if (field === 'kategori') {
+                    // For select fields
+                    $cell.find('.editable-select').hide();
+                    $cell.find('.editable-text').text(value).show();
+                } else if (field === 'status_aktif') {
+                    // For status field
+                    $cell.find('.editable-select').hide();
+                    var badgeClass = value == 1 ? 'bg-success' : 'bg-danger';
+                    var statusText = value == 1 ? 'Aktif' : 'Nonaktif';
+                    $cell.find('.badge').removeClass('bg-success bg-danger').addClass(badgeClass).text(statusText);
+                } else if (field === 'ed') {
+                    // For date fields
+                    $cell.find('.editable-date').hide();
+                    $cell.data('value', value);
+                    var displayDate = value ? formatted || formatDate(value) : '-';
+                    $cell.find('.editable-text').text(displayDate).show();
+                } else if (field === 'harga') {
+                    // For price fields
+                    $cell.data('value', value);
+                    $cell.html(formatted || formatRupiah(value) + '<span class="save-indicator"><i class="bi bi-check-circle"></i></span>');
+                } else {
+                    // For text fields
+                    $cell.html(value + '<span class="save-indicator"><i class="bi bi-check-circle"></i></span>');
+                }
+            }
+
+            // Helper function to format date
+            function formatDate(dateString) {
+                if (!dateString) return '-';
+                var date = new Date(dateString);
+                return date.toLocaleDateString('id-ID', {day: '2-digit', month: '2-digit', year: 'numeric'}).replace(/\//g, '-');
+            }
+
+            // Helper function to format currency
+            function formatRupiah(angka) {
+                return 'Rp ' + parseFloat(angka).toLocaleString('id-ID');
+            }
         });
     </script>
 </body>
