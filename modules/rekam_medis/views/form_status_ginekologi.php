@@ -4,6 +4,10 @@ if (!isset($no_rkm_medis)) {
     echo "Error: Nomor rekam medis tidak tersedia.";
     exit;
 }
+
+// Ambil parameter source jika ada
+$source = isset($_GET['source']) ? $_GET['source'] : '';
+$no_rawat = isset($_GET['no_rawat']) ? $_GET['no_rawat'] : '';
 ?>
 
 <div class="container-fluid">
@@ -13,14 +17,26 @@ if (!isset($no_rkm_medis)) {
                 <div class="card-header">
                     <h3 class="card-title">Tambah Status Ginekologi</h3>
                     <div class="card-tools">
-                        <a href="index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=<?= $no_rkm_medis ?>" class="btn btn-default btn-sm">
-                            <i class="fas fa-arrow-left"></i> Kembali
-                        </a>
+                        <?php if ($source == 'form_penilaian_medis_ralan_kandungan' && !empty($no_rawat)): ?>
+                            <a href="index.php?module=rekam_medis&action=form_penilaian_medis_ralan_kandungan&no_rawat=<?= $no_rawat ?>" class="btn btn-default btn-sm">
+                                <i class="fas fa-arrow-left"></i> Kembali ke Form Penilaian
+                            </a>
+                        <?php else: ?>
+                            <a href="index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=<?= $no_rkm_medis ?>" class="btn btn-default btn-sm">
+                                <i class="fas fa-arrow-left"></i> Kembali
+                            </a>
+                        <?php endif; ?>
                     </div>
                 </div>
                 <div class="card-body">
                     <form action="index.php?module=rekam_medis&action=simpan_status_ginekologi" method="post">
                         <input type="hidden" name="no_rkm_medis" value="<?= $no_rkm_medis ?>">
+                        <?php if (!empty($source)): ?>
+                        <input type="hidden" name="source" value="<?= $source ?>">
+                        <?php endif; ?>
+                        <?php if (!empty($no_rawat)): ?>
+                        <input type="hidden" name="no_rawat" value="<?= $no_rawat ?>">
+                        <?php endif; ?>
 
                         <div class="mb-3">
                             <label class="form-label">Tanggal</label>
@@ -58,7 +74,8 @@ if (!isset($no_rkm_medis)) {
 
                         <div class="mb-3">
                             <label class="form-label">Lama Menikah (Tahun)</label>
-                            <input type="number" name="lama_menikah" class="form-control" required>
+                            <input type="number" name="lama_menikah_th" class="form-control" step="0.1" min="0" placeholder="Gunakan titik untuk desimal" required>
+                            <small class="text-muted">Gunakan titik (.) untuk desimal, bukan koma</small>
                         </div>
 
                         <div class="text-end">

@@ -436,7 +436,7 @@ $conn->close();
                         <div class="tab-pane fade" id="status-ginekologi" role="tabpanel">
                             <div class="mb-3 d-flex justify-content-between">
                                 <h6 class="font-weight-bold">Status Ginekologi</h6>
-                                <a href="index.php?module=rekam_medis&action=tambah_status_ginekologi&no_rkm_medis=<?= $data['no_rkm_medis'] ?>&source=form_penilaian_medis_ralan_kandungan" class="btn btn-primary btn-sm">
+                                <a href="index.php?module=rekam_medis&action=tambah_status_ginekologi&no_rkm_medis=<?= $data['no_rkm_medis'] ?>&source=form_penilaian_medis_ralan_kandungan&no_rawat=<?= $data['no_rawat'] ?>" class="btn btn-primary btn-sm">
                                     <i class="fas fa-plus"></i> Tambah Data
                                 </a>
                             </div>
@@ -499,18 +499,18 @@ $conn->close();
                                                     <textarea name="keluhan_utama" class="form-control form-control-sm" rows="2" required></textarea>
                                                 </div>
                                                 <div class="mb-2">
-                                                    <label>Riwayat Penyakit Sekarang</label>
-                                                    <textarea name="rps" class="form-control form-control-sm" rows="2"></textarea>
+                                                    <label>Riwayat Sekarang</label>
+                                                    <textarea name="rps" class="form-control form-control-sm" rows="5"></textarea>
                                                 </div>
                                             </div>
                                             <div class="col-6">
                                                 <div class="mb-2">
                                                     <label>Riwayat Penyakit Dahulu</label>
-                                                    <textarea name="rpd" class="form-control form-control-sm" rows="2"></textarea>
+                                                    <textarea name="rpd" class="form-control form-control-sm" rows="4"></textarea>
                                                 </div>
                                                 <div class="mb-2">
                                                     <label>Alergi</label>
-                                                    <input type="text" name="alergi" class="form-control form-control-sm">
+                                                    <textarea name="alergi" class="form-control form-control-sm" rows="2"></textarea>
                                                 </div>
                                             </div>
                                         </div>
@@ -710,7 +710,7 @@ $conn->close();
                                             <label>Diagnosis</label>
                                             <div class="row">
                                                 <div class="col-md-8">
-                                                    <textarea name="diagnosis" id="diagnosis" class="form-control" rows="2"><?= htmlspecialchars($diagnosis_terakhir) ?></textarea>
+                                                    <textarea name="diagnosis" id="diagnosis" class="form-control" rows="4"><?= htmlspecialchars($diagnosis_terakhir) ?></textarea>
                                                 </div>
                                                 <div class="col-md-4">
                                                     <div class="card border">

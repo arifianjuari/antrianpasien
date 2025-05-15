@@ -470,8 +470,8 @@ if (!isset($pemeriksaan) || !$pemeriksaan) {
                                             <textarea name="keluhan_utama" class="form-control form-control-sm" rows="2"><?= isset($pemeriksaan['keluhan_utama']) ? $pemeriksaan['keluhan_utama'] : '' ?></textarea>
                                         </div>
                                         <div class="mb-2">
-                                            <label>Riwayat Penyakit Sekarang</label>
-                                            <textarea name="rps" class="form-control form-control-sm" rows="2"><?= isset($pemeriksaan['rps']) ? $pemeriksaan['rps'] : '' ?></textarea>
+                                            <label>Riwayat Sekarang</label>
+                                            <textarea name="rps" class="form-control form-control-sm" rows="4"><?= isset($pemeriksaan['rps']) ? $pemeriksaan['rps'] : '' ?></textarea>
                                         </div>
                                     </div>
                                     <div class="col-6">
@@ -481,7 +481,7 @@ if (!isset($pemeriksaan) || !$pemeriksaan) {
                                         </div>
                                         <div class="mb-2">
                                             <label>Alergi</label>
-                                            <input type="text" name="alergi" class="form-control form-control-sm" value="<?= isset($pemeriksaan['alergi']) ? $pemeriksaan['alergi'] : '' ?>">
+                                            <textarea name="alergi" class="form-control form-control-sm" rows="2"><?= isset($pemeriksaan['alergi']) ? $pemeriksaan['alergi'] : '' ?></textarea>
                                         </div>
                                     </div>
                                 </div>
@@ -722,7 +722,7 @@ if (!isset($pemeriksaan) || !$pemeriksaan) {
                                     <label>Diagnosis</label>
                                     <div class="row">
                                         <div class="col-md-8">
-                                            <textarea name="diagnosis" id="diagnosis" class="form-control" rows="3"><?= isset($pemeriksaan['diagnosis']) ? $pemeriksaan['diagnosis'] : '' ?></textarea>
+                                            <textarea name="diagnosis" id="diagnosis" class="form-control" rows="4"><?= isset($pemeriksaan['diagnosis']) ? $pemeriksaan['diagnosis'] : '' ?></textarea>
                                         </div>
                                         <div class="col-md-4">
                                             <div class="card border">
@@ -741,7 +741,7 @@ if (!isset($pemeriksaan) || !$pemeriksaan) {
                                     <label>Tatalaksana</label>
                                     <div class="row">
                                         <div class="col-md-8">
-                                            <textarea name="tata" id="tatalaksana" class="form-control" rows="3"><?= isset($pemeriksaan['tata']) ? $pemeriksaan['tata'] : '' ?></textarea>
+                                            <textarea name="tata" id="tatalaksana" class="form-control" rows="4"><?= isset($pemeriksaan['tata']) ? $pemeriksaan['tata'] : '' ?></textarea>
                                         </div>
                                         <div class="col-md-4">
                                             <div class="card border">
@@ -760,7 +760,7 @@ if (!isset($pemeriksaan) || !$pemeriksaan) {
                                     <label>Edukasi</label>
                                     <div class="row">
                                         <div class="col-md-8">
-                                            <textarea name="edukasi" id="edukasi" class="form-control" rows="6"><?= isset($pemeriksaan['edukasi']) ? $pemeriksaan['edukasi'] : '' ?></textarea>
+                                            <textarea name="edukasi" id="edukasi" class="form-control" rows="5"><?= isset($pemeriksaan['edukasi']) ? $pemeriksaan['edukasi'] : '' ?></textarea>
                                         </div>
                                         <div class="col-md-4">
                                             <div class="card border">
@@ -785,7 +785,7 @@ if (!isset($pemeriksaan) || !$pemeriksaan) {
                                     <label>Resume</label>
                                     <div class="row">
                                         <div class="col-md-8">
-                                            <textarea name="resume" id="resume" class="form-control" rows="12"><?= isset($pemeriksaan['resume']) ? $pemeriksaan['resume'] : '' ?></textarea>
+                                            <textarea name="resume" id="resume" class="form-control" rows="17"><?= isset($pemeriksaan['resume']) ? $pemeriksaan['resume'] : '' ?></textarea>
                                         </div>
                                         <div class="col-md-4">
                                             <div class="card border">
@@ -1167,7 +1167,7 @@ if (!isset($pemeriksaan) || !$pemeriksaan) {
                                     echo "</tr>";
                                 }
                             } else {
-                                    echo "<tr><td colspan='9' class='text-center'>Tidak ada data obat</td></tr>";
+                                echo "<tr><td colspan='9' class='text-center'>Tidak ada data obat</td></tr>";
                             }
                             ?>
                         </tbody>

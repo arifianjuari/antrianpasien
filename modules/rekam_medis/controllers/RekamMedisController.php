@@ -2174,7 +2174,7 @@ class RekamMedisController
             }
 
             // Validasi input
-            $required_fields = ['no_rkm_medis', 'parturien', 'abortus', 'hpht', 'lama_menikah'];
+            $required_fields = ['no_rkm_medis', 'parturien', 'abortus', 'hpht', 'lama_menikah_th'];
             foreach ($required_fields as $field) {
                 if (empty($_POST[$field])) {
                     throw new Exception("Field $field harus diisi");
@@ -2201,7 +2201,7 @@ class RekamMedisController
             $abortus = (int)$_POST['abortus'];
             $hpht = $koneksi->real_escape_string($_POST['hpht']);
             $kontrasepsi = !empty($_POST['kontrasepsi']) ? $koneksi->real_escape_string($_POST['kontrasepsi']) : 'Tidak Ada';
-            $lama_menikah = (int)$_POST['lama_menikah'];
+            $lama_menikah_th = (float)$_POST['lama_menikah_th'];
 
             // Query untuk menyimpan data
             $query = "INSERT INTO status_ginekologi 
@@ -2211,14 +2211,14 @@ class RekamMedisController
 
             $stmt = $koneksi->prepare($query);
             $stmt->bind_param(
-                "ssiissi",
+                "ssiissd",
                 $id_status_ginekologi,
                 $no_rkm_medis,
                 $parturien,
                 $abortus,
                 $hpht,
                 $kontrasepsi,
-                $lama_menikah
+                $lama_menikah_th
             );
 
             if ($stmt->execute()) {
@@ -2230,12 +2230,22 @@ class RekamMedisController
             $stmt->close();
             $koneksi->close();
 
-            // Redirect kembali ke halaman detail pasien
-            header("Location: index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=" . $no_rkm_medis);
+            // Cek apakah ada parameter source untuk redirect
+            if (!empty($_POST['source']) && $_POST['source'] == 'form_penilaian_medis_ralan_kandungan') {
+                // Redirect kembali ke form penilaian medis ralan kandungan
+                header("Location: index.php?module=rekam_medis&action=form_penilaian_medis_ralan_kandungan&no_rawat=" . $_POST['no_rawat']);
+            } else {
+                // Redirect kembali ke halaman detail pasien
+                header("Location: index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=" . $no_rkm_medis);
+            }
             exit;
         } catch (Exception $e) {
             $_SESSION['error'] = $e->getMessage();
-            header("Location: index.php?module=rekam_medis&action=tambah_status_ginekologi&no_rkm_medis=" . $_POST['no_rkm_medis']);
+            // Preserve source parameter if it exists
+            $source_param = !empty($_POST['source']) ? "&source=" . $_POST['source'] : "";
+            $no_rawat_param = !empty($_POST['no_rawat']) ? "&no_rawat=" . $_POST['no_rawat'] : "";
+            
+            header("Location: index.php?module=rekam_medis&action=tambah_status_ginekologi&no_rkm_medis=" . $_POST['no_rkm_medis'] . $source_param . $no_rawat_param);
             exit;
         }
     }
