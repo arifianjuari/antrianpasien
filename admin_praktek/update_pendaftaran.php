@@ -40,6 +40,7 @@ $status = isset($_POST['status']) ? $_POST['status'] : '';
 $id_dokter = isset($_POST['id_dokter']) ? $_POST['id_dokter'] : '';
 $id_jadwal = isset($_POST['id_jadwal']) ? $_POST['id_jadwal'] : '';
 $id_tempat = isset($_POST['id_tempat']) ? $_POST['id_tempat'] : '';
+$waktu_perkiraan = isset($_POST['waktu_perkiraan']) ? trim($_POST['waktu_perkiraan']) : '';
 
 // Validasi data
 if (empty($nm_pasien) || empty($status) || empty($id_dokter) || empty($id_jadwal) || empty($id_tempat)) {
@@ -72,7 +73,8 @@ try {
             Status_Pendaftaran = :status,
             ID_Dokter = :id_dokter,
             ID_Jadwal = :id_jadwal,
-            ID_Tempat_Praktek = :id_tempat
+            ID_Tempat_Praktek = :id_tempat,
+            Waktu_Perkiraan = :waktu_perkiraan
         WHERE 
             ID_Pendaftaran = :id_pendaftaran
     ";
@@ -83,6 +85,16 @@ try {
     $stmt->bindParam(':id_dokter', $id_dokter);
     $stmt->bindParam(':id_jadwal', $id_jadwal);
     $stmt->bindParam(':id_tempat', $id_tempat);
+    
+    // Handle waktu_perkiraan (can be NULL if empty)
+    if (empty($waktu_perkiraan)) {
+        $stmt->bindValue(':waktu_perkiraan', null, PDO::PARAM_NULL);
+    } else {
+        // Format waktu_perkiraan to include date
+        $waktu_perkiraan_full = date('Y-m-d ') . $waktu_perkiraan . ':00';
+        $stmt->bindParam(':waktu_perkiraan', $waktu_perkiraan_full);
+    }
+    
     $stmt->bindParam(':id_pendaftaran', $id_pendaftaran);
 
     $stmt->execute();

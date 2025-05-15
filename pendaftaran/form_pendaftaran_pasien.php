@@ -445,13 +445,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $message .= "Nama: {$nama_pasien}\n";
                 $message .= "NIK: {$no_ktp}\n";
                 $message .= "Tanggal Lahir: {$tanggal_lahir}\n";
-                $message .= "Waktu Pendaftaran: " . date('Y-m-d H:i:s');
+                $message .= "Waktu Pendaftaran: " . date('Y-m-d H:i:s') . "\n";
+                $message .= "Perkiraan Waktu Periksa: " . date('H:i', strtotime($waktu_perkiraan)) . " WIB";
 
                 // Daftar nomor WhatsApp yang akan menerima notifikasi
                 $whatsapp_numbers = array(
-                    '+6285190086842',  // Nomor pertama
-                    '+6281334179767'   // Ganti dengan nomor kedua yang dituju
+                    '+6285190086842'  // Nomor pertama
                 );
+                
+                // Tambahkan nomor telepon pasien ke daftar penerima notifikasi
+                // Pastikan nomor telepon dalam format yang benar (diawali dengan kode negara)
+                $patient_phone = $nomor_telepon;
+                // Jika nomor tidak diawali dengan +62, tambahkan
+                if (substr($patient_phone, 0, 1) === '0') {
+                    $patient_phone = '+62' . substr($patient_phone, 1);
+                } elseif (substr($patient_phone, 0, 3) !== '+62') {
+                    $patient_phone = '+62' . $patient_phone;
+                }
+                
+                // Tambahkan nomor pasien ke array penerima
+                $whatsapp_numbers[] = $patient_phone;
 
                 // Kirim pesan ke setiap nomor
                 foreach ($whatsapp_numbers as $number) {

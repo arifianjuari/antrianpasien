@@ -28,6 +28,7 @@ try {
             p.ID_Tempat_Praktek,
             p.Status_Pendaftaran,
             p.Waktu_Pendaftaran,
+            p.Waktu_Perkiraan,
             jr.Hari,
             jr.Jam_Mulai,
             jr.Jam_Selesai,
@@ -147,6 +148,12 @@ try {
                 <label class="form-label">Waktu Pendaftaran</label>
                 <input type="text" class="form-control" value="<?= date('d/m/Y H:i', strtotime($pendaftaran['Waktu_Pendaftaran'])) ?>" readonly>
                 <small class="text-muted">Waktu pendaftaran tidak dapat diubah</small>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Waktu Perkiraan</label>
+                <input type="time" class="form-control" name="waktu_perkiraan" value="<?= !empty($pendaftaran['Waktu_Perkiraan']) ? date('H:i', strtotime($pendaftaran['Waktu_Perkiraan'])) : '' ?>">
+                <small class="text-muted">Format: HH:MM (24 jam)</small>
             </div>
         </div>
     </div>

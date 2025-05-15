@@ -764,6 +764,11 @@ try {
                                                                     $pesan .= "pada tanggal " . date('d/m/Y H:i', strtotime($a['Waktu_Pendaftaran'])) . " ";
                                                                     $pesan .= "saat ini berstatus " . $a['Status_Pendaftaran'] . ".";
 
+                                                                    // Tambahkan informasi waktu perkiraan jika ada
+                                                                    if (!empty($a['Waktu_Perkiraan'])) {
+                                                                        $pesan .= "\n\nWaktu perkiraan Anda diperiksa: " . date('H:i', strtotime($a['Waktu_Perkiraan'])) . " WIB.";
+                                                                    }
+
                                                                     // Encode pesan untuk URL
                                                                     $pesan_encoded = urlencode($pesan);
 
@@ -979,33 +984,33 @@ try {
             const deleteUrl = `${BASE_URL}/modules/rekam_medis/controllers/delete_pendaftaran.php`;
 
             fetch(deleteUrl, {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                loadingMessage.remove(); // Hapus pesan loading
-                if (data.success) {
-                    alert('Data pendaftaran berhasil dihapus');
-                    location.reload();
-                } else {
-                    throw new Error(data.message || 'Gagal menghapus data');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                loadingMessage.remove(); // Hapus pesan loading jika terjadi error
-                const alertDiv = document.createElement('div');
-                alertDiv.className = 'alert alert-danger alert-dismissible fade show';
-                alertDiv.innerHTML = '<strong>Error!</strong> Terjadi kesalahan saat menghapus data. Detail: ' + error.message;
-                alertDiv.innerHTML += '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
-                document.querySelector('.container-fluid').prepend(alertDiv);
-            });
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    loadingMessage.remove(); // Hapus pesan loading
+                    if (data.success) {
+                        alert('Data pendaftaran berhasil dihapus');
+                        location.reload();
+                    } else {
+                        throw new Error(data.message || 'Gagal menghapus data');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    loadingMessage.remove(); // Hapus pesan loading jika terjadi error
+                    const alertDiv = document.createElement('div');
+                    alertDiv.className = 'alert alert-danger alert-dismissible fade show';
+                    alertDiv.innerHTML = '<strong>Error!</strong> Terjadi kesalahan saat menghapus data. Detail: ' + error.message;
+                    alertDiv.innerHTML += '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
+                    document.querySelector('.container-fluid').prepend(alertDiv);
+                });
         }
     }
 </script>
