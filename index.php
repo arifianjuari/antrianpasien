@@ -347,6 +347,11 @@ try {
                 $rekamMedisController->cetak_surat();
                 exit;
                 break;
+            case 'dataKunjungan':
+                // Data Kunjungan dari tabel penilaian_medis_ralan_kandungan
+                error_log("Routing to dataKunjungan");
+                $rekamMedisController->dataKunjungan();
+                break;
             default:
                 if (empty($action)) {
                     $rekamMedisController->index();
