@@ -1147,6 +1147,12 @@ function is_current_module($module, $action = null)
                             <span class="menu-text">Manajemen Edukasi</span>
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a href="<?php echo clean_url($base_url); ?>/index.php?module=rekam_medis&action=dataKunjungan" class="nav-link <?php echo is_current_module('rekam_medis', 'dataKunjungan') ? 'active' : ''; ?>" data-title="Data Kunjungan">
+                            <i class="bi bi-clipboard2-pulse"></i>
+                            <span class="menu-text">Data Kunjungan</span>
+                        </a>
+                    </li>
                 </ul>
             </li>
 

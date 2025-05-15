@@ -3464,4 +3464,68 @@ class RekamMedisController
             exit;
         }
     }
+
+    // Metode untuk menampilkan data kunjungan dari tabel penilaian_medis_ralan_kandungan
+    public function dataKunjungan()
+    {
+        // Inisialisasi variabel pencarian dan pagination
+        $search = isset($_GET['search']) ? $_GET['search'] : '';
+        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        $limit = 10; // Jumlah data per halaman
+        $offset = ($page - 1) * $limit;
+
+        try {
+            // Query untuk menghitung total data
+            $count_query = "SELECT COUNT(*) FROM penilaian_medis_ralan_kandungan pmrk 
+                           JOIN reg_periksa rp ON pmrk.no_rawat = rp.no_rawat
+                           JOIN pasien p ON rp.no_rkm_medis = p.no_rkm_medis";
+            
+            if (!empty($search)) {
+                $count_query .= " WHERE p.no_rkm_medis LIKE :search 
+                               OR p.nm_pasien LIKE :search 
+                               OR pmrk.no_rawat LIKE :search";
+            }
+
+            $count_stmt = $this->pdo->prepare($count_query);
+            if (!empty($search)) {
+                $count_stmt->bindValue(':search', "%$search%", PDO::PARAM_STR);
+            }
+            $count_stmt->execute();
+            $total_records = $count_stmt->fetchColumn();
+
+            // Hitung total halaman
+            $total_pages = ceil($total_records / $limit);
+
+            // Query untuk mengambil data kunjungan
+            $query = "SELECT pmrk.*, rp.tgl_registrasi, p.no_rkm_medis, p.nm_pasien, p.tgl_lahir 
+                      FROM penilaian_medis_ralan_kandungan pmrk 
+                      JOIN reg_periksa rp ON pmrk.no_rawat = rp.no_rawat
+                      JOIN pasien p ON rp.no_rkm_medis = p.no_rkm_medis";
+            
+            if (!empty($search)) {
+                $query .= " WHERE p.no_rkm_medis LIKE :search 
+                          OR p.nm_pasien LIKE :search 
+                          OR pmrk.no_rawat LIKE :search";
+            }
+            
+            $query .= " ORDER BY rp.tgl_registrasi DESC, pmrk.tanggal DESC LIMIT :limit OFFSET :offset";
+
+            $stmt = $this->pdo->prepare($query);
+            if (!empty($search)) {
+                $stmt->bindValue(':search', "%$search%", PDO::PARAM_STR);
+            }
+            $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+            $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+            $stmt->execute();
+            $kunjungan = $stmt->fetchAll();
+
+        } catch (PDOException $e) {
+            $_SESSION['error'] = "Error: " . $e->getMessage();
+            $kunjungan = [];
+            $total_pages = 0;
+        }
+
+        // Load view
+        include 'modules/rekam_medis/views/data_kunjungan.php';
+    }
 }
