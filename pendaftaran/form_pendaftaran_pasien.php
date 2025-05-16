@@ -450,9 +450,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 // Daftar nomor WhatsApp yang akan menerima notifikasi
                 $whatsapp_numbers = array(
-                    '+6285190086842'  // Nomor pertama
+                    '+6285859988440'  // Nomor pertama
                 );
-                
+
                 // Tambahkan nomor telepon pasien ke daftar penerima notifikasi
                 // Pastikan nomor telepon dalam format yang benar (diawali dengan kode negara)
                 $patient_phone = $nomor_telepon;
@@ -462,7 +462,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 } elseif (substr($patient_phone, 0, 3) !== '+62') {
                     $patient_phone = '+62' . $patient_phone;
                 }
-                
+
                 // Tambahkan nomor pasien ke array penerima
                 $whatsapp_numbers[] = $patient_phone;
 
@@ -760,7 +760,7 @@ ob_start();
                                 </div>
                             </div>
                         </div>
-                        
+
                         <!-- Loading Overlay -->
                         <div id="loadingOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 9999;">
                             <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: white;">
@@ -1095,7 +1095,7 @@ ob_start();
 
         tempatSelect.addEventListener('change', loadJadwal);
         dokterSelect.addEventListener('change', loadJadwal);
-        
+
         // Prevent multiple form submissions
         formElement.addEventListener('submit', function(e) {
             // Check if form is already being submitted
@@ -1103,20 +1103,20 @@ ob_start();
                 e.preventDefault();
                 return false;
             }
-            
+
             // Check form validity
             if (!formElement.checkValidity()) {
                 return;
             }
-            
+
             // Mark form as being submitted
             formElement.classList.add('is-submitting');
-            
+
             // Disable submit button and show loading overlay
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Memproses...';
             loadingOverlay.style.display = 'block';
-            
+
             // Allow form submission to continue
             return true;
         });
