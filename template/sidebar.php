@@ -1089,6 +1089,12 @@ function is_current_module($module, $action = null)
                             <span class="menu-text">Daftar Rajal RS</span>
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a href="<?php echo $base_url; ?>/pendaftaran/form_pendaftaran_pasien_rshb.php" class="nav-link <?php echo is_current_page('/pendaftaran/form_pendaftaran_pasien_rshb.php') ? 'active' : ''; ?>" data-title="Pendaftaran Pasien RSHB">
+                            <i class="bi bi-clipboard-plus"></i>
+                            <span class="menu-text">Pendaftaran Pasien RSHB</span>
+                        </a>
+                    </li>
                 </ul>
             </li>
 

@@ -124,6 +124,7 @@ try {
             font-size: 0.9rem;
             display: -webkit-box;
             -webkit-line-clamp: 3;
+            line-clamp: 3;
             -webkit-box-orient: vertical;
             overflow: hidden;
             margin-bottom: 2rem;

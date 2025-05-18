@@ -2280,6 +2280,91 @@ class RekamMedisController
         // Tampilkan form edit status ginekologi
         include 'modules/rekam_medis/views/form_edit_status_ginekologi.php';
     }
+    
+    public function update_status_ginekologi()
+    {
+        // Debugging
+        error_log("=== Mulai proses update_status_ginekologi ===");
+        error_log("POST data: " . print_r($_POST, true));
+        
+        try {
+            // Validasi input
+            if (!isset($_POST['id_status_ginekologi']) || empty($_POST['id_status_ginekologi'])) {
+                throw new Exception("ID status ginekologi tidak valid");
+            }
+            
+            if (!isset($_POST['no_rkm_medis']) || empty($_POST['no_rkm_medis'])) {
+                throw new Exception("Nomor rekam medis tidak valid");
+            }
+            
+            // Ambil data dari form
+            $id_status_ginekologi = $_POST['id_status_ginekologi'];
+            $no_rkm_medis = $_POST['no_rkm_medis'];
+            $parturien = (int)$_POST['parturien'];
+            $abortus = (int)$_POST['abortus'];
+            $hpht = $_POST['hpht'];
+            $kontrasepsi = $_POST['kontrasepsi'];
+            $lama_menikah = (int)$_POST['lama_menikah'];
+            
+            // Koneksi ke database
+            $db2_host = 'auth-db1151.hstgr.io';
+            $db2_username = 'u609399718_adminpraktek';
+            $db2_password = 'Obgin@12345';
+            $db2_database = 'u609399718_praktekobgin';
+            
+            $koneksi = new mysqli($db2_host, $db2_username, $db2_password, $db2_database);
+            
+            if ($koneksi->connect_error) {
+                throw new Exception("Koneksi database gagal: " . $koneksi->connect_error);
+            }
+            
+            // Update data status ginekologi
+            $query = "UPDATE status_ginekologi SET 
+                Parturien = ?, 
+                Abortus = ?, 
+                Hari_pertama_haid_terakhir = ?, 
+                Kontrasepsi_terakhir = ?, 
+                lama_menikah_th = ? 
+                WHERE id_status_ginekologi = ?";
+                
+            $stmt = $koneksi->prepare($query);
+            
+            if (!$stmt) {
+                throw new Exception("Persiapan query gagal: " . $koneksi->error);
+            }
+            
+            $stmt->bind_param("iisssi", $parturien, $abortus, $hpht, $kontrasepsi, $lama_menikah, $id_status_ginekologi);
+            
+            $result = $stmt->execute();
+            
+            if (!$result) {
+                throw new Exception("Eksekusi query gagal: " . $stmt->error);
+            }
+            
+            // Tutup statement dan koneksi
+            $stmt->close();
+            $koneksi->close();
+            
+            // Set pesan sukses
+            $_SESSION['success'] = "Data status ginekologi berhasil diupdate";
+            
+            // Redirect ke halaman detail pasien
+            header("Location: index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=" . $no_rkm_medis);
+            exit;
+            
+        } catch (Exception $e) {
+            error_log("Error in update_status_ginekologi: " . $e->getMessage());
+            $_SESSION['error'] = $e->getMessage();
+            
+            // Redirect kembali ke halaman edit
+            if (isset($_POST['id_status_ginekologi'])) {
+                header("Location: index.php?module=rekam_medis&action=edit_status_ginekologi&id=" . $_POST['id_status_ginekologi']);
+            } else {
+                header("Location: index.php?module=rekam_medis");
+            }
+            exit;
+        }
+    }
 
     public function hapus_status_ginekologi()
     {

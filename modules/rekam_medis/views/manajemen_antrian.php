@@ -973,43 +973,59 @@ try {
 
     function deletePendaftaran(id) {
         if (confirm('Apakah Anda yakin ingin menghapus data pendaftaran ini? Tindakan ini tidak dapat dibatalkan.')) {
+            console.log('Menghapus pendaftaran dengan ID:', id);
+            
             const formData = new FormData();
             formData.append('id_pendaftaran', id);
-
+            
+            // Pastikan URL benar dengan menghilangkan trailing slash jika ada
+            let baseUrl = BASE_URL;
+            if (baseUrl.endsWith('/')) {
+                baseUrl = baseUrl.slice(0, -1);
+            }
+            
+            const deleteUrl = `${baseUrl}/modules/rekam_medis/controllers/delete_pendaftaran.php`;
+            console.log('URL Delete:', deleteUrl);
+            
+            // Tampilkan pesan loading
             const loadingMessage = document.createElement('div');
             loadingMessage.className = 'alert alert-info alert-dismissible fade show';
             loadingMessage.innerHTML = '<strong>Sedang memproses...</strong> Mohon tunggu sebentar.';
             document.querySelector('.container-fluid').prepend(loadingMessage);
-
-            const deleteUrl = `${BASE_URL}/modules/rekam_medis/controllers/delete_pendaftaran.php`;
-
+            
             fetch(deleteUrl, {
                     method: 'POST',
                     body: formData
                 })
                 .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    return response.json();
+                    console.log('Status response:', response.status);
+                    return response.text().then(text => {
+                        try {
+                            // Coba parse sebagai JSON
+                            console.log('Response text:', text);
+                            return JSON.parse(text);
+                        } catch (e) {
+                            // Jika bukan JSON, tampilkan sebagai error
+                            console.error('Response bukan JSON valid:', text);
+                            throw new Error('Response bukan JSON valid: ' + text);
+                        }
+                    });
                 })
                 .then(data => {
-                    loadingMessage.remove(); // Hapus pesan loading
+                    console.log('Data response:', data);
+                    loadingMessage.remove();
+                    
                     if (data.success) {
                         alert('Data pendaftaran berhasil dihapus');
                         location.reload();
                     } else {
-                        throw new Error(data.message || 'Gagal menghapus data');
+                        alert('Gagal menghapus data: ' + data.message);
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    loadingMessage.remove(); // Hapus pesan loading jika terjadi error
-                    const alertDiv = document.createElement('div');
-                    alertDiv.className = 'alert alert-danger alert-dismissible fade show';
-                    alertDiv.innerHTML = '<strong>Error!</strong> Terjadi kesalahan saat menghapus data. Detail: ' + error.message;
-                    alertDiv.innerHTML += '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
-                    document.querySelector('.container-fluid').prepend(alertDiv);
+                    loadingMessage.remove();
+                    alert('Terjadi kesalahan saat menghapus data: ' + error.message);
                 });
         }
     }
