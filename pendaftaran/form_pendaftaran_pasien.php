@@ -556,7 +556,7 @@ ob_start();
         <div class="col-md-10">
             <div class="card shadow">
                 <div class="card-header bg-primary text-white">
-                    <h4 class="mb-0">Form Pendaftaran Pasien</h4>
+                    <h6 class="mb-0">Form Pendaftaran Pasien</h6>
                 </div>
                 <div class="card-body">
                     <!-- Widget Pengumuman -->

@@ -708,7 +708,7 @@ try {
                                                         <td>
                                                             <div class="btn-group" role="group">
                                                                 <!-- Tombol untuk melihat rekam medis -->
-                                                                <a href="index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=<?= $a['no_rkm_medis'] ?>&source=antrian"
+                                                                <a href="index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=<?= $a['no_rkm_medis'] ?>&id_pendaftaran=<?= $a['ID_Pendaftaran'] ?>&source=antrian"
                                                                     class="btn btn-primary btn-sm btn-icon" data-bs-toggle="tooltip"
                                                                     title="Lihat Rekam Medis">
                                                                     <i class="bi bi-journal-medical"></i>
@@ -973,48 +973,15 @@ try {
 
     function deletePendaftaran(id) {
         if (confirm('Apakah Anda yakin ingin menghapus data pendaftaran ini? Tindakan ini tidak dapat dibatalkan.')) {
-            console.log('Menghapus pendaftaran dengan ID:', id);
-            
             const formData = new FormData();
             formData.append('id_pendaftaran', id);
-            
-            // Pastikan URL benar dengan menghilangkan trailing slash jika ada
-            let baseUrl = BASE_URL;
-            if (baseUrl.endsWith('/')) {
-                baseUrl = baseUrl.slice(0, -1);
-            }
-            
-            const deleteUrl = `${baseUrl}/modules/rekam_medis/controllers/delete_pendaftaran.php`;
-            console.log('URL Delete:', deleteUrl);
-            
-            // Tampilkan pesan loading
-            const loadingMessage = document.createElement('div');
-            loadingMessage.className = 'alert alert-info alert-dismissible fade show';
-            loadingMessage.innerHTML = '<strong>Sedang memproses...</strong> Mohon tunggu sebentar.';
-            document.querySelector('.container-fluid').prepend(loadingMessage);
-            
-            fetch(deleteUrl, {
+
+            fetch('modules/rekam_medis/controllers/delete_pendaftaran.php', {
                     method: 'POST',
                     body: formData
                 })
-                .then(response => {
-                    console.log('Status response:', response.status);
-                    return response.text().then(text => {
-                        try {
-                            // Coba parse sebagai JSON
-                            console.log('Response text:', text);
-                            return JSON.parse(text);
-                        } catch (e) {
-                            // Jika bukan JSON, tampilkan sebagai error
-                            console.error('Response bukan JSON valid:', text);
-                            throw new Error('Response bukan JSON valid: ' + text);
-                        }
-                    });
-                })
+                .then(response => response.json())
                 .then(data => {
-                    console.log('Data response:', data);
-                    loadingMessage.remove();
-                    
                     if (data.success) {
                         alert('Data pendaftaran berhasil dihapus');
                         location.reload();
@@ -1024,8 +991,7 @@ try {
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    loadingMessage.remove();
-                    alert('Terjadi kesalahan saat menghapus data: ' + error.message);
+                    alert('Terjadi kesalahan saat menghapus data');
                 });
         }
     }

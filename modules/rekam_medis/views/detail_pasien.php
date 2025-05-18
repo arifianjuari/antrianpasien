@@ -554,8 +554,13 @@ error_log("Data pasien: " . json_encode($pasien));
                             <h5 class="card-title mb-0 d-none d-md-inline-block">Detail Rekam Medis Pasien</h5>
                         </div>
 
-                        <!-- Tombol Voucher dan Berikutnya Gratis di kanan -->
+                        <!-- Tombol Voucher, Berikutnya Gratis, dan Selesai di kanan -->
                         <div class="header-buttons">
+                            <?php if (isset($_GET['id_pendaftaran']) && isset($_GET['source']) && $_GET['source'] === 'antrian'): ?>
+                                <button type="button" class="btn btn-success btn-sm" onclick="tandaiSelesai('<?= $_GET['id_pendaftaran'] ?>')">
+                                    <i class="fas fa-flag me-1"></i>Tandai Selesai
+                                </button>
+                            <?php endif; ?>
                             <span class="gratis-status <?= !empty($pasien['berikutnya_gratis']) ? 'active' : '' ?>">
                                 <i class="fas fa-check-circle me-1"></i>Digratiskan untuk Kunjungan Berikutnya
                             </span>
@@ -2044,6 +2049,78 @@ error_log("Data pasien: " . json_encode($pasien));
                     currentTh = null;
                 }
             });
+        }
+    </script>
+    <!-- Script untuk menangani tombol Tandai Selesai -->
+    <script>
+        function tandaiSelesai(idPendaftaran) {
+            if (confirm('Apakah Anda yakin ingin menandai pendaftaran ini sebagai selesai?')) {
+                const formData = new FormData();
+                formData.append('id_pendaftaran', idPendaftaran);
+                formData.append('status', 'Selesai');
+
+                // Gunakan XMLHttpRequest untuk menangkap detail error lebih baik
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', '/antrian pasien/modules/rekam_medis/controllers/update_status.php', true);
+                
+                // Menangani response
+                xhr.onload = function() {
+                    console.log('Status: ' + xhr.status);
+                    console.log('Response Text: ' + xhr.responseText);
+                    
+                    if (xhr.status === 200) {
+                        try {
+                            const data = JSON.parse(xhr.responseText);
+                            console.log('Parsed data:', data);
+                            
+                            if (data.success) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Berhasil!',
+                                    text: 'Status pendaftaran berhasil diubah menjadi Selesai',
+                                    showConfirmButton: false,
+                                    timer: 1500
+                                }).then(() => {
+                                    // Redirect ke halaman manajemen antrian
+                                    window.location.href = '<?= BASE_URL ?>/index.php?module=rekam_medis&action=manajemen_antrian';
+                                });
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Gagal!',
+                                    text: 'Gagal mengubah status pendaftaran: ' + data.message
+                                });
+                            }
+                        } catch (e) {
+                            console.error('Error parsing JSON:', e);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal!',
+                                text: 'Terjadi kesalahan saat memproses respons dari server'
+                            });
+                        }
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Gagal!',
+                            text: 'Server merespons dengan status: ' + xhr.status
+                        });
+                    }
+                };
+                
+                // Menangani error
+                xhr.onerror = function() {
+                    console.error('Request error');
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal!',
+                        text: 'Terjadi kesalahan saat menghubungi server'
+                    });
+                };
+                
+                // Mengirim request
+                xhr.send(formData);
+            }
         }
     </script>
 </body>

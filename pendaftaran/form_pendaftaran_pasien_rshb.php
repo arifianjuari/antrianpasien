@@ -37,8 +37,7 @@ try {
     );
 
     // Get filter date from various sources or default to today's date in Y-m-d format
-    $filter_date = isset($_GET['filter_date']) ? $_GET['filter_date'] : 
-                  (isset($_GET['return_filter_date']) ? $_GET['return_filter_date'] : date('Y-m-d'));
+    $filter_date = isset($_GET['filter_date']) ? $_GET['filter_date'] : (isset($_GET['return_filter_date']) ? $_GET['return_filter_date'] : date('Y-m-d'));
 
     // Query to get registered patients with kd_poli='OBG' and kd_dokter='DS0007' for the selected date
     $query = "SELECT r.no_reg, r.no_rawat, r.tgl_registrasi, r.jam_reg, p.no_rkm_medis, p.nm_pasien, p.no_ktp, p.no_tlp, p.kd_kec, p.pekerjaan, p.pekerjaanpj 
@@ -538,774 +537,768 @@ ob_start();
 ?>
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <style>
         .small-table {
-            font-size: 0.75rem; /* Smaller font size */
+            font-size: 0.75rem;
+            /* Smaller font size */
         }
-        .small-table th, .small-table td {
-            padding: 0.3rem 0.5rem; /* Reduced padding */
-            line-height: 1.2; /* Tighter line height */
+
+        .small-table th,
+        .small-table td {
+            padding: 0.3rem 0.5rem;
+            /* Reduced padding */
+            line-height: 1.2;
+            /* Tighter line height */
         }
     </style>
 </head>
+
 <body>
 
-<div class="container py-4">
-    <!-- Registered Patients Section -->
-    <div class="row justify-content-center mb-4">
-        <div class="col-md-10">
-            <div class="card shadow">
-                <div class="card-header bg-success text-white">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h4 class="mb-0">Daftar Pasien Terdaftar - Poli OBG</h4>
-                        <span class="badge bg-warning text-dark">Database RSHB</span>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <!-- Date Filter Form -->
-                    <form method="GET" action="" class="mb-3" id="dateFilterForm">
-                        <div class="row g-2 align-items-center">
-                            <div class="col-auto">
-                                <label for="filter_date" class="col-form-label">Filter Tanggal:</label>
-                            </div>
-                            <div class="col-auto">
-                                <input type="date" class="form-control" id="filter_date" name="filter_date" value="<?php echo isset($_GET['filter_date']) ? htmlspecialchars($_GET['filter_date']) : date('Y-m-d'); ?>">
-                            </div>
-                            <div class="col-auto">
-                                <button type="submit" class="btn btn-primary">Terapkan</button>
-                            </div>
-                            <div class="col-auto">
-                                <a href="?" class="btn btn-outline-secondary">Reset</a>
-                            </div>
-                            <div class="col-auto ms-auto">
-                                <span class="text-muted">Menampilkan data tanggal: <strong><?php echo date('d-m-Y', strtotime($filter_date)); ?></strong></span>
-                            </div>
+    <div class="container py-4">
+        <!-- Registered Patients Section -->
+        <div class="row justify-content-center mb-4">
+            <div class="col-md-10">
+                <div class="card shadow">
+                    <div class="card-header bg-success text-white">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h6 class="mb-0">Daftar Pasien Terdaftar - Poli OBG</h6>
+                            <span class="badge bg-warning text-dark">Database RSHB</span>
                         </div>
-                    </form>
-                    <div class="table-responsive">
-                        <table class="table table-striped table-hover small-table">
-                            <thead>
-                                <tr>
-                                    <th>No. Reg</th>
-                                    <th>Tgl Registrasi</th>
-                                    <th>Jam</th>
-                                    <th>No. RM</th>
-                                    <th>Nama Pasien</th>
-                                    <th>NIK</th>
-                                    <th>No. Telepon</th>
-                                    <th>Wilayah</th>
-                                    <th>Pekerjaan</th>
-                                    <th>PekerjaanPJ</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php if (empty($registered_patients)): ?>
+                    </div>
+                    <div class="card-body">
+                        <!-- Date Filter Form -->
+                        <form method="GET" action="" class="mb-3" id="dateFilterForm">
+                            <div class="row g-2 align-items-center">
+                                <div class="col-auto">
+                                    <label for="filter_date" class="col-form-label">Filter Tanggal:</label>
+                                </div>
+                                <div class="col-auto">
+                                    <input type="date" class="form-control" id="filter_date" name="filter_date" value="<?php echo isset($_GET['filter_date']) ? htmlspecialchars($_GET['filter_date']) : date('Y-m-d'); ?>">
+                                </div>
+                                <div class="col-auto">
+                                    <button type="submit" class="btn btn-primary">Terapkan</button>
+                                </div>
+                                <div class="col-auto">
+                                    <a href="?" class="btn btn-outline-secondary">Reset</a>
+                                </div>
+                                <div class="col-auto ms-auto">
+                                    <span class="text-muted">Menampilkan data tanggal: <strong><?php echo date('d-m-Y', strtotime($filter_date)); ?></strong></span>
+                                </div>
+                            </div>
+                        </form>
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover small-table">
+                                <thead>
                                     <tr>
-                                        <td colspan="10" class="text-center">Tidak ada data pasien terdaftar</td>
+                                        <th>No. Reg</th>
+                                        <th>Tgl Registrasi</th>
+                                        <th>Jam</th>
+                                        <th>No. RM</th>
+                                        <th>Nama Pasien</th>
+                                        <th>NIK</th>
+                                        <th>No. Telepon</th>
+                                        <th>Wilayah</th>
+                                        <th>Pekerjaan</th>
+                                        <th>PekerjaanPJ</th>
                                     </tr>
-                                <?php else: ?>
-                                    <?php foreach ($registered_patients as $patient): ?>
+                                </thead>
+                                <tbody>
+                                    <?php if (empty($registered_patients)): ?>
                                         <tr>
-                                            <td><?php echo htmlspecialchars($patient['no_reg']); ?></td>
-                                            <td><?php echo htmlspecialchars(date('d-m-Y', strtotime($patient['tgl_registrasi']))); ?></td>
-                                            <td><?php echo htmlspecialchars($patient['jam_reg']); ?></td>
-                                            <td><?php echo htmlspecialchars($patient['no_rkm_medis']); ?></td>
-                                            <td><?php echo htmlspecialchars($patient['nm_pasien']); ?></td>
-                                            <td><?php echo htmlspecialchars($patient['no_ktp']); ?></td>
-                                            <td><?php echo htmlspecialchars($patient['no_tlp']); ?></td>
-                                            <td>
-                                                <?php
-                                                // Get kecamatan code from patient data
-                                                $kd_kec = $patient['kd_kec'];
-                                                
-                                                // Initialize variable for kecamatan name
-                                                $nm_kec = '';
-                                                
-                                                // Try to find matching kecamatan in our array
-                                                foreach ($kecamatan as $kec) {
-                                                    if ((string)$kec['kd_kec'] === (string)$kd_kec) {
-                                                        $nm_kec = $kec['nm_kec'];
-                                                        break;
+                                            <td colspan="10" class="text-center">Tidak ada data pasien terdaftar</td>
+                                        </tr>
+                                    <?php else: ?>
+                                        <?php foreach ($registered_patients as $patient): ?>
+                                            <tr>
+                                                <td><?php echo htmlspecialchars($patient['no_reg']); ?></td>
+                                                <td><?php echo htmlspecialchars(date('d-m-Y', strtotime($patient['tgl_registrasi']))); ?></td>
+                                                <td><?php echo htmlspecialchars($patient['jam_reg']); ?></td>
+                                                <td><?php echo htmlspecialchars($patient['no_rkm_medis']); ?></td>
+                                                <td><?php echo htmlspecialchars($patient['nm_pasien']); ?></td>
+                                                <td><?php echo htmlspecialchars($patient['no_ktp']); ?></td>
+                                                <td><?php echo htmlspecialchars($patient['no_tlp']); ?></td>
+                                                <td>
+                                                    <?php
+                                                    // Get kecamatan code from patient data
+                                                    $kd_kec = $patient['kd_kec'];
+
+                                                    // Initialize variable for kecamatan name
+                                                    $nm_kec = '';
+
+                                                    // Try to find matching kecamatan in our array
+                                                    foreach ($kecamatan as $kec) {
+                                                        if ((string)$kec['kd_kec'] === (string)$kd_kec) {
+                                                            $nm_kec = $kec['nm_kec'];
+                                                            break;
+                                                        }
                                                     }
-                                                }
-                                                
-                                                // If no match found in our array, try to fetch directly from database
-                                                if (empty($nm_kec) && !empty($kd_kec)) {
-                                                    try {
-                                                        // First try exact match
-                                                        $query = "SELECT nm_kec FROM kecamatan WHERE kd_kec = ? LIMIT 1";
-                                                        $stmt = $conn_rshb->prepare($query);
-                                                        $stmt->execute([$kd_kec]);
-                                                        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-                                                        
-                                                        if ($result && isset($result['nm_kec'])) {
-                                                            $nm_kec = $result['nm_kec'];
-                                                        } else {
-                                                            // If no exact match, try to get any kecamatan with similar code
-                                                            // This handles cases where the code might be stored differently
-                                                            $query = "SELECT nm_kec FROM kecamatan WHERE kd_kec LIKE ? LIMIT 1";
+
+                                                    // If no match found in our array, try to fetch directly from database
+                                                    if (empty($nm_kec) && !empty($kd_kec)) {
+                                                        try {
+                                                            // First try exact match
+                                                            $query = "SELECT nm_kec FROM kecamatan WHERE kd_kec = ? LIMIT 1";
                                                             $stmt = $conn_rshb->prepare($query);
-                                                            $stmt->execute(["%{$kd_kec}%"]);
+                                                            $stmt->execute([$kd_kec]);
                                                             $result = $stmt->fetch(PDO::FETCH_ASSOC);
-                                                            
+
                                                             if ($result && isset($result['nm_kec'])) {
                                                                 $nm_kec = $result['nm_kec'];
+                                                            } else {
+                                                                // If no exact match, try to get any kecamatan with similar code
+                                                                // This handles cases where the code might be stored differently
+                                                                $query = "SELECT nm_kec FROM kecamatan WHERE kd_kec LIKE ? LIMIT 1";
+                                                                $stmt = $conn_rshb->prepare($query);
+                                                                $stmt->execute(["%{$kd_kec}%"]);
+                                                                $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+                                                                if ($result && isset($result['nm_kec'])) {
+                                                                    $nm_kec = $result['nm_kec'];
+                                                                }
                                                             }
+                                                        } catch (Exception $e) {
+                                                            error_log("Error fetching kecamatan name: " . $e->getMessage());
                                                         }
-                                                    } catch (Exception $e) {
-                                                        error_log("Error fetching kecamatan name: " . $e->getMessage());
                                                     }
-                                                }
-                                                
-                                                // Display name if found, otherwise display code
-                                                echo htmlspecialchars($nm_kec ?: $kd_kec);
-                                                ?>
-                                            </td>
-                                            <td><?php echo htmlspecialchars($patient['pekerjaan']); ?></td>
-                                            <td><?php echo htmlspecialchars($patient['pekerjaanpj']); ?></td>
-                                        </tr>
+
+                                                    // Display name if found, otherwise display code
+                                                    echo htmlspecialchars($nm_kec ?: $kd_kec);
+                                                    ?>
+                                                </td>
+                                                <td><?php echo htmlspecialchars($patient['pekerjaan']); ?></td>
+                                                <td><?php echo htmlspecialchars($patient['pekerjaanpj']); ?></td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form Pendaftaran Section -->
+        <div class="row justify-content-center">
+            <div class="col-md-10">
+                <div class="card shadow">
+                    <div class="card-header bg-primary text-white">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h6 class="mb-0">Form Pendaftaran Pasien</h6>
+                            <span class="badge bg-warning text-dark">Database RSHB</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+
+
+                        <?php if (!empty($errors)): ?>
+                            <div class="alert alert-danger">
+                                <h5><i class="fas fa-exclamation-triangle"></i> Terjadi Kesalahan</h5>
+                                <ul class="mb-0">
+                                    <?php foreach ($errors as $error): ?>
+                                        <li><?php echo htmlspecialchars($error); ?></li>
                                     <?php endforeach; ?>
-                                <?php endif; ?>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Form Pendaftaran Section -->
-    <div class="row justify-content-center">
-        <div class="col-md-10">
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h4 class="mb-0">Form Pendaftaran Pasien</h4>
-                        <span class="badge bg-warning text-dark">Database RSHB</span>
-                    </div>
-                </div>
-                <div class="card-body">
-
-
-                    <?php if (!empty($errors)): ?>
-                        <div class="alert alert-danger">
-                            <h5><i class="fas fa-exclamation-triangle"></i> Terjadi Kesalahan</h5>
-                            <ul class="mb-0">
-                                <?php foreach ($errors as $error): ?>
-                                    <li><?php echo htmlspecialchars($error); ?></li>
-                                <?php endforeach; ?>
-                            </ul>
-                            <hr>
-                            <p class="mb-0">Silakan periksa kembali data yang Anda masukkan dan coba lagi. Jika masalah berlanjut, hubungi administrator.</p>
-                        </div>
-                    <?php endif; ?>
-
-                    <form method="POST" action="" id="formPendaftaran" class="needs-validation" novalidate>
-                        <?php if(isset($_GET['filter_date'])): ?>
-                        <input type="hidden" name="filter_date" value="<?php echo htmlspecialchars($_GET['filter_date']); ?>">
+                                </ul>
+                                <hr>
+                                <p class="mb-0">Silakan periksa kembali data yang Anda masukkan dan coba lagi. Jika masalah berlanjut, hubungi administrator.</p>
+                            </div>
                         <?php endif; ?>
-                        <div class="row mb-4">
-                            <div class="col-md-12">
-                                <h5 class="border-bottom pb-2">Data Pasien</h5>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="no_ktp" class="form-label">NIK <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="no_ktp" name="no_ktp" maxlength="16" required>
-                                    <div class="invalid-feedback">NIK harus diisi (16 digit)</div>
+
+                        <form method="POST" action="" id="formPendaftaran" class="needs-validation" novalidate>
+                            <?php if (isset($_GET['filter_date'])): ?>
+                                <input type="hidden" name="filter_date" value="<?php echo htmlspecialchars($_GET['filter_date']); ?>">
+                            <?php endif; ?>
+                            <div class="row mb-4">
+                                <div class="col-md-12">
+                                    <h5 class="border-bottom pb-2">Data Pasien</h5>
                                 </div>
-                                <div class="mb-3">
-                                    <label for="nama_pasien" class="form-label">Nama Lengkap <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="nama_pasien" name="nama_pasien" required>
-                                    <div class="invalid-feedback">Nama lengkap harus diisi</div>
-                                    <small class="form-text text-muted">Nama akan otomatis diubah menjadi huruf kapital</small>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="tanggal_lahir" class="form-label">Tanggal Lahir <span class="text-danger">*</span></label>
-                                    <input type="date" class="form-control" id="tanggal_lahir" name="tanggal_lahir" required>
-                                    <div class="invalid-feedback">Tanggal lahir harus diisi</div>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Jenis Kelamin <span class="text-danger">*</span></label>
-                                    <div>
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="jenis_kelamin" id="gender_male" value="L" required>
-                                            <label class="form-check-label" for="gender_male">Laki-laki</label>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="no_ktp" class="form-label">NIK <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="no_ktp" name="no_ktp" maxlength="16" required>
+                                        <div class="invalid-feedback">NIK harus diisi (16 digit)</div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="nama_pasien" class="form-label">Nama Lengkap <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="nama_pasien" name="nama_pasien" required>
+                                        <div class="invalid-feedback">Nama lengkap harus diisi</div>
+                                        <small class="form-text text-muted">Nama akan otomatis diubah menjadi huruf kapital</small>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="tanggal_lahir" class="form-label">Tanggal Lahir <span class="text-danger">*</span></label>
+                                        <input type="date" class="form-control" id="tanggal_lahir" name="tanggal_lahir" required>
+                                        <div class="invalid-feedback">Tanggal lahir harus diisi</div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Jenis Kelamin <span class="text-danger">*</span></label>
+                                        <div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="jenis_kelamin" id="gender_male" value="L" required>
+                                                <label class="form-check-label" for="gender_male">Laki-laki</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="jenis_kelamin" id="gender_female" value="P" required>
+                                                <label class="form-check-label" for="gender_female">Perempuan</label>
+                                            </div>
+                                            <div class="invalid-feedback">Jenis kelamin harus dipilih</div>
                                         </div>
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="jenis_kelamin" id="gender_female" value="P" required>
-                                            <label class="form-check-label" for="gender_female">Perempuan</label>
-                                        </div>
-                                        <div class="invalid-feedback">Jenis kelamin harus dipilih</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="nomor_telepon" class="form-label">Nomor Telepon <span class="text-danger">*</span></label>
+                                        <input type="tel" class="form-control" id="nomor_telepon" name="nomor_telepon" required>
+                                        <div class="invalid-feedback">Nomor telepon harus diisi</div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="alamat" class="form-label">Alamat <span class="text-danger">*</span></label>
+                                        <textarea class="form-control" id="alamat" name="alamat" rows="2" required></textarea>
+                                        <div class="invalid-feedback">Alamat harus diisi</div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="kd_kec" class="form-label">Wilayah</label>
+                                        <select class="form-select" id="kd_kec" name="kd_kec">
+                                            <option value="">Pilih Wilayah</option>
+                                            <?php foreach ($kecamatan as $kec): ?>
+                                                <option value="<?php echo htmlspecialchars($kec['kd_kec']); ?>">
+                                                    <?php echo htmlspecialchars($kec['nm_kec']); ?>
+                                                </option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                        <div class="invalid-feedback">Wilayah harus dipilih</div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="pekerjaan" class="form-label">Pekerjaan</label>
+                                        <select class="form-select" id="pekerjaan" name="pekerjaan">
+                                            <option value="">Pilih Pekerjaan</option>
+                                            <option value="Tidak Bekerja">Tidak Bekerja</option>
+                                            <option value="Ibu Rumah Tangga">Ibu Rumah Tangga</option>
+                                            <option value="Guru/Dosen">Guru/Dosen</option>
+                                            <option value="PNS">PNS</option>
+                                            <option value="TNI/Polri">TNI/Polri</option>
+                                            <option value="Pegawai Swasta">Pegawai Swasta</option>
+                                            <option value="Wiraswasta/Pengusaha">Wiraswasta/Pengusaha</option>
+                                            <option value="Tenaga Kesehatan">Tenaga Kesehatan</option>
+                                            <option value="Petani/Nelayan">Petani/Nelayan</option>
+                                            <option value="Buruh">Buruh</option>
+                                            <option value="Pelajar/Mahasiswa">Pelajar/Mahasiswa</option>
+                                            <option value="Pensiunan">Pensiunan</option>
+                                            <option value="Lainnya">Lainnya</option>
+                                        </select>
+                                        <div class="invalid-feedback">Pekerjaan tidak valid</div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="nomor_telepon" class="form-label">Nomor Telepon <span class="text-danger">*</span></label>
-                                    <input type="tel" class="form-control" id="nomor_telepon" name="nomor_telepon" required>
-                                    <div class="invalid-feedback">Nomor telepon harus diisi</div>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="alamat" class="form-label">Alamat <span class="text-danger">*</span></label>
-                                    <textarea class="form-control" id="alamat" name="alamat" rows="2" required></textarea>
-                                    <div class="invalid-feedback">Alamat harus diisi</div>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="kd_kec" class="form-label">Wilayah</label>
-                                    <select class="form-select" id="kd_kec" name="kd_kec">
-                                        <option value="">Pilih Wilayah</option>
-                                        <?php foreach ($kecamatan as $kec): ?>
-                                            <option value="<?php echo htmlspecialchars($kec['kd_kec']); ?>">
-                                                <?php echo htmlspecialchars($kec['nm_kec']); ?>
-                                            </option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                    <div class="invalid-feedback">Wilayah harus dipilih</div>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="pekerjaan" class="form-label">Pekerjaan</label>
-                                    <select class="form-select" id="pekerjaan" name="pekerjaan">
-                                        <option value="">Pilih Pekerjaan</option>
-                                        <option value="Tidak Bekerja">Tidak Bekerja</option>
-                                        <option value="Ibu Rumah Tangga">Ibu Rumah Tangga</option>
-                                        <option value="Guru/Dosen">Guru/Dosen</option>
-                                        <option value="PNS">PNS</option>
-                                        <option value="TNI/Polri">TNI/Polri</option>
-                                        <option value="Pegawai Swasta">Pegawai Swasta</option>
-                                        <option value="Wiraswasta/Pengusaha">Wiraswasta/Pengusaha</option>
-                                        <option value="Tenaga Kesehatan">Tenaga Kesehatan</option>
-                                        <option value="Petani/Nelayan">Petani/Nelayan</option>
-                                        <option value="Buruh">Buruh</option>
-                                        <option value="Pelajar/Mahasiswa">Pelajar/Mahasiswa</option>
-                                        <option value="Pensiunan">Pensiunan</option>
-                                        <option value="Lainnya">Lainnya</option>
-                                    </select>
-                                    <div class="invalid-feedback">Pekerjaan tidak valid</div>
-                                </div>
-                            </div>
-                        </div>
 
-                        <div class="row mb-4">
-                            <div class="col-md-12">
-                                <h5 class="border-bottom pb-2">Informasi Kunjungan</h5>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="id_tempat_praktek" class="form-label">Tempat Praktek <span class="text-danger">*</span></label>
-                                    <select class="form-select" id="id_tempat_praktek" name="id_tempat_praktek" required>
-                                        <option value="">Pilih Tempat Praktek</option>
-                                        <?php foreach ($tempat_praktek as $tp): ?>
-                                            <option value="<?php echo htmlspecialchars($tp['ID_Tempat_Praktek']); ?>" <?php echo $id_tempat_praktek == $tp['ID_Tempat_Praktek'] ? 'selected' : ''; ?>>
-                                                <?php echo htmlspecialchars($tp['Nama_Tempat']); ?>
-                                            </option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                    <div class="invalid-feedback">Tempat praktek harus dipilih</div>
+                            <div class="row mb-4">
+                                <div class="col-md-12">
+                                    <h5 class="border-bottom pb-2">Informasi Kunjungan</h5>
                                 </div>
-                                <div class="mb-3">
-                                    <label for="id_dokter" class="form-label">Dokter <span class="text-danger">*</span></label>
-                                    <select class="form-select" id="id_dokter" name="id_dokter" required>
-                                        <?php foreach ($dokter as $d): ?>
-                                            <option value="<?php echo htmlspecialchars($d['ID_Dokter']); ?>" selected>
-                                                <?php echo htmlspecialchars($d['Nama_Dokter']); ?> (<?php echo htmlspecialchars($d['Spesialisasi']); ?>)
-                                            </option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                    <div class="invalid-feedback">Dokter harus dipilih</div>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="id_jadwal" class="form-label">Jadwal <span class="text-danger">*</span></label>
-                                    <select class="form-select" id="id_jadwal" name="id_jadwal" required>
-                                        <option value="">Pilih Tempat dan Dokter terlebih dahulu</option>
-                                    </select>
-                                    <div class="invalid-feedback">Jadwal harus dipilih</div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="keluhan" class="form-label">Keluhan</label>
-                                    <textarea class="form-control" id="keluhan" name="keluhan" rows="3"></textarea>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="yang_menyarankan" class="form-label">Yang menyarankan periksa kesini</label>
-                                    <input type="text" class="form-control" id="yang_menyarankan" name="yang_menyarankan" maxlength="50">
-                                </div>
-                                <div class="mb-3">
-                                    <label for="mohon_keringanan" class="form-label">Minta Keringanan</label>
-                                    <textarea class="form-control" id="mohon_keringanan" name="mohon_keringanan" rows="2" placeholder="Alasan permohonan keringanan"></textarea>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="voucher_code" class="form-label">Kode Voucher</label>
-                                    <div class="input-group">
-                                        <input type="text" class="form-control" id="voucher_code" name="voucher_code" placeholder="Masukkan kode voucher jika ada">
-                                        <button class="btn btn-outline-secondary" type="button" id="check_voucher">Cek Voucher</button>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="id_tempat_praktek" class="form-label">Tempat Praktek <span class="text-danger">*</span></label>
+                                        <select class="form-select" id="id_tempat_praktek" name="id_tempat_praktek" required>
+                                            <option value="">Pilih Tempat Praktek</option>
+                                            <?php foreach ($tempat_praktek as $tp): ?>
+                                                <option value="<?php echo htmlspecialchars($tp['ID_Tempat_Praktek']); ?>" <?php echo $id_tempat_praktek == $tp['ID_Tempat_Praktek'] ? 'selected' : ''; ?>>
+                                                    <?php echo htmlspecialchars($tp['Nama_Tempat']); ?>
+                                                </option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                        <div class="invalid-feedback">Tempat praktek harus dipilih</div>
                                     </div>
-                                    <div id="voucher_feedback" class="form-text"></div>
+                                    <div class="mb-3">
+                                        <label for="id_dokter" class="form-label">Dokter <span class="text-danger">*</span></label>
+                                        <select class="form-select" id="id_dokter" name="id_dokter" required>
+                                            <?php foreach ($dokter as $d): ?>
+                                                <option value="<?php echo htmlspecialchars($d['ID_Dokter']); ?>" selected>
+                                                    <?php echo htmlspecialchars($d['Nama_Dokter']); ?> (<?php echo htmlspecialchars($d['Spesialisasi']); ?>)
+                                                </option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                        <div class="invalid-feedback">Dokter harus dipilih</div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="id_jadwal" class="form-label">Jadwal <span class="text-danger">*</span></label>
+                                        <select class="form-select" id="id_jadwal" name="id_jadwal" required>
+                                            <option value="">Pilih Tempat dan Dokter terlebih dahulu</option>
+                                        </select>
+                                        <div class="invalid-feedback">Jadwal harus dipilih</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="keluhan" class="form-label">Keluhan</label>
+                                        <textarea class="form-control" id="keluhan" name="keluhan" rows="3"></textarea>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="yang_menyarankan" class="form-label">Yang menyarankan periksa kesini</label>
+                                        <input type="text" class="form-control" id="yang_menyarankan" name="yang_menyarankan" maxlength="50">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="mohon_keringanan" class="form-label">Minta Keringanan</label>
+                                        <textarea class="form-control" id="mohon_keringanan" name="mohon_keringanan" rows="2" placeholder="Alasan permohonan keringanan"></textarea>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="voucher_code" class="form-label">Kode Voucher</label>
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" id="voucher_code" name="voucher_code" placeholder="Masukkan kode voucher jika ada">
+                                            <button class="btn btn-outline-secondary" type="button" id="check_voucher">Cek Voucher</button>
+                                        </div>
+                                        <div id="voucher_feedback" class="form-text"></div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                                    <button type="reset" class="btn btn-secondary me-md-2">Reset</button>
-                                    <button type="submit" class="btn btn-primary" id="submitBtn">Daftar</button>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                        <button type="reset" class="btn btn-secondary me-md-2">Reset</button>
+                                        <button type="submit" class="btn btn-primary" id="submitBtn">Daftar</button>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <!-- Loading Overlay -->
-                        <div id="loadingOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 9999;">
-                            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: white;">
-                                <div class="spinner-border text-light" role="status" style="width: 3rem; height: 3rem;">
-                                    <span class="visually-hidden">Loading...</span>
+                            <!-- Loading Overlay -->
+                            <div id="loadingOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 9999;">
+                                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: white;">
+                                    <div class="spinner-border text-light" role="status" style="width: 3rem; height: 3rem;">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                    <h4 class="mt-3">Sedang memproses pendaftaran...</h4>
+                                    <p>Mohon tunggu sebentar</p>
                                 </div>
-                                <h4 class="mt-3">Sedang memproses pendaftaran...</h4>
-                                <p>Mohon tunggu sebentar</p>
                             </div>
-                        </div>
-                    </form>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const formElement = document.getElementById('formPendaftaran');
-        const submitBtn = document.getElementById('submitBtn');
-        const loadingOverlay = document.getElementById('loadingOverlay');
-        const nikInput = document.getElementById('no_ktp');
-        const formFields = {
-            nama_pasien: document.getElementById('nama_pasien'),
-            tanggal_lahir: document.getElementById('tanggal_lahir'),
-            gender_male: document.getElementById('gender_male'),
-            gender_female: document.getElementById('gender_female'),
-            nomor_telepon: document.getElementById('nomor_telepon'),
-            alamat: document.getElementById('alamat'),
-            kd_kec: document.getElementById('kd_kec'),
-            pekerjaan: document.getElementById('pekerjaan'),
-            keluhan: document.getElementById('keluhan'),
-            yang_menyarankan: document.getElementById('yang_menyarankan')
-        };
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const formElement = document.getElementById('formPendaftaran');
+            const submitBtn = document.getElementById('submitBtn');
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            const nikInput = document.getElementById('no_ktp');
+            const formFields = {
+                nama_pasien: document.getElementById('nama_pasien'),
+                tanggal_lahir: document.getElementById('tanggal_lahir'),
+                gender_male: document.getElementById('gender_male'),
+                gender_female: document.getElementById('gender_female'),
+                nomor_telepon: document.getElementById('nomor_telepon'),
+                alamat: document.getElementById('alamat'),
+                kd_kec: document.getElementById('kd_kec'),
+                pekerjaan: document.getElementById('pekerjaan'),
+                keluhan: document.getElementById('keluhan'),
+                yang_menyarankan: document.getElementById('yang_menyarankan')
+            };
 
-        // Semua field form selain NIK
-        const allFormFields = document.querySelectorAll('#formPendaftaran input:not(#no_ktp), #formPendaftaran select, #formPendaftaran textarea');
+            // Semua field form selain NIK
+            const allFormFields = document.querySelectorAll('#formPendaftaran input:not(#no_ktp), #formPendaftaran select, #formPendaftaran textarea');
 
-        // Nonaktifkan semua field form kecuali NIK saat halaman dimuat
-        allFormFields.forEach(field => {
-            field.disabled = true;
-        });
+            // Nonaktifkan semua field form kecuali NIK saat halaman dimuat
+            allFormFields.forEach(field => {
+                field.disabled = true;
+            });
 
-        // Tambahkan pesan informasi di atas form
-        const formContainer = document.querySelector('.card-body');
-        const infoAlert = document.createElement('div');
-        infoAlert.className = 'alert alert-info mb-3';
-        infoAlert.innerHTML = '<strong>Petunjuk:</strong> Masukkan NIK (16 digit) terlebih dahulu untuk melanjutkan pendaftaran.';
-        formContainer.insertBefore(infoAlert, formContainer.firstChild);
+            // Fungsi untuk mengubah nama menjadi huruf kapital
+            const namaPasienInput = document.getElementById('nama_pasien');
+            namaPasienInput.addEventListener('input', function() {
+                this.value = this.value.toUpperCase();
+            });
 
-        // Fungsi untuk mengubah nama menjadi huruf kapital
-        const namaPasienInput = document.getElementById('nama_pasien');
-        namaPasienInput.addEventListener('input', function() {
-            this.value = this.value.toUpperCase();
-        });
+            // Pastikan nama pasien dalam huruf kapital saat form disubmit
+            document.getElementById('formPendaftaran').addEventListener('submit', function(e) {
+                namaPasienInput.value = namaPasienInput.value.toUpperCase();
+            });
 
-        // Pastikan nama pasien dalam huruf kapital saat form disubmit
-        document.getElementById('formPendaftaran').addEventListener('submit', function(e) {
-            namaPasienInput.value = namaPasienInput.value.toUpperCase();
-        });
+            // Fungsi untuk mencari data pasien berdasarkan NIK
+            function searchPatient(nik) {
+                // Tampilkan loading indicator
+                // Gunakan URL lengkap dengan HTTPS
+                const baseUrl = window.location.protocol + '//' + window.location.host;
+                let apiUrl;
 
-        // Fungsi untuk mencari data pasien berdasarkan NIK
-        function searchPatient(nik) {
-            // Tampilkan loading indicator
-            infoAlert.className = 'alert alert-warning mb-3';
-            infoAlert.innerHTML = '<strong>Sedang memproses:</strong> Mencari data pasien dari database RSHB...';
+                // Penanganan khusus untuk domain produksi
+                if (window.location.host === 'praktekobgin.com' || window.location.host === 'www.praktekobgin.com') {
+                    apiUrl = `${baseUrl}/pendaftaran/check_patient_rshb.php?nik=${nik}`;
+                } else {
+                    apiUrl = `${baseUrl}/antrian%20pasien/pendaftaran/check_patient_rshb.php?nik=${nik}`;
+                }
 
-            // Gunakan URL lengkap dengan HTTPS
-            const baseUrl = window.location.protocol + '//' + window.location.host;
-            let apiUrl;
+                console.log('Mengakses URL RSHB:', apiUrl);
 
-            // Penanganan khusus untuk domain produksi
-            if (window.location.host === 'praktekobgin.com' || window.location.host === 'www.praktekobgin.com') {
-                apiUrl = `${baseUrl}/pendaftaran/check_patient_rshb.php?nik=${nik}`;
-            } else {
-                apiUrl = `${baseUrl}/antrian%20pasien/pendaftaran/check_patient_rshb.php?nik=${nik}`;
-            }
-
-            console.log('Mengakses URL RSHB:', apiUrl);
-
-            fetch(apiUrl)
-                .then(response => {
-                    // Periksa apakah respons OK (status 200-299)
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! Status: ${response.status}`);
-                    }
-
-                    // Periksa content-type untuk memastikan respons adalah JSON
-                    const contentType = response.headers.get('content-type');
-                    if (!contentType || !contentType.includes('application/json')) {
-                        throw new Error(`Respons bukan JSON: ${contentType}`);
-                    }
-
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.found) {
-                        // Isi form dengan data pasien
-                        formFields.nama_pasien.value = data.patient.nm_pasien.toUpperCase();
-                        formFields.tanggal_lahir.value = data.patient.tgl_lahir;
-                        if (data.patient.jk === 'L') {
-                            formFields.gender_male.checked = true;
-                        } else if (data.patient.jk === 'P') {
-                            formFields.gender_female.checked = true;
+                fetch(apiUrl)
+                    .then(response => {
+                        // Periksa apakah respons OK (status 200-299)
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! Status: ${response.status}`);
                         }
-                        formFields.nomor_telepon.value = data.patient.no_tlp;
-                        formFields.alamat.value = data.patient.alamat;
-                        formFields.kd_kec.value = data.patient.kd_kec;
-                        // Use pekerjaanpj as the initial value for pekerjaan if available, otherwise fall back to pekerjaan
-                        formFields.pekerjaan.value = data.patient.pekerjaanpj || data.patient.pekerjaan || '';
-                        formFields.keluhan.value = '';
-                        formFields.yang_menyarankan.value = '';
 
-                        // Aktifkan semua field agar bisa diedit
-                        allFormFields.forEach(field => {
-                            field.disabled = false;
-                        });
+                        // Periksa content-type untuk memastikan respons adalah JSON
+                        const contentType = response.headers.get('content-type');
+                        if (!contentType || !contentType.includes('application/json')) {
+                            throw new Error(`Respons bukan JSON: ${contentType}`);
+                        }
 
-                        // Update pesan informasi
-                        infoAlert.className = 'alert alert-success mb-3';
-                        infoAlert.innerHTML = '<strong>Data ditemukan:</strong> Data pasien telah ditemukan di database RSHB. Anda dapat memperbarui data jika diperlukan dan melanjutkan dengan memilih tempat praktek, dokter, dan jadwal.';
-                    } else {
-                        // Aktifkan semua field untuk pasien baru
-                        allFormFields.forEach(field => {
-                            field.disabled = false;
-                        });
-
-                        // Reset form fields
-                        Object.values(formFields).forEach(field => {
-                            if (field.type === 'radio') {
-                                field.checked = false;
-                            } else if (field !== nikInput) {
-                                field.value = '';
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.found) {
+                            // Isi form dengan data pasien
+                            formFields.nama_pasien.value = data.patient.nm_pasien.toUpperCase();
+                            formFields.tanggal_lahir.value = data.patient.tgl_lahir;
+                            if (data.patient.jk === 'L') {
+                                formFields.gender_male.checked = true;
+                            } else if (data.patient.jk === 'P') {
+                                formFields.gender_female.checked = true;
                             }
+                            formFields.nomor_telepon.value = data.patient.no_tlp;
+                            formFields.alamat.value = data.patient.alamat;
+                            formFields.kd_kec.value = data.patient.kd_kec;
+                            // Use pekerjaanpj as the initial value for pekerjaan if available, otherwise fall back to pekerjaan
+                            formFields.pekerjaan.value = data.patient.pekerjaanpj || data.patient.pekerjaan || '';
+                            formFields.keluhan.value = '';
+                            formFields.yang_menyarankan.value = '';
+
+                            // Aktifkan semua field agar bisa diedit
+                            allFormFields.forEach(field => {
+                                field.disabled = false;
+                            });
+
+                            // Update pesan informasi
+                            // Success message removed
+                        } else {
+                            // Aktifkan semua field untuk pasien baru
+                            allFormFields.forEach(field => {
+                                field.disabled = false;
+                            });
+
+                            // Reset form fields
+                            Object.values(formFields).forEach(field => {
+                                if (field.type === 'radio') {
+                                    field.checked = false;
+                                } else if (field !== nikInput) {
+                                    field.value = '';
+                                }
+                            });
+
+                            // Update pesan informasi
+                            // New patient message removed
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        // Update pesan informasi jika terjadi error
+                        // Error message removed
+
+                        // Log error lebih detail untuk debugging
+                        console.log('Detail error:', error.message);
+
+                        // Tampilkan informasi URL yang diakses untuk debugging
+                        console.log('URL yang diakses:', apiUrl);
+
+                        // Aktifkan semua field untuk memungkinkan input manual
+                        allFormFields.forEach(field => {
+                            field.disabled = false;
+                        });
+                    });
+            }
+
+            // Event listener untuk input NIK
+            let typingTimer;
+            nikInput.addEventListener('input', function() {
+                clearTimeout(typingTimer);
+
+                // Reset dan nonaktifkan form jika NIK tidak lengkap
+                if (this.value.length !== 16) {
+                    allFormFields.forEach(field => {
+                        field.disabled = true;
+                    });
+
+                    // Update pesan informasi
+                    // Alert styling removed
+                    // Alert content removed
+                    return;
+                }
+
+                // Cek NIK jika sudah 16 digit
+                typingTimer = setTimeout(() => searchPatient(this.value), 500);
+            });
+
+            // Trigger manual check if NIK is already filled with 16 digits
+            if (nikInput.value.length === 16) {
+                searchPatient(nikInput.value);
+            }
+
+            // Form validation
+            const form = document.getElementById('formPendaftaran');
+            form.addEventListener('submit', async function(event) {
+                event.preventDefault();
+
+                if (!this.checkValidity()) {
+                    event.stopPropagation();
+                    this.classList.add('was-validated');
+                    return;
+                }
+
+                // Cek apakah ada voucher yang digunakan
+                const voucherCode = document.getElementById('voucher_code').value.trim();
+                if (voucherCode) {
+                    try {
+                        const formData = new FormData();
+                        formData.append('voucher_code', voucherCode);
+                        formData.append('mode', 'use');
+                        formData.append('id_pendaftaran', 'TEMP'); // Akan diupdate setelah pendaftaran berhasil
+
+                        // Cek validitas voucher terakhir kali sebelum submit
+                        const response = await fetch('check_voucher.php', {
+                            method: 'POST',
+                            body: formData
                         });
 
-                        // Update pesan informasi
-                        infoAlert.className = 'alert alert-primary mb-3';
-                        infoAlert.innerHTML = '<strong>Pasien Baru:</strong> Silakan lengkapi semua data untuk pendaftaran pasien baru.';
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    // Update pesan informasi jika terjadi error
-                    infoAlert.className = 'alert alert-danger mb-3';
-                    infoAlert.innerHTML = '<strong>Error:</strong> Terjadi kesalahan saat mencari data pasien di database RSHB. Silakan coba lagi.';
-
-                    // Log error lebih detail untuk debugging
-                    console.log('Detail error:', error.message);
-
-                    // Tampilkan informasi URL yang diakses untuk debugging
-                    console.log('URL yang diakses:', apiUrl);
-
-                    // Aktifkan semua field untuk memungkinkan input manual
-                    allFormFields.forEach(field => {
-                        field.disabled = false;
-                    });
-                });
-        }
-
-        // Event listener untuk input NIK
-        let typingTimer;
-        nikInput.addEventListener('input', function() {
-            clearTimeout(typingTimer);
-
-            // Reset dan nonaktifkan form jika NIK tidak lengkap
-            if (this.value.length !== 16) {
-                allFormFields.forEach(field => {
-                    field.disabled = true;
-                });
-
-                // Update pesan informasi
-                infoAlert.className = 'alert alert-info mb-3';
-                infoAlert.innerHTML = '<strong>Petunjuk:</strong> Masukkan NIK (16 digit) terlebih dahulu untuk melanjutkan pendaftaran.';
-                return;
-            }
-
-            // Cek NIK jika sudah 16 digit
-            typingTimer = setTimeout(() => searchPatient(this.value), 500);
-        });
-        
-        // Trigger manual check if NIK is already filled with 16 digits
-        if (nikInput.value.length === 16) {
-            searchPatient(nikInput.value);
-        }
-
-        // Form validation
-        const form = document.getElementById('formPendaftaran');
-        form.addEventListener('submit', async function(event) {
-            event.preventDefault();
-
-            if (!this.checkValidity()) {
-                event.stopPropagation();
-                this.classList.add('was-validated');
-                return;
-            }
-
-            // Cek apakah ada voucher yang digunakan
-            const voucherCode = document.getElementById('voucher_code').value.trim();
-            if (voucherCode) {
-                try {
-                    const formData = new FormData();
-                    formData.append('voucher_code', voucherCode);
-                    formData.append('mode', 'use');
-                    formData.append('id_pendaftaran', 'TEMP'); // Akan diupdate setelah pendaftaran berhasil
-
-                    // Cek validitas voucher terakhir kali sebelum submit
-                    const response = await fetch('check_voucher.php', {
-                        method: 'POST',
-                        body: formData
-                    });
-
-                    const data = await response.json();
-                    if (!data.valid) {
-                        alert('Voucher tidak valid: ' + data.message);
+                        const data = await response.json();
+                        if (!data.valid) {
+                            alert('Voucher tidak valid: ' + data.message);
+                            return;
+                        }
+                    } catch (error) {
+                        console.error('Error checking voucher:', error);
+                        alert('Terjadi kesalahan saat memvalidasi voucher');
                         return;
                     }
-                } catch (error) {
-                    console.error('Error checking voucher:', error);
-                    alert('Terjadi kesalahan saat memvalidasi voucher');
-                    return;
+                }
+
+                // Jika sampai di sini, lanjutkan dengan submit form
+                this.submit();
+            });
+
+            // Load jadwal when tempat or dokter changes
+            const tempatSelect = document.getElementById('id_tempat_praktek');
+            const dokterSelect = document.getElementById('id_dokter');
+            const jadwalSelect = document.getElementById('id_jadwal');
+
+            function loadJadwal() {
+                var tempat = tempatSelect.value;
+                var dokter = dokterSelect.value;
+
+                // Reset jadwal dropdown
+                jadwalSelect.innerHTML = '<option value="">Pilih Jadwal</option>';
+
+                if (tempat && dokter) {
+                    // Tampilkan loading
+                    jadwalSelect.innerHTML = '<option value="">Memuat jadwal...</option>';
+
+                    // Buat URL dengan timestamp untuk mencegah caching
+                    var timestamp = new Date().getTime();
+                    var url = '../get_jadwal.php?tempat=' + encodeURIComponent(tempat) +
+                        '&dokter=' + encodeURIComponent(dokter) +
+                        '&_=' + timestamp;
+
+                    // Log untuk debugging
+                    console.log('Memuat jadwal dari: ' + url);
+
+                    // Gunakan XMLHttpRequest (kompatibel dengan browser lama)
+                    var xhr = new XMLHttpRequest();
+
+                    // Setup request
+                    xhr.open('GET', url, true);
+                    xhr.setRequestHeader('Accept', 'application/json');
+
+                    // Handler untuk response
+                    xhr.onreadystatechange = function() {
+                        if (xhr.readyState === 4) { // Request selesai
+                            console.log('Status response: ' + xhr.status);
+
+                            if (xhr.status === 200) { // Sukses
+                                try {
+                                    // Parse JSON response
+                                    var data = JSON.parse(xhr.responseText);
+                                    console.log('Data jadwal diterima:', data);
+
+                                    // Reset dropdown
+                                    jadwalSelect.innerHTML = '<option value="">Pilih Jadwal</option>';
+
+                                    // Cek error
+                                    if (data.error) {
+                                        console.error('Error server:', data.error);
+                                        jadwalSelect.innerHTML = '<option value="">Error: ' + data.error + '</option>';
+                                        return;
+                                    }
+
+                                    // Cek apakah data adalah array
+                                    if (!Array.isArray(data)) {
+                                        console.error('Data bukan array:', data);
+                                        jadwalSelect.innerHTML = '<option value="">Format data tidak valid</option>';
+                                        return;
+                                    }
+
+                                    // Cek apakah data kosong
+                                    if (data.length === 0) {
+                                        jadwalSelect.innerHTML = '<option value="">Tidak ada jadwal tersedia</option>';
+                                        return;
+                                    }
+
+                                    // Tambahkan opsi untuk setiap jadwal
+                                    for (var i = 0; i < data.length; i++) {
+                                        var jadwal = data[i];
+                                        var option = document.createElement('option');
+                                        option.value = jadwal.ID_Jadwal_Rutin;
+
+                                        // Format teks jadwal
+                                        var jadwalText = jadwal.Hari + ' - ' +
+                                            jadwal.Jam_Mulai + '-' +
+                                            jadwal.Jam_Selesai + ' (' +
+                                            jadwal.Jenis_Layanan + ')';
+
+                                        option.textContent = jadwalText;
+                                        jadwalSelect.appendChild(option);
+                                    }
+                                } catch (e) {
+                                    // Error parsing JSON
+                                    console.error('Error parsing JSON:', e);
+                                    console.error('Response text:', xhr.responseText.substring(0, 200) + '...');
+                                    jadwalSelect.innerHTML = '<option value="">Error: Format respons tidak valid</option>';
+                                }
+                            } else {
+                                // HTTP error
+                                console.error('HTTP error:', xhr.status);
+                                jadwalSelect.innerHTML = '<option value="">Error: Gagal memuat jadwal (HTTP ' + xhr.status + ')</option>';
+                            }
+                        }
+                    };
+
+                    // Handler untuk network error
+                    xhr.onerror = function() {
+                        console.error('Network error');
+                        jadwalSelect.innerHTML = '<option value="">Error: Koneksi jaringan gagal</option>';
+                    };
+
+                    // Kirim request
+                    xhr.send();
+                } else {
+                    // Tidak ada tempat atau dokter yang dipilih
+                    jadwalSelect.innerHTML = '<option value="">Pilih tempat praktek dan dokter terlebih dahulu</option>';
                 }
             }
 
-            // Jika sampai di sini, lanjutkan dengan submit form
-            this.submit();
-        });
+            tempatSelect.addEventListener('change', loadJadwal);
+            dokterSelect.addEventListener('change', loadJadwal);
 
-        // Load jadwal when tempat or dokter changes
-        const tempatSelect = document.getElementById('id_tempat_praktek');
-        const dokterSelect = document.getElementById('id_dokter');
-        const jadwalSelect = document.getElementById('id_jadwal');
+            // Prevent multiple form submissions
+            formElement.addEventListener('submit', function(e) {
+                // Check if form is already being submitted
+                if (formElement.classList.contains('is-submitting')) {
+                    e.preventDefault();
+                    return false;
+                }
 
-        function loadJadwal() {
-            var tempat = tempatSelect.value;
-            var dokter = dokterSelect.value;
+                // Check form validity
+                if (!formElement.checkValidity()) {
+                    return;
+                }
 
-            // Reset jadwal dropdown
-            jadwalSelect.innerHTML = '<option value="">Pilih Jadwal</option>';
+                // Mark form as being submitted
+                formElement.classList.add('is-submitting');
 
-            if (tempat && dokter) {
-                // Tampilkan loading
-                jadwalSelect.innerHTML = '<option value="">Memuat jadwal...</option>';
+                // Disable submit button and show loading overlay
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Memproses...';
+                loadingOverlay.style.display = 'block';
 
-                // Buat URL dengan timestamp untuk mencegah caching
-                var timestamp = new Date().getTime();
-                var url = '../get_jadwal.php?tempat=' + encodeURIComponent(tempat) +
-                    '&dokter=' + encodeURIComponent(dokter) +
-                    '&_=' + timestamp;
+                // Allow form submission to continue
+                return true;
+            });
+
+            if (tempatSelect.value && dokterSelect.value) {
+                loadJadwal();
+            }
+
+            // Fungsi untuk memeriksa validitas voucher
+            document.getElementById('check_voucher').addEventListener('click', function() {
+                const voucherCode = document.getElementById('voucher_code').value.trim();
+                const feedbackElement = document.getElementById('voucher_feedback');
+                const voucherInput = document.getElementById('voucher_code');
+
+                if (!voucherCode) {
+                    feedbackElement.innerHTML = '<span class="text-danger">Silakan masukkan kode voucher</span>';
+                    voucherInput.classList.add('is-invalid');
+                    voucherInput.classList.remove('is-valid');
+                    return;
+                }
+
+                // Tampilkan loading state
+                feedbackElement.innerHTML = '<span class="text-warning"><i class="bi bi-hourglass-split"></i> Memeriksa voucher...</span>';
+                voucherInput.classList.remove('is-valid', 'is-invalid');
+
+                // Buat URL untuk pengecekan voucher
+                const baseUrl = window.location.protocol + '//' + window.location.host;
+                let checkUrl;
+
+                if (window.location.host === 'praktekobgin.com' || window.location.host === 'www.praktekobgin.com') {
+                    checkUrl = `${baseUrl}/pendaftaran/check_voucher.php`;
+                } else {
+                    checkUrl = `${baseUrl}/antrian%20pasien/pendaftaran/check_voucher.php`;
+                }
 
                 // Log untuk debugging
-                console.log('Memuat jadwal dari: ' + url);
+                console.log('Checking voucher at URL:', checkUrl);
+                console.log('Voucher code:', voucherCode);
 
-                // Gunakan XMLHttpRequest (kompatibel dengan browser lama)
-                var xhr = new XMLHttpRequest();
+                fetch(checkUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: 'voucher_code=' + encodeURIComponent(voucherCode)
+                    })
+                    .then(response => {
+                        console.log('Response status:', response.status);
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log('Voucher check response:', data);
 
-                // Setup request
-                xhr.open('GET', url, true);
-                xhr.setRequestHeader('Accept', 'application/json');
-
-                // Handler untuk response
-                xhr.onreadystatechange = function() {
-                    if (xhr.readyState === 4) { // Request selesai
-                        console.log('Status response: ' + xhr.status);
-
-                        if (xhr.status === 200) { // Sukses
-                            try {
-                                // Parse JSON response
-                                var data = JSON.parse(xhr.responseText);
-                                console.log('Data jadwal diterima:', data);
-
-                                // Reset dropdown
-                                jadwalSelect.innerHTML = '<option value="">Pilih Jadwal</option>';
-
-                                // Cek error
-                                if (data.error) {
-                                    console.error('Error server:', data.error);
-                                    jadwalSelect.innerHTML = '<option value="">Error: ' + data.error + '</option>';
-                                    return;
-                                }
-
-                                // Cek apakah data adalah array
-                                if (!Array.isArray(data)) {
-                                    console.error('Data bukan array:', data);
-                                    jadwalSelect.innerHTML = '<option value="">Format data tidak valid</option>';
-                                    return;
-                                }
-
-                                // Cek apakah data kosong
-                                if (data.length === 0) {
-                                    jadwalSelect.innerHTML = '<option value="">Tidak ada jadwal tersedia</option>';
-                                    return;
-                                }
-
-                                // Tambahkan opsi untuk setiap jadwal
-                                for (var i = 0; i < data.length; i++) {
-                                    var jadwal = data[i];
-                                    var option = document.createElement('option');
-                                    option.value = jadwal.ID_Jadwal_Rutin;
-
-                                    // Format teks jadwal
-                                    var jadwalText = jadwal.Hari + ' - ' +
-                                        jadwal.Jam_Mulai + '-' +
-                                        jadwal.Jam_Selesai + ' (' +
-                                        jadwal.Jenis_Layanan + ')';
-
-                                    option.textContent = jadwalText;
-                                    jadwalSelect.appendChild(option);
-                                }
-                            } catch (e) {
-                                // Error parsing JSON
-                                console.error('Error parsing JSON:', e);
-                                console.error('Response text:', xhr.responseText.substring(0, 200) + '...');
-                                jadwalSelect.innerHTML = '<option value="">Error: Format respons tidak valid</option>';
-                            }
-                        } else {
-                            // HTTP error
-                            console.error('HTTP error:', xhr.status);
-                            jadwalSelect.innerHTML = '<option value="">Error: Gagal memuat jadwal (HTTP ' + xhr.status + ')</option>';
-                        }
-                    }
-                };
-
-                // Handler untuk network error
-                xhr.onerror = function() {
-                    console.error('Network error');
-                    jadwalSelect.innerHTML = '<option value="">Error: Koneksi jaringan gagal</option>';
-                };
-
-                // Kirim request
-                xhr.send();
-            } else {
-                // Tidak ada tempat atau dokter yang dipilih
-                jadwalSelect.innerHTML = '<option value="">Pilih tempat praktek dan dokter terlebih dahulu</option>';
-            }
-        }
-
-        tempatSelect.addEventListener('change', loadJadwal);
-        dokterSelect.addEventListener('change', loadJadwal);
-
-        // Prevent multiple form submissions
-        formElement.addEventListener('submit', function(e) {
-            // Check if form is already being submitted
-            if (formElement.classList.contains('is-submitting')) {
-                e.preventDefault();
-                return false;
-            }
-
-            // Check form validity
-            if (!formElement.checkValidity()) {
-                return;
-            }
-
-            // Mark form as being submitted
-            formElement.classList.add('is-submitting');
-
-            // Disable submit button and show loading overlay
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Memproses...';
-            loadingOverlay.style.display = 'block';
-
-            // Allow form submission to continue
-            return true;
-        });
-
-        if (tempatSelect.value && dokterSelect.value) {
-            loadJadwal();
-        }
-
-        // Fungsi untuk memeriksa validitas voucher
-        document.getElementById('check_voucher').addEventListener('click', function() {
-            const voucherCode = document.getElementById('voucher_code').value.trim();
-            const feedbackElement = document.getElementById('voucher_feedback');
-            const voucherInput = document.getElementById('voucher_code');
-
-            if (!voucherCode) {
-                feedbackElement.innerHTML = '<span class="text-danger">Silakan masukkan kode voucher</span>';
-                voucherInput.classList.add('is-invalid');
-                voucherInput.classList.remove('is-valid');
-                return;
-            }
-
-            // Tampilkan loading state
-            feedbackElement.innerHTML = '<span class="text-warning"><i class="bi bi-hourglass-split"></i> Memeriksa voucher...</span>';
-            voucherInput.classList.remove('is-valid', 'is-invalid');
-
-            // Buat URL untuk pengecekan voucher
-            const baseUrl = window.location.protocol + '//' + window.location.host;
-            let checkUrl;
-
-            if (window.location.host === 'praktekobgin.com' || window.location.host === 'www.praktekobgin.com') {
-                checkUrl = `${baseUrl}/pendaftaran/check_voucher.php`;
-            } else {
-                checkUrl = `${baseUrl}/antrian%20pasien/pendaftaran/check_voucher.php`;
-            }
-
-            // Log untuk debugging
-            console.log('Checking voucher at URL:', checkUrl);
-            console.log('Voucher code:', voucherCode);
-
-            fetch(checkUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: 'voucher_code=' + encodeURIComponent(voucherCode)
-                })
-                .then(response => {
-                    console.log('Response status:', response.status);
-                    return response.json();
-                })
-                .then(data => {
-                    console.log('Voucher check response:', data);
-
-                    if (data.valid) {
-                        feedbackElement.innerHTML = `
+                        if (data.valid) {
+                            feedbackElement.innerHTML = `
                         <div class="text-success">
                             <i class="bi bi-check-circle"></i> ${data.nama_voucher}<br>
                             <small>${data.message}</small>
                         </div>`;
-                        voucherInput.classList.add('is-valid');
-                        voucherInput.classList.remove('is-invalid');
-                    } else {
-                        feedbackElement.innerHTML = `
+                            voucherInput.classList.add('is-valid');
+                            voucherInput.classList.remove('is-invalid');
+                        } else {
+                            feedbackElement.innerHTML = `
                         <div class="text-danger">
                             <i class="bi bi-x-circle"></i> ${data.message}
                         </div>`;
-                        voucherInput.classList.add('is-invalid');
-                        voucherInput.classList.remove('is-valid');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error checking voucher:', error);
-                    feedbackElement.innerHTML = `
+                            voucherInput.classList.add('is-invalid');
+                            voucherInput.classList.remove('is-valid');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error checking voucher:', error);
+                        feedbackElement.innerHTML = `
                     <div class="text-danger">
                         <i class="bi bi-exclamation-triangle"></i> Terjadi kesalahan saat memeriksa voucher
                     </div>`;
-                    voucherInput.classList.add('is-invalid');
-                    voucherInput.classList.remove('is-valid');
-                });
+                        voucherInput.classList.add('is-invalid');
+                        voucherInput.classList.remove('is-valid');
+                    });
+            });
         });
-    });
-</script>
+    </script>
 
-<?php
-$content = ob_get_clean();
+    <?php
+    $content = ob_get_clean();
 
-// Additional CSS
-$additional_css = "
+    // Additional CSS
+    $additional_css = "
     .card {
         border-radius: 10px;
         overflow: hidden;
@@ -1341,8 +1334,8 @@ $additional_css = "
     }
 ";
 
-// Additional JavaScript for pengumuman widget
-$additional_scripts = '
+    // Additional JavaScript for pengumuman widget
+    $additional_scripts = '
 <script>
     $(document).ready(function() {
         // Tampilkan detail pengumuman pada modal
@@ -1367,6 +1360,6 @@ $additional_scripts = '
 </script>
 ';
 
-// Include template
-include_once '../template/layout.php';
-?>
+    // Include template
+    include_once '../template/layout.php';
+    ?>
