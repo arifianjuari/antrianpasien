@@ -21,9 +21,22 @@ try {
     $stmt->execute([$status, $id_pendaftaran]);
 
     if ($stmt->rowCount() > 0) {
-        echo json_encode(['success' => true, 'message' => 'Status berhasil diupdate']);
+        // Jika ada parameter redirect, alihkan ke URL tersebut
+        if (isset($_POST['redirect']) && !empty($_POST['redirect'])) {
+            header('Location: ' . $_POST['redirect']);
+            exit;
+        } else {
+            echo json_encode(['success' => true, 'message' => 'Status berhasil diupdate']);
+        }
     } else {
-        echo json_encode(['success' => false, 'message' => 'Tidak ada data yang diupdate']);
+        if (isset($_POST['redirect']) && !empty($_POST['redirect'])) {
+            // Tambahkan parameter error ke URL redirect
+            $redirect_url = $_POST['redirect'] . (strpos($_POST['redirect'], '?') !== false ? '&' : '?') . 'error=1&message=' . urlencode('Tidak ada data yang diupdate');
+            header('Location: ' . $redirect_url);
+            exit;
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Tidak ada data yang diupdate']);
+        }
     }
 } catch (PDOException $e) {
     error_log("Database Error: " . $e->getMessage());

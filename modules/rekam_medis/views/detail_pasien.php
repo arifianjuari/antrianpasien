@@ -2055,71 +2055,35 @@ error_log("Data pasien: " . json_encode($pasien));
     <script>
         function tandaiSelesai(idPendaftaran) {
             if (confirm('Apakah Anda yakin ingin menandai pendaftaran ini sebagai selesai?')) {
-                const formData = new FormData();
-                formData.append('id_pendaftaran', idPendaftaran);
-                formData.append('status', 'Selesai');
-
-                // Gunakan XMLHttpRequest untuk menangkap detail error lebih baik
-                const xhr = new XMLHttpRequest();
-                xhr.open('POST', '/antrian pasien/modules/rekam_medis/controllers/update_status.php', true);
+                // Buat form sementara untuk submit data
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '<?= BASE_URL ?>/modules/rekam_medis/controllers/update_status.php';
+                form.style.display = 'none';
                 
-                // Menangani response
-                xhr.onload = function() {
-                    console.log('Status: ' + xhr.status);
-                    console.log('Response Text: ' + xhr.responseText);
-                    
-                    if (xhr.status === 200) {
-                        try {
-                            const data = JSON.parse(xhr.responseText);
-                            console.log('Parsed data:', data);
-                            
-                            if (data.success) {
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Berhasil!',
-                                    text: 'Status pendaftaran berhasil diubah menjadi Selesai',
-                                    showConfirmButton: false,
-                                    timer: 1500
-                                }).then(() => {
-                                    // Redirect ke halaman manajemen antrian
-                                    window.location.href = '<?= BASE_URL ?>/index.php?module=rekam_medis&action=manajemen_antrian';
-                                });
-                            } else {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Gagal!',
-                                    text: 'Gagal mengubah status pendaftaran: ' + data.message
-                                });
-                            }
-                        } catch (e) {
-                            console.error('Error parsing JSON:', e);
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Gagal!',
-                                text: 'Terjadi kesalahan saat memproses respons dari server'
-                            });
-                        }
-                    } else {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Gagal!',
-                            text: 'Server merespons dengan status: ' + xhr.status
-                        });
-                    }
-                };
+                // Tambahkan input fields untuk data yang akan dikirim
+                const idField = document.createElement('input');
+                idField.type = 'hidden';
+                idField.name = 'id_pendaftaran';
+                idField.value = idPendaftaran;
+                form.appendChild(idField);
                 
-                // Menangani error
-                xhr.onerror = function() {
-                    console.error('Request error');
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Gagal!',
-                        text: 'Terjadi kesalahan saat menghubungi server'
-                    });
-                };
+                const statusField = document.createElement('input');
+                statusField.type = 'hidden';
+                statusField.name = 'status';
+                statusField.value = 'Selesai';
+                form.appendChild(statusField);
                 
-                // Mengirim request
-                xhr.send(formData);
+                // Tambahkan redirect field
+                const redirectField = document.createElement('input');
+                redirectField.type = 'hidden';
+                redirectField.name = 'redirect';
+                redirectField.value = '<?= BASE_URL ?>/index.php?module=rekam_medis&action=manajemen_antrian';
+                form.appendChild(redirectField);
+                
+                // Tambahkan form ke body dan submit
+                document.body.appendChild(form);
+                form.submit();
             }
         }
     </script>
