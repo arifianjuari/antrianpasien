@@ -19,20 +19,13 @@ class RekamMedisController
     private $templateUsgModel;
     private $pdo;
     private $conn;
-
-    private static $sharedPDO = null;
     
     public function __construct($conn)
     {
         $this->conn = $conn;
         try {
-            // Gunakan koneksi yang sudah ada jika tersedia untuk menghemat koneksi
-            if (self::$sharedPDO !== null) {
-                $this->pdo = self::$sharedPDO;
-                error_log("Menggunakan koneksi database yang sudah ada");
-            } else {
-                // Jika koneksi tidak valid, buat koneksi baru
-                if (!isset($conn) || !($conn instanceof PDO)) {
+            // Gunakan koneksi yang diberikan
+            if (!isset($conn) || !($conn instanceof PDO)) {
                     $db2_host = 'auth-db1151.hstgr.io';
                     $db2_username = 'u609399718_adminpraktek';
                     $db2_password = 'Obgin@12345';
@@ -45,12 +38,10 @@ class RekamMedisController
                         [
                             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-                            PDO::ATTR_EMULATE_PREPARES => false,
-                            // Tambahkan opsi koneksi persisten untuk mengurangi jumlah koneksi baru
-                            PDO::ATTR_PERSISTENT => true
+                            PDO::ATTR_EMULATE_PREPARES => false
                         ]
                     );
-                    error_log("Membuat koneksi database baru dengan koneksi persisten");
+                    error_log("Membuat koneksi database baru");
                 }
     
                 // Test koneksi
@@ -60,8 +51,6 @@ class RekamMedisController
                 }
     
                 $this->pdo = $conn;
-                // Simpan koneksi untuk digunakan kembali
-                self::$sharedPDO = $conn;
             }
             
             $this->rekamMedisModel = new RekamMedis($this->pdo);
@@ -3786,12 +3775,11 @@ class RekamMedisController
         error_log("QUERY STRING: " . $_SERVER['QUERY_STRING']);
         error_log("no_rawat param: " . ($_GET['no_rawat'] ?? 'not set'));
         
-        // Gunakan koneksi yang sudah ada untuk mengurangi koneksi database baru
+        // Buat koneksi database baru (versi sederhana tanpa koneksi persisten)
         try {
-            // Gunakan koneksi yang sudah ada jika memungkinkan
-            if (self::$sharedPDO !== null) {
-                error_log("Menggunakan koneksi database yang sudah ada untuk form edit pemeriksaan");
-                $this->pdo = self::$sharedPDO;
+            // Gunakan koneksi yang ada jika valid
+            if (isset($this->pdo) && $this->pdo instanceof PDO) {
+                error_log("Menggunakan koneksi database yang ada");
             } else {
                 $db2_host = 'auth-db1151.hstgr.io';
                 $db2_username = 'u609399718_adminpraktek';
@@ -3807,14 +3795,11 @@ class RekamMedisController
                     [
                         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-                        PDO::ATTR_EMULATE_PREPARES => false,
-                        PDO::ATTR_PERSISTENT => true  // Gunakan koneksi persisten
+                        PDO::ATTR_EMULATE_PREPARES => false
                     ]
                 );
                 error_log("Database connection successful");
                 
-                // Simpan koneksi untuk penggunaan berikutnya
-                self::$sharedPDO = $pdo_praktek;
                 $this->pdo = $pdo_praktek;
             }
         } catch (PDOException $e) {
