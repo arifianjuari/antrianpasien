@@ -2224,7 +2224,7 @@ class RekamMedisController
                      (?, ?, ?, ?, NULL, ?, ?)";
             $stmt = $koneksi->prepare($query);
             $stmt->bind_param(
-                "ssiissd",
+                "ssiisd",
                 $id_status_ginekologi,
                 $no_rkm_medis,
                 $parturien,
