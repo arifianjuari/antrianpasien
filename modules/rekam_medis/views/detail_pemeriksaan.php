@@ -11,8 +11,8 @@ if (!isset($pemeriksaan) || !$pemeriksaan) {
     exit;
 }
 
-// Debug URL
-$edit_url = "index.php?module=rekam_medis&action=edit_pemeriksaan&id=" . $pemeriksaan['no_rawat'];
+// Set URL untuk edit pemeriksaan menggunakan form_edit_pemeriksaan (dengan underscore) yang sudah terdaftar di router
+$edit_url = "index.php?module=rekam_medis&action=form_edit_pemeriksaan&no_rawat=" . $pemeriksaan['no_rawat'];
 error_log("Edit URL: " . $edit_url);
 ?>
 
