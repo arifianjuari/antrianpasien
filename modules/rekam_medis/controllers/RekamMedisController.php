@@ -2173,12 +2173,9 @@ class RekamMedisController
                 throw new Exception("Koneksi database gagal: " . $koneksi->connect_error);
             }
 
-            // Validasi input
-            $required_fields = ['no_rkm_medis', 'parturien', 'abortus', 'hpht', 'lama_menikah_th'];
-            foreach ($required_fields as $field) {
-                if (empty($_POST[$field])) {
-                    throw new Exception("Field $field harus diisi");
-                }
+            // Validasi input - hanya no_rkm_medis yang wajib diisi
+            if (empty($_POST['no_rkm_medis'])) {
+                throw new Exception("Nomor rekam medis harus diisi");
             }
 
             // Generate UUID untuk id_status_ginekologi
@@ -2194,14 +2191,22 @@ class RekamMedisController
                 mt_rand(0, 0xffff)
             );
 
-            // Sanitasi input
+            // Sanitasi input - semua field opsional kecuali no_rkm_medis
             $id_status_ginekologi = $uuid;
             $no_rkm_medis = $koneksi->real_escape_string($_POST['no_rkm_medis']);
-            $parturien = (int)$_POST['parturien'];
-            $abortus = (int)$_POST['abortus'];
-            $hpht = $koneksi->real_escape_string($_POST['hpht']);
+            
+            // Handle optional fields with default values
+            $parturien = isset($_POST['parturien']) ? (int)$_POST['parturien'] : 0;
+            $abortus = isset($_POST['abortus']) ? (int)$_POST['abortus'] : 0;
+            
+            // HPHT is optional and can be NULL
+            $hpht = !empty($_POST['hpht']) ? $koneksi->real_escape_string($_POST['hpht']) : NULL;
+            
+            // Default kontrasepsi to 'Tidak Ada' if not provided
             $kontrasepsi = !empty($_POST['kontrasepsi']) ? $koneksi->real_escape_string($_POST['kontrasepsi']) : 'Tidak Ada';
-            $lama_menikah_th = (float)$_POST['lama_menikah_th'];
+            
+            // Ensure lama_menikah_th can be 0
+            $lama_menikah_th = isset($_POST['lama_menikah_th']) ? (float)$_POST['lama_menikah_th'] : 0;
 
             // Query untuk menyimpan data
             $query = "INSERT INTO status_ginekologi 
@@ -2210,6 +2215,24 @@ class RekamMedisController
                      (?, ?, ?, ?, ?, ?, ?)";
 
             $stmt = $koneksi->prepare($query);
+        
+        // Modify the query if HPHT is NULL
+        if ($hpht === NULL) {
+            $query = "INSERT INTO status_ginekologi 
+                     (id_status_ginekologi, no_rkm_medis, Parturien, Abortus, Hari_pertama_haid_terakhir, Kontrasepsi_terakhir, lama_menikah_th) 
+                     VALUES 
+                     (?, ?, ?, ?, NULL, ?, ?)";
+            $stmt = $koneksi->prepare($query);
+            $stmt->bind_param(
+                "ssiissd",
+                $id_status_ginekologi,
+                $no_rkm_medis,
+                $parturien,
+                $abortus,
+                $kontrasepsi,
+                $lama_menikah_th
+            );
+        } else {
             $stmt->bind_param(
                 "ssiissd",
                 $id_status_ginekologi,
@@ -2220,6 +2243,7 @@ class RekamMedisController
                 $kontrasepsi,
                 $lama_menikah_th
             );
+        }
 
             if ($stmt->execute()) {
                 $_SESSION['success'] = 'Data status ginekologi berhasil disimpan';
@@ -2254,6 +2278,8 @@ class RekamMedisController
     {
         // Debugging
         error_log("=== Mulai proses edit_status_ginekologi ===");
+        error_log("GET parameters: " . json_encode($_GET));
+        error_log("SESSION: " . json_encode($_SESSION));
         
         // Pastikan parameter id tersedia
         if (!isset($_GET['id']) || empty($_GET['id'])) {
@@ -2263,19 +2289,39 @@ class RekamMedisController
         }
 
         $id_status_ginekologi = $_GET['id'];
+        $source = isset($_GET['source']) ? $_GET['source'] : '';
+        $no_rawat = isset($_GET['no_rawat']) ? $_GET['no_rawat'] : '';
+        
+        // Debugging source parameter
+        error_log("Source from URL: " . $source);
+        
+        // Store source in session explicitly
+        if (!empty($source)) {
+            $_SESSION['edit_source'] = $source;
+            error_log("Stored source in session: " . $source);
+        }
+        
+        // Simpan no_rawat dalam session jika tersedia
+        if (!empty($no_rawat)) {
+            $_SESSION['no_rawat'] = $no_rawat;
+        }
+        
         error_log("ID status ginekologi yang akan diedit: " . $id_status_ginekologi);
         
         // Gunakan model StatusGinekologi untuk mendapatkan data
         $statusGinekologiModel = new StatusGinekologi($this->pdo);
-        $statusGinekologi = $statusGinekologiModel->getStatusGinekologiById($id_status_ginekologi);
+        $status_ginekologi = $statusGinekologiModel->getStatusGinekologiById($id_status_ginekologi);
 
-        if (!$statusGinekologi) {
+        if (!$status_ginekologi) {
             $_SESSION['error'] = "Data status ginekologi tidak ditemukan";
             header("Location: index.php?module=rekam_medis");
             exit;
         }
 
-        $pasien = $this->rekamMedisModel->getPasienById($statusGinekologi['no_rkm_medis']);
+        $pasien = $this->rekamMedisModel->getPasienById($status_ginekologi['no_rkm_medis']);
+        
+        // Debug untuk memeriksa isi data
+        error_log("Data status ginekologi ditemukan: " . json_encode($status_ginekologi));
         
         // Tampilkan form edit status ginekologi
         include 'modules/rekam_medis/views/form_edit_status_ginekologi.php';
@@ -2300,11 +2346,19 @@ class RekamMedisController
             // Ambil data dari form
             $id_status_ginekologi = $_POST['id_status_ginekologi'];
             $no_rkm_medis = $_POST['no_rkm_medis'];
-            $parturien = (int)$_POST['parturien'];
-            $abortus = (int)$_POST['abortus'];
-            $hpht = $_POST['hpht'];
-            $kontrasepsi = $_POST['kontrasepsi'];
-            $lama_menikah = (int)$_POST['lama_menikah'];
+            
+            // Handle optional fields with default values
+            $parturien = isset($_POST['parturien']) ? (int)$_POST['parturien'] : 0;
+            $abortus = isset($_POST['abortus']) ? (int)$_POST['abortus'] : 0;
+            
+            // HPHT is optional and can be NULL
+            $hpht = !empty($_POST['hpht']) ? $_POST['hpht'] : NULL;
+            
+            // Default kontrasepsi to 'Tidak Ada' if not provided
+            $kontrasepsi = !empty($_POST['kontrasepsi']) ? $_POST['kontrasepsi'] : 'Tidak Ada';
+            
+            // Ensure lama_menikah_th can be 0 - note the corrected field name
+            $lama_menikah_th = isset($_POST['lama_menikah_th']) ? (float)$_POST['lama_menikah_th'] : 0;
             
             // Koneksi ke database
             $db2_host = 'auth-db1151.hstgr.io';
@@ -2319,6 +2373,17 @@ class RekamMedisController
             }
             
             // Update data status ginekologi
+            if ($hpht === NULL) {
+            // Handle NULL value for HPHT
+            $query = "UPDATE status_ginekologi SET 
+                Parturien = ?, 
+                Abortus = ?, 
+                Hari_pertama_haid_terakhir = NULL, 
+                Kontrasepsi_terakhir = ?, 
+                lama_menikah_th = ? 
+                WHERE id_status_ginekologi = ?";
+        } else {
+            // Regular query when HPHT has a value
             $query = "UPDATE status_ginekologi SET 
                 Parturien = ?, 
                 Abortus = ?, 
@@ -2326,6 +2391,7 @@ class RekamMedisController
                 Kontrasepsi_terakhir = ?, 
                 lama_menikah_th = ? 
                 WHERE id_status_ginekologi = ?";
+        }
                 
             $stmt = $koneksi->prepare($query);
             
@@ -2333,7 +2399,13 @@ class RekamMedisController
                 throw new Exception("Persiapan query gagal: " . $koneksi->error);
             }
             
-            $stmt->bind_param("iisssi", $parturien, $abortus, $hpht, $kontrasepsi, $lama_menikah, $id_status_ginekologi);
+            if ($hpht === NULL) {
+            // Binding for NULL HPHT (exclude HPHT parameter)
+            $stmt->bind_param("iisdi", $parturien, $abortus, $kontrasepsi, $lama_menikah_th, $id_status_ginekologi);
+        } else {
+            // Regular binding when HPHT has a value
+            $stmt->bind_param("iissdi", $parturien, $abortus, $hpht, $kontrasepsi, $lama_menikah_th, $id_status_ginekologi);
+        }
             
             $result = $stmt->execute();
             
@@ -2348,8 +2420,51 @@ class RekamMedisController
             // Set pesan sukses
             $_SESSION['success'] = "Data status ginekologi berhasil diupdate";
             
-            // Redirect ke halaman detail pasien
-            header("Location: index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=" . $no_rkm_medis);
+            // Add debugging to trace source parameter
+            error_log("update_status_ginekologi POST data: " . json_encode($_POST));
+            error_log("update_status_ginekologi SESSION: " . json_encode($_SESSION));
+            
+            // Check for source in various places with priority
+            $source = '';
+            if (isset($_POST['source'])) {
+                $source = $_POST['source'];
+                error_log("Source from POST: " . $source);
+            } elseif (isset($_SESSION['edit_source'])) {
+                $source = $_SESSION['edit_source'];
+                error_log("Source from edit_source session: " . $source);
+            } elseif (isset($_SESSION['source_page'])) {
+                $source = $_SESSION['source_page'];
+                error_log("Source from source_page session: " . $source);
+            }
+            
+            error_log("Final source value for redirection: " . $source);
+            
+            // Routing based on source
+            if ($source == 'form_penilaian_medis_ralan_kandungan') {
+                // Get no_rawat if available
+                $no_rawat = isset($_SESSION['no_rawat']) ? $_SESSION['no_rawat'] : '';
+                if (empty($no_rawat) && isset($_POST['no_rawat'])) {
+                    $no_rawat = $_POST['no_rawat'];
+                }
+                
+                $redirect_url = "index.php?module=rekam_medis&action=form_penilaian_medis_ralan_kandungan";
+                
+                if (!empty($no_rawat)) {
+                    $redirect_url .= "&no_rawat=" . $no_rawat;
+                }
+                
+                if (!empty($no_rkm_medis)) {
+                    $redirect_url .= "&no_rkm_medis=" . $no_rkm_medis;
+                }
+                
+                header("Location: " . $redirect_url);
+            } elseif ($source == 'detail_pasien') {
+                // Redirect to detail_pasien
+                header("Location: index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=" . $no_rkm_medis);
+            } else {
+                // Default redirect to halaman detail pasien
+                header("Location: index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=" . $no_rkm_medis);
+            }
             exit;
             
         } catch (Exception $e) {

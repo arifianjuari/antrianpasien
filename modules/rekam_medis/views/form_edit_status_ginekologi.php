@@ -4,6 +4,30 @@ if (!isset($status_ginekologi)) {
     echo "Error: Data status ginekologi tidak tersedia.";
     exit;
 }
+
+// Add debugging
+error_log("form_edit_status_ginekologi.php GET params: " . json_encode($_GET));
+error_log("form_edit_status_ginekologi.php SESSION: " . json_encode($_SESSION));
+
+// Ambil parameter source dengan prioritas
+// 1. URL parameter (GET)
+// 2. Session variable edit_source (specifically set for edit operations)
+// 3. Session variable source_page (general)
+$source = isset($_GET['source']) ? $_GET['source'] : '';
+if (empty($source) && isset($_SESSION['edit_source'])) {
+    $source = $_SESSION['edit_source'];
+} elseif (empty($source) && isset($_SESSION['source_page'])) {
+    $source = $_SESSION['source_page'];
+}
+
+// For debugging
+error_log("Final source value used: " . $source);
+
+// Get no_rawat parameter
+$no_rawat = isset($_GET['no_rawat']) ? $_GET['no_rawat'] : '';
+if (empty($no_rawat) && isset($_SESSION['no_rawat'])) {
+    $no_rawat = $_SESSION['no_rawat'];
+}
 ?>
 
 <div class="container-fluid">
@@ -13,29 +37,52 @@ if (!isset($status_ginekologi)) {
                 <div class="card-header">
                     <h3 class="card-title">Edit Status Ginekologi</h3>
                     <div class="card-tools">
-                        <a href="index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=<?= $status_ginekologi['no_rkm_medis'] ?>" class="btn btn-default btn-sm">
-                            <i class="fas fa-arrow-left"></i> Kembali
-                        </a>
+                        <?php if ($source == 'form_penilaian_medis_ralan_kandungan' && !empty($no_rawat)): ?>
+                            <a href="index.php?module=rekam_medis&action=form_penilaian_medis_ralan_kandungan&no_rawat=<?= $no_rawat ?>&no_rkm_medis=<?= $status_ginekologi['no_rkm_medis'] ?>" class="btn btn-default btn-sm">
+                                <i class="fas fa-arrow-left"></i> Kembali ke Form Penilaian
+                            </a>
+                        <?php else: ?>
+                            <a href="index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=<?= $status_ginekologi['no_rkm_medis'] ?>" class="btn btn-default btn-sm">
+                                <i class="fas fa-arrow-left"></i> Kembali
+                            </a>
+                        <?php endif; ?>
                     </div>
                 </div>
                 <div class="card-body">
                     <form action="index.php?module=rekam_medis&action=update_status_ginekologi" method="post">
                         <input type="hidden" name="id_status_ginekologi" value="<?= $status_ginekologi['id_status_ginekologi'] ?>">
                         <input type="hidden" name="no_rkm_medis" value="<?= $status_ginekologi['no_rkm_medis'] ?>">
+                        <?php if (!empty($source)): ?>
+                        <input type="hidden" name="source" value="<?= $source ?>">
+                        <?php endif; ?>
+                        <?php if (!empty($no_rawat)): ?>
+                        <input type="hidden" name="no_rawat" value="<?= $no_rawat ?>">
+                        <?php endif; ?>
+
+                        <div class="mb-3">
+                            <label class="form-label">Tanggal</label>
+                            <?php
+                            // Format tanggal dari database atau gunakan tanggal hari ini
+                            $created_date = isset($status_ginekologi['created_at']) ? date('Y-m-d', strtotime($status_ginekologi['created_at'])) : date('Y-m-d');
+                            ?>
+                            <input type="date" name="tanggal" class="form-control" value="<?= $created_date ?>" readonly>
+                            <small class="text-muted">Tanggal pembuatan data (tidak dapat diubah)</small>
+                        </div>
 
                         <div class="mb-3">
                             <label class="form-label">Parturien</label>
-                            <input type="number" name="parturien" class="form-control" value="<?= $status_ginekologi['Parturien'] ?>" required>
+                            <input type="number" name="parturien" class="form-control" value="<?= $status_ginekologi['Parturien'] ?? 0 ?>" min="0">
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label">Abortus</label>
-                            <input type="number" name="abortus" class="form-control" value="<?= $status_ginekologi['Abortus'] ?>" required>
+                            <input type="number" name="abortus" class="form-control" value="<?= $status_ginekologi['Abortus'] ?? 0 ?>" min="0">
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label">Hari Pertama Haid Terakhir</label>
-                            <input type="date" name="hpht" class="form-control" value="<?= $status_ginekologi['Hari_pertama_haid_terakhir'] ?>" required>
+                            <input type="date" name="hpht" class="form-control" value="<?= $status_ginekologi['Hari_pertama_haid_terakhir'] ?? '' ?>">
+                            <small class="text-muted">Opsional</small>
                         </div>
 
                         <div class="mb-3">
@@ -54,7 +101,8 @@ if (!isset($status_ginekologi)) {
 
                         <div class="mb-3">
                             <label class="form-label">Lama Menikah (Tahun)</label>
-                            <input type="number" name="lama_menikah" class="form-control" value="<?= $status_ginekologi['lama_menikah_th'] ?>" required>
+                            <input type="number" name="lama_menikah_th" class="form-control" step="0.1" min="0" value="<?= $status_ginekologi['lama_menikah_th'] ?? 0 ?>">
+                            <small class="text-muted">Gunakan titik (.) untuk desimal, bukan koma</small>
                         </div>
 
                         <div class="text-end">

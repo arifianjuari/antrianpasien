@@ -1,4 +1,5 @@
 const CACHE_NAME = 'praktek-obgin-v3';
+const isLocalhost = self.location.hostname === 'localhost' || self.location.hostname === '127.0.0.1';
 const urlsToCache = [
     '/',
     '/index.php',
@@ -70,6 +71,11 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', event => {
     console.log('Service Worker: Event fetch terdeteksi untuk:', event.request.url);
 
+    // Jangan mengintervensi request di lingkungan development/localhost
+    if (isLocalhost) {
+        return;
+    }
+
     // Jangan mencoba cache untuk request yang bukan GET
     if (event.request.method !== 'GET') {
         return;
@@ -99,7 +105,7 @@ self.addEventListener('fetch', event => {
                             console.log('Response tidak valid untuk:', event.request.url, 'Status:', response.status);
 
                             // Jika status 500 atau error lainnya dan request adalah navigasi
-                            if ((response.status === 500 || !response.ok) && event.request.mode === 'navigate') {
+                            if (!isLocalhost && (response.status === 500 || !response.ok) && event.request.mode === 'navigate') {
                                 console.log('Server error 500, menampilkan halaman offline');
                                 return caches.match('/offline.html');
                             }
@@ -121,7 +127,7 @@ self.addEventListener('fetch', event => {
                     .catch(error => {
                         console.log('Fetch error:', error);
                         // Jika request gagal (offline atau error network lainnya)
-                        if (event.request.mode === 'navigate') {
+                        if (!isLocalhost && event.request.mode === 'navigate') {
                             console.log('Menampilkan halaman offline');
                             return caches.match('/offline.html');
                         }

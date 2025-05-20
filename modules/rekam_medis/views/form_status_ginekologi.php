@@ -40,22 +40,23 @@ $no_rawat = isset($_GET['no_rawat']) ? $_GET['no_rawat'] : '';
 
                         <div class="mb-3">
                             <label class="form-label">Tanggal</label>
-                            <input type="date" name="tanggal" class="form-control" value="<?= date('Y-m-d') ?>" required>
+                            <input type="date" name="tanggal" class="form-control" value="<?= date('Y-m-d') ?>">
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label">Parturien</label>
-                            <input type="number" name="parturien" class="form-control" required>
+                            <input type="number" name="parturien" class="form-control" value="0" min="0">
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label">Abortus</label>
-                            <input type="number" name="abortus" class="form-control" required>
+                            <input type="number" name="abortus" class="form-control" value="0" min="0">
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label">Hari Pertama Haid Terakhir</label>
-                            <input type="date" name="hpht" class="form-control" required>
+                            <input type="date" name="hpht" class="form-control">
+                            <small class="text-muted">Opsional</small>
                         </div>
 
                         <div class="mb-3">
@@ -74,7 +75,7 @@ $no_rawat = isset($_GET['no_rawat']) ? $_GET['no_rawat'] : '';
 
                         <div class="mb-3">
                             <label class="form-label">Lama Menikah (Tahun)</label>
-                            <input type="number" name="lama_menikah_th" class="form-control" step="0.1" min="0" placeholder="Gunakan titik untuk desimal" required>
+                            <input type="number" name="lama_menikah_th" class="form-control" step="0.1" min="0" value="0" placeholder="Gunakan titik untuk desimal">
                             <small class="text-muted">Gunakan titik (.) untuk desimal, bukan koma</small>
                         </div>
 

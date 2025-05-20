@@ -1,43 +1,62 @@
-// Mendaftarkan Service Worker
+// Script untuk Service Worker
 if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/assets/pwa/sw.js', { scope: '/' })
-            .then(registration => {
-                console.log('ServiceWorker berhasil didaftarkan dengan scope:', registration.scope);
+    // Deteksi localhost
+    const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    
+    // Untuk lingkungan development (localhost) - nonaktifkan service worker
+    if (isLocalhost) {
+        console.log('Lingkungan development (localhost) terdeteksi');
+        console.log('Menonaktifkan Service Worker untuk pengembangan...');
+        
+        // Unregister semua service worker yang terdaftar
+        navigator.serviceWorker.getRegistrations().then(function(registrations) {
+            for(let registration of registrations) {
+                registration.unregister();
+                console.log('Service Worker berhasil dihapus');
+            }
+        });
+    } 
+    // Untuk lingkungan produksi - aktifkan service worker
+    else {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/assets/pwa/sw.js', { scope: '/' })
+                .then(registration => {
+                    console.log('ServiceWorker berhasil didaftarkan dengan scope:', registration.scope);
 
-                // Periksa apakah ada pembaruan service worker
-                registration.addEventListener('updatefound', () => {
-                    const newWorker = registration.installing;
-                    console.log('Service worker baru sedang diinstal');
+                    // Periksa apakah ada pembaruan service worker
+                    registration.addEventListener('updatefound', () => {
+                        const newWorker = registration.installing;
+                        console.log('Service worker baru sedang diinstal');
 
-                    newWorker.addEventListener('statechange', () => {
-                        console.log('Service worker state:', newWorker.state);
+                        newWorker.addEventListener('statechange', () => {
+                            console.log('Service worker state:', newWorker.state);
+                        });
                     });
+
+                    // Mendaftarkan untuk push notification jika didukung
+                    if ('PushManager' in window) {
+                        console.log('Push notification didukung');
+
+                        // Meminta izin notifikasi
+                        Notification.requestPermission().then(permission => {
+                            if (permission === 'granted') {
+                                console.log('Izin notifikasi diberikan');
+                            } else {
+                                console.log('Izin notifikasi ditolak');
+                            }
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('ServiceWorker gagal didaftarkan:', error);
                 });
 
-                // Mendaftarkan untuk push notification jika didukung
-                if ('PushManager' in window) {
-                    console.log('Push notification didukung');
-
-                    // Meminta izin notifikasi
-                    Notification.requestPermission().then(permission => {
-                        if (permission === 'granted') {
-                            console.log('Izin notifikasi diberikan');
-                        } else {
-                            console.log('Izin notifikasi ditolak');
-                        }
-                    });
-                }
-            })
-            .catch(error => {
-                console.error('ServiceWorker gagal didaftarkan:', error);
+            // Periksa apakah ada service worker yang perlu diperbarui
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+                console.log('Service worker controller berubah');
             });
-
-        // Periksa apakah ada service worker yang perlu diperbarui
-        navigator.serviceWorker.addEventListener('controllerchange', () => {
-            console.log('Service worker controller berubah');
         });
-    });
+    }
 }
 
 // Mendeteksi apakah aplikasi dijalankan dalam mode standalone (PWA)
