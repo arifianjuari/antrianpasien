@@ -1,4 +1,4 @@
-const CACHE_NAME = 'praktek-obgin-v3';
+const CACHE_NAME = 'praktek-obgin-v4'; // Meningkatkan versi untuk memaksa update
 const isLocalhost = self.location.hostname === 'localhost' || self.location.hostname === '127.0.0.1';
 const urlsToCache = [
     '/',

@@ -61,6 +61,28 @@ if (!isset($pemeriksaan) || !$pemeriksaan) {
 }
 ?>
 
+<script>
+// Menonaktifkan Service Worker untuk halaman ini
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then(function(registrations) {
+        for(let registration of registrations) {
+            registration.unregister();
+            console.log('Service Worker dinonaktifkan untuk halaman Edit Pemeriksaan');
+        }
+    });
+    
+    // Menghindari caching
+    if (window.caches) {
+        caches.keys().then(function(cacheNames) {
+            cacheNames.forEach(function(cacheName) {
+                caches.delete(cacheName);
+                console.log('Cache dihapus:', cacheName);
+            });
+        });
+    }
+}
+</script>
+
 <style>
     /* CSS untuk mengatur ukuran font */
     .form-control,
