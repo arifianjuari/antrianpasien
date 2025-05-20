@@ -20,40 +20,54 @@ class RekamMedisController
     private $pdo;
     private $conn;
 
+    private static $sharedPDO = null;
+    
     public function __construct($conn)
     {
         $this->conn = $conn;
         try {
-            // Jika koneksi tidak valid, buat koneksi baru
-            if (!isset($conn) || !($conn instanceof PDO)) {
-                $db2_host = 'auth-db1151.hstgr.io';
-                $db2_username = 'u609399718_adminpraktek';
-                $db2_password = 'Obgin@12345';
-                $db2_database = 'u609399718_praktekobgin';
-
-                $conn = new PDO(
-                    "mysql:host=$db2_host;dbname=$db2_database;charset=utf8mb4",
-                    $db2_username,
-                    $db2_password,
-                    [
-                        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-                        PDO::ATTR_EMULATE_PREPARES => false
-                    ]
-                );
+            // Gunakan koneksi yang sudah ada jika tersedia untuk menghemat koneksi
+            if (self::$sharedPDO !== null) {
+                $this->pdo = self::$sharedPDO;
+                error_log("Menggunakan koneksi database yang sudah ada");
+            } else {
+                // Jika koneksi tidak valid, buat koneksi baru
+                if (!isset($conn) || !($conn instanceof PDO)) {
+                    $db2_host = 'auth-db1151.hstgr.io';
+                    $db2_username = 'u609399718_adminpraktek';
+                    $db2_password = 'Obgin@12345';
+                    $db2_database = 'u609399718_praktekobgin';
+    
+                    $conn = new PDO(
+                        "mysql:host=$db2_host;dbname=$db2_database;charset=utf8mb4",
+                        $db2_username,
+                        $db2_password,
+                        [
+                            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                            PDO::ATTR_EMULATE_PREPARES => false,
+                            // Tambahkan opsi koneksi persisten untuk mengurangi jumlah koneksi baru
+                            PDO::ATTR_PERSISTENT => true
+                        ]
+                    );
+                    error_log("Membuat koneksi database baru dengan koneksi persisten");
+                }
+    
+                // Test koneksi
+                $test = $conn->query("SELECT 1");
+                if (!$test) {
+                    throw new PDOException("Koneksi database tidak dapat melakukan query");
+                }
+    
+                $this->pdo = $conn;
+                // Simpan koneksi untuk digunakan kembali
+                self::$sharedPDO = $conn;
             }
-
-            // Test koneksi
-            $test = $conn->query("SELECT 1");
-            if (!$test) {
-                throw new PDOException("Koneksi database tidak dapat melakukan query");
-            }
-
-            $this->pdo = $conn;
-            $this->rekamMedisModel = new RekamMedis($conn);
-            $this->tindakanMedisModel = new TindakanMedis($conn);
-            $this->templateTatalaksanaModel = new TemplateTatalaksana($conn);
-            $this->templateUsgModel = new TemplateUsg($conn);
+            
+            $this->rekamMedisModel = new RekamMedis($this->pdo);
+            $this->tindakanMedisModel = new TindakanMedis($this->pdo);
+            $this->templateTatalaksanaModel = new TemplateTatalaksana($this->pdo);
+            $this->templateUsgModel = new TemplateUsg($this->pdo);
         } catch (PDOException $e) {
             error_log("Database Error in RekamMedisController constructor: " . $e->getMessage());
             throw new Exception("Koneksi database bermasalah: " . $e->getMessage());
@@ -3772,30 +3786,37 @@ class RekamMedisController
         error_log("QUERY STRING: " . $_SERVER['QUERY_STRING']);
         error_log("no_rawat param: " . ($_GET['no_rawat'] ?? 'not set'));
         
-        // Buat koneksi langsung ke database praktek obgin
+        // Gunakan koneksi yang sudah ada untuk mengurangi koneksi database baru
         try {
-            $db2_host = 'auth-db1151.hstgr.io';
-            $db2_username = 'u609399718_adminpraktek';
-            $db2_password = 'Obgin@12345';
-            $db2_database = 'u609399718_praktekobgin';
-            
-            error_log("Attempting database connection to: $db2_host, $db2_database");
-            
-            $pdo_praktek = new PDO(
-                "mysql:host=$db2_host;dbname=$db2_database;charset=utf8mb4",
-                $db2_username,
-                $db2_password,
-                [
-                    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-                    PDO::ATTR_EMULATE_PREPARES => false
-                ]
-            );
-            error_log("Database connection successful");
-            
-            // Simpan PDO ke variabel kelas
-            $original_pdo = $this->pdo; // simpan koneksi asli
-            $this->pdo = $pdo_praktek; // gunakan koneksi baru
+            // Gunakan koneksi yang sudah ada jika memungkinkan
+            if (self::$sharedPDO !== null) {
+                error_log("Menggunakan koneksi database yang sudah ada untuk form edit pemeriksaan");
+                $this->pdo = self::$sharedPDO;
+            } else {
+                $db2_host = 'auth-db1151.hstgr.io';
+                $db2_username = 'u609399718_adminpraktek';
+                $db2_password = 'Obgin@12345';
+                $db2_database = 'u609399718_praktekobgin';
+                
+                error_log("Attempting database connection to: $db2_host, $db2_database");
+                
+                $pdo_praktek = new PDO(
+                    "mysql:host=$db2_host;dbname=$db2_database;charset=utf8mb4",
+                    $db2_username,
+                    $db2_password,
+                    [
+                        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                        PDO::ATTR_EMULATE_PREPARES => false,
+                        PDO::ATTR_PERSISTENT => true  // Gunakan koneksi persisten
+                    ]
+                );
+                error_log("Database connection successful");
+                
+                // Simpan koneksi untuk penggunaan berikutnya
+                self::$sharedPDO = $pdo_praktek;
+                $this->pdo = $pdo_praktek;
+            }
         } catch (PDOException $e) {
             error_log("CRITICAL formEditPemeriksaan: Database connection error: " . $e->getMessage());
             $_SESSION['error'] = 'Gagal terhubung ke database: ' . $e->getMessage();
