@@ -1,6 +1,12 @@
 <?php
-// Output sederhana untuk debugging
-echo "<!-- START FORM EDIT -->";
+// Pastikan tidak ada akses langsung ke file ini
+if (!defined('BASE_PATH')) {
+    // Definisikan BASE_PATH jika belum ada untuk kompatibilitas
+    define('BASE_PATH', $_SERVER['DOCUMENT_ROOT'] . '/antrian pasien');
+    
+    // Log untuk debugging
+    error_log("FORM EDIT: BASE_PATH not defined, setting to: " . BASE_PATH);
+}
 
 // Enable error reporting untuk debugging
 ini_set('display_errors', 1);
@@ -12,6 +18,11 @@ error_log("Form Edit Pemeriksaan: Loading started at " . date('Y-m-d H:i:s'));
 // Pastikan session sudah dimulai
 if (!isset($_SESSION)) {
     session_start();
+}
+
+// Set default source_page jika belum ada
+if (!isset($_SESSION['source_page'])) {
+    $_SESSION['source_page'] = 'form_edit_pemeriksaan';
 }
 
 try {
@@ -42,7 +53,10 @@ function getConnection() {
 // Cek apakah ada data pemeriksaan
 if (!isset($pemeriksaan) || !$pemeriksaan) {
     $_SESSION['error'] = 'Data pemeriksaan tidak ditemukan';
-    header('Location: index.php?module=rekam_medis');
+    $redirect_url = isset($_SERVER['HTTP_HOST']) ? 
+        ($_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] . '/antrian pasien/index.php?module=rekam_medis&action=data_pasien') :
+        'index.php?module=rekam_medis&action=data_pasien';
+    header('Location: ' . $redirect_url);
     exit;
 }
 ?>
