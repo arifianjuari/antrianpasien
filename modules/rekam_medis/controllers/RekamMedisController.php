@@ -1342,12 +1342,46 @@ class RekamMedisController
 
     public function edit_pemeriksaan()
     {
-        error_log("Starting edit_pemeriksaan function");
+        error_log("==== DEBUGGING edit_pemeriksaan START ====");
+        error_log("REQUEST_URI: " . $_SERVER['REQUEST_URI']);
+        error_log("QUERY STRING: " . $_SERVER['QUERY_STRING']);
+        error_log("id param: " . ($_GET['id'] ?? 'not set'));
+
+        // Buat koneksi langsung ke database praktek obgin
+        try {
+            $db2_host = 'auth-db1151.hstgr.io';
+            $db2_username = 'u609399718_adminpraktek';
+            $db2_password = 'Obgin@12345';
+            $db2_database = 'u609399718_praktekobgin';
+            
+            error_log("Attempting database connection to: $db2_host, $db2_database");
+            
+            $pdo_praktek = new PDO(
+                "mysql:host=$db2_host;dbname=$db2_database;charset=utf8mb4",
+                $db2_username,
+                $db2_password,
+                [
+                    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                    PDO::ATTR_EMULATE_PREPARES => false
+                ]
+            );
+            error_log("Database connection successful");
+            
+            // Simpan PDO ke variabel kelas
+            $original_pdo = $this->pdo; // simpan koneksi asli
+            $this->pdo = $pdo_praktek; // gunakan koneksi baru
+        } catch (PDOException $e) {
+            error_log("CRITICAL edit_pemeriksaan: Database connection error: " . $e->getMessage());
+            $_SESSION['error'] = 'Gagal terhubung ke database: ' . $e->getMessage();
+            header('Location: ' . $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] . '/antrian pasien/index.php?module=rekam_medis&action=data_pasien');
+            exit;
+        }
 
         if (!isset($_GET['id']) || empty($_GET['id'])) {
             error_log("No ID provided in edit_pemeriksaan");
             $_SESSION['error'] = 'ID pemeriksaan tidak valid';
-            header('Location: index.php?module=rekam_medis');
+            header('Location: ' . $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] . '/antrian pasien/index.php?module=rekam_medis&action=data_pasien');
             exit;
         }
 
@@ -1355,47 +1389,43 @@ class RekamMedisController
         error_log("Processing edit_pemeriksaan for no_rawat: " . $no_rawat);
 
         try {
-            // Ambil data pemeriksaan dari tabel penilaian_medis_ralan_kandungan
+            // Ambil data pemeriksaan dan pasien berdasarkan no_rawat dalam satu query
             $stmt = $this->pdo->prepare("
-                SELECT * FROM penilaian_medis_ralan_kandungan 
-                WHERE no_rawat = ?
+                SELECT pmrk.*, p.*, rp.tgl_registrasi, rp.jam_reg 
+                FROM penilaian_medis_ralan_kandungan pmrk
+                JOIN reg_periksa rp ON pmrk.no_rawat = rp.no_rawat
+                JOIN pasien p ON rp.no_rkm_medis = p.no_rkm_medis
+                WHERE pmrk.no_rawat = ?
             ");
             $stmt->execute([$no_rawat]);
-            $pemeriksaan = $stmt->fetch(PDO::FETCH_ASSOC);
+            $data = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            if (!$pemeriksaan) {
-                error_log("No pemeriksaan data found for no_rawat: " . $no_rawat);
+            if (!$data) {
+                error_log("No data found for no_rawat: " . $no_rawat);
                 $_SESSION['error'] = 'Data pemeriksaan tidak ditemukan';
-                header('Location: index.php?module=rekam_medis');
+                header('Location: ' . $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] . '/antrian pasien/index.php?module=rekam_medis&action=data_pasien');
                 exit;
             }
 
-            // Ambil data pasien dari reg_periksa dan pasien
-            $stmt = $this->pdo->prepare("
-                SELECT p.*, rp.no_rawat, rp.tgl_registrasi, rp.jam_reg
-                FROM reg_periksa rp
-                JOIN pasien p ON p.no_rkm_medis = rp.no_rkm_medis
-                WHERE rp.no_rawat = ?
-            ");
-            $stmt->execute([$no_rawat]);
-            $pasien = $stmt->fetch(PDO::FETCH_ASSOC);
+            // Simpan data pemeriksaan ke variabel yang digunakan di view
+            $pemeriksaan = $data;
+            $pasien = $data;
+            
+            error_log("DEBUG edit_pemeriksaan: Fetched data: " . print_r($data, true));
 
-            if (!$pasien) {
-                error_log("No patient data found for no_rawat: " . $no_rawat);
-                $_SESSION['error'] = 'Data pasien tidak ditemukan';
-                header('Location: index.php?module=rekam_medis');
-                exit;
-            }
-
-            error_log("Found pemeriksaan and patient data, loading edit form");
-
-            // Tampilkan form edit
-            include 'modules/rekam_medis/views/form_edit_pemeriksaan.php';
+            // Tampilkan form edit dengan absolute path
+            include $_SERVER['DOCUMENT_ROOT'] . '/antrian pasien/modules/rekam_medis/views/form_edit_pemeriksaan.php';
+        } catch (PDOException $e) {
+            error_log("CRITICAL edit_pemeriksaan: PDOException: " . $e->getMessage());
+            error_log("Stack trace: " . $e->getTraceAsString());
+            $_SESSION['error'] = 'Terjadi kesalahan database saat memuat form edit pemeriksaan: ' . $e->getMessage();
+            header('Location: ' . $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] . '/antrian pasien/index.php?module=rekam_medis&action=data_pasien');
+            exit;
         } catch (Exception $e) {
-            error_log('Error in edit_pemeriksaan: ' . $e->getMessage());
-            error_log('Stack trace: ' . $e->getTraceAsString());
+            error_log("CRITICAL edit_pemeriksaan: Exception: " . $e->getMessage());
+            error_log("Stack trace: " . $e->getTraceAsString());
             $_SESSION['error'] = $e->getMessage();
-            header('Location: index.php?module=rekam_medis');
+            header('Location: ' . $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] . '/antrian pasien/index.php?module=rekam_medis&action=data_pasien');
             exit;
         }
     }
