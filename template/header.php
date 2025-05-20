@@ -33,8 +33,20 @@ require_once __DIR__ . '/../config/config.php';
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- Service Worker Registration -->
-    <script src="<?= $base_url ?>/assets/pwa/register-sw.js"></script>
+    <!-- Service Worker Disabler -->
+    <script src="<?= $base_url ?>/assets/pwa/sw-disable.js"></script>
+    <!-- Script untuk memastikan service worker dinonaktifkan -->
+    <script>
+        // Force hapus service worker saat halaman dimuat
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                for(let registration of registrations) {
+                    registration.unregister();
+                    console.log('Service Worker dinonaktifkan:', registration.scope);
+                }
+            });
+        }
+    </script>
 </head>
 
 <body>
