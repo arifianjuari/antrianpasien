@@ -81,8 +81,15 @@ self.addEventListener('fetch', event => {
         return;
     }
 
-    // Jangan mencoba cache untuk URL yang mengandung API atau admin
-    if (event.request.url.includes('/api/') || event.request.url.includes('/admin/')) {
+    // Jangan mencoba cache untuk URL yang mengandung API, admin, atau halaman edit/form
+    if (event.request.url.includes('/api/') || 
+        event.request.url.includes('/admin/') ||
+        event.request.url.includes('edit_pemeriksaan') ||
+        event.request.url.includes('form_edit_pemeriksaan') ||
+        event.request.url.includes('formEditPemeriksaan') ||
+        event.request.url.includes('form_penilaian_medis_ralan_kandungan') ||
+        event.request.url.includes('detail_pemeriksaan')) {
+        console.log('Service Worker: Tidak mengintervensi halaman dinamis:', event.request.url);
         return;
     }
 
