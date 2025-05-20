@@ -3761,6 +3761,12 @@ class RekamMedisController
 
     public function formEditPemeriksaan()
     {
+        // Set header untuk mencegah caching
+        header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+        header("Cache-Control: post-check=0, pre-check=0", false);
+        header("Pragma: no-cache");
+        header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Tanggal di masa lalu
+        
         error_log("==== DEBUGGING formEditPemeriksaan START ====");
         error_log("REQUEST_URI: " . $_SERVER['REQUEST_URI']);
         error_log("QUERY STRING: " . $_SERVER['QUERY_STRING']);
