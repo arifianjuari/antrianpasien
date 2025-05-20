@@ -4,6 +4,26 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+// Enable error reporting (maximum level for debugging)
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+// Log errors to a file
+ini_set('log_errors', 1);
+ini_set('error_log', __DIR__ . '/error-form-edit.log');
+
+// Debug marker to track execution
+function debug_marker($message) {
+    echo "<!-- DEBUG: $message -->\n";
+    error_log("DEBUG MARKER: $message");
+}
+
+debug_marker('Script started');
+
+// Wrap main code in try/catch to catch any uncaught exceptions
+try {
+
 // Buat koneksi langsung ke database praktek obgin menggunakan mysqli (sama seperti form_penilaian_medis_ralan_kandungan.php)
 $conn = new mysqli('auth-db1151.hstgr.io', 'u609399718_adminpraktek', 'Obgin@12345', 'u609399718_praktekobgin');
 
@@ -3128,3 +3148,20 @@ if (!isset($pemeriksaan) || !$pemeriksaan) {
         }
     }
 </script>
+<?php
+debug_marker('End of normal execution');
+} catch (Exception $e) {
+    // Log the exception
+    error_log('Exception caught: ' . $e->getMessage());
+    
+    // Display error for debugging (remove in production)
+    echo '<div style="padding: 20px; background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; margin: 20px;">';
+    echo '<h3>Error Detected</h3>';
+    echo '<p><strong>Message:</strong> ' . htmlspecialchars($e->getMessage()) . '</p>';
+    echo '<p><strong>File:</strong> ' . htmlspecialchars($e->getFile()) . '</p>';
+    echo '<p><strong>Line:</strong> ' . $e->getLine() . '</p>';
+    echo '<p><strong>Trace:</strong></p>';
+    echo '<pre>' . htmlspecialchars($e->getTraceAsString()) . '</pre>';
+    echo '</div>';
+}
+?>
