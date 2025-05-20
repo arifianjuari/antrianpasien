@@ -1148,7 +1148,7 @@ error_log("Data pasien: " . json_encode($pasien));
                                                                                 <i class="fas fa-plus"></i> Tambah Pemeriksaan
                                                                             </a>
                                                                         <?php else: ?>
-                                                                            <a href="index.php?module=rekam_medis&action=edit_pemeriksaan&id=<?= $rp['no_rawat'] ?>&source=<?= $_SESSION['source_page'] ?>" class="btn btn-warning">
+                                                                            <a href="index.php?module=rekam_medis&action=form_edit_pemeriksaan&no_rawat=<?= $rp['no_rawat'] ?>" class="btn btn-warning">
                                                                                 <i class="fas fa-edit"></i> Edit Pemeriksaan
                                                                             </a>
                                                                         <?php endif; ?>

@@ -163,6 +163,10 @@ try {
                 error_log("Routing to edit_pemeriksaan with id: " . ($_GET['id'] ?? 'no id'));
                 $rekamMedisController->edit_pemeriksaan();
                 break;
+            case 'form_edit_pemeriksaan':
+                error_log("Routing to form_edit_pemeriksaan with no_rawat: " . ($_GET['no_rawat'] ?? 'not set'));
+                $rekamMedisController->formEditPemeriksaan();
+                break;
             case 'update_pemeriksaan':
                 $rekamMedisController->update_pemeriksaan();
                 break;

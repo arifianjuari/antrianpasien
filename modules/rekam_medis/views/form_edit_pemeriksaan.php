@@ -4,17 +4,18 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Pastikan koneksi database tersedia
-require_once($_SERVER['DOCUMENT_ROOT'] . '/antrian pasien/config.php');
-// Alias untuk koneksi database agar kompatibel dengan kode yang menggunakan $conn
-if (!isset($conn) && isset($conn_db1)) {
-    $conn = $conn_db1;
+// Buat koneksi langsung ke database praktek obgin menggunakan mysqli (sama seperti form_penilaian_medis_ralan_kandungan.php)
+$conn = new mysqli('auth-db1151.hstgr.io', 'u609399718_adminpraktek', 'Obgin@12345', 'u609399718_praktekobgin');
+
+if ($conn->connect_error) {
+    die("Koneksi gagal: " . $conn->connect_error);
 }
+
 
 // Fungsi untuk mendapatkan koneksi database
 function getConnection() {
-    global $conn_db1;
-    return $conn_db1;
+    global $conn;
+    return $conn;
 }
 
 // Cek apakah ada data pemeriksaan

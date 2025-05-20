@@ -3728,4 +3728,92 @@ class RekamMedisController
         // Load view
         include 'modules/rekam_medis/views/data_kunjungan.php';
     }
+
+    public function formEditPemeriksaan()
+    {
+        error_log("==== DEBUGGING formEditPemeriksaan START ====");
+        error_log("REQUEST_URI: " . $_SERVER['REQUEST_URI']);
+        error_log("QUERY STRING: " . $_SERVER['QUERY_STRING']);
+        error_log("no_rawat param: " . ($_GET['no_rawat'] ?? 'not set'));
+        
+        // Buat koneksi langsung ke database praktek obgin
+        try {
+            $db2_host = 'auth-db1151.hstgr.io';
+            $db2_username = 'u609399718_adminpraktek';
+            $db2_password = 'Obgin@12345';
+            $db2_database = 'u609399718_praktekobgin';
+            
+            error_log("Attempting database connection to: $db2_host, $db2_database");
+            
+            $pdo_praktek = new PDO(
+                "mysql:host=$db2_host;dbname=$db2_database;charset=utf8mb4",
+                $db2_username,
+                $db2_password,
+                [
+                    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                    PDO::ATTR_EMULATE_PREPARES => false
+                ]
+            );
+            error_log("Database connection successful");
+            
+            // Simpan PDO ke variabel kelas
+            $original_pdo = $this->pdo; // simpan koneksi asli
+            $this->pdo = $pdo_praktek; // gunakan koneksi baru
+        } catch (PDOException $e) {
+            error_log("CRITICAL formEditPemeriksaan: Database connection error: " . $e->getMessage());
+            $_SESSION['error'] = 'Gagal terhubung ke database: ' . $e->getMessage();
+            header('Location: ' . $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] . '/antrian pasien/index.php?module=rekam_medis&action=data_pasien');
+            exit;
+        }
+
+        $no_rawat = $_GET['no_rawat'] ?? '';
+
+        if (empty($no_rawat)) {
+            $_SESSION['error'] = "Nomor rawat tidak valid";
+            header("Location: " . $_SERVER['REQUEST_SCHEME'] . "://" . $_SERVER['HTTP_HOST'] . "/antrian pasien/index.php?module=rekam_medis&action=data_pasien");
+            exit;
+        }
+
+        try {
+            // 1. Ambil data pemeriksaan dan pasien berdasarkan no_rawat
+            $stmt = $this->pdo->prepare("
+                SELECT pmrk.*, p.*, rp.tgl_registrasi, rp.jam_reg 
+                FROM penilaian_medis_ralan_kandungan pmrk
+                JOIN reg_periksa rp ON pmrk.no_rawat = rp.no_rawat
+                JOIN pasien p ON rp.no_rkm_medis = p.no_rkm_medis
+                WHERE pmrk.no_rawat = ?
+            ");
+            $stmt->execute([$no_rawat]);
+            $data = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if (!$data) {
+                $_SESSION['error'] = "Data pemeriksaan tidak ditemukan";
+                header("Location: " . $_SERVER['REQUEST_SCHEME'] . "://" . $_SERVER['HTTP_HOST'] . "/antrian pasien/index.php?module=rekam_medis&action=data_pasien");
+                exit;
+            }
+
+            // Simpan data pemeriksaan ke variabel yang digunakan di view
+            $pemeriksaan = $data;
+            $pasien = $data;
+            
+            // Debug
+            error_log("DEBUG formEditPemeriksaan: Fetched data: " . print_r($data, true));
+
+            // Load view dengan absolute path
+            include $_SERVER['DOCUMENT_ROOT'] . '/antrian pasien/modules/rekam_medis/views/form_edit_pemeriksaan.php';
+
+        } catch (PDOException $e) {
+            error_log("CRITICAL formEditPemeriksaan: PDOException: " . $e->getMessage());
+            $_SESSION['error'] = 'Terjadi kesalahan database saat memuat form edit pemeriksaan: ' . $e->getMessage();
+            header('Location: ' . $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] . '/antrian pasien/index.php?module=rekam_medis&action=data_pasien');
+            exit;
+        } catch (Exception $e) {
+            error_log("CRITICAL formEditPemeriksaan: Exception: " . $e->getMessage());
+            $_SESSION['error'] = 'Terjadi kesalahan umum saat memuat form edit pemeriksaan.';
+            header('Location: ' . $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] . '/antrian pasien/index.php?module=rekam_medis&action=data_pasien');
+            exit;
+        }
+    }
+
 }
