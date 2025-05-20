@@ -4,11 +4,28 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Buat koneksi langsung ke database praktek obgin menggunakan mysqli (sama seperti form_penilaian_medis_ralan_kandungan.php)
-$conn = new mysqli('auth-db1151.hstgr.io', 'u609399718_adminpraktek', 'Obgin@12345', 'u609399718_praktekobgin');
+// Aktifkan error reporting untuk debugging
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
-if ($conn->connect_error) {
-    die("Koneksi gagal: " . $conn->connect_error);
+// Buat koneksi langsung ke database praktek obgin menggunakan mysqli
+try {
+    // Koneksi database untuk server online dan localhost
+    $conn = new mysqli('auth-db1151.hstgr.io', 'u609399718_adminpraktek', 'Obgin@12345', 'u609399718_praktekobgin');
+    
+    // Cek koneksi
+    if ($conn->connect_error) {
+        throw new Exception("Koneksi database gagal: " . $conn->connect_error);
+    }
+    
+    // Log koneksi berhasil
+    error_log("[Edit Pemeriksaan] Koneksi database berhasil");
+    
+} catch (Exception $e) {
+    // Tampilkan error agar tahu penyebab masalah
+    echo "<div class='alert alert-danger'>Error: " . $e->getMessage() . "</div>";
+    error_log("[Edit Pemeriksaan] Error: " . $e->getMessage());
 }
 
 
@@ -935,9 +952,9 @@ if (!isset($pemeriksaan) || !$pemeriksaan) {
                             $sql = "SELECT * FROM template_tatalaksana WHERE status = 'active' ORDER BY kategori_tx ASC, nama_template_tx ASC";
                             $stmt = $conn->query($sql);
 
-                            if ($stmt && $stmt->rowCount() > 0) {
+                            if ($stmt && $stmt->num_rows > 0) {
                                 $no = 1;
-                                while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                                while ($row = $stmt->fetch_assoc()) {
                                     echo "<tr class='template-row' data-kategori='" . htmlspecialchars($row['kategori_tx']) . "'>";
                                     echo "<td>" . $no++ . "</td>";
                                     echo "<td>" . htmlspecialchars($row['nama_template_tx']) . "</td>";
@@ -1005,9 +1022,9 @@ if (!isset($pemeriksaan) || !$pemeriksaan) {
                             $sql = "SELECT * FROM template_usg WHERE status = 'active' ORDER BY kategori_usg ASC, nama_template_usg ASC";
                             $stmt = $conn->query($sql);
 
-                            if ($stmt && $stmt->rowCount() > 0) {
+                            if ($stmt && $stmt->num_rows > 0) {
                                 $no = 1;
-                                while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                                while ($row = $stmt->fetch_assoc()) {
                                     echo "<tr class='template-row' data-kategori='" . htmlspecialchars($row['kategori_usg']) . "'>";
                                     echo "<td>" . $no++ . "</td>";
                                     echo "<td>" . htmlspecialchars($row['nama_template_usg']) . "</td>";
@@ -1066,18 +1083,19 @@ if (!isset($pemeriksaan) || !$pemeriksaan) {
                                     pmrk.diagnosis 
                                 FROM penilaian_medis_ralan_kandungan pmrk
                                 JOIN reg_periksa rp ON pmrk.no_rawat = rp.no_rawat
-                                WHERE rp.no_rkm_medis = :no_rkm_medis 
+                                WHERE rp.no_rkm_medis = ? 
                                 AND pmrk.diagnosis IS NOT NULL 
                                 AND pmrk.diagnosis != ''
                                 ORDER BY pmrk.tanggal DESC";
 
                             $stmt = $conn->prepare($sql);
-                            $stmt->bindParam(':no_rkm_medis', $no_rkm_medis, PDO::PARAM_STR);
+                            $stmt->bind_param('s', $no_rkm_medis);
                             $stmt->execute();
+                            $result = $stmt->get_result();
 
-                            if ($stmt && $stmt->rowCount() > 0) {
+                            if ($result && $result->num_rows > 0) {
                                 $no = 1;
-                                while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                                while ($row = $result->fetch_assoc()) {
                                     echo "<tr>";
                                     echo "<td>" . $no++ . "</td>";
                                     echo "<td>" . date('d-m-Y', strtotime($row['tanggal'])) . "</td>";
@@ -1169,8 +1187,8 @@ if (!isset($pemeriksaan) || !$pemeriksaan) {
                             $sql = "SELECT * FROM formularium WHERE status_aktif = 1 ORDER BY (ed IS NULL OR ed = '') ASC, ed ASC, nama_obat ASC";
                             $stmt = $conn->query($sql);
 
-                            if ($stmt && $stmt->rowCount() > 0) {
-                                while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                            if ($stmt && $stmt->num_rows > 0) {
+                                while ($row = $stmt->fetch_assoc()) {
                                     $bentuk_dosis = $row['bentuk_sediaan'] . ' ' . $row['dosis'];
                                     echo "<tr class='obat-row' data-kategori='" . htmlspecialchars($row['kategori']) . "'>";
                                     echo "<td><input type='checkbox' class='form-check-input obat-checkbox' data-nama='" . htmlspecialchars($row['nama_obat']) . "' data-bentuk-sediaan='" . htmlspecialchars($row['bentuk_sediaan']) . "' data-dosis='" . htmlspecialchars($row['dosis']) . "' data-catatan='" . htmlspecialchars($row['catatan_obat']) . "'></td>";
@@ -1247,9 +1265,9 @@ if (!isset($pemeriksaan) || !$pemeriksaan) {
                             $sql = "SELECT * FROM edukasi WHERE status_aktif = 1 ORDER BY kategori ASC, judul ASC";
                             $stmt = $conn->query($sql);
 
-                            if ($stmt && $stmt->rowCount() > 0) {
+                            if ($stmt && $stmt->num_rows > 0) {
                                 $no = 1;
-                                while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                                while ($row = $stmt->fetch_assoc()) {
                                     echo "<tr class='template-row' data-kategori='" . htmlspecialchars($row['kategori']) . "' data-judul='" . htmlspecialchars($row['judul']) . "'>";
                                     echo "<td>" . $no++ . "</td>";
                                     echo "<td>" . htmlspecialchars($row['judul']) . "</td>";
@@ -1324,9 +1342,9 @@ if (!isset($pemeriksaan) || !$pemeriksaan) {
                             try {
                                 $stmt = $conn->query($sql);
 
-                                if ($stmt && $stmt->rowCount() > 0) {
+                                if ($stmt && $stmt->num_rows > 0) {
                                     $no = 1;
-                                    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                                    while ($row = $stmt->fetch_assoc()) {
                                         echo "<tr class='template-row' data-kategori='" . htmlspecialchars($row['kategori']) . "' data-judul='" . htmlspecialchars($row['judul']) . "'>";
                                         echo "<td>" . $no++ . "</td>";
                                         echo "<td>" . htmlspecialchars($row['judul']) . "</td>";
@@ -1339,7 +1357,7 @@ if (!isset($pemeriksaan) || !$pemeriksaan) {
                                 } else {
                                     echo "<tr><td colspan='6' class='text-center'>Tidak ada template resume tersedia</td></tr>";
                                 }
-                            } catch (PDOException $e) {
+                            } catch (Exception $e) {
                                 echo "<tr><td colspan='6' class='text-center'>Fitur template resume belum tersedia</td></tr>";
                             }
                             ?>
@@ -1391,8 +1409,8 @@ if (!isset($pemeriksaan) || !$pemeriksaan) {
                     $sql = "SELECT * FROM edukasi WHERE status_aktif = 1 AND link_gambar IS NOT NULL ORDER BY kategori ASC, judul ASC";
                     $stmt = $conn->query($sql);
 
-                    if ($stmt && $stmt->rowCount() > 0) {
-                        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                    if ($stmt && $stmt->num_rows > 0) {
+                        while ($row = $stmt->fetch_assoc()) {
                             echo '<div class="col-md-4 mb-3 gambar-item" data-kategori="' . htmlspecialchars($row['kategori']) . '" data-judul="' . htmlspecialchars($row['judul']) . '">';
                             echo '<div class="card h-100">';
                             echo '<img src="uploads/edukasi/' . htmlspecialchars($row['link_gambar']) . '" class="card-img-top" alt="' . htmlspecialchars($row['judul']) . '" style="height: 200px; object-fit: contain;">';
@@ -1913,15 +1931,16 @@ if (!isset($pemeriksaan) || !$pemeriksaan) {
             $sql = "SELECT s.*
                     FROM reg_periksa r 
                     JOIN status_obstetri s ON r.no_rkm_medis = s.no_rkm_medis
-                    WHERE r.no_rawat = :no_rawat";
+                    WHERE r.no_rawat = ?";
             $stmt = $conn->prepare($sql);
-            $stmt->bindParam(':no_rawat', $no_rawat, PDO::PARAM_STR);
+            $stmt->bind_param('s', $no_rawat);
             $stmt->execute();
+            $result = $stmt->get_result();
 
-            if ($stmt && $stmt->rowCount() > 0) {
-                $obstetri_data = $stmt->fetch(PDO::FETCH_ASSOC);
+            if ($result && $result->num_rows > 0) {
+                $obstetri_data = $result->fetch_assoc();
             }
-        } catch (PDOException $e) {
+        } catch (Exception $e) {
             // Handle error jika terjadi kesalahan pada query
             error_log("Error fetching obstetri data: " . $e->getMessage());
         }
@@ -2019,21 +2038,22 @@ if (!isset($pemeriksaan) || !$pemeriksaan) {
             
             // Query langsung ke tabel status_ginekologi dengan no_rkm_medis
             // Perhatikan bahwa nama kolom menggunakan kapital di awal (seperti dalam model StatusGinekologi.php)
-            $sql = "SELECT * FROM status_ginekologi WHERE no_rkm_medis = :no_rkm_medis ORDER BY created_at DESC LIMIT 1";
+            $sql = "SELECT * FROM status_ginekologi WHERE no_rkm_medis = ? ORDER BY created_at DESC LIMIT 1";
             $stmt = $conn->prepare($sql);
-            $stmt->bindParam(':no_rkm_medis', $no_rkm_medis, PDO::PARAM_STR);
+            $stmt->bind_param('s', $no_rkm_medis);
             $stmt->execute();
-
+            $result = $stmt->get_result();
+            
             // Debug output
-            error_log("Query status_ginekologi untuk no_rkm_medis: " . $no_rkm_medis);
+            error_log("Query ginekologi executed: " . $sql);
 
-            if ($stmt && $stmt->rowCount() > 0) {
-                $ginekologi_data = $stmt->fetch(PDO::FETCH_ASSOC);
+            if ($result && $result->num_rows > 0) {
+                $ginekologi_data = $result->fetch_assoc();
                 error_log("Data ginekologi ditemukan: " . json_encode($ginekologi_data));
             } else {
                 error_log("Tidak ada data ginekologi untuk no_rkm_medis: " . $no_rkm_medis);
             }
-        } catch (PDOException $e) {
+        } catch (Exception $e) {
             // Handle error jika terjadi kesalahan pada query
             error_log("Error fetching ginekologi data: " . $e->getMessage());
         }
