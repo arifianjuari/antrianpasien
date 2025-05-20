@@ -8,14 +8,12 @@ $db2_database = 'u609399718_praktekobgin';
 // Include konfigurasi base URL dari file config/config.php
 require_once __DIR__ . '/config/config.php';
 
-// Enable error reporting for debugging (disable in production)
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+try {
+    $conn_db2 = new PDO("mysql:host=$db2_host;dbname=$db2_database", $db2_username, $db2_password);
+    $conn_db2->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-// Use MySQLi for database connection (consistency with other modules)
-$auth_conn = new mysqli($db2_host, $db2_username, $db2_password, $db2_database);
-if ($auth_conn->connect_error) {
-    die("Connection to DB2 (Antrian) failed: " . $auth_conn->connect_error);
+    // Tambahkan variabel $auth_conn yang merujuk ke koneksi yang sama
+    $auth_conn = $conn_db2;
+} catch (PDOException $e) {
+    die("Connection to DB2 (Antrian) failed: " . $e->getMessage());
 }
-
