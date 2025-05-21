@@ -1,10 +1,42 @@
 <?php
-// Include error handler
-require_once 'error_handler.php';
+// Debug points - Jangan hapus komentar ini
+echo "<!-- Debug Point 1: Awal Eksekusi -->";
 
-// Enable error reporting for debugging
-error_reporting(E_ALL);
+// Aktifkan log error ke file
+ini_set('log_errors', 1);
+ini_set('error_log', __DIR__ . '/error_log.txt');
+error_log("=== Mulai eksekusi index.php pada " . date('Y-m-d H:i:s') . " ===\nURI: " . ($_SERVER['REQUEST_URI'] ?? 'unknown'));
+
+// Deteksi versi PHP dan sesuaikan error reporting
+if (PHP_VERSION_ID >= 80000) {
+    error_log("Detected PHP version 8.x: " . PHP_VERSION);
+    error_reporting(E_ALL & ~E_NOTICE & ~E_STRICT & ~E_DEPRECATED);
+} else if (PHP_VERSION_ID >= 70000) {
+    error_log("Detected PHP version 7.x: " . PHP_VERSION);
+    error_reporting(E_ALL & ~E_NOTICE);
+} else {
+    error_log("Detected PHP version: " . PHP_VERSION);
+    error_reporting(E_ALL);
+}
+
+// Force display errors (dapat dioverride oleh setting server)
 ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+
+// Debug mode - set true untuk menampilkan error detail di browser
+define('DEBUG', true);
+
+// Include error handler
+try {
+    if (file_exists(__DIR__ . '/error_handler.php')) {
+        require_once __DIR__ . '/error_handler.php';
+        error_log("Error handler loaded successfully");
+    } else {
+        error_log("WARNING: error_handler.php tidak ditemukan!");
+    }
+} catch (Exception $e) {
+    error_log("ERROR loading error_handler.php: " . $e->getMessage());
+}
 
 // Define base path
 define('BASE_PATH', __DIR__);
@@ -39,9 +71,24 @@ if (!isset($conn) || !($conn instanceof PDO)) {
 // Load controller
 require_once 'modules/rekam_medis/controllers/RekamMedisController.php';
 
+echo "<!-- Debug Point 2: Sebelum inisialisasi controller -->";
+
 try {
+    // Verifikasi koneksi database
+    if (!isset($conn) || !($conn instanceof PDO)) {
+        error_log("CRITICAL: Database connection not available or invalid in index.php");
+        throw new Exception("Koneksi database tidak tersedia. Silakan hubungi administrator.");
+    }
+    error_log("Database connection verified");
+    
     // Inisialisasi controller dengan koneksi database
+    if (!class_exists('RekamMedisController')) {
+        error_log("CRITICAL: RekamMedisController class does not exist");
+        throw new Exception("Class controller tidak ditemukan");
+    }
+    
     $rekamMedisController = new RekamMedisController($conn);
+    error_log("Controller initialized successfully");
 
     // Ambil modul dari parameter GET
     $module = isset($_GET['module']) ? $_GET['module'] : '';
@@ -370,15 +417,80 @@ try {
         header("Location: " . BASE_URL . "/home.php");
         exit;
     }
+} catch (PDOException $e) {
+    // Khusus untuk error database
+    error_log("DATABASE ERROR in routing: " . $e->getMessage() . "\n" . $e->getTraceAsString());
+    
+    if (defined('DEBUG') && DEBUG === true) {
+        // Dalam mode debug, tampilkan error lengkap
+        echo "<h1>Database Error</h1>";
+        echo "<p>" . $e->getMessage() . "</p>";
+        echo "<pre>" . $e->getTraceAsString() . "</pre>";
+        exit;
+    } else {
+        // Dalam mode produksi, redirect ke halaman error
+        $_SESSION['error'] = "Terjadi kesalahan pada database. Silakan coba lagi atau hubungi administrator.";
+        header('Location: ' . BASE_URL . '/index.php?module=rekam_medis&action=data_pasien');
+        exit;
+    }
 } catch (Exception $e) {
-    error_log("Error in routing: " . $e->getMessage());
-    $_SESSION['error'] = $e->getMessage();
-    header('Location: ' . BASE_URL . '/index.php?module=rekam_medis&action=data_pasien');
-    exit;
+    // Untuk error umum
+    error_log("ERROR in routing: " . $e->getMessage() . "\n" . $e->getTraceAsString());
+    
+    if (defined('DEBUG') && DEBUG === true) {
+        // Dalam mode debug, tampilkan error lengkap
+        echo "<h1>Application Error</h1>";
+        echo "<p>" . $e->getMessage() . "</p>";
+        echo "<pre>" . $e->getTraceAsString() . "</pre>";
+        exit;
+    } else {
+        // Dalam mode produksi, redirect ke halaman error
+        $_SESSION['error'] = $e->getMessage();
+        header('Location: ' . BASE_URL . '/index.php?module=rekam_medis&action=data_pasien');
+        exit;
+    }
 }
+
+echo "<!-- Debug Point 3: Sebelum ob_get_clean -->";
+
+// Periksa buffer sebelum get_clean
+error_log("Content buffer length before ob_get_clean: " . (ob_get_length() ?: 'NULL'));
 
 // Get the buffered content
 $content = ob_get_clean();
 
-// Include the layout template
-include 'template/layout.php';
+// Verifikasi konten setelah ob_get_clean
+if (empty($content)) {
+    error_log("CRITICAL: Content buffer is empty after ob_get_clean!");
+    $content = "<div class='alert alert-danger'>Konten tidak dapat dimuat. Silahkan coba lagi atau hubungi administrator.</div>";
+} else {
+    error_log("Content buffer length after ob_get_clean: " . strlen($content));
+}
+
+echo "<!-- Debug Point 4: Sebelum include layout -->";
+
+// Periksa keberadaan layout template
+$layout_path = __DIR__ . '/template/layout.php';
+if (!file_exists($layout_path)) {
+    error_log("CRITICAL: Layout template tidak ditemukan di: " . $layout_path);
+    echo "<h1>Error</h1><p>Layout template tidak ditemukan. Path: {$layout_path}</p>";
+    echo "<hr>Konten:<br>";
+    echo $content; // Tampilkan konten tanpa layout jika layout tidak ditemukan
+    exit;
+}
+
+// Include the layout template dengan path absolut
+error_log("Including layout template from: " . $layout_path);
+try {
+    include $layout_path;
+    echo "<!-- Debug Point 5: Setelah include layout -->";
+} catch (Exception $e) {
+    error_log("ERROR including layout: " . $e->getMessage() . "\n" . $e->getTraceAsString());
+    if (defined('DEBUG') && DEBUG === true) {
+        echo "<h1>Error Including Layout</h1>";
+        echo "<p>" . $e->getMessage() . "</p>";
+        echo "<pre>" . $e->getTraceAsString() . "</pre>";
+    } else {
+        echo "<div class='alert alert-danger'>Terjadi kesalahan saat memuat layout. Silahkan coba lagi.</div>";
+    }
+}
