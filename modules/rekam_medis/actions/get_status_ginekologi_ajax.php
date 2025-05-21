@@ -26,8 +26,11 @@ if (!isset($_GET['no_rkm_medis']) || empty($_GET['no_rkm_medis'])) {
 $no_rkm_medis = $_GET['no_rkm_medis'];
 
 // Koneksi ke database
+// Include konfigurasi database
+require_once BASE_PATH . '/config/database.php';
+
 try {
-    $conn = new mysqli('auth-db1151.hstgr.io', 'u609399718_adminpraktek', 'Obgin@12345', 'u609399718_praktekobgin');
+    $conn = new mysqli($db2_host, $db2_username, $db2_password, $db2_database);
 
     if ($conn->connect_error) {
         returnError('Koneksi database gagal: ' . $conn->connect_error);

@@ -454,11 +454,31 @@ $conn->close();
                                                 <th>Aksi</th>
                                             </tr>
                                         </thead>
-                                        <tbody id="statusGinekologiTableBody">
-                                            <!-- Data status ginekologi akan dimuat melalui AJAX -->
-                                            <tr>
-                                                <td colspan="7" class="text-center">Memuat data status ginekologi...</td>
-                                            </tr>
+                                        <tbody>
+                                            <?php if (isset($statusGinekologi) && count($statusGinekologi) > 0): ?>
+                                                <?php foreach ($statusGinekologi as $sg): ?>
+                                                    <tr>
+                                                        <td><?= isset($sg['created_at']) ? date('d-m-Y', strtotime($sg['created_at'])) : '-' ?></td>
+                                                        <td><?= htmlspecialchars($sg['parturien'] ?? '-') ?></td>
+                                                        <td><?= htmlspecialchars($sg['abortus'] ?? '-') ?></td>
+                                                        <td><?= htmlspecialchars($sg['hari_pertama_haid_terakhir'] ?? '-') ?></td>
+                                                        <td><?= htmlspecialchars($sg['kontrasepsi_terakhir'] ?? '-') ?></td>
+                                                        <td><?= htmlspecialchars($sg['lama_menikah'] ?? '-') ?></td>
+                                                        <td>
+                                                            <a href="index.php?module=rekam_medis&action=edit_status_ginekologi&id=<?= $sg['id_status_ginekologi'] ?>&source=penilaian_medis" class="btn btn-warning btn-sm">
+                                                                <i class="fas fa-edit"></i>
+                                                            </a>
+                                                            <a href="index.php?module=rekam_medis&action=hapus_status_ginekologi&id=<?= $sg['id_status_ginekologi'] ?>&source=penilaian_medis" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
+                                                                <i class="fas fa-trash"></i>
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                <?php endforeach; ?>
+                                            <?php else: ?>
+                                                <tr>
+                                                    <td colspan="7" class="text-center">Tidak ada data status ginekologi</td>
+                                                </tr>
+                                            <?php endif; ?>
                                         </tbody>
                                     </table>
                                 </div>
@@ -1981,106 +2001,6 @@ $conn->close();
         xhr.send();
     }
 
-    // Fungsi untuk refresh data Status Ginekologi
-    function refreshStatusGinekologiData() {
-        const noRkmMedis = '<?= $data['no_rkm_medis'] ?>';
-        const statusGinekologiContent = document.getElementById('statusGinekologiContent');
-
-        // Buat element untuk loading overlay
-        const loadingOverlay = document.createElement('div');
-        loadingOverlay.className = 'loading-overlay';
-        loadingOverlay.innerHTML = '<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>';
-
-        // Tambahkan loading overlay ke content
-        statusGinekologiContent.style.position = 'relative';
-        statusGinekologiContent.appendChild(loadingOverlay);
-
-        console.log('Refreshing Status Ginekologi data for: ' + noRkmMedis);
-
-        // AJAX request untuk status ginekologi
-        const xhr = new XMLHttpRequest();
-        xhr.open('GET', 'index.php?module=rekam_medis&action=get_status_ginekologi_ajax&no_rkm_medis=' + encodeURIComponent(noRkmMedis), true);
-
-        xhr.onload = function() {
-            if (this.status === 200) {
-                try {
-                    const response = JSON.parse(this.responseText);
-                    console.log('Status ginekologi data received:', response);
-
-                    const tableBody = document.getElementById('statusGinekologiTableBody');
-                    if (tableBody) {
-                        if (response.status === 'success' && response.data && response.data.length > 0) {
-                            let tableHtml = '';
-
-                            response.data.forEach(function(sg) {
-                                const tanggalCreated = new Date(sg.created_at).toLocaleDateString('id-ID', {
-                                    day: '2-digit',
-                                    month: '2-digit',
-                                    year: 'numeric'
-                                });
-
-                                const hphtDate = sg.Hari_pertama_haid_terakhir ? new Date(sg.Hari_pertama_haid_terakhir).toLocaleDateString('id-ID', {
-                                    day: '2-digit',
-                                    month: '2-digit',
-                                    year: 'numeric'
-                                }) : '-';
-
-                                tableHtml += `
-                                    <tr>
-                                        <td>${tanggalCreated}</td>
-                                        <td>${sg.Parturien || '-'}</td>
-                                        <td>${sg.Abortus || '-'}</td>
-                                        <td>${hphtDate}</td>
-                                        <td>${sg.Kontrasepsi_terakhir || '-'}</td>
-                                        <td>${sg.lama_menikah_th || '-'}</td>
-                                        <td>
-                                            <a href="index.php?module=rekam_medis&action=edit_status_ginekologi&id=${sg.id_status_ginekologi}&source=<?= $_SESSION['source_page'] ?>&no_rawat=<?= $data['no_rawat'] ?>" class="btn btn-warning btn-sm">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
-                                            <a href="index.php?module=rekam_medis&action=hapus_status_ginekologi&id=${sg.id_status_ginekologi}&source=<?= $_SESSION['source_page'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
-                                                <i class="fas fa-trash"></i>
-                                            </a>
-                                        </td>
-                                    </tr>
-                                `;
-                            });
-
-                            tableBody.innerHTML = tableHtml;
-                        } else {
-                            tableBody.innerHTML = '<tr><td colspan="7" class="text-center">Tidak ada data status ginekologi</td></tr>';
-                        }
-                    }
-                } catch (error) {
-                    console.error('Error parsing JSON:', error);
-                    document.getElementById('statusGinekologiTableBody').innerHTML =
-                        '<tr><td colspan="7" class="text-center text-danger">Error: Gagal memuat data status ginekologi</td></tr>';
-                }
-            } else {
-                console.error('HTTP Error:', this.status);
-                document.getElementById('statusGinekologiTableBody').innerHTML =
-                    '<tr><td colspan="7" class="text-center text-danger">Error: Gagal memuat data status ginekologi</td></tr>';
-            }
-
-            // Hapus loading overlay
-            if (statusGinekologiContent.contains(loadingOverlay)) {
-                statusGinekologiContent.removeChild(loadingOverlay);
-            }
-        };
-
-        xhr.onerror = function() {
-            console.error('Request Failed');
-            document.getElementById('statusGinekologiTableBody').innerHTML =
-                '<tr><td colspan="7" class="text-center text-danger">Error: Gagal terhubung ke server</td></tr>';
-
-            // Hapus loading overlay
-            if (statusGinekologiContent.contains(loadingOverlay)) {
-                statusGinekologiContent.removeChild(loadingOverlay);
-            }
-        };
-
-        xhr.send();
-    }
-
     // Fungsi untuk melihat gambar edukasi
     function lihatGambarEdukasi(url, judul) {
         // Set judul modal
@@ -2176,30 +2096,6 @@ $conn->close();
             console.error('ERROR: Tab Riwayat Kehamilan tidak ditemukan');
         }
 
-        // --- Tambahkan event listener untuk tab Status Ginekologi ---
-        const statusGinekologiTab = document.getElementById('status-ginekologi-tab');
-
-        if (statusGinekologiTab) {
-            console.log('Tab Status Ginekologi ditemukan, menambahkan click listener');
-            statusGinekologiTab.addEventListener('click', function(e) {
-                console.log('Tab Status Ginekologi diklik');
-
-                // Set timer untuk loading data setelah tab dibuka
-                setTimeout(() => {
-                    const statusGinekologiPane = document.getElementById('status-ginekologi');
-
-                    if (statusGinekologiPane && statusGinekologiPane.style.display === 'block') {
-                        console.log('Tab Status Ginekologi terdeteksi terbuka, memanggil refresh data');
-                        refreshStatusGinekologiData();
-                    } else {
-                        console.log('Tab Status Ginekologi terdeteksi belum terbuka');
-                    }
-                }, 200);
-            });
-        } else {
-            console.error('ERROR: Tab Status Ginekologi tidak ditemukan');
-        }
-
         // --- Pendekatan #2: Panggil segera jika tab sudah aktif saat load ---
         const skriningPane = document.getElementById('skrining');
         if (skriningPane && window.getComputedStyle(skriningPane).display === 'block') {
@@ -2213,13 +2109,6 @@ $conn->close();
         if (riwayatKehamilanPane && window.getComputedStyle(riwayatKehamilanPane).display === 'block') {
             console.log('Tab Riwayat Kehamilan terdeteksi sudah aktif saat load, memanggil refresh data');
             setTimeout(refreshRiwayatKehamilanData, 300);
-        }
-
-        // Periksa juga tab status ginekologi
-        const statusGinekologiPane = document.getElementById('status-ginekologi');
-        if (statusGinekologiPane && window.getComputedStyle(statusGinekologiPane).display === 'block') {
-            console.log('Tab Status Ginekologi terdeteksi sudah aktif saat load, memanggil refresh data');
-            setTimeout(refreshStatusGinekologiData, 300);
         }
 
         // --- Pendekatan #3: Backup - coba load saat tombol di tab Status Obstetri pertama kali terlihat ---

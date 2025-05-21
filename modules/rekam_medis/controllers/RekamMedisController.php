@@ -1561,6 +1561,10 @@ class RekamMedisController
             exit;
         }
 
+        // Ambil data status ginekologi
+        $statusGinekologiModel = new StatusGinekologi($this->pdo);
+        $statusGinekologi = $statusGinekologiModel->getStatusGinekologiByPasien($data['no_rkm_medis']);
+
         include 'modules/rekam_medis/views/form_penilaian_medis_ralan_kandungan.php';
     }
 

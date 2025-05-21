@@ -883,11 +883,32 @@ error_log("Data pasien: " . json_encode($pasien));
                                                     <th>Aksi</th>
                                                 </tr>
                                             </thead>
-                                            <tbody id="statusGinekologiTableBody">
-                                                <tr>
-                                                    <td colspan="7" class="text-center">Memuat data status ginekologi...</td>
-                                                </tr>
-                                            </tbody>
+                                            <tbody>
+    <?php if (isset($statusGinekologi) && count($statusGinekologi) > 0): ?>
+        <?php foreach ($statusGinekologi as $sg): ?>
+            <tr>
+                <td><?= isset($sg['created_at']) ? date('d-m-Y', strtotime($sg['created_at'])) : '-' ?></td>
+                <td><?= htmlspecialchars($sg['parturien'] ?? '-') ?></td>
+                <td><?= htmlspecialchars($sg['abortus'] ?? '-') ?></td>
+                <td><?= htmlspecialchars($sg['hari_pertama_haid_terakhir'] ?? '-') ?></td>
+                <td><?= htmlspecialchars($sg['kontrasepsi_terakhir'] ?? '-') ?></td>
+                <td><?= htmlspecialchars($sg['lama_menikah'] ?? '-') ?></td>
+                <td>
+                    <a href="index.php?module=rekam_medis&action=edit_status_ginekologi&id=<?= $sg['id_status_ginekologi'] ?>&source=detail_pasien" class="btn btn-warning btn-sm">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                    <a href="index.php?module=rekam_medis&action=hapus_status_ginekologi&id=<?= $sg['id_status_ginekologi'] ?>&source=detail_pasien" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
+                        <i class="fas fa-trash"></i>
+                    </a>
+                </td>
+            </tr>
+        <?php endforeach; ?>
+    <?php else: ?>
+        <tr>
+            <td colspan="7" class="text-center">Tidak ada data status ginekologi</td>
+        </tr>
+    <?php endif; ?>
+</tbody>
                                         </table>
                                     </div>
                                 </div>
