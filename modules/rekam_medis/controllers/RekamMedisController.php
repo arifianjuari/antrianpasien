@@ -3850,8 +3850,23 @@ class RekamMedisController
             
             error_log("DEBUG formEditPemeriksaan: Fetched data: " . print_r($data, true));
 
-            // Path ke file view
-            $view_file_path = $_SERVER['DOCUMENT_ROOT'] . '/antrian pasien/modules/rekam_medis/views/form_edit_pemeriksaan.php';
+            // Path ke file view - gunakan deteksi fleksibel berdasarkan lingkungan
+            // Cek apakah aplikasi berjalan di direktori langsung atau subdirektori
+            $app_dir = ''; // default: no subdirectory
+            if (strpos($_SERVER['DOCUMENT_ROOT'], 'public_html') !== false) {
+                // Di hosting, struktur direktori berbeda
+                // Cek jika aplikasi berada di root domain atau subdirektori
+                if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/modules/rekam_medis/views/form_edit_pemeriksaan.php')) {
+                    $app_dir = ''; // Aplikasi di root domain
+                } else {
+                    $app_dir = '/antrian pasien'; // Aplikasi di subdirektori 'antrian pasien'
+                }
+            } else {
+                // Di localhost
+                $app_dir = '/antrian pasien';
+            }
+            
+            $view_file_path = $_SERVER['DOCUMENT_ROOT'] . $app_dir . '/modules/rekam_medis/views/form_edit_pemeriksaan.php';
             error_log("DEBUG formEditPemeriksaan: Attempting to include view file: " . $view_file_path);
 
             if (file_exists($view_file_path) && is_readable($view_file_path)) {
