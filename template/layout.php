@@ -115,6 +115,14 @@ if (!isset($conn)) {
     ?>
 
     <div class="main-content">
+        <!-- Debug marker untuk membantu diagnosa -->  
+        <!-- DEBUG: Layout rendering start -->
+        
+        <?php
+        // Log debugging untuk layout
+        error_log("Layout rendering - Content length: " . (isset($content) ? strlen($content) : 'variable not set'));
+        ?>
+    
         <?php
         // Display any flash messages
         if (isset($_SESSION['success_message'])): ?>
@@ -137,8 +145,39 @@ if (!isset($conn)) {
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         <?php endif; ?>
+        
+        <?php if (isset($_GET['debug']) && $_GET['debug'] === 'layout'): ?>
+        <!-- DEBUGGING INFO - Hanya tampil jika parameter debug=layout ditambahkan ke URL -->
+        <div style="background:#f8f9fa; padding:10px; margin-bottom:20px; border:1px solid #ddd;">
+            <h5>Layout Debug Info</h5>
+            <ul>
+                <li>Content variable: <?= isset($content) ? 'defined' : 'not defined' ?></li>
+                <li>Content length: <?= isset($content) ? strlen($content) : 'N/A' ?> bytes</li>
+                <li>Request URI: <?= $_SERVER['REQUEST_URI'] ?></li>
+                <li>PHP Version: <?= PHP_VERSION ?></li>
+            </ul>
+        </div>
+        <?php endif; ?>
 
-        <?php echo $content; ?>
+        <?php if (!empty($content)): ?>
+            <!-- Konten berhasil dimuat -->
+            <?php echo $content; ?>
+        <?php else: ?>
+            <!-- Fallback jika $content kosong -->
+            <div class="alert alert-warning">
+                <h4>Informasi</h4>
+                <p>Konten halaman tidak dapat dimuat. Ini bisa disebabkan oleh:</p>
+                <ul>
+                    <li>Controller tidak menghasilkan output</li>
+                    <li>Terjadi error saat proses rendering</li>
+                    <li>Masalah dengan output buffering</li>
+                </ul>
+                <p>Coba refresh halaman, atau hubungi administrator jika masalah berlanjut.</p>
+                <p><small>Debug: Content variable is <?= isset($content) ? 'empty' : 'not defined' ?>.</small></p>
+            </div>
+        <?php endif; ?>
+        
+        <!-- DEBUG: Layout rendering end -->
     </div>
 
     <!-- Tombol Install PWA -->

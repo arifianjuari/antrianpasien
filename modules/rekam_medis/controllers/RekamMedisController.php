@@ -3794,20 +3794,30 @@ class RekamMedisController
             error_log("Database connection successful");
             
             // Simpan PDO ke variabel kelas
-            $original_pdo = $this->pdo; // simpan koneksi asli
-            $this->pdo = $pdo_praktek; // gunakan koneksi baru
+            // $original_pdo = $this->pdo; // simpan koneksi asli, jika diperlukan nanti
+            $this->pdo = $pdo_praktek; // gunakan koneksi baru untuk scope fungsi ini
         } catch (PDOException $e) {
             error_log("CRITICAL formEditPemeriksaan: Database connection error: " . $e->getMessage());
             $_SESSION['error'] = 'Gagal terhubung ke database: ' . $e->getMessage();
-            header('Location: ' . $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] . '/antrian pasien/index.php?module=rekam_medis&action=data_pasien');
+            // Hindari redirect jika output sudah dimulai atau untuk AJAX
+            if (!headers_sent()) {
+                header('Location: ' . $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] . '/antrian pasien/index.php?module=rekam_medis&action=data_pasien');
+            } else {
+                echo "Error: Gagal terhubung ke database. Silakan cek log server.";
+            }
             exit;
         }
 
         $no_rawat = $_GET['no_rawat'] ?? '';
 
         if (empty($no_rawat)) {
+            error_log("CRITICAL formEditPemeriksaan: Nomor rawat tidak valid atau kosong.");
             $_SESSION['error'] = "Nomor rawat tidak valid";
-            header("Location: " . $_SERVER['REQUEST_SCHEME'] . "://" . $_SERVER['HTTP_HOST'] . "/antrian pasien/index.php?module=rekam_medis&action=data_pasien");
+            if (!headers_sent()) {
+                header("Location: " . $_SERVER['REQUEST_SCHEME'] . "://" . $_SERVER['HTTP_HOST'] . "/antrian pasien/index.php?module=rekam_medis&action=data_pasien");
+            } else {
+                echo "Error: Nomor rawat tidak valid. Silakan cek log server.";
+            }
             exit;
         }
 
@@ -3824,32 +3834,74 @@ class RekamMedisController
             $data = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if (!$data) {
+                error_log("CRITICAL formEditPemeriksaan: Data pemeriksaan tidak ditemukan untuk no_rawat: " . $no_rawat);
                 $_SESSION['error'] = "Data pemeriksaan tidak ditemukan";
-                header("Location: " . $_SERVER['REQUEST_SCHEME'] . "://" . $_SERVER['HTTP_HOST'] . "/antrian pasien/index.php?module=rekam_medis&action=data_pasien");
+                if (!headers_sent()) {
+                    header("Location: " . $_SERVER['REQUEST_SCHEME'] . "://" . $_SERVER['HTTP_HOST'] . "/antrian pasien/index.php?module=rekam_medis&action=data_pasien");
+                } else {
+                    echo "Error: Data pemeriksaan tidak ditemukan. Silakan cek log server.";
+                }
                 exit;
             }
 
             // Simpan data pemeriksaan ke variabel yang digunakan di view
             $pemeriksaan = $data;
-            $pasien = $data;
+            $pasien = $data; // Ini mungkin perlu dibedakan jika fieldnya tumpang tindih
             
-            // Debug
             error_log("DEBUG formEditPemeriksaan: Fetched data: " . print_r($data, true));
 
-            // Load view dengan absolute path
-            include $_SERVER['DOCUMENT_ROOT'] . '/antrian pasien/modules/rekam_medis/views/form_edit_pemeriksaan.php';
+            // Path ke file view
+            $view_file_path = $_SERVER['DOCUMENT_ROOT'] . '/antrian pasien/modules/rekam_medis/views/form_edit_pemeriksaan.php';
+            error_log("DEBUG formEditPemeriksaan: Attempting to include view file: " . $view_file_path);
+
+            if (file_exists($view_file_path) && is_readable($view_file_path)) {
+                error_log("DEBUG formEditPemeriksaan: View file found and readable. Including...");
+                include $view_file_path;
+                error_log("DEBUG formEditPemeriksaan: View file included successfully.");
+            } else {
+                $error_message = "CRITICAL formEditPemeriksaan: View file not found or not readable. Path: " . $view_file_path;
+                if (!file_exists($view_file_path)) {
+                    $error_message .= " (File does not exist)";
+                }
+                if (!is_readable($view_file_path)) { // Menggunakan elseif agar tidak duplikat pesan jika keduanya true (meski jarang)
+                    $error_message .= " (File is not readable - check permissions)";
+                }
+                error_log($error_message);
+                $_SESSION['error'] = 'Kesalahan internal: Gagal memuat tampilan form edit. (ERR_VIEW_LOAD)';
+                // Menampilkan pesan error langsung jika header sudah terkirim atau sebagai fallback
+                echo "<h3>Error Kritis</h3><p>Tidak dapat memuat komponen halaman. Silakan hubungi administrator. (Kode: ERR_VIEW_LOAD)</p><p>Detail: " . htmlspecialchars($error_message) . "</p>";
+                // Jika memungkinkan, redirect
+                if (!headers_sent()) {
+                     header('Location: ' . $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] . '/antrian pasien/index.php?module=rekam_medis&action=data_pasien');
+                     exit;
+                }
+            }
 
         } catch (PDOException $e) {
-            error_log("CRITICAL formEditPemeriksaan: PDOException: " . $e->getMessage());
+            error_log("CRITICAL formEditPemeriksaan: PDOException during data fetch or view include: " . $e->getMessage());
             $_SESSION['error'] = 'Terjadi kesalahan database saat memuat form edit pemeriksaan: ' . $e->getMessage();
-            header('Location: ' . $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] . '/antrian pasien/index.php?module=rekam_medis&action=data_pasien');
+            if (!headers_sent()) {
+                header('Location: ' . $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] . '/antrian pasien/index.php?module=rekam_medis&action=data_pasien');
+            } else {
+                echo "Error: Terjadi kesalahan database. Silakan cek log server.";
+            }
             exit;
         } catch (Exception $e) {
-            error_log("CRITICAL formEditPemeriksaan: Exception: " . $e->getMessage());
+            error_log("CRITICAL formEditPemeriksaan: Generic Exception during data fetch or view include: " . $e->getMessage());
             $_SESSION['error'] = 'Terjadi kesalahan umum saat memuat form edit pemeriksaan.';
-            header('Location: ' . $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] . '/antrian pasien/index.php?module=rekam_medis&action=data_pasien');
+            if (!headers_sent()) {
+                header('Location: ' . $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] . '/antrian pasien/index.php?module=rekam_medis&action=data_pasien');
+            } else {
+                echo "Error: Terjadi kesalahan umum. Silakan cek log server.";
+            }
             exit;
+        } finally {
+            // Kembalikan koneksi PDO asli jika diubah, jika perlu
+            // if (isset($original_pdo)) {
+            //     $this->pdo = $original_pdo;
+            //     error_log("DEBUG formEditPemeriksaan: Restored original PDO connection.");
+            // }
+            error_log("==== DEBUGGING formEditPemeriksaan END ====");
         }
     }
-
 }

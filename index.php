@@ -454,17 +454,50 @@ try {
 echo "<!-- Debug Point 3: Sebelum ob_get_clean -->";
 
 // Periksa buffer sebelum get_clean
-error_log("Content buffer length before ob_get_clean: " . (ob_get_length() ?: 'NULL'));
+$buffer_length = ob_get_length() ?: 0;
+error_log("Content buffer length before ob_get_clean: " . $buffer_length);
 
-// Get the buffered content
-$content = ob_get_clean();
+// Alternatif 1: Gunakan ob_get_contents() dan ob_end_clean() terpisah
+// untuk mendiagnosis masalah dgn ob_get_clean()
+$content = ob_get_contents(); // Hanya mengambil konten tanpa membersihkan buffer
+error_log("Buffer setelah ob_get_contents: " . (ob_get_length() ?: 0));
+ob_end_clean(); // Membersihkan buffer
 
-// Verifikasi konten setelah ob_get_clean
+// Verifikasi konten yang diambil
 if (empty($content)) {
-    error_log("CRITICAL: Content buffer is empty after ob_get_clean!");
-    $content = "<div class='alert alert-danger'>Konten tidak dapat dimuat. Silahkan coba lagi atau hubungi administrator.</div>";
+    error_log("CRITICAL: Content buffer is empty! Original buffer length: " . $buffer_length);
+    
+    // Jika buffer asli tidak kosong tapi $content kosong, coba alternatif lain
+    if ($buffer_length > 0) {
+        error_log("Buffering issue detected - output exists but couldn't be captured");
+    }
+    
+    // Fallback content
+    $content = "<div class='alert alert-danger'>
+        <h4>Error Rendering Content</h4>
+        <p>Konten tidak dapat dimuat. Buffer asli: {$buffer_length} bytes.</p>
+        <p>Silahkan coba <a href='" . $_SERVER['REQUEST_URI'] . "'>refresh halaman</a> atau hubungi administrator.</p>
+      </div>";
 } else {
-    error_log("Content buffer length after ob_get_clean: " . strlen($content));
+    error_log("Content successfully captured, length: " . strlen($content) . " bytes");
+    
+    // Diagnostic: Log the first 200 chars of content
+    $content_preview = substr($content, 0, 200);
+    error_log("Content preview: " . $content_preview . (strlen($content) > 200 ? '...' : ''));
+}
+
+// Add diagnostic information at bottom of page for troubleshooting
+if (isset($_GET['debug']) && $_GET['debug'] === 'content') {
+    $content .= "<div style='background:#f8f9fa; padding:15px; margin:20px 0; border:1px solid #ddd;'>
+        <h5>Content Debug Info</h5>
+        <ul>
+            <li>Original buffer length: {$buffer_length} bytes</li> 
+            <li>Captured content length: " . strlen($content) . " bytes</li>
+            <li>URI: {$_SERVER['REQUEST_URI']}</li>
+            <li>PHP Version: " . PHP_VERSION . "</li>
+            <li>Time: " . date('Y-m-d H:i:s') . "</li>
+        </ul>
+      </div>";
 }
 
 echo "<!-- Debug Point 4: Sebelum include layout -->";
