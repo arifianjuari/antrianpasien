@@ -852,10 +852,34 @@ error_log("Data pasien: " . json_encode($pasien));
                                                     </th>
                                                 </tr>
                                             </thead>
-                                            <tbody id="riwayatKehamilanTableBody">
-                                                <tr>
-                                                    <td colspan="10" class="text-center">Memuat data riwayat kehamilan...</td>
-                                                </tr>
+                                            <tbody>
+                                                <?php if (isset($riwayatKehamilan) && count($riwayatKehamilan) > 0): ?>
+                                                    <?php foreach ($riwayatKehamilan as $rk): ?>
+                                                        <tr>
+                                                            <td><?= htmlspecialchars($rk['no_urut_kehamilan'] ?? '-') ?></td>
+                                                            <td><?= htmlspecialchars($rk['status_kehamilan'] ?? '-') ?></td>
+                                                            <td><?= htmlspecialchars($rk['jenis_persalinan'] ?? '-') ?></td>
+                                                            <td><?= htmlspecialchars($rk['tempat_persalinan'] ?? '-') ?></td>
+                                                            <td><?= htmlspecialchars($rk['penolong_persalinan'] ?? '-') ?></td>
+                                                            <td><?= htmlspecialchars($rk['tahun_persalinan'] ?? '-') ?></td>
+                                                            <td><?= htmlspecialchars($rk['jenis_kelamin_anak'] ?? '-') ?></td>
+                                                            <td><?= htmlspecialchars($rk['berat_badan_lahir'] ?? '-') ?></td>
+                                                            <td><?= htmlspecialchars($rk['kondisi_lahir'] ?? '-') ?></td>
+                                                            <td>
+                                                                <a href="index.php?module=rekam_medis&action=edit_riwayat_kehamilan&id=<?= $rk['id_riwayat_kehamilan'] ?>&source=detail_pasien" class="btn btn-warning btn-sm">
+                                                                    <i class="fas fa-edit"></i>
+                                                                </a>
+                                                                <a href="index.php?module=rekam_medis&action=hapus_riwayat_kehamilan&id=<?= $rk['id_riwayat_kehamilan'] ?>&source=detail_pasien" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
+                                                                    <i class="fas fa-trash"></i>
+                                                                </a>
+                                                            </td>
+                                                        </tr>
+                                                    <?php endforeach; ?>
+                                                <?php else: ?>
+                                                    <tr>
+                                                        <td colspan="10" class="text-center">Tidak ada data riwayat kehamilan</td>
+                                                    </tr>
+                                                <?php endif; ?>
                                             </tbody>
                                         </table>
                                     </div>
@@ -888,11 +912,11 @@ error_log("Data pasien: " . json_encode($pasien));
         <?php foreach ($statusGinekologi as $sg): ?>
             <tr>
                 <td><?= isset($sg['created_at']) ? date('d-m-Y', strtotime($sg['created_at'])) : '-' ?></td>
-                <td><?= htmlspecialchars($sg['parturien'] ?? '-') ?></td>
-                <td><?= htmlspecialchars($sg['abortus'] ?? '-') ?></td>
-                <td><?= htmlspecialchars($sg['hari_pertama_haid_terakhir'] ?? '-') ?></td>
-                <td><?= htmlspecialchars($sg['kontrasepsi_terakhir'] ?? '-') ?></td>
-                <td><?= htmlspecialchars($sg['lama_menikah'] ?? '-') ?></td>
+                <td><?= htmlspecialchars($sg['Parturien'] ?? '-') ?></td>
+                <td><?= htmlspecialchars($sg['Abortus'] ?? '-') ?></td>
+                <td><?= !empty($sg['Hari_pertama_haid_terakhir']) ? date('d-m-Y', strtotime($sg['Hari_pertama_haid_terakhir'])) : '-' ?></td>
+                <td><?= htmlspecialchars($sg['Kontrasepsi_terakhir'] ?? '-') ?></td>
+                <td><?= htmlspecialchars($sg['lama_menikah_th'] ?? '-') ?></td>
                 <td>
                     <a href="index.php?module=rekam_medis&action=edit_status_ginekologi&id=<?= $sg['id_status_ginekologi'] ?>&source=detail_pasien" class="btn btn-warning btn-sm">
                         <i class="fas fa-edit"></i>

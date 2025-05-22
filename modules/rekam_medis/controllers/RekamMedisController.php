@@ -1412,6 +1412,20 @@ class RekamMedisController
             $pasien = $data;
             
             error_log("DEBUG edit_pemeriksaan: Fetched data: " . print_r($data, true));
+            
+            // Ambil data riwayat kehamilan
+            $riwayatKehamilan = $this->rekamMedisModel->getRiwayatKehamilan($data['no_rkm_medis']);
+            
+            // Ambil data status obstetri
+            $statusObstetri = $this->rekamMedisModel->getStatusObstetri($data['no_rkm_medis']);
+            
+            // Ambil data status ginekologi
+            $statusGinekologiModel = new StatusGinekologi($this->pdo);
+            $statusGinekologi = $statusGinekologiModel->getStatusGinekologiByPasien($data['no_rkm_medis']);
+            
+            error_log("DEBUG edit_pemeriksaan: Riwayat Kehamilan count: " . count($riwayatKehamilan));
+            error_log("DEBUG edit_pemeriksaan: Status Obstetri count: " . count($statusObstetri));
+            error_log("DEBUG edit_pemeriksaan: Status Ginekologi count: " . count($statusGinekologi));
 
             // Tampilkan form edit dengan absolute path
             include $_SERVER['DOCUMENT_ROOT'] . '/antrian pasien/modules/rekam_medis/views/form_edit_pemeriksaan.php';
@@ -1564,6 +1578,12 @@ class RekamMedisController
         // Ambil data status ginekologi
         $statusGinekologiModel = new StatusGinekologi($this->pdo);
         $statusGinekologi = $statusGinekologiModel->getStatusGinekologiByPasien($data['no_rkm_medis']);
+
+        // Ambil data riwayat kehamilan
+        $riwayatKehamilan = $this->rekamMedisModel->getRiwayatKehamilan($data['no_rkm_medis']);
+
+        // Ambil data status obstetri
+        $statusObstetri = $this->rekamMedisModel->getStatusObstetri($data['no_rkm_medis']);
 
         include 'modules/rekam_medis/views/form_penilaian_medis_ralan_kandungan.php';
     }
@@ -3872,6 +3892,10 @@ class RekamMedisController
             
             $view_file_path = $_SERVER['DOCUMENT_ROOT'] . $app_dir . '/modules/rekam_medis/views/form_edit_pemeriksaan.php';
             error_log("DEBUG formEditPemeriksaan: Attempting to include view file: " . $view_file_path);
+
+            // Ambil data riwayat kehamilan
+            $riwayatKehamilan = $this->rekamMedisModel->getRiwayatKehamilan($data['no_rkm_medis']);
+            error_log("DEBUG formEditPemeriksaan: Fetched riwayat kehamilan data");
 
             if (file_exists($view_file_path) && is_readable($view_file_path)) {
                 error_log("DEBUG formEditPemeriksaan: View file found and readable. Including...");
