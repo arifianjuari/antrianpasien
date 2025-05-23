@@ -666,7 +666,22 @@ if ($conn) {
                                 </div>
                                 <div class="mb-2">
                                     <label>Riwayat Sekarang</label>
-                                    <textarea name="rps" class="form-control form-control-sm" rows="6"><?= isset($pemeriksaan['rps']) ? $pemeriksaan['rps'] : '' ?></textarea>
+                                    <div class="row">
+                                        <div class="col-md-9">
+                                            <!-- Modified textarea with auto-resize class and styling -->
+                                            <textarea name="rps" id="riwayat_sekarang" class="form-control form-control-sm auto-resize" rows="6" style="min-height: 120px; overflow-y: hidden;"><?= isset($pemeriksaan['rps']) ? $pemeriksaan['rps'] : '' ?></textarea>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="card border">
+
+                                                <div class="card-body p-2">
+                                                    <button type="button" class="btn btn-sm btn-info w-100" data-bs-toggle="modal" data-bs-target="#modalDaftarTemplateAnamnesis">
+                                                        <i class="fas fa-list"></i> Lihat Template
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="mb-2">
                                     <label>Riwayat Penyakit Dahulu</label>
@@ -1532,6 +1547,88 @@ if ($conn) {
 </div>
 
 <!-- Modal Pilih Gambar Edukasi -->
+<!-- Modal Daftar Template Anamnesis -->
+<div class="modal fade" id="modalDaftarTemplateAnamnesis" tabindex="-1" aria-labelledby="modalDaftarTemplateAnamnesisLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalDaftarTemplateAnamnesisLabel">Daftar Template Anamnesis</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Filter Kategori -->
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <select id="filter_kategori_anamnesis" class="form-select me-2">
+                            <option value="">Semua Kategori</option>
+                            <option value="fetomaternal">Fetomaternal</option>
+                            <option value="ginekologi umum">Ginekologi Umum</option>
+                            <option value="onkogin">Onkogin</option>
+                            <option value="fertilitas">Fertilitas</option>
+                            <option value="uroginekologi">Uroginekologi</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Tabel Template -->
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover" id="tabelTemplateAnamnesis">
+                        <thead class="table-light">
+                            <tr>
+                                <th width="5%">No</th>
+                                <th width="20%">Nama Template</th>
+                                <th width="40%">Isi Template</th>
+                                <th width="15%">Kategori</th>
+                                <th width="10%">Tags</th>
+                                <th width="10%">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php
+                            // Koneksi ke database
+                            $conn = new mysqli('auth-db1151.hstgr.io', 'u609399718_adminpraktek', 'Obgin@12345', 'u609399718_praktekobgin');
+
+                            if ($conn->connect_error) {
+                                die("Koneksi gagal: " . $conn->connect_error);
+                            }
+
+                            // Query untuk mengambil semua data template anamnesis
+                            $sql = "SELECT * FROM template_anamnesis WHERE status = 'active' ORDER BY kategori_anamnesis ASC, nama_template_anamnesis ASC";
+                            $result = $conn->query($sql);
+
+                            if ($result->num_rows > 0) {
+                                $no = 1;
+                                while ($row = $result->fetch_assoc()) {
+                                    echo "<tr class='template-row' data-kategori='" . htmlspecialchars($row['kategori_anamnesis']) . "'>";
+                                    echo "<td>" . $no++ . "</td>";
+                                    echo "<td>" . htmlspecialchars($row['nama_template_anamnesis']) . "</td>";
+                                    echo "<td><div style='max-height: 100px; overflow-y: auto;'>" . nl2br(htmlspecialchars($row['isi_template_anamnesis'])) . "</div></td>";
+                                    echo "<td>" . htmlspecialchars($row['kategori_anamnesis']) . "</td>";
+                                    echo "<td>" . htmlspecialchars($row['tags'] ?? '-') . "</td>";
+                                    echo "<td>
+                                            <button type='button' class='btn btn-sm btn-primary mb-1 w-100' onclick='gunakanTemplateAnamnesis(" . json_encode($row['isi_template_anamnesis']) . ")'>
+                                                <i class='fas fa-copy'></i> Gunakan
+                                            </button>
+                                          </td>";
+                                    echo "</tr>";
+                                }
+                            } else {
+                                echo "<tr><td colspan='6' class='text-center'>Tidak ada data template anamnesis</td></tr>";
+                            }
+
+                            $conn->close();
+                            ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="modal fade" id="modalPilihGambarEdukasi" tabindex="-1" aria-labelledby="modalPilihGambarEdukasiLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
@@ -1681,6 +1778,60 @@ error_log("Form Edit Pemeriksaan: File execution completed");
 
 <!-- Script utama aplikasi -->
 <script>
+    // Function to auto-resize textareas based on content
+    function autoResizeTextarea(textarea) {
+        // Reset height to auto to get the correct scrollHeight
+        textarea.style.height = 'auto';
+        // Set the height to match the content (scrollHeight)
+        textarea.style.height = (textarea.scrollHeight) + 'px';
+    }
+
+    // Function to use template anamnesis content
+    function gunakanTemplateAnamnesis(isi) {
+        const textarea = document.getElementById('riwayat_sekarang');
+        const currentValue = textarea.value;
+        if (currentValue && currentValue.trim() !== '') {
+            textarea.value = currentValue + '\n\n' + isi;
+        } else {
+            textarea.value = isi;
+        }
+        // Auto-resize the textarea after content is added
+        autoResizeTextarea(textarea);
+        $('#modalDaftarTemplateAnamnesis').modal('hide');
+    }
+
+    // Initialize auto-resize for the Riwayat Sekarang textarea when the DOM is loaded
+    document.addEventListener('DOMContentLoaded', function() {
+        const riwayatSekarangTextarea = document.getElementById('riwayat_sekarang');
+        if (riwayatSekarangTextarea) {
+            // Initial resize (if there's content)
+            autoResizeTextarea(riwayatSekarangTextarea);
+
+            // Add input event listener to resize as user types
+            riwayatSekarangTextarea.addEventListener('input', function() {
+                autoResizeTextarea(this);
+            });
+        }
+
+        // Add event listener for template anamnesis category filter
+        const filterKategoriAnamnesis = document.getElementById('filter_kategori_anamnesis');
+        if (filterKategoriAnamnesis) {
+            filterKategoriAnamnesis.addEventListener('change', function() {
+                const kategori = this.value;
+                const rows = document.querySelectorAll('#tabelTemplateAnamnesis tbody tr.template-row');
+
+                rows.forEach(function(row) {
+                    const rowKategori = row.getAttribute('data-kategori');
+                    if (kategori === '' || rowKategori === kategori) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+            });
+        }
+    });
+
     const loadingManager = {
         overlay: null,
         timeoutId: null,
@@ -3074,11 +3225,11 @@ error_log("Form Edit Pemeriksaan: File execution completed");
         var searchText = document.getElementById('search_generik').value.toLowerCase();
         var rows = document.querySelectorAll('#tabelFormularium tbody tr.obat-row');
         var hasVisible = false;
-        
+
         // Iterasi setiap baris dalam tabel
         rows.forEach(function(row) {
             var rowKategori = row.getAttribute('data-kategori').toLowerCase();
-            
+
             // Perbaikan: Ambil semua teks dari semua kolom (kecuali kolom aksi di index 0)
             // untuk memungkinkan pencarian di semua kolom formularium
             var text = Array.from(row.cells).map(function(cell, index) {
@@ -3086,11 +3237,11 @@ error_log("Form Edit Pemeriksaan: File execution completed");
                 if (index === 0) return '';
                 return cell.textContent.toLowerCase();
             }).join(' ');
-            
+
             // Cek apakah kategori dan kata kunci cocok
             var matchesKategori = kategori === '' || rowKategori === kategori;
             var matchesSearch = searchText === '' || text.includes(searchText);
-            
+
             // Tampilkan atau sembunyikan baris berdasarkan hasil filter
             if (matchesKategori && matchesSearch) {
                 row.style.display = '';
@@ -3099,7 +3250,7 @@ error_log("Form Edit Pemeriksaan: File execution completed");
                 row.style.display = 'none';
             }
         });
-        
+
         // Tampilkan pesan jika tidak ada data yang cocok
         var tbody = document.querySelector('#tabelFormularium tbody');
         var noData = document.querySelector('#tabelFormularium tbody tr.no-data-row');
