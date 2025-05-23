@@ -10,6 +10,9 @@ require_once 'modules/rekam_medis/models/StatusGinekologi.php';
 require_once 'modules/rekam_medis/models/TemplateTatalaksana.php';
 require_once 'modules/rekam_medis/models/TemplateUsg.php';
 require_once 'modules/rekam_medis/models/Surat.php';
+// Atensi model is not available yet, so we're removing the include
+// require_once 'modules/rekam_medis/models/Atensi.php';
+require_once 'modules/rekam_medis/models/TemplateAnamnesis.php';
 
 class RekamMedisController
 {
@@ -17,6 +20,9 @@ class RekamMedisController
     private $tindakanMedisModel;
     private $templateTatalaksanaModel;
     private $templateUsgModel;
+    // Atensi model is not available yet, so we're removing the property
+    // private $atensiModel;
+    private $templateAnamnesisModel;
     private $pdo;
     private $conn;
 
@@ -54,6 +60,9 @@ class RekamMedisController
             $this->tindakanMedisModel = new TindakanMedis($conn);
             $this->templateTatalaksanaModel = new TemplateTatalaksana($conn);
             $this->templateUsgModel = new TemplateUsg($conn);
+            // Atensi model is not available yet, so we're removing the initialization
+            // $this->atensiModel = new Atensi($conn);
+            $this->templateAnamnesisModel = new TemplateAnamnesis($conn);
         } catch (PDOException $e) {
             error_log("Database Error in RekamMedisController constructor: " . $e->getMessage());
             throw new Exception("Koneksi database bermasalah: " . $e->getMessage());
@@ -2937,6 +2946,301 @@ class RekamMedisController
         exit;
     }
 
+    /**
+     * Menangani permintaan untuk template anamnesis
+     */
+    public function get_template_anamnesis()
+    {
+        // Default response
+        $response = [
+            'status' => 'error',
+            'message' => 'Permintaan tidak valid',
+            'data' => null
+        ];
+
+        // Cek jenis request
+        if (isset($_GET['action'])) {
+            $action = $_GET['action'];
+
+            try {
+                switch ($action) {
+                    case 'get_kategori':
+                        // Ambil semua kategori
+                        $kategori = $this->templateAnamnesisModel->getAllKategori();
+                        $response = [
+                            'status' => 'success',
+                            'message' => 'Berhasil mengambil data kategori',
+                            'data' => $kategori
+                        ];
+                        break;
+
+                    case 'get_template_by_kategori':
+                        // Validasi parameter
+                        if (!isset($_GET['kategori']) || empty($_GET['kategori'])) {
+                            $response['message'] = 'Parameter kategori diperlukan';
+                            break;
+                        }
+
+                        // Ambil template berdasarkan kategori
+                        $templates = $this->templateAnamnesisModel->getTemplateByKategori($_GET['kategori']);
+                        $response = [
+                            'status' => 'success',
+                            'message' => 'Berhasil mengambil data template',
+                            'data' => $templates
+                        ];
+                        break;
+
+                    case 'get_template_by_id':
+                        // Validasi parameter
+                        if (!isset($_GET['id']) || empty($_GET['id'])) {
+                            $response['message'] = 'Parameter ID diperlukan';
+                            break;
+                        }
+
+                        // Ambil template berdasarkan ID
+                        $template = $this->templateAnamnesisModel->getTemplateById($_GET['id']);
+                        if ($template) {
+                            $response = [
+                                'status' => 'success',
+                                'message' => 'Berhasil mengambil data template',
+                                'data' => $template
+                            ];
+                        } else {
+                            $response['message'] = 'Template tidak ditemukan';
+                        }
+                        break;
+
+                    case 'get_all_template':
+                        // Ambil semua template
+                        $templates = $this->templateAnamnesisModel->getAllTemplate();
+                        $response = [
+                            'status' => 'success',
+                            'message' => 'Berhasil mengambil semua data template',
+                            'data' => $templates
+                        ];
+                        break;
+
+                    default:
+                        $response['message'] = 'Action tidak dikenali';
+                        break;
+                }
+            } catch (Exception $e) {
+                $response['message'] = 'Terjadi kesalahan: ' . $e->getMessage();
+            }
+        }
+
+        // Kirim response dalam format JSON
+        header('Content-Type: application/json');
+        echo json_encode($response);
+        exit;
+    }
+
+    /**
+     * Menampilkan halaman manajemen template anamnesis
+     */
+    public function template_anamnesis()
+    {
+        try {
+            // Ambil semua kategori
+            $kategori = $this->templateAnamnesisModel->getAllKategori();
+
+            // Filter berdasarkan kategori jika ada
+            if (isset($_GET['kategori']) && !empty($_GET['kategori'])) {
+                $templates = $this->templateAnamnesisModel->getTemplateByKategori($_GET['kategori']);
+                $filter_kategori = $_GET['kategori']; // Untuk menandai kategori yang dipilih di dropdown
+            }
+            // Filter berdasarkan pencarian jika ada
+            else if (isset($_GET['search']) && !empty($_GET['search'])) {
+                $templates = $this->templateAnamnesisModel->searchTemplate($_GET['search']);
+                $search_keyword = $_GET['search']; // Untuk menampilkan keyword di input search
+            }
+            // Jika tidak ada filter, ambil semua template
+            else {
+                $templates = $this->templateAnamnesisModel->getAllTemplate();
+            }
+
+            // Pesan sukses atau error
+            $success_message = '';
+            $error_message = '';
+
+            if (isset($_GET['success'])) {
+                switch ($_GET['success']) {
+                    case '1':
+                        $success_message = 'Template berhasil ditambahkan';
+                        break;
+                    case '2':
+                        $success_message = 'Template berhasil diperbarui';
+                        break;
+                    case '3':
+                        $success_message = 'Template berhasil dihapus';
+                        break;
+                }
+            }
+
+            if (isset($_GET['error'])) {
+                $error_message = urldecode($_GET['error']);
+            }
+
+            // Tampilkan view
+            include 'modules/rekam_medis/views/template_anamnesis.php';
+        } catch (Exception $e) {
+            echo "Terjadi kesalahan: " . $e->getMessage();
+        }
+    }
+
+    /**
+     * Menyimpan template anamnesis baru
+     */
+    public function simpan_template_anamnesis()
+    {
+        try {
+            // Validasi input
+            if (!isset($_POST['nama_template_anamnesis']) || empty($_POST['nama_template_anamnesis'])) {
+                throw new Exception("Nama template harus diisi");
+            }
+
+            if (!isset($_POST['isi_template_anamnesis']) || empty($_POST['isi_template_anamnesis'])) {
+                throw new Exception("Isi template harus diisi");
+            }
+
+            if (!isset($_POST['kategori_anamnesis']) || empty($_POST['kategori_anamnesis'])) {
+                throw new Exception("Kategori harus dipilih");
+            }
+
+            // Siapkan data
+            $data = [
+                'nama_template_anamnesis' => $_POST['nama_template_anamnesis'],
+                'isi_template_anamnesis' => $_POST['isi_template_anamnesis'],
+                'kategori_anamnesis' => $_POST['kategori_anamnesis'],
+                'status' => $_POST['status'] ?? 'active',
+                'tags' => $_POST['tags'] ?? null
+            ];
+
+            // Simpan template
+            $result = $this->templateAnamnesisModel->saveTemplate($data);
+
+            if ($result) {
+                // Redirect dengan pesan sukses
+                header("Location: index.php?module=rekam_medis&action=template_anamnesis&success=1");
+                exit;
+            } else {
+                throw new Exception("Gagal menyimpan template");
+            }
+        } catch (Exception $e) {
+            // Redirect dengan pesan error
+            header("Location: index.php?module=rekam_medis&action=template_anamnesis&error=" . urlencode($e->getMessage()));
+            exit;
+        }
+    }
+
+    /**
+     * Mengupdate template anamnesis
+     */
+    public function update_template_anamnesis()
+    {
+        try {
+            // Validasi input
+            if (!isset($_POST['id_template_anamnesis']) || empty($_POST['id_template_anamnesis'])) {
+                throw new Exception("ID template tidak valid");
+            }
+
+            if (!isset($_POST['nama_template_anamnesis']) || empty($_POST['nama_template_anamnesis'])) {
+                throw new Exception("Nama template harus diisi");
+            }
+
+            if (!isset($_POST['isi_template_anamnesis']) || empty($_POST['isi_template_anamnesis'])) {
+                throw new Exception("Isi template harus diisi");
+            }
+
+            if (!isset($_POST['kategori_anamnesis']) || empty($_POST['kategori_anamnesis'])) {
+                throw new Exception("Kategori harus dipilih");
+            }
+
+            // Siapkan data
+            $data = [
+                'id_template_anamnesis' => $_POST['id_template_anamnesis'],
+                'nama_template_anamnesis' => $_POST['nama_template_anamnesis'],
+                'isi_template_anamnesis' => $_POST['isi_template_anamnesis'],
+                'kategori_anamnesis' => $_POST['kategori_anamnesis'],
+                'status' => $_POST['status'] ?? 'active',
+                'tags' => $_POST['tags'] ?? null
+            ];
+
+            // Update template
+            $result = $this->templateAnamnesisModel->updateTemplate($data);
+
+            if ($result) {
+                // Redirect dengan pesan sukses
+                header("Location: index.php?module=rekam_medis&action=template_anamnesis&success=2");
+                exit;
+            } else {
+                throw new Exception("Gagal mengupdate template");
+            }
+        } catch (Exception $e) {
+            // Redirect dengan pesan error
+            header("Location: index.php?module=rekam_medis&action=template_anamnesis&error=" . urlencode($e->getMessage()));
+            exit;
+        }
+    }
+
+    /**
+     * Menghapus template anamnesis
+     */
+    public function hapus_template_anamnesis()
+    {
+        try {
+            // Validasi input
+            if (!isset($_POST['id_template']) || empty($_POST['id_template'])) {
+                throw new Exception("ID template tidak valid");
+            }
+
+            // Hapus template
+            $result = $this->templateAnamnesisModel->deleteTemplate($_POST['id_template']);
+
+            if ($result) {
+                // Redirect dengan pesan sukses
+                header("Location: index.php?module=rekam_medis&action=template_anamnesis&success=3");
+                exit;
+            } else {
+                throw new Exception("Gagal menghapus template");
+            }
+        } catch (Exception $e) {
+            // Redirect dengan pesan error
+            header("Location: index.php?module=rekam_medis&action=template_anamnesis&error=" . urlencode($e->getMessage()));
+            exit;
+        }
+    }
+
+    /**
+     * Menampilkan form edit template anamnesis
+     */
+    public function edit_template_anamnesis_form()
+    {
+        try {
+            // Validasi input
+            if (!isset($_POST['id_template']) || empty($_POST['id_template'])) {
+                throw new Exception("ID template tidak valid");
+            }
+
+            // Ambil data template
+            $template = $this->templateAnamnesisModel->getTemplateById($_POST['id_template']);
+
+            if (!$template) {
+                throw new Exception("Template tidak ditemukan");
+            }
+
+            // Ambil semua kategori
+            $kategori = $this->templateAnamnesisModel->getAllKategori();
+
+            // Tampilkan view
+            include 'modules/rekam_medis/views/form_edit_template_anamnesis.php';
+        } catch (Exception $e) {
+            // Redirect dengan pesan error
+            header("Location: index.php?module=rekam_medis&action=template_anamnesis&error=" . urlencode($e->getMessage()));
+            exit;
+        }
+    }
+    
     /**
      * Menampilkan halaman manajemen template tatalaksana
      */

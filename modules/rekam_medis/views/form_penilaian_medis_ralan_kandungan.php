@@ -576,7 +576,23 @@ $conn->close();
                                         </div>
                                         <div class="mb-2">
                                             <label>Riwayat Sekarang</label>
-                                            <textarea name="rps" class="form-control form-control-sm" rows="6"></textarea>
+                                            <div class="row">
+                                                <div class="col-md-9">
+                                                    <textarea name="rps" id="riwayat_sekarang" class="form-control form-control-sm" rows="6"></textarea>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="card border">
+                                                        <div class="card-header py-1 bg-light">
+                                                            <h6 class="mb-0 small">Template Anamnesis</h6>
+                                                        </div>
+                                                        <div class="card-body p-2">
+                                                            <button type="button" class="btn btn-sm btn-info w-100" data-bs-toggle="modal" data-bs-target="#modalDaftarTemplateAnamnesis">
+                                                                <i class="fas fa-list"></i> Lihat Template
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                         <div class="mb-2">
                                             <label>Riwayat Penyakit Dahulu</label>
@@ -1216,6 +1232,88 @@ $conn->close();
     </div>
 </div>
 
+<!-- Modal Daftar Template Anamnesis -->
+<div class="modal fade" id="modalDaftarTemplateAnamnesis" tabindex="-1" aria-labelledby="modalDaftarTemplateAnamnesisLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalDaftarTemplateAnamnesisLabel">Daftar Template Anamnesis</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Filter Kategori -->
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <select id="filter_kategori_anamnesis" class="form-select me-2">
+                            <option value="">Semua Kategori</option>
+                            <option value="fetomaternal">Fetomaternal</option>
+                            <option value="ginekologi umum">Ginekologi Umum</option>
+                            <option value="onkogin">Onkogin</option>
+                            <option value="fertilitas">Fertilitas</option>
+                            <option value="uroginekologi">Uroginekologi</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Tabel Template -->
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover" id="tabelTemplateAnamnesis">
+                        <thead class="table-light">
+                            <tr>
+                                <th width="5%">No</th>
+                                <th width="20%">Nama Template</th>
+                                <th width="40%">Isi Template</th>
+                                <th width="15%">Kategori</th>
+                                <th width="10%">Tags</th>
+                                <th width="10%">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php
+                            // Koneksi ke database
+                            $conn = new mysqli('auth-db1151.hstgr.io', 'u609399718_adminpraktek', 'Obgin@12345', 'u609399718_praktekobgin');
+
+                            if ($conn->connect_error) {
+                                die("Koneksi gagal: " . $conn->connect_error);
+                            }
+
+                            // Query untuk mengambil semua data template anamnesis
+                            $sql = "SELECT * FROM template_anamnesis WHERE status = 'active' ORDER BY kategori_anamnesis ASC, nama_template_anamnesis ASC";
+                            $result = $conn->query($sql);
+
+                            if ($result->num_rows > 0) {
+                                $no = 1;
+                                while ($row = $result->fetch_assoc()) {
+                                    echo "<tr class='template-row' data-kategori='" . htmlspecialchars($row['kategori_anamnesis']) . "'>";
+                                    echo "<td>" . $no++ . "</td>";
+                                    echo "<td>" . htmlspecialchars($row['nama_template_anamnesis']) . "</td>";
+                                    echo "<td><div style='max-height: 100px; overflow-y: auto;'>" . nl2br(htmlspecialchars($row['isi_template_anamnesis'])) . "</div></td>";
+                                    echo "<td>" . htmlspecialchars($row['kategori_anamnesis']) . "</td>";
+                                    echo "<td>" . htmlspecialchars($row['tags'] ?? '-') . "</td>";
+                                    echo "<td>
+                                            <button type='button' class='btn btn-sm btn-primary mb-1 w-100' onclick='gunakanTemplateAnamnesis(" . json_encode($row['isi_template_anamnesis']) . ")'>
+                                                <i class='fas fa-copy'></i> Gunakan
+                                            </button>
+                                          </td>";
+                                    echo "</tr>";
+                                }
+                            } else {
+                                echo "<tr><td colspan='6' class='text-center'>Tidak ada data template anamnesis</td></tr>";
+                            }
+
+                            $conn->close();
+                            ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Modal Daftar Template Edukasi -->
 <div class="modal fade" id="modalDaftarEdukasi" tabindex="-1" aria-labelledby="modalDaftarEdukasiLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl">
@@ -1482,6 +1580,16 @@ $conn->close();
         $('#modalDaftarTemplate').modal('hide');
     }
 
+    function gunakanTemplateAnamnesis(isi) {
+        const currentValue = document.getElementById('riwayat_sekarang').value;
+        if (currentValue && currentValue.trim() !== '') {
+            document.getElementById('riwayat_sekarang').value = currentValue + '\n\n' + isi;
+        } else {
+            document.getElementById('riwayat_sekarang').value = isi;
+        }
+        $('#modalDaftarTemplateAnamnesis').modal('hide');
+    }
+
     function gunakanTemplateUsg(isi) {
         const currentValue = document.getElementById('ultrasonografi').value;
         if (currentValue && currentValue.trim() !== '') {
@@ -1566,6 +1674,21 @@ $conn->close();
 
     // Filter untuk template USG
     document.addEventListener('DOMContentLoaded', function() {
+        // Tambahkan event listener untuk filter kategori Anamnesis
+        document.getElementById('filter_kategori_anamnesis').addEventListener('change', function() {
+            var kategori = this.value;
+            var rows = document.querySelectorAll('#tabelTemplateAnamnesis tbody tr.template-row');
+
+            rows.forEach(function(row) {
+                var rowKategori = row.getAttribute('data-kategori');
+                if (kategori === '' || rowKategori === kategori) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+        
         // Tambahkan event listener untuk filter kategori USG
         document.getElementById('filter_kategori_usg').addEventListener('change', function() {
             var kategori = this.value;

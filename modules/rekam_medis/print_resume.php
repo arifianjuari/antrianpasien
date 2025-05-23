@@ -112,14 +112,6 @@ foreach ($lines as $line) {
 // Tampilkan hasil resume dengan format HTML
 $tempPdf->writeHTML('<div style="line-height: 1.5; font-size: 10pt;">' . nl2br($formattedText) . '</div>', true, false, true, false, '');
 
-// Tambahkan tanda tangan
-$tempPdf->Ln(1);
-$tempPdf->SetFont('helvetica', '', 9);
-$tempPdf->Cell(0, 5, 'Dokter Pemeriksa,', 0, 1, 'R');
-$tempPdf->Ln(4); // Spasi untuk tanda tangan
-$tempPdf->Cell(0, 5, 'dr.ARIFIAN JUARI,SpOG', 0, 1, 'R');
-$tempPdf->Cell(0, 5, 'SIP: MR35792503010132', 0, 1, 'R');
-
 // ---- Akhir Tambahkan Konten ke PDF Sementara ----
 
 // Dapatkan posisi Y terakhir (tinggi konten)
@@ -177,14 +169,6 @@ $pdf->Ln(4);
 
 // Proses teks resume untuk menampilkan header dengan bold (gunakan hasil yang sudah diformat)
 $pdf->writeHTML('<div style="line-height: 1.5; font-size: 10pt;">' . nl2br($formattedText) . '</div>', true, false, true, false, '');
-
-// Tambahkan tanda tangan
-$pdf->Ln(1);
-$pdf->SetFont('helvetica', '', 9);
-$pdf->Cell(0, 5, 'Dokter Pemeriksa,', 0, 1, 'R');
-$pdf->Ln(4); // Spasi untuk tanda tangan
-$pdf->Cell(0, 5, 'dr.ARIFIAN JUARI,SpOG', 0, 1, 'R');
-$pdf->Cell(0, 5, 'SIP: MR35792503010132', 0, 1, 'R');
 
 // ---- Akhir Tambahkan Konten ke PDF FINAL ----
 

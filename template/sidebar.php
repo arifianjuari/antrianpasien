@@ -1128,6 +1128,13 @@ function is_current_module($module, $action = null)
                         </a>
                     </li>
                     <li class="nav-item">
+                        <a href="<?php echo clean_url($base_url); ?>/index.php?module=rekam_medis&action=template_anamnesis"
+                            class="nav-link <?php echo is_current_module('rekam_medis', 'template_anamnesis') ? 'active' : ''; ?>" data-title="Template Anamnesis">
+                            <i class="bi bi-clipboard-pulse"></i>
+                            <span class="menu-text">Template Anamnesis</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a href="<?php echo clean_url($base_url); ?>/index.php?module=rekam_medis&action=template_tatalaksana"
                             class="nav-link <?php echo is_current_module('rekam_medis', 'template_tatalaksana') ? 'active' : ''; ?>" data-title="Template Tatalaksana">
                             <i class="bi bi-file-text"></i>

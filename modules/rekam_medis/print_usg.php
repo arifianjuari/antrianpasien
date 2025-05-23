@@ -60,9 +60,7 @@ $startY = $tempPdf->GetY();
 $tempPdf->SetFont('helvetica', 'B', 9);
 $tempPdf->Cell(0, 6, 'HASIL PEMERIKSAAN USG', 0, 1, 'C');
 
-// Nama dokter dan SIP dipindahkan ke sini
-$tempPdf->SetFont('helvetica', '', 9);
-$tempPdf->Cell(0, 4, 'dr.ARIFIAN JUARI,SpOG / No.SIP MR35792503010132', 0, 1, 'C');
+
 
 $tempPdf->Ln(2);
 
@@ -126,9 +124,6 @@ $pdf->AddPage();
 $pdf->SetFont('helvetica', 'B', 12);
 $pdf->Cell(0, 6, 'HASIL PEMERIKSAAN USG', 0, 1, 'C');
 
-// Nama dokter dan SIP dipindahkan ke sini
-$pdf->SetFont('helvetica', '', 9);
-$pdf->Cell(0, 4, 'dr.ARIFIAN JUARI,SpOG / No.SIP MR35792503010132', 0, 1, 'C');
 
 $pdf->Ln(2);
 

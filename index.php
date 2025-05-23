@@ -135,6 +135,24 @@ try {
             case 'daftar_atensi':
                 $rekamMedisController->daftarAtensi();
                 break;
+            case 'template_anamnesis':
+                $rekamMedisController->template_anamnesis();
+                break;
+            case 'simpan_template_anamnesis':
+                $rekamMedisController->simpan_template_anamnesis();
+                break;
+            case 'update_template_anamnesis':
+                $rekamMedisController->update_template_anamnesis();
+                break;
+            case 'hapus_template_anamnesis':
+                $rekamMedisController->hapus_template_anamnesis();
+                break;
+            case 'edit_template_anamnesis_form':
+                $rekamMedisController->edit_template_anamnesis_form();
+                break;
+            case 'get_template_anamnesis':
+                $rekamMedisController->get_template_anamnesis();
+                break;
             case 'template_tatalaksana':
                 $rekamMedisController->template_tatalaksana();
                 break;
