@@ -3069,18 +3069,29 @@ error_log("Form Edit Pemeriksaan: File execution completed");
     document.getElementById('filter_kategori_obat').addEventListener('change', filterFormularium);
 
     function filterFormularium() {
+        // Ambil nilai filter kategori dan kata kunci pencarian
         var kategori = document.getElementById('filter_kategori_obat').value.toLowerCase();
         var searchText = document.getElementById('search_generik').value.toLowerCase();
         var rows = document.querySelectorAll('#tabelFormularium tbody tr.obat-row');
         var hasVisible = false;
+        
+        // Iterasi setiap baris dalam tabel
         rows.forEach(function(row) {
             var rowKategori = row.getAttribute('data-kategori').toLowerCase();
-            // gabungkan teks dari kolom untuk pencarian
-            var text = Array.from(row.cells).slice(1, 6).map(function(cell) {
+            
+            // Perbaikan: Ambil semua teks dari semua kolom (kecuali kolom aksi di index 0)
+            // untuk memungkinkan pencarian di semua kolom formularium
+            var text = Array.from(row.cells).map(function(cell, index) {
+                // Skip kolom aksi (biasanya kolom pertama dengan tombol)
+                if (index === 0) return '';
                 return cell.textContent.toLowerCase();
             }).join(' ');
+            
+            // Cek apakah kategori dan kata kunci cocok
             var matchesKategori = kategori === '' || rowKategori === kategori;
             var matchesSearch = searchText === '' || text.includes(searchText);
+            
+            // Tampilkan atau sembunyikan baris berdasarkan hasil filter
             if (matchesKategori && matchesSearch) {
                 row.style.display = '';
                 hasVisible = true;
@@ -3088,6 +3099,8 @@ error_log("Form Edit Pemeriksaan: File execution completed");
                 row.style.display = 'none';
             }
         });
+        
+        // Tampilkan pesan jika tidak ada data yang cocok
         var tbody = document.querySelector('#tabelFormularium tbody');
         var noData = document.querySelector('#tabelFormularium tbody tr.no-data-row');
         if (!hasVisible) {
