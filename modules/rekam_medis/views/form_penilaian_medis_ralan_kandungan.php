@@ -578,7 +578,8 @@ $conn->close();
                                             <label>Riwayat Sekarang</label>
                                             <div class="row">
                                                 <div class="col-md-9">
-                                                    <textarea name="rps" id="riwayat_sekarang" class="form-control form-control-sm" rows="6"></textarea>
+                                                    <!-- Modified textarea with auto-resize class and data attribute -->
+                                                    <textarea name="rps" id="riwayat_sekarang" class="form-control form-control-sm auto-resize" rows="6" style="min-height: 120px; overflow-y: hidden;"></textarea>
                                                 </div>
                                                 <div class="col-md-3">
                                                     <div class="card border">
@@ -1404,8 +1405,27 @@ $conn->close();
 </div>
 
 <script>
+    // Function to auto-resize textareas based on content
+    function autoResizeTextarea(textarea) {
+        // Reset height to auto to get the correct scrollHeight
+        textarea.style.height = 'auto';
+        // Set the height to match the content (scrollHeight)
+        textarea.style.height = (textarea.scrollHeight) + 'px';
+    }
+    
     // Tab functionality
     document.addEventListener('DOMContentLoaded', function() {
+        // Initialize auto-resize for the Riwayat Sekarang textarea
+        const riwayatSekarangTextarea = document.getElementById('riwayat_sekarang');
+        if (riwayatSekarangTextarea) {
+            // Initial resize (if there's content)
+            autoResizeTextarea(riwayatSekarangTextarea);
+            
+            // Add input event listener to resize as user types
+            riwayatSekarangTextarea.addEventListener('input', function() {
+                autoResizeTextarea(this);
+            });
+        }
         // Identitas tab
         const identitasTab = document.getElementById('identitas-tab');
         const identitasContent = document.getElementById('identitas');
@@ -1581,12 +1601,15 @@ $conn->close();
     }
 
     function gunakanTemplateAnamnesis(isi) {
-        const currentValue = document.getElementById('riwayat_sekarang').value;
+        const textarea = document.getElementById('riwayat_sekarang');
+        const currentValue = textarea.value;
         if (currentValue && currentValue.trim() !== '') {
-            document.getElementById('riwayat_sekarang').value = currentValue + '\n\n' + isi;
+            textarea.value = currentValue + '\n\n' + isi;
         } else {
-            document.getElementById('riwayat_sekarang').value = isi;
+            textarea.value = isi;
         }
+        // Auto-resize the textarea after content is added
+        autoResizeTextarea(textarea);
         $('#modalDaftarTemplateAnamnesis').modal('hide');
     }
 
