@@ -132,6 +132,13 @@
                             </div>
                         </div>
 
+                        <div class="form-group row">
+                            <label class="col-sm-2 col-form-label">Ceklist</label>
+                            <div class="col-sm-10">
+                                <textarea class="form-control" name="ceklist" rows="3" maxlength="500" placeholder="Masukkan ceklist untuk pasien ini (opsional)"><?= $pasien['ceklist'] ?? '' ?></textarea>
+                            </div>
+                        </div>
+
                         <!-- Hidden field untuk umur -->
                         <input type="hidden" name="umur" id="umur" value="<?= $pasien['umur'] ?>">
 

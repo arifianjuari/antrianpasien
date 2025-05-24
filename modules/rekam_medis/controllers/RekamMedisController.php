@@ -23,6 +23,7 @@ class RekamMedisController
     // Atensi model is not available yet, so we're removing the property
     // private $atensiModel;
     private $templateAnamnesisModel;
+    private $templateCeklistModel; // Property for Template Ceklist model
     private $pdo;
     private $conn;
 
@@ -59,6 +60,17 @@ class RekamMedisController
             $this->rekamMedisModel = new RekamMedis($conn);
             $this->tindakanMedisModel = new TindakanMedis($conn);
             $this->templateTatalaksanaModel = new TemplateTatalaksana($conn);
+            
+            // Inisialisasi model template anamnesis dan ceklist
+            require_once 'modules/rekam_medis/models/TemplateAnamnesis.php';
+            $this->templateAnamnesisModel = new TemplateAnamnesis($conn);
+            
+            // Inisialisasi model template ceklist jika file ada
+            $templateCeklistPath = 'modules/rekam_medis/models/TemplateCeklist.php';
+            if (file_exists($templateCeklistPath)) {
+                require_once $templateCeklistPath;
+                $this->templateCeklistModel = new TemplateCeklist($conn);
+            }
             $this->templateUsgModel = new TemplateUsg($conn);
             // Atensi model is not available yet, so we're removing the initialization
             // $this->atensiModel = new Atensi($conn);
@@ -448,20 +460,41 @@ class RekamMedisController
             $umur = $diff->y . " Th";
         }
 
-        // Data pasien yang akan diupdate
-        $data = [
-            'nm_pasien' => $_POST['nm_pasien'] ?? '',
-            'jk' => $_POST['jk'] ?? '',
-            'tgl_lahir' => $tgl_lahir,
-            'umur' => $umur,
-            'alamat' => $_POST['alamat'] ?? '',
-            'kd_kec' => $_POST['kd_kec'] ?? '',
-            'no_tlp' => $_POST['no_tlp'] ?? '',
-            'pekerjaan' => $_POST['pekerjaan'] ?? '',
-            'no_ktp' => $_POST['no_ktp'] ?? '',
-            'stts_nikah' => $_POST['stts_nikah'] ?? '',
-            'catatan_pasien' => $_POST['catatan_pasien'] ?? ''
-        ];
+        // Cek apakah ini update ceklist saja atau update data pasien lengkap
+        $isCeklistUpdateOnly = isset($_POST['ceklist']) && count($_POST) <= 2; // Hanya no_rkm_medis dan ceklist
+        
+        if ($isCeklistUpdateOnly) {
+            // Jika hanya update ceklist, ambil data pasien yang ada dan update hanya field ceklist
+            $existingPasien = $this->rekamMedisModel->getPasienById($no_rkm_medis);
+            if (!$existingPasien) {
+                echo json_encode(['status' => 'error', 'message' => 'Data pasien tidak ditemukan']);
+                exit;
+            }
+            
+            $data = [
+                'ceklist' => $_POST['ceklist'] ?? ''
+            ];
+            
+            error_log("Update ceklist only for patient ID: $no_rkm_medis");
+        } else {
+            // Update data pasien lengkap
+            $data = [
+                'nm_pasien' => $_POST['nm_pasien'] ?? '',
+                'jk' => $_POST['jk'] ?? '',
+                'tgl_lahir' => $tgl_lahir,
+                'umur' => $umur,
+                'alamat' => $_POST['alamat'] ?? '',
+                'kd_kec' => $_POST['kd_kec'] ?? '',
+                'no_tlp' => $_POST['no_tlp'] ?? '',
+                'pekerjaan' => $_POST['pekerjaan'] ?? '',
+                'no_ktp' => $_POST['no_ktp'] ?? '',
+                'stts_nikah' => $_POST['stts_nikah'] ?? '',
+                'catatan_pasien' => $_POST['catatan_pasien'] ?? '',
+                'ceklist' => $_POST['ceklist'] ?? ''
+            ];
+            
+            error_log("Update full patient data for ID: $no_rkm_medis");
+        }
 
         try {
             // Update data pasien
@@ -3207,6 +3240,243 @@ class RekamMedisController
         } catch (Exception $e) {
             // Redirect dengan pesan error
             header("Location: index.php?module=rekam_medis&action=template_anamnesis&error=" . urlencode($e->getMessage()));
+            exit;
+        }
+    }
+    
+    /**
+     * Menampilkan halaman template ceklist
+     */
+    public function template_ceklist()
+    {
+        try {
+            // Inisialisasi model jika belum ada
+            if (!isset($this->templateCeklistModel)) {
+                require_once 'modules/rekam_medis/models/TemplateCeklist.php';
+                $this->templateCeklistModel = new TemplateCeklist();
+            }
+            
+            // Ambil semua kategori
+            $kategori = $this->templateCeklistModel->getAllKategori();
+
+            // Filter berdasarkan kategori jika ada
+            if (isset($_GET['kategori']) && !empty($_GET['kategori'])) {
+                $templates = $this->templateCeklistModel->getTemplateByKategori($_GET['kategori']);
+                $filter_kategori = $_GET['kategori']; // Untuk menandai kategori yang dipilih di dropdown
+            }
+            // Filter berdasarkan pencarian jika ada
+            else if (isset($_GET['search']) && !empty($_GET['search'])) {
+                $templates = $this->templateCeklistModel->searchTemplate($_GET['search']);
+                $search_keyword = $_GET['search']; // Untuk menampilkan keyword di input search
+            }
+            // Jika tidak ada filter, ambil semua template
+            else {
+                $templates = $this->templateCeklistModel->getAllTemplate();
+            }
+
+            // Pesan sukses atau error
+            $success_message = '';
+            $error_message = '';
+
+            if (isset($_GET['success'])) {
+                switch ($_GET['success']) {
+                    case '1':
+                        $success_message = 'Template berhasil ditambahkan';
+                        break;
+                    case '2':
+                        $success_message = 'Template berhasil diperbarui';
+                        break;
+                    case '3':
+                        $success_message = 'Template berhasil dihapus';
+                        break;
+                }
+            }
+
+            if (isset($_GET['error'])) {
+                $error_message = urldecode($_GET['error']);
+            }
+
+            // Tampilkan view
+            include 'modules/rekam_medis/views/template_ceklist.php';
+        } catch (Exception $e) {
+            echo "Terjadi kesalahan: " . $e->getMessage();
+        }
+    }
+
+    /**
+     * Menyimpan template ceklist baru
+     */
+    public function simpan_template_ceklist()
+    {
+        try {
+            // Inisialisasi model jika belum ada
+            if (!isset($this->templateCeklistModel)) {
+                require_once 'modules/rekam_medis/models/TemplateCeklist.php';
+                $this->templateCeklistModel = new TemplateCeklist();
+            }
+            
+            // Validasi input
+            if (!isset($_POST['nama_template_ck']) || empty($_POST['nama_template_ck'])) {
+                throw new Exception("Nama template harus diisi");
+            }
+
+            if (!isset($_POST['isi_template_ck']) || empty($_POST['isi_template_ck'])) {
+                throw new Exception("Isi template harus diisi");
+            }
+
+            if (!isset($_POST['kategori_ck']) || empty($_POST['kategori_ck'])) {
+                throw new Exception("Kategori harus dipilih");
+            }
+
+            // Siapkan data
+            $data = [
+                'nama_template_ck' => $_POST['nama_template_ck'],
+                'isi_template_ck' => $_POST['isi_template_ck'],
+                'kategori_ck' => $_POST['kategori_ck'],
+                'status' => $_POST['status'] ?? 'active',
+                'tags' => $_POST['tags'] ?? null,
+                'created_by' => isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null
+            ];
+
+            // Simpan template
+            $result = $this->templateCeklistModel->saveTemplate($data);
+
+            if ($result) {
+                // Redirect dengan pesan sukses
+                header("Location: index.php?module=rekam_medis&action=template_ceklist&success=1");
+                exit;
+            } else {
+                throw new Exception("Gagal menyimpan template");
+            }
+        } catch (Exception $e) {
+            // Redirect dengan pesan error
+            header("Location: index.php?module=rekam_medis&action=template_ceklist&error=" . urlencode($e->getMessage()));
+            exit;
+        }
+    }
+
+    /**
+     * Menampilkan form edit template ceklist
+     */
+    public function edit_template_ceklist_form()
+    {
+        try {
+            // Inisialisasi model jika belum ada
+            if (!isset($this->templateCeklistModel)) {
+                require_once 'modules/rekam_medis/models/TemplateCeklist.php';
+                $this->templateCeklistModel = new TemplateCeklist();
+            }
+            
+            // Validasi input
+            if (!isset($_POST['id_template']) || empty($_POST['id_template'])) {
+                throw new Exception("ID template tidak valid");
+            }
+
+            // Ambil data template berdasarkan ID
+            $template = $this->templateCeklistModel->getTemplateById($_POST['id_template']);
+
+            if (!$template) {
+                throw new Exception("Template tidak ditemukan");
+            }
+
+            // Ambil semua kategori
+            $kategori = $this->templateCeklistModel->getAllKategori();
+
+            // Tampilkan view
+            include 'modules/rekam_medis/views/form_edit_template_ceklist.php';
+        } catch (Exception $e) {
+            // Redirect dengan pesan error
+            header("Location: index.php?module=rekam_medis&action=template_ceklist&error=" . urlencode($e->getMessage()));
+            exit;
+        }
+    }
+
+    /**
+     * Mengupdate template ceklist
+     */
+    public function update_template_ceklist()
+    {
+        try {
+            // Inisialisasi model jika belum ada
+            if (!isset($this->templateCeklistModel)) {
+                require_once 'modules/rekam_medis/models/TemplateCeklist.php';
+                $this->templateCeklistModel = new TemplateCeklist();
+            }
+            
+            // Validasi input
+            if (!isset($_POST['id_template_ceklist']) || empty($_POST['id_template_ceklist'])) {
+                throw new Exception("ID template tidak valid");
+            }
+
+            if (!isset($_POST['nama_template_ck']) || empty($_POST['nama_template_ck'])) {
+                throw new Exception("Nama template harus diisi");
+            }
+
+            if (!isset($_POST['isi_template_ck']) || empty($_POST['isi_template_ck'])) {
+                throw new Exception("Isi template harus diisi");
+            }
+
+            if (!isset($_POST['kategori_ck']) || empty($_POST['kategori_ck'])) {
+                throw new Exception("Kategori harus dipilih");
+            }
+
+            // Siapkan data
+            $data = [
+                'id_template_ceklist' => $_POST['id_template_ceklist'],
+                'nama_template_ck' => $_POST['nama_template_ck'],
+                'isi_template_ck' => $_POST['isi_template_ck'],
+                'kategori_ck' => $_POST['kategori_ck'],
+                'status' => $_POST['status'] ?? 'active',
+                'tags' => $_POST['tags'] ?? null
+            ];
+
+            // Update template
+            $result = $this->templateCeklistModel->updateTemplate($data);
+
+            if ($result) {
+                // Redirect dengan pesan sukses
+                header("Location: index.php?module=rekam_medis&action=template_ceklist&success=2");
+                exit;
+            } else {
+                throw new Exception("Gagal mengupdate template");
+            }
+        } catch (Exception $e) {
+            // Redirect dengan pesan error
+            header("Location: index.php?module=rekam_medis&action=template_ceklist&error=" . urlencode($e->getMessage()));
+            exit;
+        }
+    }
+
+    /**
+     * Menghapus template ceklist
+     */
+    public function hapus_template_ceklist()
+    {
+        try {
+            // Inisialisasi model jika belum ada
+            if (!isset($this->templateCeklistModel)) {
+                require_once 'modules/rekam_medis/models/TemplateCeklist.php';
+                $this->templateCeklistModel = new TemplateCeklist();
+            }
+            
+            // Validasi input
+            if (!isset($_POST['id_template']) || empty($_POST['id_template'])) {
+                throw new Exception("ID template tidak valid");
+            }
+
+            // Hapus template
+            $result = $this->templateCeklistModel->deleteTemplate($_POST['id_template']);
+
+            if ($result) {
+                // Redirect dengan pesan sukses
+                header("Location: index.php?module=rekam_medis&action=template_ceklist&success=3");
+                exit;
+            } else {
+                throw new Exception("Gagal menghapus template");
+            }
+        } catch (Exception $e) {
+            // Redirect dengan pesan error
+            header("Location: index.php?module=rekam_medis&action=template_ceklist&error=" . urlencode($e->getMessage()));
             exit;
         }
     }

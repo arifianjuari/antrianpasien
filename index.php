@@ -153,6 +153,27 @@ try {
             case 'get_template_anamnesis':
                 $rekamMedisController->get_template_anamnesis();
                 break;
+                
+            // Template Ceklist routes
+            case 'template_ceklist':
+                $rekamMedisController->template_ceklist();
+                break;
+                
+            case 'simpan_template_ceklist':
+                $rekamMedisController->simpan_template_ceklist();
+                break;
+                
+            case 'update_template_ceklist':
+                $rekamMedisController->update_template_ceklist();
+                break;
+                
+            case 'hapus_template_ceklist':
+                $rekamMedisController->hapus_template_ceklist();
+                break;
+                
+            case 'edit_template_ceklist_form':
+                $rekamMedisController->edit_template_ceklist_form();
+                break;
             case 'template_tatalaksana':
                 $rekamMedisController->template_tatalaksana();
                 break;

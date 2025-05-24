@@ -583,12 +583,10 @@ $conn->close();
                                                 </div>
                                                 <div class="col-md-3">
                                                     <div class="card border">
-                                                        <div class="card-header py-1 bg-light">
-                                                            <h6 class="mb-0 small">Template Anamnesis</h6>
-                                                        </div>
+
                                                         <div class="card-body p-2">
                                                             <button type="button" class="btn btn-sm btn-info w-100" data-bs-toggle="modal" data-bs-target="#modalDaftarTemplateAnamnesis">
-                                                                <i class="fas fa-list"></i> Lihat Template
+                                                                <i class="fas fa-list"></i> Template Anamnesis
                                                             </button>
                                                         </div>
                                                     </div>
@@ -768,12 +766,10 @@ $conn->close();
                                                 </div>
                                                 <div class="col-md-4">
                                                     <div class="card border">
-                                                        <div class="card-header py-1 bg-light">
-                                                            <h6 class="mb-0 small">Template USG</h6>
-                                                        </div>
+
                                                         <div class="card-body p-2">
                                                             <button type="button" class="btn btn-sm btn-info w-100" data-bs-toggle="modal" data-bs-target="#modalDaftarTemplateUsg">
-                                                                <i class="fas fa-list"></i> Lihat Template USG
+                                                                <i class="fas fa-list"></i> Template USG
                                                             </button>
                                                         </div>
                                                     </div>
@@ -804,12 +800,10 @@ $conn->close();
                                                 </div>
                                                 <div class="col-md-4">
                                                     <div class="card border">
-                                                        <div class="card-header py-1 bg-light">
-                                                            <h6 class="mb-0 small">Riwayat Diagnosis</h6>
-                                                        </div>
+
                                                         <div class="card-body p-2">
                                                             <button type="button" class="btn btn-sm btn-info w-100" data-bs-toggle="modal" data-bs-target="#modalRiwayatDiagnosis">
-                                                                <i class="fas fa-history"></i> Lihat Riwayat
+                                                                <i class="fas fa-history"></i> Riwayat Diagnosis
                                                             </button>
                                                         </div>
                                                     </div>
@@ -824,12 +818,10 @@ $conn->close();
                                                 </div>
                                                 <div class="col-md-4">
                                                     <div class="card border">
-                                                        <div class="card-header py-1 bg-light">
-                                                            <h6 class="mb-0 small">Template Tatalaksana</h6>
-                                                        </div>
+
                                                         <div class="card-body p-2">
                                                             <button type="button" class="btn btn-sm btn-info w-100" data-bs-toggle="modal" data-bs-target="#modalDaftarTemplate">
-                                                                <i class="fas fa-list"></i> Lihat Template
+                                                                <i class="fas fa-list"></i> Daftar Tatalaksana
                                                             </button>
                                                         </div>
                                                     </div>
@@ -845,12 +837,10 @@ $conn->close();
                                                 </div>
                                                 <div class="col-md-4">
                                                     <div class="card border">
-                                                        <div class="card-header py-1 bg-light">
-                                                            <h6 class="mb-0 small">Template Edukasi</h6>
-                                                        </div>
+
                                                         <div class="card-body p-2">
                                                             <button type="button" class="btn btn-sm btn-info w-100" data-bs-toggle="modal" data-bs-target="#modalDaftarEdukasi">
-                                                                <i class="fas fa-list"></i> Lihat Template
+                                                                <i class="fas fa-list"></i> Daftar Edukasi
                                                             </button>
                                                         </div>
                                                     </div>
@@ -866,12 +856,10 @@ $conn->close();
                                                 </div>
                                                 <div class="col-md-4">
                                                     <div class="card border">
-                                                        <div class="card-header py-1 bg-light">
-                                                            <h6 class="mb-0 small">Formularium</h6>
-                                                        </div>
+
                                                         <div class="card-body p-2">
                                                             <button type="button" class="btn btn-sm btn-info w-100" data-bs-toggle="modal" data-bs-target="#modalDaftarTemplateResep">
-                                                                <i class="fas fa-list"></i> Lihat Daftar
+                                                                <i class="fas fa-list"></i> Formularium
                                                             </button>
                                                         </div>
                                                     </div>
@@ -1412,7 +1400,7 @@ $conn->close();
         // Set the height to match the content (scrollHeight)
         textarea.style.height = (textarea.scrollHeight) + 'px';
     }
-    
+
     // Tab functionality
     document.addEventListener('DOMContentLoaded', function() {
         // Initialize auto-resize for the Riwayat Sekarang textarea
@@ -1420,7 +1408,7 @@ $conn->close();
         if (riwayatSekarangTextarea) {
             // Initial resize (if there's content)
             autoResizeTextarea(riwayatSekarangTextarea);
-            
+
             // Add input event listener to resize as user types
             riwayatSekarangTextarea.addEventListener('input', function() {
                 autoResizeTextarea(this);
@@ -1711,7 +1699,7 @@ $conn->close();
                 }
             });
         });
-        
+
         // Tambahkan event listener untuk filter kategori USG
         document.getElementById('filter_kategori_usg').addEventListener('change', function() {
             var kategori = this.value;

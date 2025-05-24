@@ -617,25 +617,26 @@ error_log("Data pasien: " . json_encode($pasien));
                             Data diakses pada: <?= date('Y-m-d H:i:s') ?>
                         </div>
 
-                        <ul class="nav nav-tabs" id="myTab" role="tablist">
+                        <!-- Tab Identitas dan Status Obstetri -->
+                        <ul class="nav nav-tabs mb-0" id="myTab" role="tablist">
                             <li class="nav-item">
-                                <a class="nav-link active" id="identitas-tab" data-toggle="collapse" href="#identitas" role="tab">
-                                    Identitas <i class="fas fa-chevron-down"></i>
+                                <a class="nav-link active" id="identitas-tab" data-bs-toggle="tab" data-bs-target="#identitas" role="tab" aria-controls="identitas" aria-selected="true">
+                                    <i class="fas fa-user me-2"></i>Identitas
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link collapsed" id="skrining-tab" data-toggle="collapse" href="#skrining" role="tab">
-                                    Status Obstetri <i class="fas fa-chevron-down"></i>
+                                <a class="nav-link" id="skrining-tab" data-bs-toggle="tab" data-bs-target="#skrining" role="tab" aria-controls="skrining" aria-selected="false">
+                                    <i class="fas fa-notes-medical me-2"></i>Status Obstetri
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link collapsed" id="riwayat-kehamilan-tab" data-toggle="collapse" href="#riwayat-kehamilan" role="tab">
-                                    Riwayat Kehamilan <i class="fas fa-chevron-down"></i>
+                                <a class="nav-link" id="riwayat-kehamilan-tab" data-bs-toggle="tab" data-bs-target="#riwayat-kehamilan" role="tab" aria-controls="riwayat-kehamilan" aria-selected="false">
+                                    <i class="fas fa-baby me-2"></i>Riwayat Kehamilan
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link collapsed" id="status-ginekologi-tab" data-toggle="collapse" href="#status-ginekologi" role="tab">
-                                    Status Ginekologi <i class="fas fa-chevron-down"></i>
+                                <a class="nav-link" id="status-ginekologi-tab" data-bs-toggle="tab" data-bs-target="#status-ginekologi" role="tab" aria-controls="status-ginekologi" aria-selected="false">
+                                    <i class="fas fa-female me-2"></i>Status Ginekologi
                                 </a>
                             </li>
                             <li class="nav-item">
@@ -644,15 +645,15 @@ error_log("Data pasien: " . json_encode($pasien));
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link collapsed" id="download-tab" data-toggle="collapse" href="#download" role="tab">
-                                    Download <i class="fas fa-chevron-down"></i>
+                                <a class="nav-link" id="download-tab" data-bs-toggle="tab" data-bs-target="#download" role="tab" aria-controls="download" aria-selected="false">
+                                    <i class="fas fa-download me-2"></i>Download
                                 </a>
                             </li>
                         </ul>
 
                         <div class="tab-content" id="myTabContent">
                             <!-- Tab Identitas -->
-                            <div class="tab-pane fade collapse" id="identitas" role="tabpanel">
+                            <div class="tab-pane fade show active" id="identitas" role="tabpanel" aria-labelledby="identitas-tab">
                                 <div class="mb-3 d-flex justify-content-end">
                                     <a href="index.php?module=rekam_medis&action=editPasien&id=<?= $pasien['no_rkm_medis'] ?>&source=<?= $_SESSION['source_page'] ?>" class="btn btn-warning btn-sm me-2">
                                         <i class="fas fa-edit"></i> Edit Data Pasien
@@ -666,7 +667,7 @@ error_log("Data pasien: " . json_encode($pasien));
 
                                 <div class="row">
                                     <!-- Kolom Kiri -->
-                                    <div class="col-md-6">
+                                    <div class="col-md-4">
                                         <div class="card">
                                             <div class="card-header bg-light">
                                                 <h6 class="card-title mb-0" style="font-size: 0.9rem;">Data Pribadi</h6>
@@ -702,8 +703,8 @@ error_log("Data pasien: " . json_encode($pasien));
                                         </div>
                                     </div>
 
-                                    <!-- Kolom Kanan -->
-                                    <div class="col-md-6">
+                                    <!-- Kolom Tengah -->
+                                    <div class="col-md-4">
                                         <div class="card">
                                             <div class="card-header bg-light">
                                                 <h6 class="card-title mb-0" style="font-size: 0.9rem;">Informasi Tambahan</h6>
@@ -712,7 +713,7 @@ error_log("Data pasien: " . json_encode($pasien));
                                                 <table class="table table-sm table-hover" style="font-size: 0.85rem;">
                                                     <tr>
                                                         <th width="140" class="text-muted px-3">Alamat</th>
-                                                        <td class="px-3"><?= $pasien['alamat'] ?></td>
+                                                        <td class="px-3" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px;"><?= $pasien['alamat'] ?></td>
                                                     </tr>
                                                     <tr>
                                                         <th class="text-muted px-3">Kecamatan</th>
@@ -745,7 +746,35 @@ error_log("Data pasien: " . json_encode($pasien));
                                                         <th class="text-muted px-3">Catatan Pasien</th>
                                                         <td class="px-3"><?= $pasien['catatan_pasien'] ?? '-' ?></td>
                                                     </tr>
+
                                                 </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Kolom Ketiga (Ceklist) -->
+                                    <div class="col-md-4">
+                                        <div class="card">
+                                            <div class="card-header bg-light position-relative">
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <h6 class="card-title mb-0" style="font-size: 0.9rem;">Ceklist</h6>
+                                                </div>
+                                                <div class="ceklist-buttons position-absolute" style="top: 8px; right: 10px;">
+                                                    <button type="button" class="btn btn-xs btn-outline-info me-1" style="padding: 0.2rem 0.4rem; font-size: 0.7rem;" data-bs-toggle="modal" data-bs-target="#modalDaftarTemplateCeklist">
+                                                        <i class="fas fa-list"></i>
+                                                    </button>
+                                                    <button type="button" id="saveCeklist" class="btn btn-xs btn-outline-success" style="padding: 0.2rem 0.4rem; font-size: 0.7rem; display: none;">
+                                                        <i class="fas fa-check"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div class="card-body p-0">
+                                                <div class="p-3" style="font-size: 0.75rem;">
+                                                    <div id="ceklistContent" 
+                                                         contenteditable="true" 
+                                                         style="white-space: pre-wrap; line-height: 1.3; min-height: 100px; outline: none; font-size: 0.7rem;"
+                                                         data-no-rkm-medis="<?= $pasien['no_rkm_medis'] ?>"><?= htmlspecialchars($pasien['ceklist'] ?? '-') ?></div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -753,7 +782,7 @@ error_log("Data pasien: " . json_encode($pasien));
                             </div>
 
                             <!-- Tab Status Obstetri -->
-                            <div class="tab-pane fade" id="skrining" role="tabpanel">
+                            <div class="tab-pane fade" id="skrining" role="tabpanel" aria-labelledby="skrining-tab">
                                 <div class="mb-3">
                                     <?php if (!isset($statusObstetri) || count($statusObstetri) === 0): ?>
                                         <a href="index.php?module=rekam_medis&action=tambah_status_obstetri&no_rkm_medis=<?= $pasien['no_rkm_medis'] ?>&source=<?= $_SESSION['source_page'] ?>" class="btn btn-add btn-sm">
@@ -819,7 +848,7 @@ error_log("Data pasien: " . json_encode($pasien));
                             </div>
 
                             <!-- Tab Riwayat Kehamilan -->
-                            <div class="tab-pane fade" id="riwayat-kehamilan" role="tabpanel">
+                            <div class="tab-pane fade" id="riwayat-kehamilan" role="tabpanel" aria-labelledby="riwayat-kehamilan-tab">
                                 <div class="d-flex justify-content-end mb-3">
                                     <a href="index.php?module=rekam_medis&action=tambah_riwayat_kehamilan&no_rkm_medis=<?= $pasien['no_rkm_medis'] ?>&source=<?= $_SESSION['source_page'] ?>" class="btn btn-primary btn-sm">
                                         <i class="fas fa-plus"></i> Tambah Riwayat
@@ -887,7 +916,7 @@ error_log("Data pasien: " . json_encode($pasien));
                             </div>
 
                             <!-- Tab Status Ginekologi -->
-                            <div class="tab-pane fade" id="status-ginekologi" role="tabpanel">
+                            <div class="tab-pane fade" id="status-ginekologi" role="tabpanel" aria-labelledby="status-ginekologi-tab">
                                 <div class="d-flex justify-content-end mb-3">
                                     <a href="index.php?module=rekam_medis&action=tambah_status_ginekologi&no_rkm_medis=<?= $pasien['no_rkm_medis'] ?>&source=<?= $_SESSION['source_page'] ?>" class="btn btn-primary btn-sm">
                                         <i class="fas fa-plus"></i> Tambah Status Ginekologi
@@ -1341,7 +1370,292 @@ error_log("Data pasien: " . json_encode($pasien));
         </div>
     </div>
 
+    <!-- Modal Daftar Template Ceklist -->
+    <div class="modal fade" id="modalDaftarTemplateCeklist" tabindex="-1" aria-labelledby="modalDaftarTemplateCeklistLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalDaftarTemplateCeklistLabel">Daftar Template Ceklist</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Filter dan Pencarian -->
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <select id="filter_kategori_ceklist" class="form-select me-2">
+                                <option value="">Semua Kategori</option>
+                                <option value="fetomaternal">Fetomaternal</option>
+                                <option value="ginekologi umum">Ginekologi Umum</option>
+                                <option value="onkogin">Onkogin</option>
+                                <option value="fertilitas">Fertilitas</option>
+                                <option value="uroginekologi">Uroginekologi</option>
+                                <option value="obstetri">Obstetri</option>
+                            </select>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="input-group">
+                                <input type="text" id="search_template_ceklist" class="form-control" placeholder="Cari template..." aria-label="Cari template">
+                                <button class="btn btn-outline-secondary" type="button" id="clear_search_template_ceklist">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tabel Template -->
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover" id="tabelTemplateCeklist">
+                            <thead class="table-light">
+                                <tr>
+                                    <th width="5%">No</th>
+                                    <th width="20%">Nama Template</th>
+                                    <th width="40%">Isi Template</th>
+                                    <th width="15%">Kategori</th>
+                                    <th width="10%">Tags</th>
+                                    <th width="10%">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php
+                                // Koneksi ke database
+                                $conn = new mysqli('auth-db1151.hstgr.io', 'u609399718_adminpraktek', 'Obgin@12345', 'u609399718_praktekobgin');
+
+                                if ($conn->connect_error) {
+                                    die("Koneksi gagal: " . $conn->connect_error);
+                                }
+
+                                // Query untuk mengambil semua data template ceklist
+                                $sql = "SELECT * FROM template_ceklist WHERE status = 'active' ORDER BY kategori_ck ASC, nama_template_ck ASC";
+                                $result = $conn->query($sql);
+
+                                if ($result->num_rows > 0) {
+                                    $no = 1;
+                                    while ($row = $result->fetch_assoc()) {
+                                        echo "<tr class='template-row' data-kategori='" . htmlspecialchars($row['kategori_ck']) . "'>";
+                                        echo "<td>" . $no++ . "</td>";
+                                        echo "<td>" . htmlspecialchars($row['nama_template_ck']) . "</td>";
+                                        echo "<td><div style='max-height: 100px; overflow-y: auto;'>" . nl2br(htmlspecialchars($row['isi_template_ck'])) . "</div></td>";
+                                        echo "<td>" . htmlspecialchars($row['kategori_ck']) . "</td>";
+                                        echo "<td>" . htmlspecialchars($row['tags'] ?? '-') . "</td>";
+                                        echo "<td>
+                                                <button type='button' class='btn btn-sm btn-primary mb-1 w-100' onclick='gunakanTemplateCeklist(" . json_encode($row['isi_template_ck']) . ")'>
+                                                    <i class='fas fa-copy'></i> Gunakan
+                                                </button>
+                                              </td>";
+                                        echo "</tr>";
+                                    }
+                                } else {
+                                    echo "<tr><td colspan='6' class='text-center'>Tidak ada data template ceklist</td></tr>";
+                                }
+
+                                $conn->close();
+                                ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
+        // Tab functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabs = document.querySelectorAll('[data-bs-toggle="tab"]');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('data-bs-target'));
+                    
+                    // Hide all tab panes
+                    document.querySelectorAll('.tab-pane').forEach(pane => {
+                        pane.classList.remove('show', 'active');
+                    });
+                    
+                    // Remove active class from all tabs
+                    tabs.forEach(t => {
+                        t.classList.remove('active');
+                    });
+                    
+                    // Show the selected tab pane
+                    if (target) {
+                        target.classList.add('show', 'active');
+                        this.classList.add('active');
+                    }
+                });
+            });
+            
+            // Activate first tab by default
+            const firstTab = document.querySelector('[data-bs-toggle="tab"]');
+            if (firstTab) {
+                firstTab.click();
+            }
+        });
+
+        // Fungsi untuk menggunakan template ceklist
+        function gunakanTemplateCeklist(isi) {
+            try {
+                const ceklistContent = document.getElementById('ceklistContent');
+                if (!ceklistContent) {
+                    console.error('Element ceklistContent not found');
+                    return;
+                }
+                
+                const currentValue = ceklistContent.textContent.trim();
+                
+                // Jika sudah ada konten, tambahkan baris baru
+                if (currentValue && currentValue !== '-') {
+                    ceklistContent.textContent = currentValue + '\n' + isi;
+                } else {
+                    ceklistContent.textContent = isi;
+                }
+                
+                // Tampilkan tombol simpan
+                const saveButton = document.getElementById('saveCeklist');
+                if (saveButton) {
+                    saveButton.style.display = 'inline-block';
+                }
+                
+                // TEMPORARILY SKIP MODAL HIDE FOR DIAGNOSIS
+                console.log('Modal hide was intentionally skipped for diagnosis.');
+                const modalElementForDebug = document.getElementById('modalDaftarTemplateCeklist');
+                if (!modalElementForDebug) {
+                    console.error('Modal element modalDaftarTemplateCeklist not found even for debugging log.');
+                }
+                // Original modal hide code commented out:
+                // const modalElement = document.getElementById('modalDaftarTemplateCeklist');
+                // const modal = bootstrap.Modal.getInstance(modalElement);
+                // if (modalElement && modal) {
+                //     modal.hide();
+                // } else {
+                //     console.error('Modal instance or element not found for modalDaftarTemplateCeklist');
+                // }
+            } catch (error) {
+                console.error('Error in gunakanTemplateCeklist:', error);
+                alert('Terjadi kesalahan saat menggunakan template. Silakan coba lagi.');
+            }
+        }
+
+        // Filter dan pencarian untuk template ceklist
+        document.addEventListener('DOMContentLoaded', function() {
+            // Fungsi untuk memfilter template berdasarkan kategori dan pencarian
+            function filterTemplates() {
+                var kategori = document.getElementById('filter_kategori_ceklist').value;
+                var searchText = document.getElementById('search_template_ceklist').value.toLowerCase();
+                var rows = document.querySelectorAll('#tabelTemplateCeklist tbody tr.template-row');
+                var anyVisible = false;
+
+                rows.forEach(function(row) {
+                    // Ambil teks dari semua kolom kecuali kolom aksi (terakhir)
+                    var rowText = '';
+                    var cells = row.querySelectorAll('td:not(:last-child)');
+                    cells.forEach(function(cell) {
+                        rowText += cell.textContent + ' ';
+                    });
+                    rowText = rowText.toLowerCase();
+
+                    // Filter berdasarkan kategori dan teks pencarian
+                    var matchesCategory = !kategori || row.getAttribute('data-kategori') === kategori;
+                    var matchesSearch = !searchText || rowText.includes(searchText);
+
+                    if (matchesCategory && matchesSearch) {
+                        row.style.display = '';
+                        anyVisible = true;
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+
+                // Tampilkan pesan jika tidak ada hasil
+                var noResultsMessage = document.getElementById('no-template-results');
+                if (!anyVisible) {
+                    if (!noResultsMessage) {
+                        noResultsMessage = document.createElement('tr');
+                        noResultsMessage.id = 'no-template-results';
+                        noResultsMessage.innerHTML = '<td colspan="6" class="text-center py-3">Tidak ada template yang sesuai dengan kriteria pencarian</td>';
+                        document.querySelector('#tabelTemplateCeklist tbody').appendChild(noResultsMessage);
+                    } else {
+                        noResultsMessage.style.display = '';
+                    }
+                } else if (noResultsMessage) {
+                    noResultsMessage.style.display = 'none';
+                }
+            }
+
+            // Event listener untuk filter kategori
+            document.getElementById('filter_kategori_ceklist').addEventListener('change', filterTemplates);
+
+            // Event listener untuk input pencarian (dengan debounce)
+            var searchTimeout;
+            document.getElementById('search_template_ceklist').addEventListener('input', function() {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(filterTemplates, 300);
+            });
+
+            // Event listener untuk tombol clear pencarian
+            document.getElementById('clear_search_template_ceklist').addEventListener('click', function() {
+                document.getElementById('search_template_ceklist').value = '';
+                filterTemplates();
+            });
+
+            // Inline editing for ceklist
+            const ceklistContent = document.getElementById('ceklistContent');
+            const saveButton = document.getElementById('saveCeklist');
+            let originalContent = ceklistContent.textContent;
+
+            // Show save button when content changes
+            ceklistContent.addEventListener('input', function() {
+                if (originalContent !== this.textContent) {
+                    saveButton.style.display = 'block';
+                } else {
+                    saveButton.style.display = 'none';
+                }
+            });
+
+            // Handle save button click
+            saveButton.addEventListener('click', function() {
+                const noRkmMedis = ceklistContent.dataset.noRkmMedis;
+                const newContent = ceklistContent.textContent;
+
+                fetch('index.php?module=rekam_medis&action=updatePasien', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `no_rkm_medis=${encodeURIComponent(noRkmMedis)}&ceklist=${encodeURIComponent(newContent)}`
+                })
+                .then(response => response.text())
+                .then(data => {
+                    saveButton.style.display = 'none';
+                    originalContent = newContent;
+                    // Show success indicator briefly
+                    saveButton.innerHTML = '<i class="fas fa-check"></i>';
+                    saveButton.classList.remove('btn-success');
+                    saveButton.classList.add('btn-success');
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    saveButton.innerHTML = '<i class="fas fa-times"></i>';
+                    saveButton.classList.remove('btn-success');
+                    saveButton.classList.add('btn-danger');
+                });
+            });
+
+            // Handle Enter key to save
+            ceklistContent.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && e.ctrlKey) {
+                    e.preventDefault();
+                    if (saveButton.style.display === 'block') {
+                        saveButton.click();
+                    }
+                }
+            });
+        });
+
         // Fungsi untuk collapse/expand tab
         const tabToggles = document.querySelectorAll('[data-toggle="collapse"]');
         const tabPanes = document.querySelectorAll('.tab-pane');

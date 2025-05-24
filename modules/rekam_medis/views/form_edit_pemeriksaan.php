@@ -395,6 +395,11 @@ if ($conn) {
                         <i class="fas fa-venus mr-1"></i> Status Ginekologi <i class="fas fa-chevron-down"></i>
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link collapsed" id="grafik-imt-tab" data-toggle="collapse" href="#grafik-imt" role="tab">
+                        <i class="fas fa-chart-line mr-1"></i> Grafik BB Kehamilan <i class="fas fa-chevron-down"></i>
+                    </a>
+                </li>
             </ul>
 
             <!-- Tab Content -->
@@ -641,6 +646,129 @@ if ($conn) {
                                 </tbody>
                             </table>
                         </div>
+                    </div>
+                </div>
+                
+                <!-- Tab Grafik Peningkatan Berat Badan -->
+                <div class="tab-pane fade collapse" id="grafik-imt" role="tabpanel">
+                    <div class="mb-3 d-flex justify-content-between">
+                        <h6 class="font-weight-bold">Grafik Peningkatan Berat Badan Kehamilan</h6>
+                        <button id="printGrafikIMT" type="button" class="btn btn-primary btn-sm">
+                            <i class="fas fa-print"></i> Cetak Grafik
+                        </button>
+                    </div>
+                    
+                    <!-- Form Input IMT dan BB -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header bg-light">
+                                    <h6 class="card-title mb-0" style="font-size: 0.9rem;">Data IMT dan Berat Badan</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <label for="imt_pra_kehamilan" class="form-label">IMT Pra-Kehamilan</label>
+                                            <div class="input-group">
+                                                <input type="number" step="0.01" class="form-control form-control-sm" id="imt_pra_kehamilan" placeholder="Masukkan IMT">
+                                                <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="modal" data-bs-target="#modalHitungIMT">
+                                                    <i class="fas fa-calculator"></i>
+                                                </button>
+                                            </div>
+                                            <small class="text-muted">Masukkan IMT atau hitung dengan kalkulator</small>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="kategori_imt" class="form-label">Kategori IMT</label>
+                                            <input type="text" class="form-control form-control-sm" id="kategori_imt" readonly>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <label for="bb_pra_kehamilan" class="form-label">BB Pra-Kehamilan (kg)</label>
+                                            <input type="number" step="0.1" class="form-control form-control-sm" id="bb_pra_kehamilan">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="tb_ibu" class="form-label">Tinggi Badan (cm)</label>
+                                            <input type="number" step="0.1" class="form-control form-control-sm" id="tb_ibu">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <label for="minggu_kehamilan" class="form-label">Minggu Kehamilan Saat Ini</label>
+                                            <input type="number" class="form-control form-control-sm" id="minggu_kehamilan">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="bb_sekarang" class="form-label">BB Saat Ini (kg)</label>
+                                            <input type="number" step="0.1" class="form-control form-control-sm" id="bb_sekarang">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="d-grid">
+                                        <button class="btn btn-primary btn-sm" id="updateGrafik" type="button">
+                                            <i class="fas fa-sync-alt"></i> Update Grafik
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header bg-light">
+                                    <h6 class="card-title mb-0" style="font-size: 0.9rem;">Rekomendasi Peningkatan Berat Badan</h6>
+                                </div>
+                                <div class="card-body">
+                                    <table class="table table-sm table-bordered">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Kategori IMT Pra-kehamilan</th>
+                                                <th>Rekomendasi Peningkatan BB</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>&lt; 18,5</td>
+                                                <td>12,5 - 18 kg</td>
+                                            </tr>
+                                            <tr>
+                                                <td>18,5 - 24,9</td>
+                                                <td>11,5 - 16 kg</td>
+                                            </tr>
+                                            <tr>
+                                                <td>25 - 29,9</td>
+                                                <td>7 - 11,5 kg</td>
+                                            </tr>
+                                            <tr>
+                                                <td>&gt; 30</td>
+                                                <td>5 - 9 kg</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    
+                                    <div class="alert alert-info mt-3" id="rekomendasiInfo">
+                                        <strong>Rekomendasi untuk pasien:</strong>
+                                        <span id="rekomendasiText">Silahkan masukkan IMT untuk melihat rekomendasi</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Grafik -->
+                    <div class="card">
+                        <div class="card-body">
+                            <canvas id="grafikIMT" width="100%" height="400"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- Catatan -->
+                    <div class="alert alert-secondary mt-3">
+                        <small>
+                            <i class="fas fa-info-circle"></i> Grafik ini diadaptasi dari Institute of Medicine (IOM) 2009.
+                            Silahkan lihat edukasi di halaman 4-20 untuk informasi lebih lanjut.
+                        </small>
                     </div>
                 </div>
             </div>
@@ -1076,6 +1204,9 @@ if ($conn) {
                         <i class="fas fa-times"></i> Batal
                     </a>
                 </div>
+                <!-- Hidden input untuk data pasien yang digunakan oleh fitur Grafik IMT -->
+                <input type="hidden" id="hidden_no_rkm_medis" value="<?= $pasien['no_rkm_medis'] ?>">
+                <input type="hidden" id="hidden_nm_pasien" value="<?= $pasien['nm_pasien'] ?>">
             </form>
         </div>
     </div>
@@ -1636,6 +1767,7 @@ if ($conn) {
                 <h5 class="modal-title" id="modalPilihGambarEdukasiLabel">Pilih Gambar Edukasi</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
+
             <div class="modal-body">
                 <!-- Filter Kategori dan Pencarian -->
                 <div class="row mb-3">
@@ -2883,22 +3015,25 @@ error_log("Form Edit Pemeriksaan: File execution completed");
         const skriningTab = document.getElementById('skrining-tab');
         const riwayatKehamilanTab = document.getElementById('riwayat-kehamilan-tab');
         const statusGinekologiTab = document.getElementById('status-ginekologi-tab');
+        const grafikImtTab = document.getElementById('grafik-imt-tab');
 
         const identitasContent = document.getElementById('identitas');
         const skriningContent = document.getElementById('skrining');
         const riwayatKehamilanContent = document.getElementById('riwayat-kehamilan');
         const statusGinekologiContent = document.getElementById('status-ginekologi');
+        const grafikImtContent = document.getElementById('grafik-imt');
 
         // Initialize icon state
         identitasTab.querySelector('i.fas.fa-chevron-down').style.transform = 'rotate(0deg)';
         skriningTab.querySelector('i.fas.fa-chevron-down').style.transform = 'rotate(-90deg)';
         riwayatKehamilanTab.querySelector('i.fas.fa-chevron-down').style.transform = 'rotate(-90deg)';
         statusGinekologiTab.querySelector('i.fas.fa-chevron-down').style.transform = 'rotate(-90deg)';
+        grafikImtTab.querySelector('i.fas.fa-chevron-down').style.transform = 'rotate(-90deg)';
 
         // Fungsi untuk menutup semua tab kecuali yang aktif
         function closeAllTabsExcept(activeTabContent) {
-            const allTabContents = [identitasContent, skriningContent, riwayatKehamilanContent, statusGinekologiContent];
-            const allTabs = [identitasTab, skriningTab, riwayatKehamilanTab, statusGinekologiTab];
+            const allTabContents = [identitasContent, skriningContent, riwayatKehamilanContent, statusGinekologiContent, grafikImtContent];
+            const allTabs = [identitasTab, skriningTab, riwayatKehamilanTab, statusGinekologiTab, grafikImtTab];
 
             allTabContents.forEach(content => {
                 if (content !== activeTabContent) {
@@ -3002,6 +3137,28 @@ error_log("Form Edit Pemeriksaan: File execution completed");
                 this.querySelector('i.fas.fa-chevron-down').style.transform = 'rotate(0deg)';
             }
         });
+        
+        // Handler untuk tab Grafik IMT
+        grafikImtTab.addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log('Grafik IMT tab clicked');
+
+            if (grafikImtContent.style.display === 'block') {
+                grafikImtContent.style.display = 'none';
+                grafikImtContent.classList.remove('show');
+                this.classList.add('collapsed');
+                this.classList.remove('active');
+                this.querySelector('i.fas.fa-chevron-down').style.transform = 'rotate(-90deg)';
+            } else {
+                grafikImtContent.style.display = 'block';
+                grafikImtContent.classList.add('show');
+                closeAllTabsExcept(grafikImtContent);
+
+                this.classList.remove('collapsed');
+                this.classList.add('active');
+                this.querySelector('i.fas.fa-chevron-down').style.transform = 'rotate(0deg)';
+            }
+        });
 
         // Inisialisasi tampilan - pastikan tab identitas terbuka di awal
         identitasContent.style.display = 'block';
@@ -3011,6 +3168,7 @@ error_log("Form Edit Pemeriksaan: File execution completed");
         skriningContent.style.display = 'none';
         riwayatKehamilanContent.style.display = 'none';
         statusGinekologiContent.style.display = 'none';
+        grafikImtContent.style.display = 'none';
 
         // Buat IntersectionObserver untuk setiap konten tab sebagai fallback
         const setupObserver = (elementId, callbackFn) => {
@@ -3310,3 +3468,42 @@ error_log("Form Edit Pemeriksaan: File execution completed");
         }
     }
 </script>
+
+<!-- Tambahkan Chart.js dan script grafik IMT -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+<script src="../../modules/rekam_medis/js/grafik_imt.js"></script>
+
+<!-- Modal Kalkulator IMT -->
+<div class="modal fade" id="modalHitungIMT" tabindex="-1" aria-labelledby="modalHitungIMTLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalHitungIMTLabel">Kalkulator IMT</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="kalkulator_bb" class="form-label">Berat Badan (kg)</label>
+                    <input type="number" step="0.1" class="form-control" id="kalkulator_bb">
+                </div>
+                <div class="mb-3">
+                    <label for="kalkulator_tb" class="form-label">Tinggi Badan (cm)</label>
+                    <input type="number" step="0.1" class="form-control" id="kalkulator_tb">
+                </div>
+                <div class="mb-3">
+                    <label for="hasil_imt" class="form-label">Hasil IMT</label>
+                    <input type="text" class="form-control" id="hasil_imt" readonly>
+                </div>
+                <div class="mb-3">
+                    <label for="kategori_hasil_imt" class="form-label">Kategori</label>
+                    <input type="text" class="form-control" id="kategori_hasil_imt" readonly>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                <button type="button" class="btn btn-primary" id="hitungIMT">Hitung</button>
+                <button type="button" class="btn btn-success" id="gunakanIMT">Gunakan</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -86,28 +86,10 @@ $tempPdf->Ln(2);
 $tempPdf->Line($leftMargin, $tempPdf->GetY(), 100 - $rightMargin, $tempPdf->GetY());
 $tempPdf->Ln(4);
 
-// Tampilkan judul edukasi
-$tempPdf->SetFont('helvetica', 'B', 10);
-$tempPdf->Cell(0, 5, 'INFORMASI EDUKASI:', 0, 1, 'L');
-$tempPdf->Ln(2);
 
 // Tampilkan hasil edukasi
 $tempPdf->SetFont('helvetica', '', 9);
 $tempPdf->writeHTML('<div style="line-height: 1.5; text-align: justify;">' . nl2br($isiEdukasi) . '</div>', true, false, true, false, '');
-
-// Tambahkan tanda tangan
-$tempPdf->Ln(10);
-$tempPdf->SetFont('helvetica', '', 9);
-$tempPdf->Cell(0, 5, 'Dokter Pemeriksa,', 0, 1, 'R');
-$tempPdf->Ln(15); // Spasi untuk tanda tangan
-$tempPdf->Cell(0, 5, 'dr.ARIFIAN JUARI,SpOG', 0, 1, 'R');
-$tempPdf->Cell(0, 5, 'SIP: MR35792503010132', 0, 1, 'R');
-
-// Tanda terima pasien
-$tempPdf->Ln(5);
-$tempPdf->Cell(0, 5, 'Diterima oleh Pasien/Keluarga,', 0, 1, 'L');
-$tempPdf->Ln(15); // Spasi untuk tanda tangan pasien
-$tempPdf->Cell(0, 5, '(.................................)', 0, 1, 'L');
 
 // ---- Akhir Tambahkan Konten ke PDF Sementara ----
 
@@ -170,28 +152,10 @@ $pdf->Ln(2);
 $pdf->Line($leftMargin, $pdf->GetY(), 100 - $rightMargin, $pdf->GetY());
 $pdf->Ln(4);
 
-// Tampilkan judul edukasi
-$pdf->SetFont('helvetica', 'B', 10);
-$pdf->Cell(0, 5, 'INFORMASI EDUKASI:', 0, 1, 'L');
-$pdf->Ln(2);
 
 // Tampilkan hasil edukasi
 $pdf->SetFont('helvetica', '', 9);
 $pdf->writeHTML('<div style="line-height: 1.5; text-align: justify;">' . nl2br($isiEdukasi) . '</div>', true, false, true, false, '');
-
-// Tambahkan tanda tangan
-$pdf->Ln(10);
-$pdf->SetFont('helvetica', '', 9);
-$pdf->Cell(0, 5, 'Dokter Pemeriksa,', 0, 1, 'R');
-$pdf->Ln(15); // Spasi untuk tanda tangan
-$pdf->Cell(0, 5, 'dr.ARIFIAN JUARI,SpOG', 0, 1, 'R');
-$pdf->Cell(0, 5, 'SIP: MR35792503010132', 0, 1, 'R');
-
-// Tanda terima pasien
-$pdf->Ln(5);
-$pdf->Cell(0, 5, 'Diterima oleh Pasien/Keluarga,', 0, 1, 'L');
-$pdf->Ln(15); // Spasi untuk tanda tangan pasien
-$pdf->Cell(0, 5, '(.................................)', 0, 1, 'L');
 
 // ---- Akhir Tambahkan Konten ke PDF FINAL ----
 

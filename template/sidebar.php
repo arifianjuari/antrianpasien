@@ -978,32 +978,6 @@ function is_current_module($module, $action = null)
         transition: width 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
     }
 
-    /* Tooltip for minimized sidebar */
-    .sidebar.minimized .nav-link::after {
-        content: attr(data-title);
-        position: absolute;
-        left: 100%;
-        top: 50%;
-        transform: translateY(-50%);
-        background-color: rgba(0, 0, 0, 0.8);
-        color: white;
-        padding: 0.25rem 0.5rem;
-        border-radius: 0.25rem;
-        font-size: 0.75rem;
-        white-space: nowrap;
-        opacity: 0;
-        visibility: hidden;
-        transition: all 0.2s ease;
-        pointer-events: none;
-        z-index: 1070;
-        margin-left: 10px;
-    }
-
-    .sidebar.minimized .nav-link:hover::after {
-        opacity: 1;
-        visibility: visible;
-    }
-
     /* Fix for minimized sidebar icons */
     .sidebar.minimized .nav-item {
         display: flex;
@@ -1125,6 +1099,13 @@ function is_current_module($module, $action = null)
                             class="nav-link <?php echo is_current_module('rekam_medis', 'daftar_atensi') ? 'active' : ''; ?>" data-title="Daftar Atensi">
                             <i class="bi bi-exclamation-circle"></i>
                             <span class="menu-text">Daftar Atensi</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="<?php echo clean_url($base_url); ?>/index.php?module=rekam_medis&action=template_ceklist"
+                            class="nav-link <?php echo is_current_module('rekam_medis', 'template_ceklist') ? 'active' : ''; ?>" data-title="Template Ceklist">
+                            <i class="bi bi-check2-square"></i>
+                            <span class="menu-text">Template Ceklist</span>
                         </a>
                     </li>
                     <li class="nav-item">
