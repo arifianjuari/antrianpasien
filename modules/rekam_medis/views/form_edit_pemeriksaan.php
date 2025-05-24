@@ -409,7 +409,7 @@ if ($conn) {
                     <div class="py-3">
                         <div class="row">
                             <!-- Kolom Kiri - Data Pasien -->
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="card">
                                     <div class="card-header bg-light">
                                         <h6 class="card-title mb-0" style="font-size: 0.9rem;">Informasi Pasien</h6>
@@ -438,8 +438,8 @@ if ($conn) {
                                 </div>
                             </div>
 
-                            <!-- Kolom Kanan - Data Tambahan -->
-                            <div class="col-md-6">
+                            <!-- Kolom Tengah - Data Tambahan -->
+                            <div class="col-md-4">
                                 <div class="card">
                                     <div class="card-header bg-light">
                                         <h6 class="card-title mb-0" style="font-size: 0.9rem;">Informasi Tambahan</h6>
@@ -463,6 +463,34 @@ if ($conn) {
                                                 <td class="px-3"><?= $pasien['stts_nikah'] ?? '-' ?></td>
                                             </tr>
                                         </table>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Kolom Ketiga (Ceklist) -->
+                            <div class="col-md-4">
+                                <div class="card">
+                                    <div class="card-header bg-light position-relative">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <h6 class="card-title mb-0" style="font-size: 0.9rem;">Ceklist</h6>
+                                        </div>
+                                        <div class="ceklist-buttons position-absolute" style="top: 8px; right: 10px;">
+                                            <button type="button" class="btn btn-xs btn-outline-info me-1" style="padding: 0.2rem 0.4rem; font-size: 0.7rem;" data-bs-toggle="modal" data-bs-target="#modalDaftarTemplateCeklist">
+                                                <i class="fas fa-list"></i>
+                                            </button>
+                                            <button type="button" id="saveCeklist" class="btn btn-xs btn-outline-success" style="padding: 0.2rem 0.4rem; font-size: 0.7rem; display: none;">
+                                                <i class="fas fa-check"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="card-body p-0">
+                                        <div class="p-3" style="font-size: 0.75rem;">
+                                            <div id="ceklistContent" 
+                                                 contenteditable="true" 
+                                                 style="white-space: pre-wrap; line-height: 1.3; min-height: 100px; outline: none; font-size: 0.7rem;"
+                                                 data-no-rkm-medis="<?= $pasien['no_rkm_medis'] ?>"><?= htmlspecialchars($pemeriksaan['ceklist'] ?? '-') ?></div>
+                                            <input type="hidden" name="ceklist" id="ceklistHidden" value="<?= htmlspecialchars($pemeriksaan['ceklist'] ?? '-') ?>">
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -648,7 +676,7 @@ if ($conn) {
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Tab Grafik Peningkatan Berat Badan -->
                 <div class="tab-pane fade collapse" id="grafik-imt" role="tabpanel">
                     <div class="mb-3 d-flex justify-content-between">
@@ -657,7 +685,7 @@ if ($conn) {
                             <i class="fas fa-print"></i> Cetak Grafik
                         </button>
                     </div>
-                    
+
                     <!-- Form Input IMT dan BB -->
                     <div class="row mb-3">
                         <div class="col-md-6">
@@ -682,7 +710,7 @@ if ($conn) {
                                             <input type="text" class="form-control form-control-sm" id="kategori_imt" readonly>
                                         </div>
                                     </div>
-                                    
+
                                     <div class="row mb-3">
                                         <div class="col-md-6">
                                             <label for="bb_pra_kehamilan" class="form-label">BB Pra-Kehamilan (kg)</label>
@@ -693,7 +721,7 @@ if ($conn) {
                                             <input type="number" step="0.1" class="form-control form-control-sm" id="tb_ibu">
                                         </div>
                                     </div>
-                                    
+
                                     <div class="row mb-3">
                                         <div class="col-md-6">
                                             <label for="minggu_kehamilan" class="form-label">Minggu Kehamilan Saat Ini</label>
@@ -704,7 +732,7 @@ if ($conn) {
                                             <input type="number" step="0.1" class="form-control form-control-sm" id="bb_sekarang">
                                         </div>
                                     </div>
-                                    
+
                                     <div class="d-grid">
                                         <button class="btn btn-primary btn-sm" id="updateGrafik" type="button">
                                             <i class="fas fa-sync-alt"></i> Update Grafik
@@ -713,7 +741,7 @@ if ($conn) {
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="col-md-6">
                             <div class="card">
                                 <div class="card-header bg-light">
@@ -746,7 +774,7 @@ if ($conn) {
                                             </tr>
                                         </tbody>
                                     </table>
-                                    
+
                                     <div class="alert alert-info mt-3" id="rekomendasiInfo">
                                         <strong>Rekomendasi untuk pasien:</strong>
                                         <span id="rekomendasiText">Silahkan masukkan IMT untuk melihat rekomendasi</span>
@@ -755,14 +783,14 @@ if ($conn) {
                             </div>
                         </div>
                     </div>
-                    
+
                     <!-- Grafik -->
                     <div class="card">
                         <div class="card-body">
                             <canvas id="grafikIMT" width="100%" height="400"></canvas>
                         </div>
                     </div>
-                    
+
                     <!-- Catatan -->
                     <div class="alert alert-secondary mt-3">
                         <small>
@@ -1428,6 +1456,97 @@ if ($conn) {
 </div>
 
 <!-- Modal Daftar Template Resep -->
+<!-- Modal Daftar Template Ceklist -->
+<div class="modal fade" id="modalDaftarTemplateCeklist" tabindex="-1" aria-labelledby="modalDaftarTemplateCeklistLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalDaftarTemplateCeklistLabel">Daftar Template Ceklist</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Filter dan Pencarian -->
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <select id="filter_kategori_ceklist" class="form-select me-2">
+                            <option value="">Semua Kategori</option>
+                            <option value="fetomaternal">Fetomaternal</option>
+                            <option value="ginekologi umum">Ginekologi Umum</option>
+                            <option value="onkogin">Onkogin</option>
+                            <option value="fertilitas">Fertilitas</option>
+                            <option value="uroginekologi">Uroginekologi</option>
+                            <option value="obstetri">Obstetri</option>
+                        </select>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="input-group">
+                            <input type="text" id="search_template_ceklist" class="form-control" placeholder="Cari template..." aria-label="Cari template">
+                            <button class="btn btn-outline-secondary" type="button" id="clear_search_template_ceklist">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tabel Template -->
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover" id="tabelTemplateCeklist">
+                        <thead class="table-light">
+                            <tr>
+                                <th width="5%">No</th>
+                                <th width="20%">Nama Template</th>
+                                <th width="40%">Isi Template</th>
+                                <th width="15%">Kategori</th>
+                                <th width="10%">Tags</th>
+                                <th width="10%">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php
+                            // Koneksi ke database
+                            $conn = new mysqli('auth-db1151.hstgr.io', 'u609399718_adminpraktek', 'Obgin@12345', 'u609399718_praktekobgin');
+
+                            if ($conn->connect_error) {
+                                die("Koneksi gagal: " . $conn->connect_error);
+                            }
+
+                            // Query untuk mengambil semua data template ceklist
+                            $sql = "SELECT * FROM template_ceklist WHERE status = 'active' ORDER BY kategori_ck ASC, nama_template_ck ASC";
+                            $result = $conn->query($sql);
+
+                            if ($result->num_rows > 0) {
+                                $no = 1;
+                                while ($row = $result->fetch_assoc()) {
+                                    echo "<tr class='template-row' data-kategori='" . htmlspecialchars($row['kategori_ck']) . "'>";
+                                    echo "<td>" . $no++ . "</td>";
+                                    echo "<td>" . htmlspecialchars($row['nama_template_ck']) . "</td>";
+                                    echo "<td><div style='max-height: 100px; overflow-y: auto;'>" . nl2br(htmlspecialchars($row['isi_template_ck'])) . "</div></td>";
+                                    echo "<td>" . htmlspecialchars($row['kategori_ck']) . "</td>";
+                                    echo "<td>" . htmlspecialchars($row['tags'] ?? '-') . "</td>";
+                                    echo "<td>
+                                            <button type='button' class='btn btn-sm btn-primary mb-1 w-100' onclick='gunakanTemplateCeklist(" . json_encode($row['isi_template_ck']) . ")'>
+                                                <i class='fas fa-copy'></i> Gunakan
+                                            </button>
+                                          </td>";
+                                    echo "</tr>";
+                                }
+                            } else {
+                                echo "<tr><td colspan='6' class='text-center'>Tidak ada data template ceklist</td></tr>";
+                            }
+
+                            $conn->close();
+                            ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="modal fade" id="modalDaftarTemplateResep" tabindex="-1" aria-labelledby="modalDaftarTemplateResepLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
@@ -1825,6 +1944,45 @@ if ($conn) {
 
 <!-- Pastikan jQuery dan Bootstrap JS dimuat -->
 <script>
+    // Fungsi untuk menggunakan template ceklist
+    function gunakanTemplateCeklist(isi) {
+        try {
+            const ceklistContent = document.getElementById('ceklistContent');
+            if (!ceklistContent) {
+                console.error('Element ceklistContent not found');
+                return;
+            }
+            
+            const currentValue = ceklistContent.textContent.trim();
+            
+            // Jika sudah ada konten, tambahkan baris baru
+            if (currentValue && currentValue !== '-') {
+                ceklistContent.textContent = currentValue + '\n' + isi;
+            } else {
+                ceklistContent.textContent = isi;
+            }
+            
+            // Tampilkan tombol simpan
+            const saveButton = document.getElementById('saveCeklist');
+            if (saveButton) {
+                saveButton.style.display = 'inline-block';
+            }
+            
+            // Update hidden input
+            document.getElementById('ceklistHidden').value = ceklistContent.textContent;
+            
+            // Close modal
+            const modalElement = document.getElementById('modalDaftarTemplateCeklist');
+            const modal = bootstrap.Modal.getInstance(modalElement);
+            if (modalElement && modal) {
+                modal.hide();
+            }
+        } catch (error) {
+            console.error('Error in gunakanTemplateCeklist:', error);
+            alert('Terjadi kesalahan saat menggunakan template. Silakan coba lagi.');
+        }
+    }
+    
     // Periksa jika jQuery belum dimuat
     if (typeof jQuery === 'undefined') {
         console.error('jQuery tidak ditemukan. Memuat dari CDN...');
@@ -2006,7 +2164,99 @@ error_log("Form Edit Pemeriksaan: File execution completed");
                 loadingManager.hide(); // Pastikan loading hilang saat modal tertutup
             });
         });
+        
+        // Inisialisasi event listeners untuk ceklist
+        initCeklistEventListeners();
     });
+    
+    // Fungsi untuk menginisialisasi event listeners ceklist
+    function initCeklistEventListeners() {
+        // Dapatkan elemen-elemen ceklist
+        const ceklistContent = document.getElementById('ceklistContent');
+        const saveButton = document.getElementById('saveCeklist');
+        const ceklistHidden = document.getElementById('ceklistHidden');
+        
+        if (ceklistContent && saveButton && ceklistHidden) {
+            let originalContent = ceklistContent.textContent;
+            
+            // Tampilkan tombol save ketika konten berubah
+            ceklistContent.addEventListener('input', function() {
+                if (originalContent !== this.textContent) {
+                    saveButton.style.display = 'block';
+                    // Update hidden input untuk form submission
+                    ceklistHidden.value = this.textContent;
+                } else {
+                    saveButton.style.display = 'none';
+                }
+            });
+            
+            // Handle klik tombol save
+            saveButton.addEventListener('click', function() {
+                const noRkmMedis = ceklistContent.dataset.noRkmMedis;
+                const newContent = ceklistContent.textContent;
+                
+                // Tampilkan indikator loading
+                loadingManager.show();
+                
+                fetch('index.php?module=rekam_medis&action=updatePasien', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `no_rkm_medis=${encodeURIComponent(noRkmMedis)}&ceklist=${encodeURIComponent(newContent)}`
+                })
+                .then(response => response.text())
+                .then(data => {
+                    loadingManager.hide();
+                    saveButton.style.display = 'none';
+                    originalContent = newContent;
+                    // Tampilkan indikator sukses
+                    saveButton.innerHTML = '<i class="fas fa-check"></i>';
+                    saveButton.classList.remove('btn-outline-success');
+                    saveButton.classList.add('btn-success');
+                    
+                    // Kembalikan ke ikon asli setelah beberapa saat
+                    setTimeout(() => {
+                        saveButton.innerHTML = '<i class="fas fa-check"></i>';
+                        saveButton.classList.remove('btn-success');
+                        saveButton.classList.add('btn-outline-success');
+                    }, 2000);
+                })
+                .catch(error => {
+                    loadingManager.hide();
+                    console.error('Error:', error);
+                    saveButton.innerHTML = '<i class="fas fa-times"></i>';
+                    saveButton.classList.remove('btn-outline-success');
+                    saveButton.classList.add('btn-danger');
+                    
+                    // Kembalikan ke ikon asli setelah beberapa saat
+                    setTimeout(() => {
+                        saveButton.innerHTML = '<i class="fas fa-check"></i>';
+                        saveButton.classList.remove('btn-danger');
+                        saveButton.classList.add('btn-outline-success');
+                    }, 2000);
+                });
+            });
+            
+            // Handle Ctrl+Enter untuk menyimpan
+            ceklistContent.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && e.ctrlKey) {
+                    e.preventDefault();
+                    if (saveButton.style.display === 'block') {
+                        saveButton.click();
+                    }
+                }
+            });
+            
+            console.log('Ceklist event listeners initialized');
+        } else {
+            console.warn('Some ceklist elements not found:', {
+                content: !!ceklistContent,
+                saveButton: !!saveButton,
+                hiddenInput: !!ceklistHidden
+            });
+        }
+    }
 
     function gunakanTemplate(isi) {
         try {
@@ -3137,7 +3387,7 @@ error_log("Form Edit Pemeriksaan: File execution completed");
                 this.querySelector('i.fas.fa-chevron-down').style.transform = 'rotate(0deg)';
             }
         });
-        
+
         // Handler untuk tab Grafik IMT
         grafikImtTab.addEventListener('click', function(e) {
             e.preventDefault();
