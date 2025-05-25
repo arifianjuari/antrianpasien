@@ -448,7 +448,7 @@ if ($conn) {
                                         <table class="table table-sm table-hover" style="font-size: 0.85rem;">
                                             <tr>
                                                 <th width="140" class="text-muted px-3">Alamat</th>
-                                                <td class="px-3"><?= $pasien['alamat'] ?? '-' ?></td>
+                                                <td class="px-3" style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><?= $pasien['alamat'] ?? '-' ?></td>
                                             </tr>
                                             <tr>
                                                 <th class="text-muted px-3">No. Telepon</th>
@@ -466,7 +466,7 @@ if ($conn) {
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <!-- Kolom Ketiga (Ceklist) -->
                             <div class="col-md-4">
                                 <div class="card">
@@ -478,17 +478,20 @@ if ($conn) {
                                             <button type="button" class="btn btn-xs btn-outline-info me-1" style="padding: 0.2rem 0.4rem; font-size: 0.7rem;" data-bs-toggle="modal" data-bs-target="#modalDaftarTemplateCeklist">
                                                 <i class="fas fa-list"></i>
                                             </button>
-                                            <button type="button" id="saveCeklist" class="btn btn-xs btn-outline-success" style="padding: 0.2rem 0.4rem; font-size: 0.7rem; display: none;">
+                                            <button type="button" id="saveCeklist" class="btn btn-xs btn-outline-success me-1" style="padding: 0.2rem 0.4rem; font-size: 0.7rem; display: none;">
                                                 <i class="fas fa-check"></i>
+                                            </button>
+                                            <button type="button" onclick="printCeklist()" class="btn btn-xs btn-outline-success" style="padding: 0.2rem 0.4rem; font-size: 0.7rem;">
+                                                <i class="fas fa-print"></i>
                                             </button>
                                         </div>
                                     </div>
                                     <div class="card-body p-0">
                                         <div class="p-3" style="font-size: 0.75rem;">
-                                            <div id="ceklistContent" 
-                                                 contenteditable="true" 
-                                                 style="white-space: pre-wrap; line-height: 1.3; min-height: 100px; outline: none; font-size: 0.7rem;"
-                                                 data-no-rkm-medis="<?= $pasien['no_rkm_medis'] ?>"><?= htmlspecialchars($pemeriksaan['ceklist'] ?? '-') ?></div>
+                                            <div id="ceklistContent"
+                                                contenteditable="true"
+                                                style="white-space: pre-wrap; line-height: 1.3; min-height: 100px; outline: none; font-size: 0.7rem;"
+                                                data-no-rkm-medis="<?= $pasien['no_rkm_medis'] ?>"><?= htmlspecialchars($pemeriksaan['ceklist'] ?? '-') ?></div>
                                             <input type="hidden" name="ceklist" id="ceklistHidden" value="<?= htmlspecialchars($pemeriksaan['ceklist'] ?? '-') ?>">
                                         </div>
                                     </div>
@@ -1952,25 +1955,25 @@ if ($conn) {
                 console.error('Element ceklistContent not found');
                 return;
             }
-            
+
             const currentValue = ceklistContent.textContent.trim();
-            
+
             // Jika sudah ada konten, tambahkan baris baru
             if (currentValue && currentValue !== '-') {
                 ceklistContent.textContent = currentValue + '\n' + isi;
             } else {
                 ceklistContent.textContent = isi;
             }
-            
+
             // Tampilkan tombol simpan
             const saveButton = document.getElementById('saveCeklist');
             if (saveButton) {
                 saveButton.style.display = 'inline-block';
             }
-            
+
             // Update hidden input
             document.getElementById('ceklistHidden').value = ceklistContent.textContent;
-            
+
             // Close modal
             const modalElement = document.getElementById('modalDaftarTemplateCeklist');
             const modal = bootstrap.Modal.getInstance(modalElement);
@@ -1982,7 +1985,7 @@ if ($conn) {
             alert('Terjadi kesalahan saat menggunakan template. Silakan coba lagi.');
         }
     }
-    
+
     // Periksa jika jQuery belum dimuat
     if (typeof jQuery === 'undefined') {
         console.error('jQuery tidak ditemukan. Memuat dari CDN...');
@@ -2090,8 +2093,9 @@ error_log("Form Edit Pemeriksaan: File execution completed");
         $('#modalDaftarTemplateAnamnesis').modal('hide');
     }
 
-    // Initialize auto-resize for the Riwayat Sekarang textarea when the DOM is loaded
+    // Initialize auto-resize for textareas when the DOM is loaded
     document.addEventListener('DOMContentLoaded', function() {
+        // Auto-resize for Riwayat Sekarang
         const riwayatSekarangTextarea = document.getElementById('riwayat_sekarang');
         if (riwayatSekarangTextarea) {
             // Initial resize (if there's content)
@@ -2099,6 +2103,66 @@ error_log("Form Edit Pemeriksaan: File execution completed");
 
             // Add input event listener to resize as user types
             riwayatSekarangTextarea.addEventListener('input', function() {
+                autoResizeTextarea(this);
+            });
+        }
+
+        // Auto-resize for Resume
+        const resumeTextarea = document.getElementById('resume');
+        if (resumeTextarea) {
+            // Initial resize (if there's content)
+            autoResizeTextarea(resumeTextarea);
+
+            // Add input event listener to resize as user types
+            resumeTextarea.addEventListener('input', function() {
+                autoResizeTextarea(this);
+            });
+        }
+
+        // Auto-resize for Resep
+        const resepTextarea = document.getElementById('resep');
+        if (resepTextarea) {
+            // Initial resize (if there's content)
+            autoResizeTextarea(resepTextarea);
+
+            // Add input event listener to resize as user types
+            resepTextarea.addEventListener('input', function() {
+                autoResizeTextarea(this);
+            });
+        }
+
+        // Auto-resize for Diagnosis
+        const diagnosisTextarea = document.getElementById('diagnosis');
+        if (diagnosisTextarea) {
+            // Initial resize (if there's content)
+            autoResizeTextarea(diagnosisTextarea);
+
+            // Add input event listener to resize as user types
+            diagnosisTextarea.addEventListener('input', function() {
+                autoResizeTextarea(this);
+            });
+        }
+
+        // Auto-resize for Tatalaksana
+        const tatalaksanaTextarea = document.getElementById('tatalaksana');
+        if (tatalaksanaTextarea) {
+            // Initial resize (if there's content)
+            autoResizeTextarea(tatalaksanaTextarea);
+
+            // Add input event listener to resize as user types
+            tatalaksanaTextarea.addEventListener('input', function() {
+                autoResizeTextarea(this);
+            });
+        }
+
+        // Auto-resize for Edukasi
+        const edukasiTextarea = document.getElementById('edukasi');
+        if (edukasiTextarea) {
+            // Initial resize (if there's content)
+            autoResizeTextarea(edukasiTextarea);
+
+            // Add input event listener to resize as user types
+            edukasiTextarea.addEventListener('input', function() {
                 autoResizeTextarea(this);
             });
         }
@@ -2164,21 +2228,21 @@ error_log("Form Edit Pemeriksaan: File execution completed");
                 loadingManager.hide(); // Pastikan loading hilang saat modal tertutup
             });
         });
-        
+
         // Inisialisasi event listeners untuk ceklist
         initCeklistEventListeners();
     });
-    
+
     // Fungsi untuk menginisialisasi event listeners ceklist
     function initCeklistEventListeners() {
         // Dapatkan elemen-elemen ceklist
         const ceklistContent = document.getElementById('ceklistContent');
         const saveButton = document.getElementById('saveCeklist');
         const ceklistHidden = document.getElementById('ceklistHidden');
-        
+
         if (ceklistContent && saveButton && ceklistHidden) {
             let originalContent = ceklistContent.textContent;
-            
+
             // Tampilkan tombol save ketika konten berubah
             ceklistContent.addEventListener('input', function() {
                 if (originalContent !== this.textContent) {
@@ -2189,55 +2253,55 @@ error_log("Form Edit Pemeriksaan: File execution completed");
                     saveButton.style.display = 'none';
                 }
             });
-            
+
             // Handle klik tombol save
             saveButton.addEventListener('click', function() {
                 const noRkmMedis = ceklistContent.dataset.noRkmMedis;
                 const newContent = ceklistContent.textContent;
-                
+
                 // Tampilkan indikator loading
                 loadingManager.show();
-                
+
                 fetch('index.php?module=rekam_medis&action=updatePasien', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: `no_rkm_medis=${encodeURIComponent(noRkmMedis)}&ceklist=${encodeURIComponent(newContent)}`
-                })
-                .then(response => response.text())
-                .then(data => {
-                    loadingManager.hide();
-                    saveButton.style.display = 'none';
-                    originalContent = newContent;
-                    // Tampilkan indikator sukses
-                    saveButton.innerHTML = '<i class="fas fa-check"></i>';
-                    saveButton.classList.remove('btn-outline-success');
-                    saveButton.classList.add('btn-success');
-                    
-                    // Kembalikan ke ikon asli setelah beberapa saat
-                    setTimeout(() => {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: `no_rkm_medis=${encodeURIComponent(noRkmMedis)}&ceklist=${encodeURIComponent(newContent)}`
+                    })
+                    .then(response => response.text())
+                    .then(data => {
+                        loadingManager.hide();
+                        saveButton.style.display = 'none';
+                        originalContent = newContent;
+                        // Tampilkan indikator sukses
                         saveButton.innerHTML = '<i class="fas fa-check"></i>';
-                        saveButton.classList.remove('btn-success');
-                        saveButton.classList.add('btn-outline-success');
-                    }, 2000);
-                })
-                .catch(error => {
-                    loadingManager.hide();
-                    console.error('Error:', error);
-                    saveButton.innerHTML = '<i class="fas fa-times"></i>';
-                    saveButton.classList.remove('btn-outline-success');
-                    saveButton.classList.add('btn-danger');
-                    
-                    // Kembalikan ke ikon asli setelah beberapa saat
-                    setTimeout(() => {
-                        saveButton.innerHTML = '<i class="fas fa-check"></i>';
-                        saveButton.classList.remove('btn-danger');
-                        saveButton.classList.add('btn-outline-success');
-                    }, 2000);
-                });
+                        saveButton.classList.remove('btn-outline-success');
+                        saveButton.classList.add('btn-success');
+
+                        // Kembalikan ke ikon asli setelah beberapa saat
+                        setTimeout(() => {
+                            saveButton.innerHTML = '<i class="fas fa-check"></i>';
+                            saveButton.classList.remove('btn-success');
+                            saveButton.classList.add('btn-outline-success');
+                        }, 2000);
+                    })
+                    .catch(error => {
+                        loadingManager.hide();
+                        console.error('Error:', error);
+                        saveButton.innerHTML = '<i class="fas fa-times"></i>';
+                        saveButton.classList.remove('btn-outline-success');
+                        saveButton.classList.add('btn-danger');
+
+                        // Kembalikan ke ikon asli setelah beberapa saat
+                        setTimeout(() => {
+                            saveButton.innerHTML = '<i class="fas fa-check"></i>';
+                            saveButton.classList.remove('btn-danger');
+                            saveButton.classList.add('btn-outline-success');
+                        }, 2000);
+                    });
             });
-            
+
             // Handle Ctrl+Enter untuk menyimpan
             ceklistContent.addEventListener('keydown', function(e) {
                 if (e.key === 'Enter' && e.ctrlKey) {
@@ -2247,7 +2311,7 @@ error_log("Form Edit Pemeriksaan: File execution completed");
                     }
                 }
             });
-            
+
             console.log('Ceklist event listeners initialized');
         } else {
             console.warn('Some ceklist elements not found:', {
@@ -2267,6 +2331,8 @@ error_log("Form Edit Pemeriksaan: File execution completed");
             } else {
                 document.getElementById('tatalaksana').value = isi;
             }
+            // Auto-resize after adding content
+            autoResizeTextarea(document.getElementById('tatalaksana'));
             const modal = bootstrap.Modal.getInstance(document.getElementById('modalDaftarTemplate'));
             if (modal) {
                 modal.hide();
@@ -2344,6 +2410,8 @@ error_log("Form Edit Pemeriksaan: File execution completed");
 
     function gunakanDiagnosis(isi) {
         document.getElementById('diagnosis').value = isi;
+        // Auto-resize after adding content
+        autoResizeTextarea(document.getElementById('diagnosis'));
         $('#modalRiwayatDiagnosis').modal('hide');
     }
 
@@ -2370,6 +2438,8 @@ error_log("Form Edit Pemeriksaan: File execution completed");
             } else {
                 document.getElementById('edukasi').value = cleanedContent;
             }
+            // Auto-resize after adding content
+            autoResizeTextarea(document.getElementById('edukasi'));
             const modal = bootstrap.Modal.getInstance(document.getElementById('modalDaftarEdukasi'));
             if (modal) {
                 modal.hide();
@@ -2402,6 +2472,8 @@ error_log("Form Edit Pemeriksaan: File execution completed");
             } else {
                 document.getElementById('resume').value = cleanedContent;
             }
+            // Auto-resize after adding content
+            autoResizeTextarea(document.getElementById('resume'));
             const modal = bootstrap.Modal.getInstance(document.getElementById('modalDaftarTemplateResume'));
             if (modal) {
                 modal.hide();
@@ -2452,6 +2524,8 @@ error_log("Form Edit Pemeriksaan: File execution completed");
             } else {
                 resepField.value = newValue;
             }
+            // Auto-resize after adding content
+            autoResizeTextarea(resepField);
         }
 
         // Tutup modal menggunakan Bootstrap 5 API
@@ -2577,6 +2651,9 @@ error_log("Form Edit Pemeriksaan: File execution completed");
 
         // Update field resume dengan tambahan satu baris kosong
         resumeField.value = newResumeText.trim() + '\n';
+
+        // Auto-resize setelah mengubah konten
+        autoResizeTextarea(resumeField);
     }
 
     function masukkanIdentitasPasien() {
@@ -2585,14 +2662,17 @@ error_log("Form Edit Pemeriksaan: File execution completed");
         var tglLahir = "<?= date('d-m-Y', strtotime($pasien['tgl_lahir'])) ?>";
         var umur = hitungUmur("<?= $pasien['tgl_lahir'] ?>");
 
-        // Format identitas pasien
-        var identitasPasien = "Nama: " + namaPasien + "\n";
-        identitasPasien += "Tanggal Lahir: " + tglLahir + "\n";
-        identitasPasien += "Umur: " + umur + " tahun\n\n";
+        // Format identitas pasien dengan nama pasien lebih besar dan bold
+        // Gunakan format khusus yang akan diproses saat menampilkan resume
+        var identitasPasien = namaPasien.toUpperCase() + "\n";
+        identitasPasien += tglLahir + "/" + umur + " thn\n";
 
         // Sisipkan ke field resume
         var resumeField = document.getElementById('resume');
         resumeField.value = identitasPasien + resumeField.value;
+
+        // Auto-resize setelah mengubah konten
+        autoResizeTextarea(resumeField);
 
         // Update format data
         updateResumeFormat();
@@ -2657,7 +2737,7 @@ error_log("Form Edit Pemeriksaan: File execution completed");
         var hasilFaktorRisiko = "<?= isset($obstetri_data['hasil_faktor_risiko']) ? $obstetri_data['hasil_faktor_risiko'] : '-' ?>";
 
         // Format status obstetri
-        var statusObstetriText = "STATUS OBSTETRI:\n";
+        var statusObstetriText = "\nSTATUS OBSTETRI:\n";
         statusObstetriText += "G" + gravida + "P" + paritas + "A" + abortus;
 
         if (tanggalHpht && tanggalHpht !== '-') {
@@ -2756,7 +2836,7 @@ error_log("Form Edit Pemeriksaan: File execution completed");
         ?>
 
         // Format status ginekologi
-        var statusGinekologiText = "STATUS GINEKOLOGI:\n";
+        var statusGinekologiText = "\nSTATUS GINEKOLOGI:\n";
 
         // Ambil data dengan konversi tipe yang benar dan memperhatikan nama kolom
         var parturien = <?= isset($ginekologi_data['Parturien']) ? intval($ginekologi_data['Parturien']) : 0 ?>;
@@ -2855,6 +2935,9 @@ error_log("Form Edit Pemeriksaan: File execution completed");
         var resumeField = document.getElementById('resume');
         resumeField.value += (resumeField.value ? "\n" : "") + diagnosisText;
 
+        // Auto-resize setelah mengubah konten
+        autoResizeTextarea(resumeField);
+
         // Update format data
         updateResumeFormat();
     }
@@ -2875,6 +2958,9 @@ error_log("Form Edit Pemeriksaan: File execution completed");
         // Sisipkan ke field resume
         var resumeField = document.getElementById('resume');
         resumeField.value += (resumeField.value ? "\n" : "") + tatalaksanaText;
+
+        // Auto-resize setelah mengubah konten
+        autoResizeTextarea(resumeField);
 
         // Update format data
         updateResumeFormat();
@@ -2920,6 +3006,30 @@ error_log("Form Edit Pemeriksaan: File execution completed");
 
         // Redirect ke halaman print dengan parameter
         const url = 'modules/rekam_medis/print_edukasi.php?isi=' + encodeURIComponent(isiEdukasi) +
+            '&no_rawat=' + encodeURIComponent(noRawat) +
+            '&nama=' + encodeURIComponent(namaPasien) +
+            '&no_rm=' + encodeURIComponent(noRm);
+
+        // Buka halaman print di tab baru
+        window.open(url, '_blank');
+    }
+
+    function printCeklist() {
+        // Ambil isi dari ceklist content
+        const isiCeklist = document.getElementById('ceklistContent').textContent.trim();
+
+        // Validasi isi ceklist
+        if (!isiCeklist || isiCeklist === '-') {
+            alert('Mohon isi data ceklist terlebih dahulu sebelum mencetak');
+            return;
+        }
+
+        const noRawat = '<?= $pemeriksaan['no_rawat'] ?>';
+        const namaPasien = '<?= $pasien['nm_pasien'] ?>';
+        const noRm = '<?= $pasien['no_rkm_medis'] ?>';
+
+        // Redirect ke halaman print dengan parameter
+        const url = 'modules/rekam_medis/print_ceklist.php?isi=' + encodeURIComponent(isiCeklist) +
             '&no_rawat=' + encodeURIComponent(noRawat) +
             '&nama=' + encodeURIComponent(namaPasien) +
             '&no_rm=' + encodeURIComponent(noRm);
@@ -3568,6 +3678,8 @@ error_log("Form Edit Pemeriksaan: File execution completed");
             } else {
                 document.getElementById('tatalaksana').value = isi;
             }
+            // Auto-resize after adding content
+            autoResizeTextarea(document.getElementById('tatalaksana'));
             const modal = bootstrap.Modal.getInstance(document.getElementById('modalDaftarTemplate'));
             if (modal) {
                 modal.hide();

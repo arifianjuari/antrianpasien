@@ -56,25 +56,14 @@ $tempPdf->AddPage();
 // Posisi awal Y untuk melacak
 $startY = $tempPdf->GetY();
 
-// Judul utama
-$tempPdf->SetFont('helvetica', 'B', 12);
-$tempPdf->Cell(0, 6, 'RESUME MEDIS', 0, 1, 'C');
-
-
-$tempPdf->Ln(3);
-
-// Informasi pasien
-$tempPdf->SetFont('helvetica', 'B', 9);
-$tempPdf->Cell(25, 5, 'Nama', 0, 0, 'L');
-$tempPdf->Cell(3, 5, ':', 0, 0, 'C');
-$tempPdf->SetFont('helvetica', '', 9);
-$tempPdf->Cell(52, 5, $namaPasien, 0, 1, 'L');
-
-$tempPdf->SetFont('helvetica', 'B', 9);
-$tempPdf->Cell(25, 5, 'Tanggal Resume', 0, 0, 'L');
-$tempPdf->Cell(3, 5, ':', 0, 0, 'C');
-$tempPdf->SetFont('helvetica', '', 9);
-$tempPdf->Cell(52, 5, date('d-m-Y H:i'), 0, 1, 'L');
+$tempPdf->SetFont('helvetica', '', 7);
+// Get page width and calculate position for right alignment
+$pageWidth = $tempPdf->getPageWidth();
+$dateText = 'Tgl. Cetak: ' . date('d-m-Y H:i');
+$textWidth = $tempPdf->GetStringWidth($dateText);
+// Position text at right margin
+$tempPdf->SetX($pageWidth - $textWidth - $rightMargin);
+$tempPdf->Cell($textWidth, 5, $dateText, 0, 1, 'R');
 
 // Garis pemisah
 $tempPdf->Ln(2);
@@ -94,18 +83,35 @@ $sections = [
 $lines = explode("\n", $isiResume);
 $formattedText = '';
 
-foreach ($lines as $line) {
-    $isHeader = false;
-    foreach ($sections as $header => $value) {
-        if (strpos($line, $header) !== false) {
-            $formattedText .= '<b>' . $line . '</b>' . "\n";
-            $isHeader = true;
-            break;
-        }
-    }
+// Flag to identify the first line (patient name)
+$isFirstLine = true;
 
-    if (!$isHeader) {
-        $formattedText .= $line . "\n";
+foreach ($lines as $line) {
+    // Skip empty lines at the beginning
+    if (empty(trim($line)) && $isFirstLine) {
+        $formattedText .= "\n";
+        continue;
+    }
+    
+    // Check if this is the first non-empty line (patient name)
+    if ($isFirstLine && !empty(trim($line))) {
+        // Format the patient name with larger font size and bold
+        $formattedText .= '<span style="font-size: 12pt; font-weight: bold;">' . $line . '</span>' . "\n";
+        $isFirstLine = false;
+    } else {
+        // Check for section headers
+        $isHeader = false;
+        foreach ($sections as $header => $value) {
+            if (strpos($line, $header) !== false) {
+                $formattedText .= '<b>' . $line . '</b>' . "\n";
+                $isHeader = true;
+                break;
+            }
+        }
+
+        if (!$isHeader) {
+            $formattedText .= $line . "\n";
+        }
     }
 }
 
@@ -143,24 +149,14 @@ $pdf->AddPage();
 
 // ---- Mulai Tambahkan Konten ke PDF FINAL (sama seperti di atas) ----
 
-// Judul utama
-$pdf->SetFont('helvetica', 'B', 12);
-$pdf->Cell(0, 6, 'RESUME MEDIS', 0, 1, 'C');
-
-$pdf->Ln(3);
-
-// Informasi pasien dalam format tabel sederhana
-$pdf->SetFont('helvetica', 'B', 9);
-$pdf->Cell(25, 5, 'Nama', 0, 0, 'L');
-$pdf->Cell(3, 5, ':', 0, 0, 'C');
-$pdf->SetFont('helvetica', '', 9);
-$pdf->Cell(52, 5, $namaPasien, 0, 1, 'L');
-
-$pdf->SetFont('helvetica', 'B', 9);
-$pdf->Cell(25, 5, 'Tgl. Resume', 0, 0, 'L');
-$pdf->Cell(3, 5, ':', 0, 0, 'C');
-$pdf->SetFont('helvetica', '', 9);
-$pdf->Cell(52, 5, date('d-m-Y H:i'), 0, 1, 'L');
+$pdf->SetFont('helvetica', '', 7);
+// Get page width and calculate position for right alignment
+$pageWidth = $pdf->getPageWidth();
+$dateText = 'Tgl. Cetak: ' . date('d-m-Y H:i');
+$textWidth = $pdf->GetStringWidth($dateText);
+// Position text at right margin
+$pdf->SetX($pageWidth - $textWidth - $rightMargin);
+$pdf->Cell($textWidth, 5, $dateText, 0, 1, 'R');
 
 // Tambahkan garis pemisah
 $pdf->Ln(2);
