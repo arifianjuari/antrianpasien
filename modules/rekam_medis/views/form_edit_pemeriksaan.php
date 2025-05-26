@@ -2669,13 +2669,13 @@ error_log("Form Edit Pemeriksaan: File execution completed");
 
         // Sisipkan ke field resume
         var resumeField = document.getElementById('resume');
-        resumeField.value = identitasPasien + resumeField.value;
-
+        resumeField.value = resumeField.value + (resumeField.value ? "\n" : "") + identitasPasien;
+        resumeField.value += "\n";
         // Auto-resize setelah mengubah konten
         autoResizeTextarea(resumeField);
 
         // Update format data
-        updateResumeFormat();
+        // updateResumeFormat();
     }
 
     function masukkanStatusObstetri() {
@@ -2737,7 +2737,7 @@ error_log("Form Edit Pemeriksaan: File execution completed");
         var hasilFaktorRisiko = "<?= isset($obstetri_data['hasil_faktor_risiko']) ? $obstetri_data['hasil_faktor_risiko'] : '-' ?>";
 
         // Format status obstetri
-        var statusObstetriText = "\nSTATUS OBSTETRI:\n";
+        var statusObstetriText = "STATUS OBSTETRI:\n";
         statusObstetriText += "G" + gravida + "P" + paritas + "A" + abortus;
 
         if (tanggalHpht && tanggalHpht !== '-') {
@@ -2782,9 +2782,10 @@ error_log("Form Edit Pemeriksaan: File execution completed");
         // Sisipkan ke field resume
         var resumeField = document.getElementById('resume');
         resumeField.value += statusObstetriText;
+        autoResizeTextarea(resumeField);
 
         // Update format data
-        updateResumeFormat();
+        // updateResumeFormat();
     }
 
     function masukkanStatusGinekologi() {
@@ -2836,7 +2837,7 @@ error_log("Form Edit Pemeriksaan: File execution completed");
         ?>
 
         // Format status ginekologi
-        var statusGinekologiText = "\nSTATUS GINEKOLOGI:\n";
+        var statusGinekologiText = "STATUS GINEKOLOGI:\n";
 
         // Ambil data dengan konversi tipe yang benar dan memperhatikan nama kolom
         var parturien = <?= isset($ginekologi_data['Parturien']) ? intval($ginekologi_data['Parturien']) : 0 ?>;
@@ -2865,16 +2866,17 @@ error_log("Form Edit Pemeriksaan: File execution completed");
         statusGinekologiText += "KB Terakhir: " + kontrasepsiTerakhir + "\n";
 
         // Selalu tampilkan Lama Menikah
-        statusGinekologiText += "Lama Menikah: " + lamaMenikahTh + " tahun\n";
+        statusGinekologiText += "Lama Menikah: " + lamaMenikahTh + " tahun";
 
         statusGinekologiText += "\n";
 
         // Sisipkan ke field resume
         var resumeField = document.getElementById('resume');
         resumeField.value += statusGinekologiText;
+        autoResizeTextarea(resumeField);
 
         // Update format data
-        updateResumeFormat();
+        // updateResumeFormat();
     }
 
     function masukkanPemeriksaanFisik() {
@@ -2887,14 +2889,14 @@ error_log("Form Edit Pemeriksaan: File execution completed");
         }
 
         // Format pemeriksaan fisik
-        var pemeriksaanFisik = "PEMERIKSAAN FISIK:\n" + ket_fisik + "\n\n";
+        var pemeriksaanFisik = "PEMERIKSAAN FISIK:\n" + ket_fisik + "\n";
 
         // Sisipkan ke field resume
         var resumeField = document.getElementById('resume');
         resumeField.value += (resumeField.value ? "\n" : "") + pemeriksaanFisik;
 
         // Update format data
-        updateResumeFormat();
+        // updateResumeFormat();
     }
 
     function masukkanHasilUSG() {
@@ -2908,14 +2910,14 @@ error_log("Form Edit Pemeriksaan: File execution completed");
         }
 
         // Format pemeriksaan USG
-        var pemeriksaanUSG = "PEMERIKSAAN USG:\n" + isiUsg + "\n\n";
+        var pemeriksaanUSG = "PEMERIKSAAN USG:\n" + isiUsg + "\n";
 
         // Sisipkan ke field resume
         var resumeField = document.getElementById('resume');
         resumeField.value += (resumeField.value ? "\n" : "") + pemeriksaanUSG;
 
         // Update format data
-        updateResumeFormat();
+        // updateResumeFormat();
     }
 
     function masukkanDiagnosis() {
@@ -2929,7 +2931,7 @@ error_log("Form Edit Pemeriksaan: File execution completed");
         }
 
         // Format diagnosis
-        var diagnosisText = "DIAGNOSIS:\n" + isiDiagnosis + "\n\n";
+        var diagnosisText = "DIAGNOSIS:\n" + isiDiagnosis + "\n";
 
         // Sisipkan ke field resume
         var resumeField = document.getElementById('resume');
@@ -2939,7 +2941,7 @@ error_log("Form Edit Pemeriksaan: File execution completed");
         autoResizeTextarea(resumeField);
 
         // Update format data
-        updateResumeFormat();
+        // updateResumeFormat();
     }
 
     function masukkanTatalaksana() {
@@ -2953,7 +2955,7 @@ error_log("Form Edit Pemeriksaan: File execution completed");
         }
 
         // Format tatalaksana
-        var tatalaksanaText = "TATALAKSANA:\n" + isiTatalaksana + "\n\n";
+        var tatalaksanaText = "TATALAKSANA:\n" + isiTatalaksana + "\n";
 
         // Sisipkan ke field resume
         var resumeField = document.getElementById('resume');
@@ -2963,7 +2965,7 @@ error_log("Form Edit Pemeriksaan: File execution completed");
         autoResizeTextarea(resumeField);
 
         // Update format data
-        updateResumeFormat();
+        // updateResumeFormat();
     }
 
     function printResep() {
