@@ -40,7 +40,7 @@ try {
     $filter_date = isset($_GET['filter_date']) ? $_GET['filter_date'] : (isset($_GET['return_filter_date']) ? $_GET['return_filter_date'] : date('Y-m-d'));
 
     // Query to get registered patients with kd_poli='OBG' and kd_dokter='DS0007' for the selected date
-    $query = "SELECT r.no_reg, r.no_rawat, r.tgl_registrasi, r.jam_reg, p.no_rkm_medis, p.nm_pasien, p.no_ktp, p.no_tlp, p.kd_kec, p.pekerjaan, p.pekerjaanpj 
+    $query = "SELECT r.no_reg, r.no_rawat, r.tgl_registrasi, r.jam_reg, p.no_rkm_medis, p.nm_pasien, p.no_ktp, p.no_tlp, p.kd_kec, p.pekerjaan, p.pekerjaanpj, r.stts 
               FROM reg_periksa r 
               JOIN pasien p ON r.no_rkm_medis = p.no_rkm_medis 
               WHERE r.kd_poli = 'OBG' AND r.kd_dokter = 'DS0007' AND r.tgl_registrasi = ? 
@@ -134,6 +134,15 @@ try {
 $errors = [];
 $success = false;
 $id_pendaftaran = '';
+
+// Jika ada parameter success dari session, tampilkan pesan sukses
+if (isset($_SESSION['success_message'])) {
+    $success = true;
+    $id_pendaftaran = isset($_SESSION['id_pendaftaran']) ? $_SESSION['id_pendaftaran'] : '';
+    // Hapus session setelah digunakan
+    unset($_SESSION['success_message']);
+    unset($_SESSION['id_pendaftaran']);
+}
 
 // Periksa koneksi database
 try {
@@ -509,22 +518,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['success_message'] = "Pendaftaran berhasil dilakukan dengan ID: " . $id_pendaftaran;
             }
 
-            // Redirect ke halaman sukses atau kembali ke manajemen antrian
+            // Redirect ke manajemen antrian jika diminta
             if (isset($_GET['redirect']) && $_GET['redirect'] === 'manajemen_antrian') {
                 header("Location: ../index.php?module=rekam_medis&action=manajemen_antrian&pendaftaran_sukses=1&id=" . urlencode($id_pendaftaran));
                 exit;
             } else {
-                // Tambahkan filter_date ke URL jika ada
-                $redirect_url = "pendaftaran_sukses.php?id=" . urlencode($id_pendaftaran);
+                // Tampilkan notifikasi sukses di halaman yang sama
+                $success = true;
+                $_SESSION['id_pendaftaran'] = $id_pendaftaran;
+                
+                // Set tanggal filter untuk refresh halaman
                 if (isset($_POST['filter_date'])) {
-                    $redirect_url .= "&return_filter_date=" . urlencode($_POST['filter_date']);
+                    $filter_date = $_POST['filter_date'];
                 }
-                header("Location: " . $redirect_url);
-                exit;
+                
+                // Commit transaksi dan selesai
+                $conn->commit();
             }
         } catch (PDOException $e) {
-            // Rollback transaction
-            $conn->rollBack();
+            // Rollback transaction jika ada transaksi aktif
+            try {
+                // Cek apakah transaksi aktif dengan mencoba commit yang akan gagal jika tidak ada transaksi
+                $inTransaction = false;
+                try {
+                    // Jika inTransaction tersedia gunakan metode tersebut
+                    if (method_exists($conn, 'inTransaction')) {
+                        $inTransaction = $conn->inTransaction();
+                    }
+                } catch (Exception $ex) {
+                    // Jika metode tidak tersedia atau error, asumsikan tidak dalam transaksi
+                    $inTransaction = false;
+                }
+                
+                if ($inTransaction) {
+                    $conn->rollBack();
+                }
+            } catch (Exception $rollbackEx) {
+                // Jika rollback gagal, catat error tapi lanjutkan
+                error_log("Rollback Error: " . $rollbackEx->getMessage());
+            }
+            
             error_log("Database Error: " . $e->getMessage());
             error_log("Stack trace: " . $e->getTraceAsString());
             $errors[] = "Terjadi kesalahan saat menyimpan data: " . $e->getMessage();
@@ -593,6 +626,7 @@ ob_start();
                             <table class="table table-striped table-hover small-table">
                                 <thead>
                                     <tr>
+                                        <th>Status</th>
                                         <th>No. Reg</th>
                                         <th>Tgl Registrasi</th>
                                         <th>Jam</th>
@@ -608,18 +642,43 @@ ob_start();
                                 <tbody>
                                     <?php if (empty($registered_patients)): ?>
                                         <tr>
-                                            <td colspan="10" class="text-center">Tidak ada data pasien terdaftar</td>
+                                            <td colspan="11" class="text-center">Tidak ada data pasien terdaftar</td>
                                         </tr>
                                     <?php else: ?>
                                         <?php foreach ($registered_patients as $patient): ?>
                                             <tr>
+                                                <td class="<?php echo (strtolower($patient['stts']) == 'sudah') ? 'bg-success text-white' : 'bg-warning text-dark'; ?>">
+                                                    <?php echo htmlspecialchars($patient['stts']); ?>
+                                                </td>
                                                 <td><?php echo htmlspecialchars($patient['no_reg']); ?></td>
                                                 <td><?php echo htmlspecialchars(date('d-m-Y', strtotime($patient['tgl_registrasi']))); ?></td>
                                                 <td><?php echo htmlspecialchars($patient['jam_reg']); ?></td>
                                                 <td><?php echo htmlspecialchars($patient['no_rkm_medis']); ?></td>
                                                 <td><?php echo htmlspecialchars($patient['nm_pasien']); ?></td>
                                                 <td><?php echo htmlspecialchars($patient['no_ktp']); ?></td>
-                                                <td><?php echo htmlspecialchars($patient['no_tlp']); ?></td>
+                                                <td>
+                                                    <?php if (!empty($patient['no_tlp'])): ?>
+                                                        <?php
+                                                        // Bersihkan nomor telepon dari karakter non-numerik
+                                                        $clean_number = preg_replace('/[^0-9]/', '', $patient['no_tlp']);
+
+                                                        // Pastikan format nomor telepon benar untuk WhatsApp
+                                                        if (substr($clean_number, 0, 1) == '0') {
+                                                            $clean_number = '62' . substr($clean_number, 1);
+                                                        } elseif (substr($clean_number, 0, 2) != '62') {
+                                                            $clean_number = '62' . $clean_number;
+                                                        }
+                                                        ?>
+                                                        <div class="d-flex align-items-center">
+                                                            <a href="#" onclick="return openWhatsApp('<?php echo $clean_number; ?>')" class="btn btn-whatsapp btn-sm me-2" title="Chat WhatsApp">
+                                                                <i class="bi bi-whatsapp"></i>
+                                                            </a>
+                                                            <span><?php echo htmlspecialchars($patient['no_tlp']); ?></span>
+                                                        </div>
+                                                    <?php else: ?>
+                                                        <span class="text-muted">-</span>
+                                                    <?php endif; ?>
+                                                </td>
                                                 <td>
                                                     <?php
                                                     // Get kecamatan code from patient data
@@ -694,9 +753,20 @@ ob_start();
                     <div class="card-body">
 
 
-                        <?php if (!empty($errors)): ?>
+                        <?php if ($success): ?>
+                            <div class="alert alert-success">
+                                <h5><i class="bi bi-check-circle"></i> Pendaftaran Berhasil</h5>
+                                <p>Pendaftaran berhasil dilakukan dengan ID: <strong><?php echo htmlspecialchars($id_pendaftaran); ?></strong></p>
+                                <hr>
+                                <p class="mb-0">Data pasien telah berhasil disimpan dalam database. Terima kasih telah menggunakan layanan pendaftaran online kami.</p>
+                                <div class="mt-3">
+                                    <a href="?" class="btn btn-primary">Daftar Pasien Baru</a>
+                                    <a href="../dashboard.php" class="btn btn-outline-secondary">Kembali ke Dashboard</a>
+                                </div>
+                            </div>
+                        <?php elseif (!empty($errors)): ?>
                             <div class="alert alert-danger">
-                                <h5><i class="fas fa-exclamation-triangle"></i> Terjadi Kesalahan</h5>
+                                <h5><i class="bi bi-exclamation-triangle"></i> Terjadi Kesalahan</h5>
                                 <ul class="mb-0">
                                     <?php foreach ($errors as $error): ?>
                                         <li><?php echo htmlspecialchars($error); ?></li>
@@ -750,7 +820,12 @@ ob_start();
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label for="nomor_telepon" class="form-label">Nomor Telepon <span class="text-danger">*</span></label>
-                                        <input type="tel" class="form-control" id="nomor_telepon" name="nomor_telepon" required>
+                                        <div class="input-group">
+                                            <button class="btn btn-whatsapp" type="button" id="whatsappButton" disabled>
+                                                <i class="bi bi-whatsapp"></i>
+                                            </button>
+                                            <input type="tel" class="form-control" id="nomor_telepon" name="nomor_telepon" required>
+                                        </div>
                                         <div class="invalid-feedback">Nomor telepon harus diisi</div>
                                     </div>
                                     <div class="mb-3">
@@ -1299,6 +1374,17 @@ ob_start();
 
     // Additional CSS
     $additional_css = "
+    .btn-whatsapp {
+        background-color: #25D366;
+        border-color: #25D366;
+        color: white;
+    }
+    .btn-whatsapp:hover {
+        background-color: #128C7E;
+        border-color: #128C7E;
+        color: white;
+    }
+
     .card {
         border-radius: 10px;
         overflow: hidden;
@@ -1332,6 +1418,50 @@ ob_start();
             border-bottom: 1px solid #dee2e6;
         }
     }
+";
+
+    // Add JavaScript function for WhatsApp button
+    $additional_js = "
+    // Fungsi untuk membuka WhatsApp dengan pesan default
+    function openWhatsApp(number) {
+        const defaultMessage = 'Halo, ini dari RS. Kami ingin menginformasikan mengenai jadwal kunjungan Anda.';
+        const encodedMessage = encodeURIComponent(defaultMessage);
+        window.open('https://wa.me/' + number + '?text=' + encodedMessage, '_blank');
+        return false;
+    }
+    
+    // Script untuk tombol WhatsApp pada form input
+    document.addEventListener('DOMContentLoaded', function() {
+        const phoneInput = document.getElementById('nomor_telepon');
+        const whatsappButton = document.getElementById('whatsappButton');
+        
+        if (phoneInput && whatsappButton) {
+            phoneInput.addEventListener('input', function() {
+                if (this.value.trim() !== '') {
+                    whatsappButton.disabled = false;
+                } else {
+                    whatsappButton.disabled = true;
+                }
+            });
+            
+            whatsappButton.addEventListener('click', function() {
+                let phoneNumber = phoneInput.value.trim();
+                if (phoneNumber) {
+                    // Bersihkan nomor telepon dari karakter non-numerik
+                    phoneNumber = phoneNumber.replace(/[^0-9]/g, '');
+                    
+                    // Format untuk WhatsApp
+                    if (phoneNumber.startsWith('0')) {
+                        phoneNumber = '62' + phoneNumber.substring(1);
+                    } else if (!phoneNumber.startsWith('62')) {
+                        phoneNumber = '62' + phoneNumber;
+                    }
+                    
+                    openWhatsApp(phoneNumber);
+                }
+            });
+        }
+    });
 ";
 
     // Additional JavaScript for pengumuman widget

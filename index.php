@@ -451,6 +451,30 @@ try {
                 }
                 break;
         }
+    } elseif ($module == 'rshb') {
+        // Set page title
+        $page_title = "RSHB";
+        
+        // Load RSHB controller
+        require_once 'modules/rshb/controllers/RshbController.php';
+        $rshbController = new RshbController($conn);
+        
+        // Routing berdasarkan action
+        switch ($action) {
+            case 'dataPasien':
+                $rshbController->dataPasien();
+                break;
+            case 'getAllPatients':
+                $rshbController->getAllPatients();
+                break;
+            case 'getPatientById':
+                $rshbController->getPatientById();
+                break;
+            default:
+                // Jika action tidak ditemukan, redirect ke data_pasien
+                header('Location: ' . BASE_URL . '/index.php?module=rshb&action=dataPasien');
+                exit;
+        }
     } else {
         // Jika modul tidak ditemukan, redirect ke home
         header("Location: " . BASE_URL . "/home.php");

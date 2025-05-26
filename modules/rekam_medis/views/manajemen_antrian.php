@@ -863,11 +863,19 @@ try {
             formData.append('id_pendaftaran', id);
             formData.append('status', newStatus);
 
-            fetch('../modules/rekam_medis/controllers/update_status.php', {
+            // Fix: Use correct path to the controller
+            fetch('<?= BASE_URL ?>/modules/rekam_medis/controllers/update_status.php', {
                     method: 'POST',
                     body: formData
                 })
-                .then(response => response.json())
+                .then(response => {
+                    // Check if response is JSON
+                    const contentType = response.headers.get('content-type');
+                    if (contentType && contentType.includes('application/json')) {
+                        return response.json();
+                    }
+                    throw new Error('Respons tidak valid (bukan JSON)');
+                })
                 .then(data => {
                     if (data.success) {
                         location.reload();

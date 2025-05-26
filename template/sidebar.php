@@ -1035,32 +1035,28 @@ function is_current_module($module, $action = null)
             </li>
 
             <li class="nav-item has-submenu">
-                <a href="#" class="nav-link submenu-toggle" data-title="Rawat Inap">
-                    <i class="bi bi-hospital-fill"></i>
-                    <span class="menu-text">Rawat Inap</span>
+                <a href="#" class="nav-link submenu-toggle" data-title="RSHB">
+                    <i class="bi bi-hospital"></i>
+                    <span class="menu-text">RSHB</span>
                     <i class="bi bi-chevron-right ms-auto submenu-arrow"></i>
                 </a>
                 <ul class="submenu collapse">
                     <li class="nav-item">
-                        <a href="<?php echo $base_url; ?>/daftar_ranap.php" class="nav-link <?php echo is_current_page('/daftar_ranap.php') ? 'active' : ''; ?>" data-title="Daftar Pasien">
-                            <i class="bi bi-list-ul"></i>
-                            <span class="menu-text">Daftar Pasien</span>
+                        <a href="<?php echo clean_url($base_url); ?>/index.php?module=rshb&action=dataPasien" class="nav-link <?php echo is_current_module('rshb', 'dataPasien') ? 'active' : ''; ?>" data-title="Data Pasien">
+                            <i class="bi bi-people"></i>
+                            <span class="menu-text">Data Pasien</span>
                         </a>
                     </li>
-                </ul>
-            </li>
-
-            <li class="nav-item has-submenu">
-                <a href="#" class="nav-link submenu-toggle" data-title="Rawat Jalan">
-                    <i class="bi bi-person-walking"></i>
-                    <span class="menu-text">Rawat Jalan</span>
-                    <i class="bi bi-chevron-right ms-auto submenu-arrow"></i>
-                </a>
-                <ul class="submenu collapse">
                     <li class="nav-item">
-                        <a href="<?php echo $base_url; ?>/daftar_rajal_rs.php" class="nav-link <?php echo is_current_page('/daftar_rajal_rs.php') ? 'active' : ''; ?>" data-title="Daftar Rajal RS">
+                        <a href="<?php echo $base_url; ?>/daftar_ranap.php" class="nav-link <?php echo is_current_page('/daftar_ranap.php') ? 'active' : ''; ?>" data-title="Daftar Pasien Ranap">
+                            <i class="bi bi-list-ul"></i>
+                            <span class="menu-text">Daftar Pasien Ranap</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="<?php echo $base_url; ?>/daftar_rajal_rs.php" class="nav-link <?php echo is_current_page('/daftar_rajal_rs.php') ? 'active' : ''; ?>" data-title="Daftar Pasien Rajal">
                             <i class="bi bi-list-check"></i>
-                            <span class="menu-text">Daftar Rajal RS</span>
+                            <span class="menu-text">Daftar Pasien Rajal</span>
                         </a>
                     </li>
                     <li class="nav-item">
@@ -1071,6 +1067,7 @@ function is_current_module($module, $action = null)
                     </li>
                 </ul>
             </li>
+
 
             <!-- Menu Rekam Medis -->
             <li class="nav-item has-submenu">
