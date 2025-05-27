@@ -44,8 +44,7 @@ try {
               FROM reg_periksa r 
               JOIN pasien p ON r.no_rkm_medis = p.no_rkm_medis 
               WHERE r.kd_poli = 'OBG' AND r.kd_dokter = 'DS0007' AND r.tgl_registrasi = ? 
-              ORDER BY r.jam_reg ASC 
-              LIMIT 20";
+              ORDER BY r.jam_reg ASC";
     $stmt = $conn_rshb->prepare($query);
     $stmt->execute([$filter_date]);
     $registered_patients = $stmt->fetchAll(PDO::FETCH_ASSOC);

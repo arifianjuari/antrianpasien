@@ -44,20 +44,25 @@ try {
     $tempat_praktek = array();
 }
 
-// Set default dokter Arifian
-$default_dokter_id = 'b81a5b13-1bd4-4298-b294-285735630c0d';
-
-// Ambil data dokter
+// Ambil data dokter berdasarkan tempat praktek jika ada
 try {
-    // Untuk sementara hanya tampilkan dokter Arifian
-    $query = "SELECT * FROM dokter WHERE ID_Dokter = :id_dokter AND Status_Aktif = 1";
-    $stmt = $conn->prepare($query);
-    $stmt->execute(['id_dokter' => $default_dokter_id]);
-    $dokter = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-    // Set default value untuk id_dokter jika belum diset
-    if (empty($id_dokter)) {
-        $id_dokter = $default_dokter_id;
+    if (!empty($id_tempat_praktek)) {
+        // Ambil dokter berdasarkan tempat praktek yang dipilih
+        $query = "SELECT d.* FROM dokter d 
+                 INNER JOIN jadwal_rutin jr ON d.ID_Dokter = jr.ID_Dokter 
+                 WHERE jr.ID_Tempat_Praktek = :id_tempat_praktek 
+                 AND d.Status_Aktif = 1 
+                 GROUP BY d.ID_Dokter 
+                 ORDER BY d.Nama_Dokter ASC";
+        $stmt = $conn->prepare($query);
+        $stmt->execute(['id_tempat_praktek' => $id_tempat_praktek]);
+        $dokter = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } else {
+        // Jika tidak ada tempat praktek yang dipilih, tampilkan semua dokter aktif
+        $query = "SELECT * FROM dokter WHERE Status_Aktif = 1 ORDER BY Nama_Dokter ASC";
+        $stmt = $conn->prepare($query);
+        $stmt->execute();
+        $dokter = $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 } catch (PDOException $e) {
     error_log("Database Error: " . $e->getMessage());
@@ -710,10 +715,11 @@ ob_start();
                                     <div class="invalid-feedback">Tempat praktek harus dipilih</div>
                                 </div>
                                 <div class="mb-3">
-                                    <label for="id_dokter" class="form-label">Dokter <span class="text-danger">*</span></label>
+                                    <label for="id_dokter" class="form-label">Dokter / Bidan <span class="text-danger">*</span></label>
                                     <select class="form-select" id="id_dokter" name="id_dokter" required>
+                                        <option value="">Pilih Dokter</option>
                                         <?php foreach ($dokter as $d): ?>
-                                            <option value="<?php echo htmlspecialchars($d['ID_Dokter']); ?>" selected>
+                                            <option value="<?php echo htmlspecialchars($d['ID_Dokter']); ?>" <?php echo $id_dokter == $d['ID_Dokter'] ? 'selected' : ''; ?>>
                                                 <?php echo htmlspecialchars($d['Nama_Dokter']); ?> (<?php echo htmlspecialchars($d['Spesialisasi']); ?>)
                                             </option>
                                         <?php endforeach; ?>
@@ -989,6 +995,71 @@ ob_start();
         const dokterSelect = document.getElementById('id_dokter');
         const jadwalSelect = document.getElementById('id_jadwal');
 
+        function loadDokter() {
+            var tempat = tempatSelect.value;
+
+            // Reset dokter dropdown
+            dokterSelect.innerHTML = '<option value="">Memuat dokter...</option>';
+
+            if (tempat) {
+                // Buat URL dengan timestamp untuk mencegah caching
+                var timestamp = new Date().getTime();
+                var url = '../get_dokter.php?tempat=' + encodeURIComponent(tempat) + '&_=' + timestamp;
+
+                // Log untuk debugging
+                console.log('Memuat dokter dari: ' + url);
+
+                // Gunakan fetch API
+                fetch(url)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        // Reset dropdown
+                        dokterSelect.innerHTML = '<option value="">Pilih Dokter</option>';
+
+                        // Cek error
+                        if (data.error) {
+                            console.error('Error server:', data.error);
+                            dokterSelect.innerHTML = '<option value="">Error: ' + data.error + '</option>';
+                            return;
+                        }
+
+                        // Cek apakah data adalah array
+                        if (!Array.isArray(data)) {
+                            console.error('Data bukan array:', data);
+                            dokterSelect.innerHTML = '<option value="">Format data tidak valid</option>';
+                            return;
+                        }
+
+                        // Cek apakah data kosong
+                        if (data.length === 0) {
+                            dokterSelect.innerHTML = '<option value="">Tidak ada dokter tersedia</option>';
+                            return;
+                        }
+
+                        // Tambahkan opsi untuk setiap dokter
+                        for (var i = 0; i < data.length; i++) {
+                            var dokter = data[i];
+                            var option = document.createElement('option');
+                            option.value = dokter.ID_Dokter;
+                            option.textContent = dokter.Nama_Dokter + ' (' + dokter.Spesialisasi + ')';
+                            dokterSelect.appendChild(option);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        dokterSelect.innerHTML = '<option value="">Error: Gagal memuat data dokter</option>';
+                    });
+            } else {
+                // Tidak ada tempat yang dipilih
+                dokterSelect.innerHTML = '<option value="">Pilih tempat praktek terlebih dahulu</option>';
+            }
+        }
+
         function loadJadwal() {
             var tempat = tempatSelect.value;
             var dokter = dokterSelect.value;
@@ -1093,7 +1164,10 @@ ob_start();
             }
         }
 
-        tempatSelect.addEventListener('change', loadJadwal);
+        tempatSelect.addEventListener('change', function() {
+            loadDokter();
+            loadJadwal();
+        });
         dokterSelect.addEventListener('change', loadJadwal);
 
         // Prevent multiple form submissions
