@@ -1197,7 +1197,7 @@ class RekamMedisController
                 'ultra' => $_POST['ultra'] ?? '',
                 'lab' => $_POST['lab'] ?? '',
                 'diagnosis' => $_POST['diagnosis'] ?? '',
-                'tata' => $_POST['tatalaksana'] ?? '',
+                'tata' => $_POST['tata'] ?? '',
                 'edukasi' => $_POST['edukasi'] ?? '',
                 'resep' => $_POST['resep'] ?? '',
                 'atensi' => $_POST['atensi'] ?? '0',
