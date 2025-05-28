@@ -1004,9 +1004,16 @@ function is_current_module($module, $action = null)
 
 <div id="sidebar" class="sidebar">
     <div class="d-flex justify-content-between align-items-center py-3 px-3">
-        <a href="<?php echo clean_url($base_url); ?>" class="d-flex align-items-center text-decoration-none">
-            <span class="fs-5 fw-semibold text-dark menu-text">Praktek Obgin</span>
-        </a>
+        <div class="d-flex align-items-center">
+            <a href="<?php echo clean_url($base_url); ?>" class="d-flex align-items-center text-decoration-none me-2">
+                <span class="fs-5 fw-semibold text-dark menu-text">Praktek Obgin</span>
+            </a>
+            <?php if ($is_logged_in): ?>
+                <a href="<?php echo clean_url($base_url); ?>/logout.php" class="btn btn-sm btn-outline-danger" title="Logout" style="font-size: 0.7rem; padding: 0.15rem 0.4rem;">
+                    <i class="bi bi-box-arrow-right"></i>
+                </a>
+            <?php endif; ?>
+        </div>
         <?php if ($is_admin): ?>
             <button id="toggleSidebar" class="btn btn-sm btn-light border d-none d-lg-block">
                 <i class="bi bi-chevron-left"></i>
