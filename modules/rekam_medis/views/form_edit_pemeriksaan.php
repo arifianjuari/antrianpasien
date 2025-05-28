@@ -52,7 +52,9 @@ function getConnection()
 }
 
 // Cek apakah ada data pemeriksaan
-if (!isset($pemeriksaan) || !$pemeriksaan) {
+// PERUBAHAN: Hanya redirect jika $pemeriksaan tidak diset sama sekali
+// Ini memungkinkan $pemeriksaan berisi array kosong (kasus ketika ada di reg_periksa tapi belum ada di penilaian_medis_ralan_kandungan)
+if (!isset($pemeriksaan)) {
     $_SESSION['error'] = 'Data pemeriksaan tidak ditemukan';
     $redirect_url = isset($_SERVER['HTTP_HOST']) ?
         ($_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] . '/antrian pasien/index.php?module=rekam_medis&action=data_pasien') :
@@ -60,6 +62,9 @@ if (!isset($pemeriksaan) || !$pemeriksaan) {
     header('Location: ' . $redirect_url);
     exit;
 }
+
+// Log untuk debugging
+error_log("Form Edit: Using pemeriksaan data: " . print_r($pemeriksaan, true));
 
 // --- Ambil data Status Obstetri ---
 $statusObstetri = [];

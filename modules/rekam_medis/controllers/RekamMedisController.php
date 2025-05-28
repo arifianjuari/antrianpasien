@@ -1431,39 +1431,69 @@ class RekamMedisController
         error_log("Processing edit_pemeriksaan for no_rawat: " . $no_rawat);
 
         try {
-            // Ambil data pemeriksaan dan pasien berdasarkan no_rawat dalam satu query
-            $stmt = $this->pdo->prepare("
-                SELECT pmrk.*, p.*, rp.tgl_registrasi, rp.jam_reg 
-                FROM penilaian_medis_ralan_kandungan pmrk
-                JOIN reg_periksa rp ON pmrk.no_rawat = rp.no_rawat
+            // PERUBAHAN: Pertama cek apakah no_rawat ada di reg_periksa
+            $stmt_reg = $this->pdo->prepare("
+                SELECT rp.*, p.*
+                FROM reg_periksa rp
                 JOIN pasien p ON rp.no_rkm_medis = p.no_rkm_medis
-                WHERE pmrk.no_rawat = ?
+                WHERE rp.no_rawat = ?
             ");
-            $stmt->execute([$no_rawat]);
-            $data = $stmt->fetch(PDO::FETCH_ASSOC);
-
-            if (!$data) {
-                error_log("No data found for no_rawat: " . $no_rawat);
-                $_SESSION['error'] = 'Data pemeriksaan tidak ditemukan';
+            $stmt_reg->execute([$no_rawat]);
+            $reg_data = $stmt_reg->fetch(PDO::FETCH_ASSOC);
+            
+            if (!$reg_data) {
+                error_log("No reg_periksa data found for no_rawat: " . $no_rawat);
+                $_SESSION['error'] = 'Data kunjungan tidak ditemukan';
                 header('Location: ' . $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] . '/antrian pasien/index.php?module=rekam_medis&action=data_pasien');
                 exit;
             }
-
-            // Simpan data pemeriksaan ke variabel yang digunakan di view
-            $pemeriksaan = $data;
-            $pasien = $data;
             
-            error_log("DEBUG edit_pemeriksaan: Fetched data: " . print_r($data, true));
+            // PERUBAHAN: Sekarang cek apakah ada data di penilaian_medis_ralan_kandungan
+            $stmt_penilaian = $this->pdo->prepare("
+                SELECT * FROM penilaian_medis_ralan_kandungan
+                WHERE no_rawat = ?
+            ");
+            $stmt_penilaian->execute([$no_rawat]);
+            $penilaian_data = $stmt_penilaian->fetch(PDO::FETCH_ASSOC);
+            
+            // PERUBAHAN: Jika data penilaian ditemukan, gunakan. Jika tidak, buat data kosong
+            if ($penilaian_data) {
+                error_log("Found penilaian_medis_ralan_kandungan data for no_rawat: " . $no_rawat);
+                $pemeriksaan = $penilaian_data;
+            } else {
+                error_log("No penilaian_medis_ralan_kandungan data found for no_rawat: " . $no_rawat . ", creating empty record");
+                // Buat objek pemeriksaan kosong dengan no_rawat yang valid
+                $pemeriksaan = [
+                    'no_rawat' => $no_rawat,
+                    // Tambahkan field default lainnya yang diperlukan
+                    'keluhan_utama' => '',
+                    'rps' => '',
+                    'rpd' => '',
+                    'alergi' => '',
+                    'diagnosis' => '',
+                    'tata' => '',
+                    'edukasi' => '',
+                    'resume' => '',
+                    'resep' => ''
+                    // Tambahkan field lain yang diperlukan form
+                ];
+            }
+            
+            // Simpan data pasien dari reg_periksa/pasien
+            $pasien = $reg_data;
+            
+            error_log("DEBUG edit_pemeriksaan: Fetched reg_data: " . print_r($reg_data, true));
+            error_log("DEBUG edit_pemeriksaan: Using pemeriksaan data: " . print_r($pemeriksaan, true));
             
             // Ambil data riwayat kehamilan
-            $riwayatKehamilan = $this->rekamMedisModel->getRiwayatKehamilan($data['no_rkm_medis']);
+            $riwayatKehamilan = $this->rekamMedisModel->getRiwayatKehamilan($reg_data['no_rkm_medis']);
             
             // Ambil data status obstetri
-            $statusObstetri = $this->rekamMedisModel->getStatusObstetri($data['no_rkm_medis']);
+            $statusObstetri = $this->rekamMedisModel->getStatusObstetri($reg_data['no_rkm_medis']);
             
             // Ambil data status ginekologi
             $statusGinekologiModel = new StatusGinekologi($this->pdo);
-            $statusGinekologi = $statusGinekologiModel->getStatusGinekologiByPasien($data['no_rkm_medis']);
+            $statusGinekologi = $statusGinekologiModel->getStatusGinekologiByPasien($reg_data['no_rkm_medis']);
             
             error_log("DEBUG edit_pemeriksaan: Riwayat Kehamilan count: " . count($riwayatKehamilan));
             error_log("DEBUG edit_pemeriksaan: Status Obstetri count: " . count($statusObstetri));
@@ -1483,7 +1513,7 @@ class RekamMedisController
                     WHERE rp.no_rkm_medis = ? AND rp.kd_poli = 'OBG'
                     ORDER BY rp.tgl_registrasi DESC, rp.jam_reg DESC
                 ");
-                $stmt->execute([$data['no_rkm_medis']]);
+                $stmt->execute([$reg_data['no_rkm_medis']]);
                 $riwayatPemeriksaan = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 error_log("DEBUG edit_pemeriksaan: Riwayat Pemeriksaan count: " . count($riwayatPemeriksaan));
             } catch (PDOException $e) {
