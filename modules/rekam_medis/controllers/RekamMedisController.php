@@ -1565,6 +1565,55 @@ class RekamMedisController
         }
     }
 
+    /**
+     * Fungsi untuk memeriksa pasien - cek apakah sudah ada kunjungan di reg_periksa
+     * Jika sudah ada, tampilkan form edit pemeriksaan dengan no_rawat yang ditemukan
+     * Jika belum ada, arahkan ke halaman tambah kunjungan baru
+     */
+    public function periksa_pasien()
+    {
+        error_log("==== DEBUGGING periksa_pasien START ====");
+        
+        try {
+            // Validasi parameter no_rkm_medis
+            if (!isset($_GET['no_rkm_medis']) || empty($_GET['no_rkm_medis'])) {
+                throw new Exception('No RM tidak ditemukan');
+            }
+            
+            $no_rkm_medis = $_GET['no_rkm_medis'];
+            $source = $_GET['source'] ?? '';
+            
+            error_log("Checking reg_periksa for no_rkm_medis: " . $no_rkm_medis);
+            
+            // Cek apakah ada data di tabel reg_periksa untuk pasien ini
+            $stmt = $this->pdo->prepare("
+                SELECT no_rawat FROM reg_periksa 
+                WHERE no_rkm_medis = ? 
+                ORDER BY tgl_registrasi DESC, jam_reg DESC 
+                LIMIT 1
+            ");
+            $stmt->execute([$no_rkm_medis]);
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if ($result && isset($result['no_rawat'])) {
+                // Jika ditemukan, arahkan ke form edit pemeriksaan dengan no_rawat yang ditemukan
+                error_log("Found existing reg_periksa record with no_rawat: " . $result['no_rawat']);
+                header("Location: index.php?module=rekam_medis&action=edit_pemeriksaan&id=" . $result['no_rawat'] . "&source=" . $source);
+                exit;
+            } else {
+                // Jika tidak ditemukan, arahkan ke halaman tambah kunjungan baru
+                error_log("No existing reg_periksa record found, redirecting to tambah_pemeriksaan");
+                header("Location: index.php?module=rekam_medis&action=tambah_pemeriksaan&no_rkm_medis=" . $no_rkm_medis . "&source=" . $source);
+                exit;
+            }
+        } catch (Exception $e) {
+            error_log("ERROR in periksa_pasien: " . $e->getMessage());
+            $_SESSION['error'] = $e->getMessage();
+            header('Location: index.php?module=rekam_medis&action=data_pasien');
+            exit;
+        }
+    }
+    
     public function tambah_pemeriksaan()
     {
         try {

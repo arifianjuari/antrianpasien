@@ -237,6 +237,10 @@ try {
             case 'hapusPasien':
                 $rekamMedisController->hapusPasien();
                 break;
+            case 'periksa_pasien':
+                error_log("Routing to periksa_pasien with no_rkm_medis: " . ($_GET['no_rkm_medis'] ?? 'not set'));
+                $rekamMedisController->periksa_pasien();
+                break;
             case 'tambah_pemeriksaan':
                 error_log("Routing to tambah_pemeriksaan");
                 $rekamMedisController->tambah_pemeriksaan();

@@ -711,7 +711,14 @@ try {
                                                                 <a href="index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=<?= $a['no_rkm_medis'] ?>&id_pendaftaran=<?= $a['ID_Pendaftaran'] ?>&source=antrian"
                                                                     class="btn btn-primary btn-sm btn-icon" data-bs-toggle="tooltip"
                                                                     title="Lihat Rekam Medis">
-                                                                    <i class="bi bi-journal-medical"></i>
+                                                                    <i class="bi bi-clipboard2-pulse"></i>
+                                                                </a>
+                                                                
+                                                                <!-- Tombol untuk periksa pasien -->
+                                                                <a href="index.php?module=rekam_medis&action=periksa_pasien&no_rkm_medis=<?= $a['no_rkm_medis'] ?>&source=manajemen_antrian"
+                                                                    class="btn btn-success btn-sm btn-icon" data-bs-toggle="tooltip"
+                                                                    title="Periksa Pasien">
+                                                                    <i class="bi bi-clipboard2-check"></i>
                                                                 </a>
 
                                                                 <?php if ($a['Status_Pendaftaran'] !== 'Menunggu Konfirmasi'): ?>
