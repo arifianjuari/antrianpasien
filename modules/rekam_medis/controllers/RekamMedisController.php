@@ -1477,7 +1477,7 @@ class RekamMedisController
             $stmt->execute([$_POST['no_rawat']]);
             $no_rkm_medis = $stmt->fetchColumn();
 
-            header('Location: index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=' . $no_rkm_medis . '&refresh=1&t=' . time());
+            header('Location: index.php?module=rekam_medis&action=manajemen_antrian');
             exit;
         } catch (Exception $e) {
             error_log("Error in update_pemeriksaan: " . $e->getMessage());

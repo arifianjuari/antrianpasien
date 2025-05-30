@@ -393,7 +393,7 @@ if ($conn) {
         <div class="card-header py-3 d-flex justify-content-between align-items-center">
             <h6 class="m-0 font-weight-bold text-primary">Edit Pemeriksaan Kandungan</h6>
             <a href="index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=<?= $pasien['no_rkm_medis'] ?>" class="btn btn-sm btn-secondary">
-                <i class="fas fa-arrow-left"></i> Kembali
+                <i class="fas fa-arrow-left"></i> Lihat Rekam Medis
             </a>
         </div>
         <div class="card-body">
@@ -1369,7 +1369,7 @@ if ($conn) {
                     <button type="submit" class="btn btn-primary btn-sm">
                         <i class="fas fa-save"></i> Simpan Perubahan
                     </button>
-                    <a href="index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=<?= $pasien['no_rkm_medis'] ?>" class="btn btn-secondary btn-sm">
+                    <a href="index.php?module=rekam_medis&action=manajemen_antrian" class="btn btn-secondary btn-sm">
                         <i class="fas fa-times"></i> Batal
                     </a>
                 </div>
