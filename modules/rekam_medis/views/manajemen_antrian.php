@@ -716,9 +716,9 @@ try {
                                                                 
                                                                 <!-- Tombol untuk periksa pasien -->
                                                                 <a href="index.php?module=rekam_medis&action=periksa_pasien&no_rkm_medis=<?= $a['no_rkm_medis'] ?>&source=manajemen_antrian"
-                                                                    class="btn btn-success btn-sm btn-icon" data-bs-toggle="tooltip"
+                                                                    class="btn btn-danger btn-sm btn-icon" data-bs-toggle="tooltip"
                                                                     title="Periksa Pasien">
-                                                                    <i class="bi bi-clipboard2-check"></i>
+                                                                    <i class="bi bi-heart-pulse"></i>
                                                                 </a>
 
                                                                 <?php if ($a['Status_Pendaftaran'] !== 'Menunggu Konfirmasi'): ?>

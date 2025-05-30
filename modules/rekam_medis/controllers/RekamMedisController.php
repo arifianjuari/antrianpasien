@@ -60,11 +60,11 @@ class RekamMedisController
             $this->rekamMedisModel = new RekamMedis($conn);
             $this->tindakanMedisModel = new TindakanMedis($conn);
             $this->templateTatalaksanaModel = new TemplateTatalaksana($conn);
-            
+
             // Inisialisasi model template anamnesis dan ceklist
             require_once 'modules/rekam_medis/models/TemplateAnamnesis.php';
             $this->templateAnamnesisModel = new TemplateAnamnesis($conn);
-            
+
             // Inisialisasi model template ceklist jika file ada
             $templateCeklistPath = 'modules/rekam_medis/models/TemplateCeklist.php';
             if (file_exists($templateCeklistPath)) {
@@ -462,7 +462,7 @@ class RekamMedisController
 
         // Cek apakah ini update ceklist saja atau update data pasien lengkap
         $isCeklistUpdateOnly = isset($_POST['ceklist']) && count($_POST) <= 2; // Hanya no_rkm_medis dan ceklist
-        
+
         if ($isCeklistUpdateOnly) {
             // Jika hanya update ceklist, ambil data pasien yang ada dan update hanya field ceklist
             $existingPasien = $this->rekamMedisModel->getPasienById($no_rkm_medis);
@@ -470,11 +470,11 @@ class RekamMedisController
                 echo json_encode(['status' => 'error', 'message' => 'Data pasien tidak ditemukan']);
                 exit;
             }
-            
+
             $data = [
                 'ceklist' => $_POST['ceklist'] ?? ''
             ];
-            
+
             error_log("Update ceklist only for patient ID: $no_rkm_medis");
         } else {
             // Update data pasien lengkap
@@ -492,7 +492,7 @@ class RekamMedisController
                 'catatan_pasien' => $_POST['catatan_pasien'] ?? '',
                 'ceklist' => $_POST['ceklist'] ?? ''
             ];
-            
+
             error_log("Update full patient data for ID: $no_rkm_medis");
         }
 
@@ -1393,7 +1393,7 @@ class RekamMedisController
         error_log("REQUEST_URI: " . $_SERVER['REQUEST_URI']);
         error_log("QUERY STRING: " . $_SERVER['QUERY_STRING']);
         error_log("id param: " . ($_GET['id'] ?? 'not set'));
-        
+
         // Redirect ke formEditPemeriksaan untuk konsistensi antara local dan online
         if (isset($_GET['id']) && !empty($_GET['id'])) {
             $no_rawat = $_GET['id'];
@@ -1499,18 +1499,18 @@ class RekamMedisController
     public function periksa_pasien()
     {
         error_log("==== DEBUGGING periksa_pasien START ====");
-        
+
         try {
             // Validasi parameter no_rkm_medis
             if (!isset($_GET['no_rkm_medis']) || empty($_GET['no_rkm_medis'])) {
                 throw new Exception('No RM tidak ditemukan');
             }
-            
+
             $no_rkm_medis = $_GET['no_rkm_medis'];
             $source = $_GET['source'] ?? '';
-            
+
             error_log("Checking reg_periksa for no_rkm_medis: " . $no_rkm_medis);
-            
+
             // Cek apakah ada data di tabel reg_periksa untuk pasien ini
             $stmt_reg = $this->pdo->prepare("
                 SELECT no_rawat FROM reg_periksa 
@@ -1520,11 +1520,11 @@ class RekamMedisController
             ");
             $stmt_reg->execute([$no_rkm_medis]);
             $result_reg = $stmt_reg->fetch(PDO::FETCH_ASSOC);
-            
+
             if ($result_reg && isset($result_reg['no_rawat'])) {
                 $no_rawat = $result_reg['no_rawat'];
                 error_log("Found existing reg_periksa record with no_rawat: " . $no_rawat);
-                
+
                 // Cek apakah sudah ada data di tabel penilaian_medis_ralan_kandungan
                 $stmt_penilaian = $this->pdo->prepare("
                     SELECT no_rawat FROM penilaian_medis_ralan_kandungan 
@@ -1533,7 +1533,7 @@ class RekamMedisController
                 ");
                 $stmt_penilaian->execute([$no_rawat]);
                 $result_penilaian = $stmt_penilaian->fetch(PDO::FETCH_ASSOC);
-                
+
                 if ($result_penilaian) {
                     // Jika sudah ada data penilaian, tampilkan form edit pemeriksaan
                     // PERUBAHAN: Menggunakan format URL yang berfungsi di online (form_edit_pemeriksaan dengan parameter no_rawat)
@@ -1559,7 +1559,7 @@ class RekamMedisController
             exit;
         }
     }
-    
+
     public function tambah_pemeriksaan()
     {
         try {
@@ -2285,17 +2285,17 @@ class RekamMedisController
             // Sanitasi input - semua field opsional kecuali no_rkm_medis
             $id_status_ginekologi = $uuid;
             $no_rkm_medis = $koneksi->real_escape_string($_POST['no_rkm_medis']);
-            
+
             // Handle optional fields with default values
             $parturien = isset($_POST['parturien']) ? (int)$_POST['parturien'] : 0;
             $abortus = isset($_POST['abortus']) ? (int)$_POST['abortus'] : 0;
-            
+
             // HPHT is optional and can be NULL
             $hpht = !empty($_POST['hpht']) ? $koneksi->real_escape_string($_POST['hpht']) : NULL;
-            
+
             // Default kontrasepsi to 'Tidak Ada' if not provided
             $kontrasepsi = !empty($_POST['kontrasepsi']) ? $koneksi->real_escape_string($_POST['kontrasepsi']) : 'Tidak Ada';
-            
+
             // Ensure lama_menikah_th can be 0
             $lama_menikah_th = isset($_POST['lama_menikah_th']) ? (float)$_POST['lama_menikah_th'] : 0;
 
@@ -2306,35 +2306,35 @@ class RekamMedisController
                      (?, ?, ?, ?, ?, ?, ?)";
 
             $stmt = $koneksi->prepare($query);
-        
-        // Modify the query if HPHT is NULL
-        if ($hpht === NULL) {
-            $query = "INSERT INTO status_ginekologi 
+
+            // Modify the query if HPHT is NULL
+            if ($hpht === NULL) {
+                $query = "INSERT INTO status_ginekologi 
                      (id_status_ginekologi, no_rkm_medis, Parturien, Abortus, Hari_pertama_haid_terakhir, Kontrasepsi_terakhir, lama_menikah_th) 
                      VALUES 
                      (?, ?, ?, ?, NULL, ?, ?)";
-            $stmt = $koneksi->prepare($query);
-            $stmt->bind_param(
-                "ssiisd",
-                $id_status_ginekologi,
-                $no_rkm_medis,
-                $parturien,
-                $abortus,
-                $kontrasepsi,
-                $lama_menikah_th
-            );
-        } else {
-            $stmt->bind_param(
-                "ssiissd",
-                $id_status_ginekologi,
-                $no_rkm_medis,
-                $parturien,
-                $abortus,
-                $hpht,
-                $kontrasepsi,
-                $lama_menikah_th
-            );
-        }
+                $stmt = $koneksi->prepare($query);
+                $stmt->bind_param(
+                    "ssiisd",
+                    $id_status_ginekologi,
+                    $no_rkm_medis,
+                    $parturien,
+                    $abortus,
+                    $kontrasepsi,
+                    $lama_menikah_th
+                );
+            } else {
+                $stmt->bind_param(
+                    "ssiissd",
+                    $id_status_ginekologi,
+                    $no_rkm_medis,
+                    $parturien,
+                    $abortus,
+                    $hpht,
+                    $kontrasepsi,
+                    $lama_menikah_th
+                );
+            }
 
             if ($stmt->execute()) {
                 $_SESSION['success'] = 'Data status ginekologi berhasil disimpan';
@@ -2359,7 +2359,7 @@ class RekamMedisController
             // Preserve source parameter if it exists
             $source_param = !empty($_POST['source']) ? "&source=" . $_POST['source'] : "";
             $no_rawat_param = !empty($_POST['no_rawat']) ? "&no_rawat=" . $_POST['no_rawat'] : "";
-            
+
             header("Location: index.php?module=rekam_medis&action=tambah_status_ginekologi&no_rkm_medis=" . $_POST['no_rkm_medis'] . $source_param . $no_rawat_param);
             exit;
         }
@@ -2371,7 +2371,7 @@ class RekamMedisController
         error_log("=== Mulai proses edit_status_ginekologi ===");
         error_log("GET parameters: " . json_encode($_GET));
         error_log("SESSION: " . json_encode($_SESSION));
-        
+
         // Pastikan parameter id tersedia
         if (!isset($_GET['id']) || empty($_GET['id'])) {
             $_SESSION['error'] = "Parameter ID tidak ditemukan";
@@ -2382,23 +2382,23 @@ class RekamMedisController
         $id_status_ginekologi = $_GET['id'];
         $source = isset($_GET['source']) ? $_GET['source'] : '';
         $no_rawat = isset($_GET['no_rawat']) ? $_GET['no_rawat'] : '';
-        
+
         // Debugging source parameter
         error_log("Source from URL: " . $source);
-        
+
         // Store source in session explicitly
         if (!empty($source)) {
             $_SESSION['edit_source'] = $source;
             error_log("Stored source in session: " . $source);
         }
-        
+
         // Simpan no_rawat dalam session jika tersedia
         if (!empty($no_rawat)) {
             $_SESSION['no_rawat'] = $no_rawat;
         }
-        
+
         error_log("ID status ginekologi yang akan diedit: " . $id_status_ginekologi);
-        
+
         // Gunakan model StatusGinekologi untuk mendapatkan data
         $statusGinekologiModel = new StatusGinekologi($this->pdo);
         $status_ginekologi = $statusGinekologiModel->getStatusGinekologiById($id_status_ginekologi);
@@ -2410,111 +2410,111 @@ class RekamMedisController
         }
 
         $pasien = $this->rekamMedisModel->getPasienById($status_ginekologi['no_rkm_medis']);
-        
+
         // Debug untuk memeriksa isi data
         error_log("Data status ginekologi ditemukan: " . json_encode($status_ginekologi));
-        
+
         // Tampilkan form edit status ginekologi
         include 'modules/rekam_medis/views/form_edit_status_ginekologi.php';
     }
-    
+
     public function update_status_ginekologi()
     {
         // Debugging
         error_log("=== Mulai proses update_status_ginekologi ===");
         error_log("POST data: " . print_r($_POST, true));
-        
+
         try {
             // Validasi input
             if (!isset($_POST['id_status_ginekologi']) || empty($_POST['id_status_ginekologi'])) {
                 throw new Exception("ID status ginekologi tidak valid");
             }
-            
+
             if (!isset($_POST['no_rkm_medis']) || empty($_POST['no_rkm_medis'])) {
                 throw new Exception("Nomor rekam medis tidak valid");
             }
-            
+
             // Ambil data dari form
             $id_status_ginekologi = $_POST['id_status_ginekologi'];
             $no_rkm_medis = $_POST['no_rkm_medis'];
-            
+
             // Handle optional fields with default values
             $parturien = isset($_POST['parturien']) ? (int)$_POST['parturien'] : 0;
             $abortus = isset($_POST['abortus']) ? (int)$_POST['abortus'] : 0;
-            
+
             // HPHT is optional and can be NULL
             $hpht = !empty($_POST['hpht']) ? $_POST['hpht'] : NULL;
-            
+
             // Default kontrasepsi to 'Tidak Ada' if not provided
             $kontrasepsi = !empty($_POST['kontrasepsi']) ? $_POST['kontrasepsi'] : 'Tidak Ada';
-            
+
             // Ensure lama_menikah_th can be 0 - note the corrected field name
             $lama_menikah_th = isset($_POST['lama_menikah_th']) ? (float)$_POST['lama_menikah_th'] : 0;
-            
+
             // Koneksi ke database
             $db2_host = 'auth-db1151.hstgr.io';
             $db2_username = 'u609399718_adminpraktek';
             $db2_password = 'Obgin@12345';
             $db2_database = 'u609399718_praktekobgin';
-            
+
             $koneksi = new mysqli($db2_host, $db2_username, $db2_password, $db2_database);
-            
+
             if ($koneksi->connect_error) {
                 throw new Exception("Koneksi database gagal: " . $koneksi->connect_error);
             }
-            
+
             // Update data status ginekologi
             if ($hpht === NULL) {
-            // Handle NULL value for HPHT
-            $query = "UPDATE status_ginekologi SET 
+                // Handle NULL value for HPHT
+                $query = "UPDATE status_ginekologi SET 
                 Parturien = ?, 
                 Abortus = ?, 
                 Hari_pertama_haid_terakhir = NULL, 
                 Kontrasepsi_terakhir = ?, 
                 lama_menikah_th = ? 
                 WHERE id_status_ginekologi = ?";
-        } else {
-            // Regular query when HPHT has a value
-            $query = "UPDATE status_ginekologi SET 
+            } else {
+                // Regular query when HPHT has a value
+                $query = "UPDATE status_ginekologi SET 
                 Parturien = ?, 
                 Abortus = ?, 
                 Hari_pertama_haid_terakhir = ?, 
                 Kontrasepsi_terakhir = ?, 
                 lama_menikah_th = ? 
                 WHERE id_status_ginekologi = ?";
-        }
-                
+            }
+
             $stmt = $koneksi->prepare($query);
-            
+
             if (!$stmt) {
                 throw new Exception("Persiapan query gagal: " . $koneksi->error);
             }
-            
+
             if ($hpht === NULL) {
-            // Binding for NULL HPHT (exclude HPHT parameter)
-            $stmt->bind_param("iisdi", $parturien, $abortus, $kontrasepsi, $lama_menikah_th, $id_status_ginekologi);
-        } else {
-            // Regular binding when HPHT has a value
-            $stmt->bind_param("iissdi", $parturien, $abortus, $hpht, $kontrasepsi, $lama_menikah_th, $id_status_ginekologi);
-        }
-            
+                // Binding for NULL HPHT (exclude HPHT parameter)
+                $stmt->bind_param("iisdi", $parturien, $abortus, $kontrasepsi, $lama_menikah_th, $id_status_ginekologi);
+            } else {
+                // Regular binding when HPHT has a value
+                $stmt->bind_param("iissdi", $parturien, $abortus, $hpht, $kontrasepsi, $lama_menikah_th, $id_status_ginekologi);
+            }
+
             $result = $stmt->execute();
-            
+
             if (!$result) {
                 throw new Exception("Eksekusi query gagal: " . $stmt->error);
             }
-            
+
             // Tutup statement dan koneksi
             $stmt->close();
             $koneksi->close();
-            
+
             // Set pesan sukses
             $_SESSION['success'] = "Data status ginekologi berhasil diupdate";
-            
+
             // Add debugging to trace source parameter
             error_log("update_status_ginekologi POST data: " . json_encode($_POST));
             error_log("update_status_ginekologi SESSION: " . json_encode($_SESSION));
-            
+
             // Check for source in various places with priority
             $source = '';
             if (isset($_POST['source'])) {
@@ -2527,9 +2527,9 @@ class RekamMedisController
                 $source = $_SESSION['source_page'];
                 error_log("Source from source_page session: " . $source);
             }
-            
+
             error_log("Final source value for redirection: " . $source);
-            
+
             // Routing based on source
             if ($source == 'form_penilaian_medis_ralan_kandungan') {
                 // Get no_rawat if available
@@ -2537,17 +2537,17 @@ class RekamMedisController
                 if (empty($no_rawat) && isset($_POST['no_rawat'])) {
                     $no_rawat = $_POST['no_rawat'];
                 }
-                
+
                 $redirect_url = "index.php?module=rekam_medis&action=form_penilaian_medis_ralan_kandungan";
-                
+
                 if (!empty($no_rawat)) {
                     $redirect_url .= "&no_rawat=" . $no_rawat;
                 }
-                
+
                 if (!empty($no_rkm_medis)) {
                     $redirect_url .= "&no_rkm_medis=" . $no_rkm_medis;
                 }
-                
+
                 header("Location: " . $redirect_url);
             } elseif ($source == 'detail_pasien') {
                 // Redirect to detail_pasien
@@ -2557,11 +2557,10 @@ class RekamMedisController
                 header("Location: index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=" . $no_rkm_medis);
             }
             exit;
-            
         } catch (Exception $e) {
             error_log("Error in update_status_ginekologi: " . $e->getMessage());
             $_SESSION['error'] = $e->getMessage();
-            
+
             // Redirect kembali ke halaman edit
             if (isset($_POST['id_status_ginekologi'])) {
                 header("Location: index.php?module=rekam_medis&action=edit_status_ginekologi&id=" . $_POST['id_status_ginekologi']);
@@ -2614,11 +2613,10 @@ class RekamMedisController
                 header("Location: index.php?module=rekam_medis&action=detail_pasien&no_rkm_medis=" . $no_rkm_medis);
             }
             exit;
-
         } catch (Exception $e) {
             error_log("Error in hapus_status_ginekologi: " . $e->getMessage());
             $_SESSION['error'] = $e->getMessage();
-            
+
             // Redirect ke halaman sebelumnya atau ke daftar pasien jika terjadi error
             if (isset($_SERVER['HTTP_REFERER'])) {
                 header("Location: " . $_SERVER['HTTP_REFERER']);
@@ -3238,7 +3236,7 @@ class RekamMedisController
             exit;
         }
     }
-    
+
     /**
      * Menampilkan halaman template ceklist
      */
@@ -3250,7 +3248,7 @@ class RekamMedisController
                 require_once 'modules/rekam_medis/models/TemplateCeklist.php';
                 $this->templateCeklistModel = new TemplateCeklist();
             }
-            
+
             // Ambil semua kategori
             $kategori = $this->templateCeklistModel->getAllKategori();
 
@@ -3309,7 +3307,7 @@ class RekamMedisController
                 require_once 'modules/rekam_medis/models/TemplateCeklist.php';
                 $this->templateCeklistModel = new TemplateCeklist();
             }
-            
+
             // Validasi input
             if (!isset($_POST['nama_template_ck']) || empty($_POST['nama_template_ck'])) {
                 throw new Exception("Nama template harus diisi");
@@ -3361,7 +3359,7 @@ class RekamMedisController
                 require_once 'modules/rekam_medis/models/TemplateCeklist.php';
                 $this->templateCeklistModel = new TemplateCeklist();
             }
-            
+
             // Validasi input
             if (!isset($_POST['id_template']) || empty($_POST['id_template'])) {
                 throw new Exception("ID template tidak valid");
@@ -3397,7 +3395,7 @@ class RekamMedisController
                 require_once 'modules/rekam_medis/models/TemplateCeklist.php';
                 $this->templateCeklistModel = new TemplateCeklist();
             }
-            
+
             // Validasi input
             if (!isset($_POST['id_template_ceklist']) || empty($_POST['id_template_ceklist'])) {
                 throw new Exception("ID template tidak valid");
@@ -3453,7 +3451,7 @@ class RekamMedisController
                 require_once 'modules/rekam_medis/models/TemplateCeklist.php';
                 $this->templateCeklistModel = new TemplateCeklist();
             }
-            
+
             // Validasi input
             if (!isset($_POST['id_template']) || empty($_POST['id_template'])) {
                 throw new Exception("ID template tidak valid");
@@ -3505,7 +3503,7 @@ class RekamMedisController
             exit;
         }
     }
-    
+
     /**
      * Menampilkan halaman manajemen template tatalaksana
      */
@@ -4038,7 +4036,7 @@ class RekamMedisController
         // Debug: Log the request and post data
         error_log("tambahSurat method called");
         error_log("POST data: " . json_encode($_POST));
-        
+
         // Pastikan request adalah AJAX atau POST
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             error_log("Request method is not POST: " . $_SERVER['REQUEST_METHOD']);
@@ -4075,13 +4073,13 @@ class RekamMedisController
         try {
             // Debug data array before saving
             error_log("Data yang akan disimpan: " . json_encode($data));
-            
+
             // Gunakan model Surat untuk menyimpan data
             $suratModel = new Surat($this->pdo);
             $result = $suratModel->tambahSurat($data);
 
             error_log("Result of tambahSurat: " . var_export($result, true));
-            
+
             if ($result) {
                 error_log("Success saving surat with ID: " . $result);
                 echo json_encode([
@@ -4302,7 +4300,7 @@ class RekamMedisController
             $count_query = "SELECT COUNT(*) FROM penilaian_medis_ralan_kandungan pmrk 
                            JOIN reg_periksa rp ON pmrk.no_rawat = rp.no_rawat
                            JOIN pasien p ON rp.no_rkm_medis = p.no_rkm_medis";
-            
+
             if (!empty($search)) {
                 $count_query .= " WHERE p.no_rkm_medis LIKE :search 
                                OR p.nm_pasien LIKE :search 
@@ -4324,13 +4322,13 @@ class RekamMedisController
                       FROM penilaian_medis_ralan_kandungan pmrk 
                       JOIN reg_periksa rp ON pmrk.no_rawat = rp.no_rawat
                       JOIN pasien p ON rp.no_rkm_medis = p.no_rkm_medis";
-            
+
             if (!empty($search)) {
                 $query .= " WHERE p.no_rkm_medis LIKE :search 
                           OR p.nm_pasien LIKE :search 
                           OR pmrk.no_rawat LIKE :search";
             }
-            
+
             $query .= " ORDER BY rp.tgl_registrasi DESC, pmrk.tanggal DESC LIMIT :limit OFFSET :offset";
 
             $stmt = $this->pdo->prepare($query);
@@ -4341,7 +4339,6 @@ class RekamMedisController
             $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
             $stmt->execute();
             $kunjungan = $stmt->fetchAll();
-
         } catch (PDOException $e) {
             $_SESSION['error'] = "Error: " . $e->getMessage();
             $kunjungan = [];
@@ -4359,21 +4356,21 @@ class RekamMedisController
         header("Cache-Control: post-check=0, pre-check=0", false);
         header("Pragma: no-cache");
         header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Tanggal di masa lalu
-        
+
         error_log("==== DEBUGGING formEditPemeriksaan START ====");
         error_log("REQUEST_URI: " . $_SERVER['REQUEST_URI']);
         error_log("QUERY STRING: " . $_SERVER['QUERY_STRING']);
         error_log("no_rawat param: " . ($_GET['no_rawat'] ?? 'not set'));
-        
+
         // Buat koneksi langsung ke database praktek obgin
         try {
             $db2_host = 'auth-db1151.hstgr.io';
             $db2_username = 'u609399718_adminpraktek';
             $db2_password = 'Obgin@12345';
             $db2_database = 'u609399718_praktekobgin';
-            
+
             error_log("Attempting database connection to: $db2_host, $db2_database");
-            
+
             $pdo_praktek = new PDO(
                 "mysql:host=$db2_host;dbname=$db2_database;charset=utf8mb4",
                 $db2_username,
@@ -4385,7 +4382,7 @@ class RekamMedisController
                 ]
             );
             error_log("Database connection successful");
-            
+
             // Simpan PDO ke variabel kelas
             // $original_pdo = $this->pdo; // simpan koneksi asli, jika diperlukan nanti
             $this->pdo = $pdo_praktek; // gunakan koneksi baru untuk scope fungsi ini
@@ -4440,7 +4437,7 @@ class RekamMedisController
             // Simpan data pemeriksaan ke variabel yang digunakan di view
             $pemeriksaan = $data;
             $pasien = $data; // Ini mungkin perlu dibedakan jika fieldnya tumpang tindih
-            
+
             error_log("DEBUG formEditPemeriksaan: Fetched data: " . print_r($data, true));
 
             // Path ke file view - gunakan deteksi fleksibel berdasarkan lingkungan
@@ -4458,13 +4455,17 @@ class RekamMedisController
                 // Di localhost
                 $app_dir = '/antrian pasien';
             }
-            
+
             $view_file_path = $_SERVER['DOCUMENT_ROOT'] . $app_dir . '/modules/rekam_medis/views/form_edit_pemeriksaan.php';
             error_log("DEBUG formEditPemeriksaan: Attempting to include view file: " . $view_file_path);
 
             // Ambil data riwayat kehamilan
             $riwayatKehamilan = $this->rekamMedisModel->getRiwayatKehamilan($data['no_rkm_medis']);
             error_log("DEBUG formEditPemeriksaan: Fetched riwayat kehamilan data");
+            
+            // Ambil data riwayat pemeriksaan untuk ditampilkan di bagian bawah form
+            $riwayatPemeriksaan = $this->rekamMedisModel->getRiwayatPemeriksaan($data['no_rkm_medis']);
+            error_log("DEBUG formEditPemeriksaan: Fetched riwayat pemeriksaan data: " . count($riwayatPemeriksaan) . " records");
 
             if (file_exists($view_file_path) && is_readable($view_file_path)) {
                 error_log("DEBUG formEditPemeriksaan: View file found and readable. Including...");
@@ -4484,11 +4485,10 @@ class RekamMedisController
                 echo "<h3>Error Kritis</h3><p>Tidak dapat memuat komponen halaman. Silakan hubungi administrator. (Kode: ERR_VIEW_LOAD)</p><p>Detail: " . htmlspecialchars($error_message) . "</p>";
                 // Jika memungkinkan, redirect
                 if (!headers_sent()) {
-                     header('Location: ' . $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] . '/antrian pasien/index.php?module=rekam_medis&action=data_pasien');
-                     exit;
+                    header('Location: ' . $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] . '/antrian pasien/index.php?module=rekam_medis&action=data_pasien');
+                    exit;
                 }
             }
-
         } catch (PDOException $e) {
             error_log("CRITICAL formEditPemeriksaan: PDOException during data fetch or view include: " . $e->getMessage());
             $_SESSION['error'] = 'Terjadi kesalahan database saat memuat form edit pemeriksaan: ' . $e->getMessage();

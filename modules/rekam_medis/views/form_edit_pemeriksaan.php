@@ -249,6 +249,39 @@ if ($conn) {
         border-radius: 0.25rem 0.25rem 0 0;
     }
 
+    /* Responsive styles for mobile devices */
+    @media (max-width: 767px) {
+        .nav-tabs {
+            flex-wrap: wrap;
+            border-bottom: none;
+            margin-bottom: 10px;
+        }
+
+        .nav-tabs .nav-item {
+            width: 50%;
+            margin-bottom: 5px;
+            padding: 0 2px;
+        }
+
+        .nav-tabs .nav-link {
+            font-size: 0.75rem;
+            padding: 8px 5px;
+            margin-right: 0;
+            justify-content: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .nav-tabs .nav-link i.fas.fa-chevron-down {
+            margin-left: 3px;
+        }
+
+        .nav-tabs .nav-link i:first-child {
+            margin-right: 3px;
+        }
+    }
+
     .nav-tabs .nav-link.active {
         background-color: #fff;
         border-bottom-color: #fff;
@@ -829,12 +862,18 @@ if ($conn) {
                                 <table class="table table-sm table-bordered table-striped table-resizable">
                                     <thead class="table-light">
                                         <tr>
-                                            <th>Waktu Pemeriksaan<div class="resizer"></div></th>
-                                            <th>Keluhan Utama<div class="resizer"></div></th>
-                                            <th>Diagnosis<div class="resizer"></div></th>
-                                            <th>Tatalaksana<div class="resizer"></div></th>
-                                            <th>Resep<div class="resizer"></div></th>
-                                            <th width="120">Aksi<div class="resizer"></div></th>
+                                            <th>Waktu Pemeriksaan<div class="resizer"></div>
+                                            </th>
+                                            <th>Keluhan Utama<div class="resizer"></div>
+                                            </th>
+                                            <th>Diagnosis<div class="resizer"></div>
+                                            </th>
+                                            <th>Tatalaksana<div class="resizer"></div>
+                                            </th>
+                                            <th>Resep<div class="resizer"></div>
+                                            </th>
+                                            <th width="120">Aksi<div class="resizer"></div>
+                                            </th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -1048,6 +1087,10 @@ if ($conn) {
                             </div>
                         </div>
 
+                    </div>
+
+                    <!-- Kolom 2 -->
+                    <div class="col-md-4">
                         <!-- Pemeriksaan Fisik -->
                         <div class="card mb-3">
                             <div class="card-header">
@@ -1056,10 +1099,6 @@ if ($conn) {
                             <div class="card-body">
                                 <div class="row g-2">
                                     <div class="col-4">
-                                        <div class="mb-2">
-                                            <label>GCS</label>
-                                            <input type="text" name="gcs" class="form-control form-control-sm" value="<?= isset($pemeriksaan['gcs']) ? $pemeriksaan['gcs'] : '456' ?>">
-                                        </div>
                                         <div class="mb-2">
                                             <label>TD (mmHg)</label>
                                             <input type="text" name="td" class="form-control form-control-sm" value="<?= isset($pemeriksaan['td']) ? $pemeriksaan['td'] : '120/80' ?>">
@@ -1078,16 +1117,12 @@ if ($conn) {
                                             <label>Suhu (°C)</label>
                                             <input type="text" name="suhu" class="form-control form-control-sm" value="<?= isset($pemeriksaan['suhu']) ? $pemeriksaan['suhu'] : '36.4' ?>">
                                         </div>
-                                        <div class="mb-2">
-                                            <label>SpO2 (%)</label>
-                                            <input type="text" name="spo" class="form-control form-control-sm" value="<?= isset($pemeriksaan['spo']) ? $pemeriksaan['spo'] : '99' ?>">
-                                        </div>
                                     </div>
                                     <div class="col-4">
                                         <div class="mb-2">
                                             <label>BB (kg)</label>
                                             <input type="number" name="bb" class="form-control form-control-sm" value="<?= isset($pemeriksaan['bb']) ? $pemeriksaan['bb'] : '' ?>" step="0.01" min="0" max="500" placeholder=" " onkeypress="return (event.charCode >= 48 && event.charCode <= 57) || event.charCode == 46">
-                                            <small class="text-muted">Gunakan titik (.) untuk desimal</small>
+
                                         </div>
                                         <div class="mb-2">
                                             <label>TB (cm)</label>
@@ -1096,100 +1131,8 @@ if ($conn) {
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Kolom 2 -->
-                    <div class="col-md-4">
-                        <!-- Pemeriksaan Organ -->
-                        <div class="card mb-3">
-                            <div class="card-header">
-                                <h6 class="m-0 font-weight-bold text-primary">Pemeriksaan Organ</h6>
-                            </div>
-                            <div class="card-body">
-                                <div class="row g-2">
-                                    <div class="col-4">
-                                        <div class="mb-2">
-                                            <label>Kepala</label>
-                                            <select name="kepala" class="form-select form-select-sm">
-                                                <option value="Normal" <?= (isset($pemeriksaan['kepala']) && $pemeriksaan['kepala'] == 'Normal') ? 'selected' : '' ?>>Normal</option>
-                                                <option value="Abnormal" <?= (isset($pemeriksaan['kepala']) && $pemeriksaan['kepala'] == 'Abnormal') ? 'selected' : '' ?>>Abnormal</option>
-                                                <option value="Tidak Diperiksa" <?= (isset($pemeriksaan['kepala']) && $pemeriksaan['kepala'] == 'Tidak Diperiksa') ? 'selected' : '' ?>>Tidak Diperiksa</option>
-                                            </select>
-                                        </div>
-                                        <div class="mb-2">
-                                            <label>Mata</label>
-                                            <select name="mata" class="form-select form-select-sm">
-                                                <option value="Normal" <?= (isset($pemeriksaan['mata']) && $pemeriksaan['mata'] == 'Normal') ? 'selected' : '' ?>>Normal</option>
-                                                <option value="Abnormal" <?= (isset($pemeriksaan['mata']) && $pemeriksaan['mata'] == 'Abnormal') ? 'selected' : '' ?>>Abnormal</option>
-                                                <option value="Tidak Diperiksa" <?= (isset($pemeriksaan['mata']) && $pemeriksaan['mata'] == 'Tidak Diperiksa') ? 'selected' : '' ?>>Tidak Diperiksa</option>
-                                            </select>
-                                        </div>
-                                        <div class="mb-2">
-                                            <label>Gigi</label>
-                                            <select name="gigi" class="form-select form-select-sm">
-                                                <option value="Normal" <?= (isset($pemeriksaan['gigi']) && $pemeriksaan['gigi'] == 'Normal') ? 'selected' : '' ?>>Normal</option>
-                                                <option value="Abnormal" <?= (isset($pemeriksaan['gigi']) && $pemeriksaan['gigi'] == 'Abnormal') ? 'selected' : '' ?>>Abnormal</option>
-                                                <option value="Tidak Diperiksa" <?= (isset($pemeriksaan['gigi']) && $pemeriksaan['gigi'] == 'Tidak Diperiksa') ? 'selected' : '' ?>>Tidak Diperiksa</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="col-4">
-                                        <div class="mb-2">
-                                            <label>THT</label>
-                                            <select name="tht" class="form-select form-select-sm">
-                                                <option value="Normal" <?= (isset($pemeriksaan['tht']) && $pemeriksaan['tht'] == 'Normal') ? 'selected' : '' ?>>Normal</option>
-                                                <option value="Abnormal" <?= (isset($pemeriksaan['tht']) && $pemeriksaan['tht'] == 'Abnormal') ? 'selected' : '' ?>>Abnormal</option>
-                                                <option value="Tidak Diperiksa" <?= (isset($pemeriksaan['tht']) && $pemeriksaan['tht'] == 'Tidak Diperiksa') ? 'selected' : '' ?>>Tidak Diperiksa</option>
-                                            </select>
-                                        </div>
-                                        <div class="mb-2">
-                                            <label>Thoraks</label>
-                                            <select name="thoraks" class="form-select form-select-sm">
-                                                <option value="Normal" <?= (isset($pemeriksaan['thoraks']) && $pemeriksaan['thoraks'] == 'Normal') ? 'selected' : '' ?>>Normal</option>
-                                                <option value="Abnormal" <?= (isset($pemeriksaan['thoraks']) && $pemeriksaan['thoraks'] == 'Abnormal') ? 'selected' : '' ?>>Abnormal</option>
-                                                <option value="Tidak Diperiksa" <?= (isset($pemeriksaan['thoraks']) && $pemeriksaan['thoraks'] == 'Tidak Diperiksa') ? 'selected' : '' ?>>Tidak Diperiksa</option>
-                                            </select>
-                                        </div>
-                                        <div class="mb-2">
-                                            <label>Abdomen</label>
-                                            <select name="abdomen" class="form-select form-select-sm">
-                                                <option value="Normal" <?= (isset($pemeriksaan['abdomen']) && $pemeriksaan['abdomen'] == 'Normal') ? 'selected' : '' ?>>Normal</option>
-                                                <option value="Abnormal" <?= (isset($pemeriksaan['abdomen']) && $pemeriksaan['abdomen'] == 'Abnormal') ? 'selected' : '' ?>>Abnormal</option>
-                                                <option value="Tidak Diperiksa" <?= (isset($pemeriksaan['abdomen']) && $pemeriksaan['abdomen'] == 'Tidak Diperiksa') ? 'selected' : '' ?>>Tidak Diperiksa</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="col-4">
-                                        <div class="mb-2">
-                                            <label>Genital</label>
-                                            <select name="genital" class="form-select form-select-sm">
-                                                <option value="Normal" <?= (isset($pemeriksaan['genital']) && $pemeriksaan['genital'] == 'Normal') ? 'selected' : '' ?>>Normal</option>
-                                                <option value="Abnormal" <?= (isset($pemeriksaan['genital']) && $pemeriksaan['genital'] == 'Abnormal') ? 'selected' : '' ?>>Abnormal</option>
-                                                <option value="Tidak Diperiksa" <?= (isset($pemeriksaan['genital']) && $pemeriksaan['genital'] == 'Tidak Diperiksa') ? 'selected' : '' ?>>Tidak Diperiksa</option>
-                                            </select>
-                                        </div>
-                                        <div class="mb-2">
-                                            <label>Ekstremitas</label>
-                                            <select name="ekstremitas" class="form-select form-select-sm">
-                                                <option value="Normal" <?= (isset($pemeriksaan['ekstremitas']) && $pemeriksaan['ekstremitas'] == 'Normal') ? 'selected' : '' ?>>Normal</option>
-                                                <option value="Abnormal" <?= (isset($pemeriksaan['ekstremitas']) && $pemeriksaan['ekstremitas'] == 'Abnormal') ? 'selected' : '' ?>>Abnormal</option>
-                                                <option value="Tidak Diperiksa" <?= (isset($pemeriksaan['ekstremitas']) && $pemeriksaan['ekstremitas'] == 'Tidak Diperiksa') ? 'selected' : '' ?>>Tidak Diperiksa</option>
-                                            </select>
-                                        </div>
-                                        <div class="mb-2">
-                                            <label>Kulit</label>
-                                            <select name="kulit" class="form-select form-select-sm">
-                                                <option value="Normal" <?= (isset($pemeriksaan['kulit']) && $pemeriksaan['kulit'] == 'Normal') ? 'selected' : '' ?>>Normal</option>
-                                                <option value="Abnormal" <?= (isset($pemeriksaan['kulit']) && $pemeriksaan['kulit'] == 'Abnormal') ? 'selected' : '' ?>>Abnormal</option>
-                                                <option value="Tidak Diperiksa" <?= (isset($pemeriksaan['kulit']) && $pemeriksaan['kulit'] == 'Tidak Diperiksa') ? 'selected' : '' ?>>Tidak Diperiksa</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
                                 <div class="mb-2">
-                                    <label>Keterangan Pemeriksaan Fisik</label>
+                                    <label>Temuan Pemeriksaan Fisik</label>
                                     <textarea name="ket_fisik" class="form-control form-control-sm" rows="1"><?= isset($pemeriksaan['ket_fisik']) ? $pemeriksaan['ket_fisik'] : '' ?></textarea>
                                 </div>
                             </div>
@@ -3573,12 +3516,14 @@ error_log("Form Edit Pemeriksaan: File execution completed");
         const riwayatKehamilanTab = document.getElementById('riwayat-kehamilan-tab');
         const statusGinekologiTab = document.getElementById('status-ginekologi-tab');
         const grafikImtTab = document.getElementById('grafik-imt-tab');
+        const riwayatTab = document.getElementById('riwayat-tab');
 
         const identitasContent = document.getElementById('identitas');
         const skriningContent = document.getElementById('skrining');
         const riwayatKehamilanContent = document.getElementById('riwayat-kehamilan');
         const statusGinekologiContent = document.getElementById('status-ginekologi');
         const grafikImtContent = document.getElementById('grafik-imt');
+        const riwayatContent = document.getElementById('riwayat');
 
         // Initialize icon state
         identitasTab.querySelector('i.fas.fa-chevron-down').style.transform = 'rotate(0deg)';
@@ -3586,11 +3531,12 @@ error_log("Form Edit Pemeriksaan: File execution completed");
         riwayatKehamilanTab.querySelector('i.fas.fa-chevron-down').style.transform = 'rotate(-90deg)';
         statusGinekologiTab.querySelector('i.fas.fa-chevron-down').style.transform = 'rotate(-90deg)';
         grafikImtTab.querySelector('i.fas.fa-chevron-down').style.transform = 'rotate(-90deg)';
+        riwayatTab.querySelector('i.fas.fa-chevron-down').style.transform = 'rotate(-90deg)';
 
         // Fungsi untuk menutup semua tab kecuali yang aktif
         function closeAllTabsExcept(activeTabContent) {
-            const allTabContents = [identitasContent, skriningContent, riwayatKehamilanContent, statusGinekologiContent, grafikImtContent];
-            const allTabs = [identitasTab, skriningTab, riwayatKehamilanTab, statusGinekologiTab, grafikImtTab];
+            const allTabContents = [identitasContent, skriningContent, riwayatKehamilanContent, statusGinekologiContent, grafikImtContent, riwayatContent];
+            const allTabs = [identitasTab, skriningTab, riwayatKehamilanTab, statusGinekologiTab, grafikImtTab, riwayatTab];
 
             allTabContents.forEach(content => {
                 if (content !== activeTabContent) {
@@ -3717,6 +3663,28 @@ error_log("Form Edit Pemeriksaan: File execution completed");
             }
         });
 
+        // Handler untuk tab Riwayat
+        riwayatTab.addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log('Riwayat tab clicked');
+
+            if (riwayatContent.style.display === 'block') {
+                riwayatContent.style.display = 'none';
+                riwayatContent.classList.remove('show');
+                this.classList.add('collapsed');
+                this.classList.remove('active');
+                this.querySelector('i.fas.fa-chevron-down').style.transform = 'rotate(-90deg)';
+            } else {
+                riwayatContent.style.display = 'block';
+                riwayatContent.classList.add('show');
+                closeAllTabsExcept(riwayatContent);
+
+                this.classList.remove('collapsed');
+                this.classList.add('active');
+                this.querySelector('i.fas.fa-chevron-down').style.transform = 'rotate(0deg)';
+            }
+        });
+
         // Inisialisasi tampilan - pastikan tab identitas terbuka di awal
         identitasContent.style.display = 'block';
         identitasContent.classList.add('show');
@@ -3726,6 +3694,7 @@ error_log("Form Edit Pemeriksaan: File execution completed");
         riwayatKehamilanContent.style.display = 'none';
         statusGinekologiContent.style.display = 'none';
         grafikImtContent.style.display = 'none';
+        riwayatContent.style.display = 'none';
 
         // Buat IntersectionObserver untuk setiap konten tab sebagai fallback
         const setupObserver = (elementId, callbackFn) => {
