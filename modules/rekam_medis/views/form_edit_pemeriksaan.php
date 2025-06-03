@@ -862,9 +862,9 @@ if ($conn) {
                                 <table class="table table-sm table-bordered table-striped table-resizable">
                                     <thead class="table-light">
                                         <tr>
-                                            <th>Waktu Pemeriksaan<div class="resizer"></div>
+                                            <th width="180">Waktu Pemeriksaan<div class="resizer"></div>
                                             </th>
-                                            <th>Keluhan Utama<div class="resizer"></div>
+                                            <th width="140">Keluhan Utama<div class="resizer"></div>
                                             </th>
                                             <th>Diagnosis<div class="resizer"></div>
                                             </th>
@@ -872,7 +872,7 @@ if ($conn) {
                                             </th>
                                             <th>Resep<div class="resizer"></div>
                                             </th>
-                                            <th width="120">Aksi<div class="resizer"></div>
+                                            <th width="80">Aksi<div class="resizer"></div>
                                             </th>
                                         </tr>
                                     </thead>
@@ -1228,11 +1228,17 @@ if ($conn) {
                                             <textarea name="diagnosis" id="diagnosis" class="form-control" rows="4"><?= isset($pemeriksaan['diagnosis']) ? $pemeriksaan['diagnosis'] : '' ?></textarea>
                                         </div>
                                         <div class="col-md-4">
-                                            <div class="card border">
-
+                                            <div class="card border mb-2">
                                                 <div class="card-body p-2">
                                                     <button type="button" class="btn btn-sm btn-info w-100" data-bs-toggle="modal" data-bs-target="#modalRiwayatDiagnosis">
                                                         <i class="fas fa-history"></i> Lihat Riwayat
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div class="card border">
+                                                <div class="card-body p-2">
+                                                    <button type="button" class="btn btn-sm btn-info w-100 mb-2" onclick="masukkanStatusObstetriDiagnosis()">
+                                                        <i class="fas fa-female"></i> Status Obstetri
                                                     </button>
                                                 </div>
                                             </div>
@@ -2924,6 +2930,138 @@ error_log("Form Edit Pemeriksaan: File execution completed");
 
         // Update format data
         // updateResumeFormat();
+    }
+
+    function masukkanStatusObstetriDiagnosis() {
+        // Cek jenis kelamin, hanya lanjutkan jika pasien perempuan
+        var jenisKelamin = "<?= isset($pasien['jk']) ? $pasien['jk'] : '' ?>";
+
+        if (jenisKelamin !== 'P') {
+            alert('Status obstetri hanya berlaku untuk pasien perempuan');
+            return;
+        }
+
+        <?php
+        // Ambil data obstetri dari database menggunakan query yang disarankan
+        $no_rawat = $pemeriksaan['no_rawat'];
+        $obstetri_data = array(
+            'gravida' => '0',
+            'paritas' => '0',
+            'abortus' => '0',
+            'tanggal_hpht' => '-',
+            'tanggal_tp' => '-',
+            'tanggal_tp_penyesuaian' => '-',
+            'tb' => '0',
+            'faktor_risiko_umum' => '-',
+            'faktor_risiko_obstetri' => '-',
+            'faktor_risiko_preeklampsia' => '-',
+            'hasil_faktor_risiko' => '-'
+        );
+
+        try {
+            $conn = getConnection();
+            $sql = "SELECT s.*
+                    FROM reg_periksa r 
+                    JOIN status_obstetri s ON r.no_rkm_medis = s.no_rkm_medis
+                    WHERE r.no_rawat = :no_rawat";
+            $stmt = $conn->prepare($sql);
+            $stmt->bindParam(':no_rawat', $no_rawat, PDO::PARAM_STR);
+            $stmt->execute();
+
+            if ($stmt && $stmt->rowCount() > 0) {
+                $obstetri_data = $stmt->fetch(PDO::FETCH_ASSOC);
+            }
+        } catch (PDOException $e) {
+            // Handle error jika terjadi kesalahan pada query
+            error_log("Error fetching obstetri data: " . $e->getMessage());
+        }
+        ?>
+
+        // Ambil data obstetri dari data yang telah diambil dari database
+        var gravida = "<?= isset($obstetri_data['gravida']) ? $obstetri_data['gravida'] : '0' ?>";
+        var paritas = "<?= isset($obstetri_data['paritas']) ? $obstetri_data['paritas'] : '0' ?>";
+        var abortus = "<?= isset($obstetri_data['abortus']) ? $obstetri_data['abortus'] : '0' ?>";
+        var tanggalHpht = "<?= isset($obstetri_data['tanggal_hpht']) && $obstetri_data['tanggal_hpht'] != '0000-00-00' ? date('d-m-Y', strtotime($obstetri_data['tanggal_hpht'])) : '-' ?>";
+        var tanggalTp = "<?= isset($obstetri_data['tanggal_tp']) && $obstetri_data['tanggal_tp'] != '0000-00-00' ? date('d-m-Y', strtotime($obstetri_data['tanggal_tp'])) : '-' ?>";
+        var tanggalTpPenyesuaian = "<?= isset($obstetri_data['tanggal_tp_penyesuaian']) && $obstetri_data['tanggal_tp_penyesuaian'] != '0000-00-00' ? date('d-m-Y', strtotime($obstetri_data['tanggal_tp_penyesuaian'])) : '-' ?>";
+        var faktorRisikoUmum = "<?= isset($obstetri_data['faktor_risiko_umum']) ? $obstetri_data['faktor_risiko_umum'] : '-' ?>";
+        var faktorRisikoObstetri = "<?= isset($obstetri_data['faktor_risiko_obstetri']) ? $obstetri_data['faktor_risiko_obstetri'] : '-' ?>";
+        var faktorRisikoPreeklampsia = "<?= isset($obstetri_data['faktor_risiko_preeklampsia']) ? $obstetri_data['faktor_risiko_preeklampsia'] : '-' ?>";
+        var hasilFaktorRisiko = "<?= isset($obstetri_data['hasil_faktor_risiko']) ? $obstetri_data['hasil_faktor_risiko'] : '-' ?>";
+
+        // Format status obstetri untuk diagnosis
+        var statusObstetriText = "G" + gravida + "P" + paritas + "A" + abortus;
+        
+        // Hitung usia kehamilan (UK) berdasarkan tanggal_tp_penyesuaian (EDD)
+        if (tanggalTpPenyesuaian && tanggalTpPenyesuaian !== '-') {
+            // Konversi tanggal TP dari format dd-mm-yyyy ke objek Date
+            var parts = tanggalTpPenyesuaian.split('-');
+            var tpDate = new Date(parts[2], parts[1] - 1, parts[0]); // year, month (0-based), day
+            
+            // Tanggal hari ini
+            var today = new Date();
+            
+            // Hitung selisih dalam milidetik
+            var diffTime = tpDate.getTime() - today.getTime();
+            
+            // Konversi ke hari
+            var diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            
+            // Kehamilan normal sekitar 280 hari (40 minggu)
+            // UK = 40 minggu - (sisa waktu dalam minggu)
+            var sisaWaktuMinggu = Math.floor(diffDays / 7);
+            var ukMinggu = 40 - sisaWaktuMinggu;
+            var ukHari = 7 - (diffDays % 7);
+            
+            // Pastikan nilai UK valid
+            if (ukMinggu >= 0 && ukMinggu <= 45) {
+                statusObstetriText += " UK: " + ukMinggu;
+                if (ukHari > 0 && ukHari < 7) {
+                    statusObstetriText += "+" + ukHari;
+                }
+                statusObstetriText += " minggu";
+            }
+        }
+
+        // Tambahkan faktor risiko jika ada
+        var adaFaktorRisiko = false;
+        var faktorRisikoText = " FR: ";
+
+        if (faktorRisikoUmum && faktorRisikoUmum !== '-') {
+            faktorRisikoText += faktorRisikoUmum;
+            adaFaktorRisiko = true;
+        }
+
+        if (faktorRisikoObstetri && faktorRisikoObstetri !== '-') {
+            faktorRisikoText += (adaFaktorRisiko ? " + " : "") + faktorRisikoObstetri;
+            adaFaktorRisiko = true;
+        }
+
+        if (faktorRisikoPreeklampsia && faktorRisikoPreeklampsia !== '-') {
+            faktorRisikoText += (adaFaktorRisiko ? ", PE: " : "PE: ") + faktorRisikoPreeklampsia;
+            adaFaktorRisiko = true;
+        }
+
+        if (adaFaktorRisiko) {
+            statusObstetriText += faktorRisikoText;
+
+            if (hasilFaktorRisiko && hasilFaktorRisiko !== '-') {
+                statusObstetriText += " (" + hasilFaktorRisiko + ")";
+            }
+        }
+
+        // Sisipkan ke field diagnosis
+        var diagnosisField = document.getElementById('diagnosis');
+        var currentText = diagnosisField.value;
+        
+        // Tambahkan status obstetri ke awal diagnosis jika kosong, atau tambahkan di akhir dengan baris baru
+        if (currentText.trim() === '') {
+            diagnosisField.value = statusObstetriText;
+        } else {
+            diagnosisField.value = currentText + "\n" + statusObstetriText;
+        }
+        
+        autoResizeTextarea(diagnosisField);
     }
 
     function masukkanStatusGinekologi() {
