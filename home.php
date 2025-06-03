@@ -45,7 +45,7 @@ try {
 
 // Konversi koneksi PDO ke MySQLi untuk widget pengumuman
 $pdo_conn = $conn; // Simpan koneksi PDO
-$conn_mysqli = new mysqli($host, $username, $password, $database);
+$conn_mysqli = new mysqli($db2_host, $db2_username, $db2_password, $db2_database);
 if ($conn_mysqli->connect_error) {
     error_log("MySQLi Connection Error: " . $conn_mysqli->connect_error);
 }

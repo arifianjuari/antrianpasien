@@ -40,6 +40,9 @@ function getDayOrder($day)
     return isset($days[$day]) ? $days[$day] : 8; // Jika hari tidak dikenal, letakkan di akhir
 }
 
+// Pastikan koneksi database tersedia
+ensureDBConnection();
+
 // Query untuk mengambil data pendaftaran
 try {
     $query = "

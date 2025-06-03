@@ -58,6 +58,30 @@ try {
         body {
             font-family: 'Nunito', sans-serif;
             background-color: #f8f9fa;
+            overflow-x: hidden; /* Prevent horizontal scrollbar */
+        }
+        
+        /* Main Content Layout */
+        .main-content {
+            margin-left: 240px;
+            padding: 20px;
+            transition: margin-left 0.3s ease, width 0.3s ease;
+            width: calc(100% - 240px); /* Width minus sidebar width */
+            box-sizing: border-box;
+        }
+        
+        /* Adjust main content when sidebar is minimized */
+        .sidebar.minimized ~ .main-content {
+            margin-left: 60px;
+            width: calc(100% - 60px); /* Width minus minimized sidebar width */
+        }
+        
+        /* Mobile adjustments */
+        @media (max-width: 991.98px) {
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+            }
         }
         
         /* Card Styles */
@@ -65,125 +89,205 @@ try {
             height: 100%;
             transition: all 0.3s ease;
             border: none;
-            border-radius: 12px;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
             overflow: hidden;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
         }
 
         .service-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 12px rgba(0, 0, 0, 0.08);
+        }
+        
+        /* Category Styling - Hidden as requested */
+        .category-section {
+            margin-bottom: 1.5rem;
+            background-color: transparent;
+            box-shadow: none;
+            padding: 0;
         }
 
-        /* Category Styling */
-        .category-title {
+        /* Card Hover and Clickable Styling */
+        .service-card {
+            cursor: pointer;
             position: relative;
-            padding-bottom: 10px;
-            margin-bottom: 25px;
-            font-weight: 700;
-            color: #2c3e50;
         }
-
-        .category-title::after {
+        
+        .service-card::after {
             content: '';
             position: absolute;
+            top: 0;
             left: 0;
+            right: 0;
             bottom: 0;
-            width: 60px;
-            height: 4px;
-            background: linear-gradient(90deg, #0d6efd, #0dcaf0);
-            border-radius: 2px;
+            background-color: rgba(13, 110, 253, 0.05);
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            border-radius: 10px;
         }
-
-        /* Badge Styling */
-        .badge-booking {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            padding: 6px 10px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            border-radius: 30px;
-            box-shadow: 0 2px 5px rgba(13, 110, 253, 0.2);
-            z-index: 2;
+        
+        .service-card:hover::after {
+            opacity: 1;
         }
 
         /* Text Styling */
         .service-description {
             color: #6c757d;
-            font-size: 0.9rem;
-            line-height: 1.5;
-            margin-bottom: 15px;
+            font-size: 0.85rem;
+            line-height: 1.4;
+            margin-bottom: 8px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        @media (max-width: 767.98px) {
+            .service-description {
+                margin-bottom: 6px;
+                font-size: 0.8rem;
+                line-height: 1.3;
+            }
         }
 
         .service-preparation {
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             background-color: #f0f7ff;
-            border-radius: 8px;
-            padding: 12px 15px;
-            margin-top: 15px;
+            border-radius: 6px;
+            padding: 8px 10px;
+            margin-top: 8px;
             border-left: 3px solid #0d6efd;
+        }
+        
+        @media (max-width: 767.98px) {
+            .service-preparation {
+                padding: 6px 8px;
+                margin-top: 6px;
+                font-size: 0.75rem;
+            }
         }
 
         .service-duration {
-            font-size: 0.85rem;
-            color: #495057;
+            font-size: 0.75rem;
+            color: #6c757d;
             display: flex;
             align-items: center;
         }
         
         .service-duration i {
-            margin-right: 5px;
+            margin-right: 4px;
             color: #6c757d;
         }
 
         .service-price {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             font-weight: 700;
             color: #198754;
         }
 
         /* Layout Styling */
-        .category-section {
-            margin-bottom: 3rem;
-            padding: 1rem;
-            background-color: white;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-        }
-
         .category-icon {
-            font-size: 1.5rem;
-            margin-right: 0.5rem;
-            vertical-align: middle;
-            color: #0d6efd;
+            display: none; /* Hide category icon as requested */
+        }
+        
+        /* Grid Layout */
+        .services-grid {
+            display: flex;
+            flex-wrap: wrap;
+            margin: 0 -5px;
+        }
+        
+        .service-item {
+            padding: 0 5px;
+            margin-bottom: 10px;
+        }
+        
+        @media (max-width: 767.98px) {
+            .service-item {
+                margin-bottom: 8px;
+            }
+        }
+        
+        /* Desktop - 4 columns */
+        @media (min-width: 992px) {
+            .service-item {
+                width: 25%;
+            }
+        }
+        
+        /* Tablet - 3 columns */
+        @media (min-width: 768px) and (max-width: 991.98px) {
+            .service-item {
+                width: 33.333%;
+            }
+        }
+        
+        /* Mobile - 2 columns */
+        @media (max-width: 767.98px) {
+            .service-item {
+                width: 50%;
+            }
         }
 
         .card-title {
             margin-top: 0;
+            margin-bottom: 8px;
             font-weight: 700;
             color: #2c3e50;
-            font-size: 1.1rem;
+            font-size: 1rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .card-body {
-            padding: 1.5rem;
+            padding: 1rem;
         }
 
         .service-footer {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-top: 1rem;
-            padding-top: 1rem;
+            margin-top: 8px;
+            padding-top: 8px;
             border-top: 1px solid #f0f0f0;
+        }
+        
+        @media (max-width: 767.98px) {
+            .service-footer {
+                margin-top: 6px;
+                padding-top: 6px;
+            }
         }
         
         /* Mobile Optimizations */
         @media (max-width: 767.98px) {
             .main-content {
                 padding: 10px;
+            }
+            
+            .mobile-hide {
+                display: none;
+            }
+            
+            .col-6 {
+                padding-left: 5px;
+                padding-right: 5px;
+            }
+            
+            .row.g-3 {
+                margin-left: -5px;
+                margin-right: -5px;
+            }
+            
+            .card-body {
+                padding: 0.75rem 0.75rem 0.5rem;
+            }
+            
+            .service-card {
+                margin-bottom: 10px;
             }
             
             .container-fluid {
@@ -239,13 +343,13 @@ try {
 
     <div class="main-content">
         <div class="container-fluid">
-            <div class="row mb-4">
+            <div class="row mb-3 mb-md-4">
                 <div class="col-12">
                     <div class="d-flex align-items-center mb-2">
                         <i class="bi bi-clipboard-pulse text-primary me-2" style="font-size: 1.75rem;"></i>
                         <h2 class="page-title mb-0">Layanan Kami</h2>
                     </div>
-                    <p class="text-muted">Temukan berbagai layanan kesehatan yang kami sediakan untuk Anda</p>
+                    <p class="text-muted mobile-hide">Temukan berbagai layanan kesehatan yang kami sediakan untuk Anda</p>
                 </div>
             </div>
 
@@ -257,84 +361,44 @@ try {
 
             <?php foreach ($layanan_by_kategori as $kategori => $items): ?>
                 <div class="category-section">
-                    <h3 class="category-title mb-4">
-                        <i class="bi 
-                        <?php
-                        switch ($kategori) {
-                            case 'Konsultasi':
-                                echo 'bi-chat-dots';
-                                break;
-                            case 'Tindakan':
-                                echo 'bi-bandaid';
-                                break;
-                            case 'Pemeriksaan':
-                                echo 'bi-clipboard2-pulse';
-                                break;
-                            case 'Paket':
-                                echo 'bi-box';
-                                break;
-                            default:
-                                echo 'bi-grid';
-                        }
-                        ?> category-icon"></i>
-                        <?= $kategori ?>
-                    </h3>
 
-                    <div class="row g-4">
-                        <?php foreach ($items as $item): ?>
-                            <div class="col-12 col-md-6 col-lg-4">
-                                <div class="card service-card">
-                                    <?php if ($item['dapat_dibooking']): ?>
-                                        <span class="badge bg-primary badge-booking">
-                                            <i class="bi bi-calendar-check me-1"></i> Dapat Dibooking
-                                        </span>
-                                    <?php endif; ?>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="services-grid">
+                                <?php foreach ($items as $item): ?>
+                                <div class="service-item">
+                                    <div class="card service-card" onclick="redirectToRegistration('<?= $item['id_layanan'] ?>')">
+                                        <div class="card-body">
+                                            <h5 class="card-title"><?= htmlspecialchars($item['nama_layanan']) ?></h5>
 
-                                    <div class="card-body">
-                                        <h5 class="card-title mb-3"><?= htmlspecialchars($item['nama_layanan']) ?></h5>
-
-                                        <?php if (!empty($item['deskripsi'])): ?>
-                                            <p class="service-description mb-3"><?= nl2br(htmlspecialchars($item['deskripsi'])) ?></p>
-                                        <?php endif; ?>
-
-                                        <?php if (!empty($item['persiapan'])): ?>
-                                            <div class="service-preparation">
-                                                <strong><i class="bi bi-info-circle"></i> Persiapan:</strong><br>
-                                                <?= nl2br(htmlspecialchars($item['persiapan'])) ?>
-                                            </div>
-                                        <?php endif; ?>
-
-                                        <div class="service-footer">
-                                            <?php if ($item['durasi_estimasi']): ?>
-                                                <span class="service-duration">
-                                                    <i class="bi bi-clock"></i> <?= $item['durasi_estimasi'] ?> menit
-                                                </span>
-                                            <?php else: ?>
-                                                <span></span>
+                                            <?php if (!empty($item['deskripsi'])): ?>
+                                                <p class="service-description"><?= nl2br(htmlspecialchars($item['deskripsi'])) ?></p>
                                             <?php endif; ?>
 
-                                            <span class="service-price"><?= formatRupiah($item['harga']) ?></span>
-                                        </div>
+                                            <?php if (!empty($item['persiapan'])): ?>
+                                                <div class="service-preparation">
+                                                    <small><i class="bi bi-info-circle"></i> <strong>Persiapan:</strong></small>
+                                                    <div class="mt-1"><?= nl2br(htmlspecialchars($item['persiapan'])) ?></div>
+                                                </div>
+                                            <?php endif; ?>
 
-                                        <?php if ($item['dapat_dibooking']): ?>
-                                            <div class="mt-3">
-                                                <?php if ($is_logged_in): ?>
-                                                    <a href="<?= $base_url ?>/pendaftaran/form_pendaftaran_pasien.php?layanan=<?= $item['id_layanan'] ?>"
-                                                        class="btn btn-primary w-100">
-                                                        <i class="bi bi-calendar-plus"></i> Booking Sekarang
-                                                    </a>
+                                            <div class="service-footer">
+                                                <?php if ($item['durasi_estimasi']): ?>
+                                                    <span class="service-duration">
+                                                        <i class="bi bi-clock"></i> <?= $item['durasi_estimasi'] ?> menit
+                                                    </span>
                                                 <?php else: ?>
-                                                    <a href="<?= $base_url ?>/login.php?redirect=<?= urlencode($_SERVER['REQUEST_URI']) ?>"
-                                                        class="btn btn-primary w-100">
-                                                        <i class="bi bi-box-arrow-in-right"></i> Login untuk Booking
-                                                    </a>
+                                                    <span></span>
                                                 <?php endif; ?>
+
+                                                <span class="service-price"><?= formatRupiah($item['harga']) ?></span>
                                             </div>
-                                        <?php endif; ?>
+                                        </div>
                                     </div>
                                 </div>
+                                <?php endforeach; ?>
                             </div>
-                        <?php endforeach; ?>
+                        </div>
                     </div>
                 </div>
             <?php endforeach; ?>
@@ -354,6 +418,15 @@ try {
     
     <!-- Custom JS for mobile optimization -->
     <script>
+    // Function to redirect to registration form
+    function redirectToRegistration(layananId) {
+        <?php if ($is_logged_in): ?>
+            window.location.href = '<?= $base_url ?>/pendaftaran/form_pendaftaran_pasien.php?layanan=' + layananId;
+        <?php else: ?>
+            window.location.href = '<?= $base_url ?>/login.php?redirect=<?= urlencode($_SERVER["REQUEST_URI"]) ?>';
+        <?php endif; ?>
+    }
+    
     document.addEventListener('DOMContentLoaded', function() {
         // Add staggered animation to cards
         const cards = document.querySelectorAll('.service-card');

@@ -116,6 +116,7 @@ if ($result && $result->num_rows > 0) {
             overflow: hidden;
             display: -webkit-box;
             -webkit-line-clamp: 3;
+            line-clamp: 3;
             -webkit-box-orient: vertical;
         }
 
@@ -124,18 +125,24 @@ if ($result && $result->num_rows > 0) {
         }
 
         .content-wrapper {
-            margin-left: 280px;
-            transition: margin-left 0.3s ease;
+            margin-left: 240px;
+            padding: 20px;
+            transition: margin-left 0.3s ease, width 0.3s ease;
+            width: calc(100% - 240px); /* Width minus sidebar width */
+            box-sizing: border-box;
         }
-
-        @media (max-width: 992px) {
+        
+        /* Adjust content when sidebar is minimized */
+        .sidebar.minimized ~ .content-wrapper {
+            margin-left: 60px;
+            width: calc(100% - 60px); /* Width minus minimized sidebar width */
+        }
+        
+        @media (max-width: 991.98px) {
             .content-wrapper {
                 margin-left: 0;
+                width: 100%;
             }
-        }
-
-        body.sidebar-collapsed .content-wrapper {
-            margin-left: 70px;
         }
 
         .card-header {

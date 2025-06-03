@@ -11,6 +11,9 @@ $id_tempat_praktek = isset($_GET['tempat']) ? $_GET['tempat'] : '';
 $id_dokter = isset($_GET['dokter']) ? $_GET['dokter'] : '';
 $hari = isset($_GET['hari']) ? $_GET['hari'] : '';
 
+// Pastikan koneksi database tersedia
+ensureDBConnection();
+
 // Ambil data tempat praktek
 try {
     $query_tempat = "SELECT ID_Tempat_Praktek, Nama_Tempat FROM tempat_praktek WHERE Status_Aktif = 1";
@@ -346,7 +349,9 @@ ob_start();
             }, 3000);
         }
 
-        // Set interval untuk refresh otomatis
+        // Set interval untuk refresh otomatis dengan interval lebih lama (2 menit)
+        // Ini untuk mengurangi jumlah koneksi database
+        const longerRefreshInterval = 120000; // 2 menit dalam milidetik
         setInterval(function() {
             // Simpan posisi scroll saat ini
             const scrollPosition = window.scrollY;
@@ -356,7 +361,7 @@ ob_start();
 
             // Refresh halaman
             location.reload();
-        }, refreshInterval);
+        }, longerRefreshInterval);
 
         // Kembalikan posisi scroll setelah refresh
         const savedScrollPosition = sessionStorage.getItem('scrollPosition');

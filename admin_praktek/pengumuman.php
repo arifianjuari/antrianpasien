@@ -223,19 +223,32 @@ $page_title = "Manajemen Pengumuman";
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
     <style>
-        .content-wrapper {
-            margin-left: 280px;
-            transition: margin-left 0.3s ease;
+        /* Base Styles */
+        body {
+            overflow-x: hidden; /* Prevent horizontal scrollbar */
         }
-
-        @media (max-width: 992px) {
+        
+        /* Content Wrapper Layout */
+        .content-wrapper {
+            margin-left: 240px;
+            padding: 20px;
+            transition: margin-left 0.3s ease, width 0.3s ease;
+            width: calc(100% - 240px); /* Width minus sidebar width */
+            box-sizing: border-box;
+        }
+        
+        /* Adjust content when sidebar is minimized */
+        .sidebar.minimized ~ .content-wrapper {
+            margin-left: 60px;
+            width: calc(100% - 60px); /* Width minus minimized sidebar width */
+        }
+        
+        /* Mobile adjustments */
+        @media (max-width: 991.98px) {
             .content-wrapper {
                 margin-left: 0;
+                width: 100%;
             }
-        }
-
-        body.sidebar-collapsed .content-wrapper {
-            margin-left: 70px;
         }
 
         .card-header {

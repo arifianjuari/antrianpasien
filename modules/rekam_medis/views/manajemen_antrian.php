@@ -37,7 +37,8 @@ if (!isset($conn) || !($conn instanceof PDO)) {
 }
 
 try {
-    // Test koneksi
+    // Pastikan koneksi database tersedia dan valid
+    ensureDBConnection();
     $test = $conn->query("SELECT 1");
     if (!$test) {
         throw new PDOException("Koneksi database tidak dapat melakukan query");

@@ -27,6 +27,9 @@ if ($_SESSION['role'] !== 'admin') {
 }
 
 try {
+    // Pastikan koneksi database tersedia
+    $pdo = getPDOConnection();
+    
     // Query untuk mengambil data pengumuman terkini
     $stmt = $pdo->query("
         SELECT * FROM pengumuman 
@@ -394,6 +397,34 @@ require_once __DIR__ . '/../template/sidebar.php';
 </div>
 
 <style>
+    /* Base Styles */
+    body {
+        overflow-x: hidden; /* Prevent horizontal scrollbar */
+    }
+    
+    /* Main Content Layout */
+    .main-content {
+        margin-left: 240px;
+        padding: 20px;
+        transition: margin-left 0.3s ease, width 0.3s ease;
+        width: calc(100% - 240px); /* Width minus sidebar width */
+        box-sizing: border-box;
+    }
+    
+    /* Adjust main content when sidebar is minimized */
+    .sidebar.minimized ~ .main-content {
+        margin-left: 60px;
+        width: calc(100% - 60px); /* Width minus minimized sidebar width */
+    }
+    
+    /* Mobile adjustments */
+    @media (max-width: 991.98px) {
+        .main-content {
+            margin-left: 0;
+            width: 100%;
+        }
+    }
+    
     .icon-shape {
         width: 48px;
         height: 48px;
@@ -428,6 +459,7 @@ require_once __DIR__ . '/../template/sidebar.php';
     .pengumuman-item p {
         display: -webkit-box;
         -webkit-line-clamp: 2;
+        line-clamp: 2; /* Properti standar untuk kompatibilitas */
         -webkit-box-orient: vertical;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -726,8 +758,9 @@ require_once __DIR__ . '/../template/sidebar.php';
     document.addEventListener('DOMContentLoaded', function() {
         loadSettings();
         // Set interval default jika tidak ada pengaturan
+        // Gunakan interval yang lebih lama (2 menit) untuk mengurangi koneksi database
         if (!window.queueRefreshInterval) {
-            window.queueRefreshInterval = setInterval(loadQueueData, 30000); // 30 detik
+            window.queueRefreshInterval = setInterval(loadQueueData, 120000); // 2 menit
         }
     });
 </script>

@@ -70,7 +70,7 @@ try {
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
             PDO::ATTR_TIMEOUT => 5, // 5 second timeout
-            PDO::ATTR_PERSISTENT => false // Disable persistent connections
+            PDO::ATTR_PERSISTENT => true // Enable persistent connections
         ]
     );
 
@@ -93,3 +93,61 @@ if (!isset($GLOBALS['conn']) || !($GLOBALS['conn'] instanceof PDO)) {
 
 // Make connection available in local scope
 $conn = $GLOBALS['conn'];
+
+// Function to close database connection
+function closeDBConnection() {
+    global $conn;
+    if (isset($conn)) {
+        // Set the PDO object to null to close the connection
+        $conn = null;
+        $GLOBALS['conn'] = null;
+        error_log("Database connection closed explicitly");
+    }
+}
+
+// Register shutdown function to close connection at the end of script execution
+register_shutdown_function('closeDBConnection');
+
+// Function to check and reconnect if needed
+function ensureDBConnection() {
+    global $conn;
+    
+    // If connection doesn't exist or is closed
+    if (!isset($conn) || !($conn instanceof PDO)) {
+        error_log("Reconnecting to database");
+        
+        // Database for patient queue application
+        $db2_host = 'auth-db1151.hstgr.io';
+        $db2_username = 'u609399718_adminpraktek';
+        $db2_password = 'Obgin@12345';
+        $db2_database = 'u609399718_praktekobgin';
+        
+        try {
+            $conn = new PDO(
+                "mysql:host=$db2_host;dbname=$db2_database;charset=utf8mb4",
+                $db2_username,
+                $db2_password,
+                [
+                    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                    PDO::ATTR_TIMEOUT => 5, // 5 second timeout
+                    PDO::ATTR_PERSISTENT => true // Enable persistent connections
+                ]
+            );
+            
+            // Verify connection with simple query
+            $conn->query("SELECT 1");
+            error_log("Database reconnection successful");
+            
+            // Update global connection
+            $GLOBALS['conn'] = $conn;
+            
+            return $conn;
+        } catch (PDOException $e) {
+            handleDatabaseError("Database reconnection failed", $e);
+            return false;
+        }
+    }
+    
+    return $conn;
+}

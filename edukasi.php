@@ -100,6 +100,34 @@ try {
     <link href="<?= $base_url ?>/assets/css/styles.css" rel="stylesheet">
 
     <style>
+        /* Base Styles */
+        body {
+            overflow-x: hidden; /* Prevent horizontal scrollbar */
+        }
+        
+        /* Main Content Layout */
+        .main-content {
+            margin-left: 240px;
+            padding: 20px;
+            transition: margin-left 0.3s ease, width 0.3s ease;
+            width: calc(100% - 240px); /* Width minus sidebar width */
+            box-sizing: border-box;
+        }
+        
+        /* Adjust main content when sidebar is minimized */
+        .sidebar.minimized ~ .main-content {
+            margin-left: 60px;
+            width: calc(100% - 60px); /* Width minus minimized sidebar width */
+        }
+        
+        /* Mobile adjustments */
+        @media (max-width: 991.98px) {
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+            }
+        }
+        
         .article-card {
             height: 100%;
             transition: transform 0.2s;
