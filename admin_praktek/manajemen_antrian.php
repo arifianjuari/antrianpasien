@@ -48,6 +48,7 @@ try {
             p.nm_pasien as Nama_Pasien,
             p.Status_Pendaftaran,
             p.Waktu_Pendaftaran,
+            p.Waktu_Perkiraan,
             jr.Hari,
             jr.Jam_Mulai,
             jr.Jam_Selesai,
@@ -117,6 +118,24 @@ try {
         }
         $antrian_grouped[$hari][$tempat][] = $a;
     }
+    
+    // Sort each group by Waktu_Perkiraan
+    foreach ($antrian_grouped as $hari => &$tempat_groups) {
+        foreach ($tempat_groups as $tempat => &$antrian_list) {
+            usort($antrian_list, function($a, $b) {
+                if (empty($a['Waktu_Perkiraan']) && empty($b['Waktu_Perkiraan'])) {
+                    return 0;
+                } elseif (empty($a['Waktu_Perkiraan'])) {
+                    return 1;
+                } elseif (empty($b['Waktu_Perkiraan'])) {
+                    return -1;
+                }
+                return strtotime($a['Waktu_Perkiraan']) - strtotime($b['Waktu_Perkiraan']);
+            });
+        }
+    }
+    unset($tempat_groups);
+    unset($antrian_list);
 
     // Debug
     if (empty($antrian)) {
@@ -322,10 +341,15 @@ try {
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    <?php foreach ($antrian_list as $a): ?>
+                                                    <?php foreach ($antrian_list as $index => $a): ?>
                                                         <tr>
-                                                            <td><?= htmlspecialchars($a['ID_Pendaftaran']) ?></td>
-                                                            <td><?= date('d/m/Y H:i', strtotime($a['Waktu_Pendaftaran'])) ?></td>
+                                                            <td><?= $index + 1 ?></td>
+                                                            <td>
+                                                                <?= date('d/m/Y H:i', strtotime($a['Waktu_Pendaftaran'])) ?>
+                                                                <?php if (!empty($a['Waktu_Perkiraan'])): ?>
+                                                                <br><small class="text-muted">Perkiraan: <?= date('H:i', strtotime($a['Waktu_Perkiraan'])) ?></small>
+                                                                <?php endif; ?>
+                                                            </td>
                                                             <td><?= htmlspecialchars($a['Nama_Pasien']) ?></td>
                                                             <td><?= htmlspecialchars($a['Jam_Mulai']) ?> - <?= htmlspecialchars($a['Jam_Selesai']) ?></td>
                                                             <td><?= htmlspecialchars($a['Nama_Dokter']) ?></td>

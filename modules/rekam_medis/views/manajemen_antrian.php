@@ -153,6 +153,12 @@ try {
                         WHEN 'Minggu' THEN 7 
                         ELSE 8 END ASC, jr.Jam_Mulai ASC";
             break;
+        case 'waktu_perkiraan_asc':
+            $query .= " ORDER BY p.Waktu_Perkiraan ASC";
+            break;
+        case 'waktu_perkiraan_desc':
+            $query .= " ORDER BY p.Waktu_Perkiraan DESC";
+            break;
         case 'waktu_asc':
         default:
             $query .= " ORDER BY p.Waktu_Pendaftaran ASC";
@@ -650,6 +656,21 @@ try {
                             }
                             $grouped_antrian[$key]['data'][] = $a;
                         }
+                        
+                        // Sort each group's data by Waktu_Perkiraan
+                        foreach ($grouped_antrian as &$group) {
+                            usort($group['data'], function($a, $b) {
+                                if (empty($a['Waktu_Perkiraan']) && empty($b['Waktu_Perkiraan'])) {
+                                    return 0;
+                                } elseif (empty($a['Waktu_Perkiraan'])) {
+                                    return 1;
+                                } elseif (empty($b['Waktu_Perkiraan'])) {
+                                    return -1;
+                                }
+                                return strtotime($a['Waktu_Perkiraan']) - strtotime($b['Waktu_Perkiraan']);
+                            });
+                        }
+                        unset($group); // Unset the reference to avoid issues
 
                         // Urutkan grup berdasarkan hari
                         $hari_order = ['Senin' => 1, 'Selasa' => 2, 'Rabu' => 3, 'Kamis' => 4, 'Jumat' => 5, 'Sabtu' => 6, 'Minggu' => 7];
@@ -703,8 +724,10 @@ try {
                                             </thead>
                                             <tbody>
                                                 <?php
-                                                $no = 1;
-                                                foreach ($group['data'] as $a):
+                                                // No longer need to initialize $no = 1 here as we'll calculate it dynamically
+                                                foreach ($group['data'] as $index => $a):
+                                                    // Calculate queue number based on position in the sorted array (by Waktu_Perkiraan)
+                                                    $no = $index + 1;
                                                 ?>
                                                     <tr>
                                                         <td>
@@ -795,7 +818,7 @@ try {
                                                                 <?php endif; ?>
                                                             </div>
                                                         </td>
-                                                        <td class="text-center fw-bold"><?= $no++ ?></td>
+                                                        <td class="text-center fw-bold"><?= $no ?></td>
                                                         <td><?= htmlspecialchars($a['Nama_Pasien']) ?></td>
                                                         <td class="waktu-perkiraan-cell" data-id="<?= $a['ID_Pendaftaran'] ?>">
                                                             <span class="waktu-display"><?= !empty($a['Waktu_Perkiraan']) ? date('H:i', strtotime($a['Waktu_Perkiraan'])) : '-' ?></span>

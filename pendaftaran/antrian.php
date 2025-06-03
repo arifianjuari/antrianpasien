@@ -51,14 +51,7 @@ try {
             tp.Nama_Tempat,
             d.Nama_Dokter,
             p.Waktu_Pendaftaran,
-            p.updatedAt,
-            (SELECT COUNT(*) + 1 FROM pendaftaran p2 
-             JOIN jadwal_rutin jr2 ON p2.ID_Jadwal = jr2.ID_Jadwal_Rutin 
-             WHERE jr2.Hari = jr.Hari 
-             AND p2.ID_Tempat_Praktek = p.ID_Tempat_Praktek
-             AND p2.ID_Dokter = p.ID_Dokter
-             AND p2.Waktu_Pendaftaran < p.Waktu_Pendaftaran
-             AND p2.Status_Pendaftaran NOT IN ('Dibatalkan', 'Selesai')) AS Nomor_Urut
+            p.updatedAt
         FROM 
             pendaftaran p
         JOIN 
@@ -99,7 +92,7 @@ try {
             WHEN 'Minggu' THEN 7
         END ASC,
         jr.Jam_Mulai ASC,
-        p.Waktu_Pendaftaran ASC";
+        p.Waktu_Perkiraan ASC";  // Changed from Waktu_Pendaftaran to Waktu_Perkiraan
 
     $stmt = $conn->prepare($query);
     foreach ($params as $key => $value) {
@@ -114,6 +107,7 @@ try {
         $a['Jam_Mulai_Format'] = date('H:i', strtotime($a['Jam_Mulai']));
         $a['Jam_Selesai_Format'] = date('H:i', strtotime($a['Jam_Selesai']));
         $a['Waktu_Daftar_Format'] = date('d/m/Y H:i', strtotime($a['Waktu_Pendaftaran']));
+        $a['Waktu_Perkiraan_Format'] = !empty($a['Waktu_Perkiraan']) ? date('H:i', strtotime($a['Waktu_Perkiraan'])) : '-';
 
         $key = $a['Hari'] . '_' . $a['Nama_Tempat'] . '_' . $a['Nama_Dokter'] . '_' . $a['Jam_Mulai_Format'] . '-' . $a['Jam_Selesai_Format'];
         if (!isset($antrian_by_day_place[$key])) {
@@ -128,6 +122,22 @@ try {
         }
         $antrian_by_day_place[$key]['antrian'][] = $a;
     }
+    
+    // Sort each group's antrian by Waktu_Perkiraan
+    foreach ($antrian_by_day_place as &$group) {
+        // Sort the antrian array by Waktu_Perkiraan
+        usort($group['antrian'], function($a, $b) {
+            if (empty($a['Waktu_Perkiraan']) && empty($b['Waktu_Perkiraan'])) {
+                return 0;
+            } elseif (empty($a['Waktu_Perkiraan'])) {
+                return 1;
+            } elseif (empty($b['Waktu_Perkiraan'])) {
+                return -1;
+            }
+            return strtotime($a['Waktu_Perkiraan']) - strtotime($b['Waktu_Perkiraan']);
+        });
+    }
+    unset($group); // Unset the reference to avoid issues
 } catch (PDOException $e) {
     error_log("Error: " . $e->getMessage());
     $antrian = [];
@@ -239,7 +249,18 @@ ob_start();
                                                         <?php foreach ($group['antrian'] as $a): ?>
                                                             <tr>
                                                                 <td class="text-center">
-                                                                    <span class="fw-bold fs-5"><?= htmlspecialchars($a['Nomor_Urut']) ?></span>
+                                                                    <?php
+                                                                    // Generate nomor antrian based on position in the sorted array
+                                                                    // Find the index manually to avoid reference issues
+                                                                    $nomor_antrian = 0;
+                                                                    foreach ($group['antrian'] as $index => $antrian_item) {
+                                                                        if ($antrian_item['ID_Pendaftaran'] === $a['ID_Pendaftaran']) {
+                                                                            $nomor_antrian = $index + 1;
+                                                                            break;
+                                                                        }
+                                                                    }
+                                                                    ?>
+                                                                    <span class="fw-bold fs-5"><?= htmlspecialchars($nomor_antrian) ?></span>
                                                                 </td>
                                                                 <td>
                                                                     <div class="fw-bold"><?= htmlspecialchars($a['nm_pasien']) ?></div>
