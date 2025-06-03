@@ -51,6 +51,7 @@ try {
             tp.Nama_Tempat,
             d.Nama_Dokter,
             p.Waktu_Pendaftaran,
+            p.updatedAt,
             (SELECT COUNT(*) + 1 FROM pendaftaran p2 
              JOIN jadwal_rutin jr2 ON p2.ID_Jadwal = jr2.ID_Jadwal_Rutin 
              WHERE jr2.Hari = jr.Hari 
@@ -66,7 +67,8 @@ try {
             tempat_praktek tp ON p.ID_Tempat_Praktek = tp.ID_Tempat_Praktek
         JOIN 
             dokter d ON p.ID_Dokter = d.ID_Dokter
-        WHERE p.Status_Pendaftaran NOT IN ('Dibatalkan', 'Selesai')
+        WHERE (p.Status_Pendaftaran NOT IN ('Dibatalkan', 'Selesai')
+              OR (p.Status_Pendaftaran = 'Selesai' AND DATE(p.updatedAt) = CURRENT_DATE()))
     ";
 
     $params = [];

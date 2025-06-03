@@ -17,8 +17,9 @@ $id_pendaftaran = $_POST['id_pendaftaran'];
 $status = $_POST['status'];
 
 try {
-    $stmt = $conn->prepare("UPDATE pendaftaran SET Status_Pendaftaran = ? WHERE ID_Pendaftaran = ?");
-    $stmt->execute([$status, $id_pendaftaran]);
+    $current_datetime = date('Y-m-d H:i:s');
+    $stmt = $conn->prepare("UPDATE pendaftaran SET Status_Pendaftaran = ?, updatedAt = ? WHERE ID_Pendaftaran = ?");
+    $stmt->execute([$status, $current_datetime, $id_pendaftaran]);
 
     if ($stmt->rowCount() > 0) {
         // Jika ada parameter redirect, alihkan ke URL tersebut

@@ -82,6 +82,7 @@ try {
             p.Waktu_Pendaftaran,
             p.Waktu_Perkiraan,
             p.voucher_code,
+            p.updatedAt,
             jr.Hari,
             jr.Jam_Mulai,
             jr.Jam_Selesai,
@@ -102,7 +103,8 @@ try {
     if (!empty($status_filter)) {
         $query .= " AND p.Status_Pendaftaran = :status";
     } else if ($default_filter) {
-        $query .= " AND p.Status_Pendaftaran IN ('Dikonfirmasi', 'Menunggu Konfirmasi')";
+        $query .= " AND (p.Status_Pendaftaran IN ('Dikonfirmasi', 'Menunggu Konfirmasi') 
+                 OR (p.Status_Pendaftaran = 'Selesai' AND DATE(p.updatedAt) = CURRENT_DATE()))";
     }
 
     if (!empty($search)) {
@@ -775,6 +777,9 @@ try {
                                                                     if (!empty($a['Waktu_Perkiraan'])) {
                                                                         $pesan .= "\n\nWaktu perkiraan Anda diperiksa: " . date('H:i', strtotime($a['Waktu_Perkiraan'])) . " WIB.";
                                                                     }
+                                                                    
+                                                                    // Tambahkan pesan untuk melihat antrian
+                                                                    $pesan .= "\n\nLihat antrian anda di https://praktekobgin.com/pendaftaran/antrian.php";
 
                                                                     // Encode pesan untuk URL
                                                                     $pesan_encoded = urlencode($pesan);
