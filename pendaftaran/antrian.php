@@ -240,9 +240,9 @@ ob_start();
                                                         <tr>
                                                             <th class="text-center no-column">No</th>
                                                             <th class="pasien-column">Pasien</th>
+                                                            <th class="status-column">Status</th>
                                                             <th class="waktu-perkiraan-column">Waktu Perkiraan</th>
                                                             <th class="waktu-column">Waktu Daftar</th>
-                                                            <th class="status-column">Status</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
@@ -266,6 +266,11 @@ ob_start();
                                                                     <div class="fw-bold"><?= htmlspecialchars($a['nm_pasien']) ?></div>
                                                                 </td>
                                                                 <td>
+                                                                    <span class="badge bg-<?= $a['Status_Pendaftaran'] == 'Menunggu' ? 'warning' : ($a['Status_Pendaftaran'] == 'Dalam Proses' ? 'info' : ($a['Status_Pendaftaran'] == 'Dikonfirmasi' ? 'success' : 'secondary')) ?> rounded-pill">
+                                                                        <?= htmlspecialchars($a['Status_Pendaftaran']) ?>
+                                                                    </span>
+                                                                </td>
+                                                                <td>
                                                                     <div class="small">
                                                                         <i class="far fa-clock me-1"></i><?= !empty($a['Waktu_Perkiraan']) ? date('H:i', strtotime($a['Waktu_Perkiraan'])) : '-' ?>
                                                                     </div>
@@ -274,11 +279,6 @@ ob_start();
                                                                     <div class="small">
                                                                         <i class="far fa-clock me-1"></i><?= $a['Waktu_Daftar_Format'] ?>
                                                                     </div>
-                                                                </td>
-                                                                <td>
-                                                                    <span class="badge bg-<?= $a['Status_Pendaftaran'] == 'Menunggu' ? 'warning' : ($a['Status_Pendaftaran'] == 'Dalam Proses' ? 'info' : ($a['Status_Pendaftaran'] == 'Dikonfirmasi' ? 'success' : 'secondary')) ?> rounded-pill">
-                                                                        <?= htmlspecialchars($a['Status_Pendaftaran']) ?>
-                                                                    </span>
                                                                 </td>
                                                             </tr>
                                                         <?php endforeach; ?>
