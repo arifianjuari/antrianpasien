@@ -26,6 +26,14 @@ function getDaftarDokter($conn_db2)
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
+// Fungsi untuk mendapatkan daftar layanan
+function getDaftarLayanan($conn_db2)
+{
+    $query = "SELECT id_layanan, nama_layanan FROM menu_layanan WHERE status_aktif = 1 ORDER BY nama_layanan";
+    $stmt = $conn_db2->query($query);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
 // Handle form submission untuk menambah/edit jadwal rutin
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
@@ -318,7 +326,14 @@ ob_start();
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Jenis Layanan</label>
-                        <input type="text" name="jenis_layanan" class="form-control" required>
+                        <select name="jenis_layanan" class="form-select" required>
+                            <option value="">Pilih Jenis Layanan</option>
+                            <?php foreach (getDaftarLayanan($conn_db2) as $layanan): ?>
+                                <option value="<?php echo htmlspecialchars($layanan['nama_layanan']); ?>">
+                                    <?php echo htmlspecialchars($layanan['nama_layanan']); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
                     </div>
                     <div class="mb-3 form-check">
                         <input type="checkbox" name="status_aktif" class="form-check-input" id="statusAktif" checked>
@@ -397,7 +412,14 @@ ob_start();
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Jenis Layanan</label>
-                        <input type="text" name="jenis_layanan" id="edit_jenis_layanan" class="form-control" required>
+                        <select name="jenis_layanan" id="edit_jenis_layanan" class="form-select" required>
+                            <option value="">Pilih Jenis Layanan</option>
+                            <?php foreach (getDaftarLayanan($conn_db2) as $layanan): ?>
+                                <option value="<?php echo htmlspecialchars($layanan['nama_layanan']); ?>">
+                                    <?php echo htmlspecialchars($layanan['nama_layanan']); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
                     </div>
                     <div class="mb-3 form-check">
                         <input type="checkbox" name="status_aktif" class="form-check-input" id="edit_status_aktif">

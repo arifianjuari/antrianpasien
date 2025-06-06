@@ -785,7 +785,7 @@ error_log("Data pasien: " . json_encode($pasien));
                             <div class="tab-pane fade" id="skrining" role="tabpanel" aria-labelledby="skrining-tab">
                                 <div class="mb-3">
                                     <?php if (!isset($statusObstetri) || count($statusObstetri) === 0): ?>
-                                        <a href="index.php?module=rekam_medis&action=tambah_status_obstetri&no_rkm_medis=<?= $pasien['no_rkm_medis'] ?>&source=<?= $_SESSION['source_page'] ?>" class="btn btn-add btn-sm">
+                                        <a href="index.php?module=rekam_medis&action=tambah_status_obstetri&no_rkm_medis=<?= $pasien['no_rkm_medis'] ?>&source=<?= $_SESSION['source_page'] ?><?= isset($_GET['no_rawat']) ? '&no_rawat='.$_GET['no_rawat'] : '' ?>" class="btn btn-add btn-sm">
                                             <i class="fas fa-plus"></i> Tambah Status Obstetri
                                         </a>
                                     <?php endif; ?>
@@ -828,10 +828,11 @@ error_log("Data pasien: " . json_encode($pasien));
                                                             ?>
                                                         </td>
                                                         <td>
-                                                            <a href="index.php?module=rekam_medis&action=edit_status_obstetri&id=<?= $so['id_status_obstetri'] ?>&source=<?= $_SESSION['source_page'] ?>" class="btn btn-warning btn-sm">
+                                                            <a href="index.php?module=rekam_medis&action=edit_status_obstetri&id=<?= $so['id_status_obstetri'] ?>&source=<?= $_SESSION['source_page'] ?><?= isset($_GET['no_rawat']) ? '&no_rawat='.$_GET['no_rawat'] : '' ?>" class="btn btn-warning btn-sm">
                                                                 <i class="fas fa-edit"></i>
                                                             </a>
-                                                            <a href="index.php?module=rekam_medis&action=hapus_status_obstetri&id=<?= $so['id_status_obstetri'] ?>&source=<?= $_SESSION['source_page'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
+                                                            <a href="index.php?module=rekam_medis&action=hapus_status_obstetri&id=<?= $so['id_status_obstetri'] ?>&source=<?= $_SESSION['source_page'] ?><?= isset($_GET['no_rawat']) ? '&no_rawat='.$_GET['no_rawat'] : '' ?>" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
+                                                                
                                                                 <i class="fas fa-trash"></i>
                                                             </a>
                                                         </td>
@@ -850,7 +851,7 @@ error_log("Data pasien: " . json_encode($pasien));
                             <!-- Tab Riwayat Kehamilan -->
                             <div class="tab-pane fade" id="riwayat-kehamilan" role="tabpanel" aria-labelledby="riwayat-kehamilan-tab">
                                 <div class="d-flex justify-content-end mb-3">
-                                    <a href="index.php?module=rekam_medis&action=tambah_riwayat_kehamilan&no_rkm_medis=<?= $pasien['no_rkm_medis'] ?>&source=<?= $_SESSION['source_page'] ?>" class="btn btn-primary btn-sm">
+                                    <a href="index.php?module=rekam_medis&action=tambah_riwayat_kehamilan&no_rkm_medis=<?= $pasien['no_rkm_medis'] ?>&source=<?= $_SESSION['source_page'] ?><?= isset($_GET['no_rawat']) ? '&no_rawat='.$_GET['no_rawat'] : '' ?>" class="btn btn-primary btn-sm">
                                         <i class="fas fa-plus"></i> Tambah Riwayat
                                     </a>
                                 </div>
@@ -895,10 +896,11 @@ error_log("Data pasien: " . json_encode($pasien));
                                                             <td><?= htmlspecialchars($rk['berat_badan_lahir'] ?? '-') ?></td>
                                                             <td><?= htmlspecialchars($rk['kondisi_lahir'] ?? '-') ?></td>
                                                             <td>
-                                                                <a href="index.php?module=rekam_medis&action=edit_riwayat_kehamilan&id=<?= $rk['id_riwayat_kehamilan'] ?>&source=detail_pasien" class="btn btn-warning btn-sm">
+                                                                <a href="index.php?module=rekam_medis&action=edit_riwayat_kehamilan&id=<?= $rk['id_riwayat_kehamilan'] ?>&source=detail_pasien<?= isset($_GET['no_rawat']) ? '&no_rawat='.$_GET['no_rawat'] : '' ?>" class="btn btn-warning btn-sm">
                                                                     <i class="fas fa-edit"></i>
                                                                 </a>
-                                                                <a href="index.php?module=rekam_medis&action=hapus_riwayat_kehamilan&id=<?= $rk['id_riwayat_kehamilan'] ?>&source=detail_pasien" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
+                                                                <a href="index.php?module=rekam_medis&action=hapus_riwayat_kehamilan&id=<?= $rk['id_riwayat_kehamilan'] ?>&source=detail_pasien<?= isset($_GET['no_rawat']) ? '&no_rawat='.$_GET['no_rawat'] : '' ?>" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
+                                                                    
                                                                     <i class="fas fa-trash"></i>
                                                                 </a>
                                                             </td>
@@ -918,7 +920,7 @@ error_log("Data pasien: " . json_encode($pasien));
                             <!-- Tab Status Ginekologi -->
                             <div class="tab-pane fade" id="status-ginekologi" role="tabpanel" aria-labelledby="status-ginekologi-tab">
                                 <div class="d-flex justify-content-end mb-3">
-                                    <a href="index.php?module=rekam_medis&action=tambah_status_ginekologi&no_rkm_medis=<?= $pasien['no_rkm_medis'] ?>&source=<?= $_SESSION['source_page'] ?>" class="btn btn-primary btn-sm">
+                                    <a href="index.php?module=rekam_medis&action=tambah_status_ginekologi&no_rkm_medis=<?= $pasien['no_rkm_medis'] ?>&source=<?= $_SESSION['source_page'] ?><?= isset($_GET['no_rawat']) ? '&no_rawat='.$_GET['no_rawat'] : '' ?>" class="btn btn-primary btn-sm">
                                         <i class="fas fa-plus"></i> Tambah Status Ginekologi
                                     </a>
                                 </div>
@@ -947,10 +949,11 @@ error_log("Data pasien: " . json_encode($pasien));
                 <td><?= htmlspecialchars($sg['Kontrasepsi_terakhir'] ?? '-') ?></td>
                 <td><?= htmlspecialchars($sg['lama_menikah_th'] ?? '-') ?></td>
                 <td>
-                    <a href="index.php?module=rekam_medis&action=edit_status_ginekologi&id=<?= $sg['id_status_ginekologi'] ?>&source=detail_pasien" class="btn btn-warning btn-sm">
+                    <a href="index.php?module=rekam_medis&action=edit_status_ginekologi&id=<?= $sg['id_status_ginekologi'] ?>&source=detail_pasien<?= isset($_GET['no_rawat']) ? '&no_rawat='.$_GET['no_rawat'] : '' ?>" class="btn btn-warning btn-sm">
                         <i class="fas fa-edit"></i>
                     </a>
-                    <a href="index.php?module=rekam_medis&action=hapus_status_ginekologi&id=<?= $sg['id_status_ginekologi'] ?>&source=detail_pasien" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
+                    <a href="index.php?module=rekam_medis&action=hapus_status_ginekologi&id=<?= $sg['id_status_ginekologi'] ?>&source=detail_pasien<?= isset($_GET['no_rawat']) ? '&no_rawat='.$_GET['no_rawat'] : '' ?>" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
+                    
                         <i class="fas fa-trash"></i>
                     </a>
                 </td>

@@ -13,6 +13,7 @@ require_once 'modules/rekam_medis/models/Surat.php';
 // Atensi model is not available yet, so we're removing the include
 // require_once 'modules/rekam_medis/models/Atensi.php';
 require_once 'modules/rekam_medis/models/TemplateAnamnesis.php';
+require_once 'modules/rekam_medis/includes/redirect_helper.php';
 
 class RekamMedisController
 {
@@ -1937,8 +1938,12 @@ class RekamMedisController
             $_SESSION['error'] = "Gagal menyimpan data status obstetri";
         }
 
-        // Redirect ke halaman detail pasien
-        header("Location: index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=" . $_POST['no_rkm_medis']);
+        // Cek source parameter untuk redirect
+        $source = isset($_POST['source']) ? $_POST['source'] : '';
+        $no_rawat = isset($_POST['no_rawat']) ? $_POST['no_rawat'] : '';
+        
+        // Gunakan helper function untuk redirect
+        handleRedirect($source, $no_rawat, $_POST['no_rkm_medis']);
         exit;
     }
 
@@ -2006,8 +2011,12 @@ class RekamMedisController
             $_SESSION['error'] = "Gagal mengupdate data status obstetri";
         }
 
-        // Redirect ke halaman detail pasien
-        header("Location: index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=" . $_POST['no_rkm_medis']);
+        // Cek source parameter untuk redirect
+        $source = isset($_POST['source']) ? $_POST['source'] : '';
+        $no_rawat = isset($_POST['no_rawat']) ? $_POST['no_rawat'] : '';
+        
+        // Gunakan helper function untuk redirect
+        handleRedirect($source, $no_rawat, $_POST['no_rkm_medis']);
         exit;
     }
 
@@ -2042,8 +2051,12 @@ class RekamMedisController
             $_SESSION['error'] = "Gagal menghapus data status obstetri";
         }
 
-        // Redirect ke halaman detail pasien
-        header("Location: index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=" . $no_rkm_medis);
+        // Cek source parameter untuk redirect
+        $source = isset($_GET['source']) ? $_GET['source'] : '';
+        $no_rawat = isset($_GET['no_rawat']) ? $_GET['no_rawat'] : '';
+
+        // Gunakan helper function untuk redirect
+        handleRedirect($source, $no_rawat, $no_rkm_medis);
         exit;
     }
 
@@ -2515,47 +2528,29 @@ class RekamMedisController
             error_log("update_status_ginekologi POST data: " . json_encode($_POST));
             error_log("update_status_ginekologi SESSION: " . json_encode($_SESSION));
 
-            // Check for source in various places with priority
+            // Get source parameter from multiple possible locations
             $source = '';
             if (isset($_POST['source'])) {
                 $source = $_POST['source'];
-                error_log("Source from POST: " . $source);
             } elseif (isset($_SESSION['edit_source'])) {
                 $source = $_SESSION['edit_source'];
-                error_log("Source from edit_source session: " . $source);
             } elseif (isset($_SESSION['source_page'])) {
                 $source = $_SESSION['source_page'];
-                error_log("Source from source_page session: " . $source);
             }
-
+            
+            // Get no_rawat from post or session
+            $no_rawat = '';
+            if (isset($_POST['no_rawat']) && !empty($_POST['no_rawat'])) {
+                $no_rawat = $_POST['no_rawat'];
+            } elseif (isset($_SESSION['no_rawat']) && !empty($_SESSION['no_rawat'])) {
+                $no_rawat = $_SESSION['no_rawat'];
+            }
+            
             error_log("Final source value for redirection: " . $source);
-
-            // Routing based on source
-            if ($source == 'form_penilaian_medis_ralan_kandungan') {
-                // Get no_rawat if available
-                $no_rawat = isset($_SESSION['no_rawat']) ? $_SESSION['no_rawat'] : '';
-                if (empty($no_rawat) && isset($_POST['no_rawat'])) {
-                    $no_rawat = $_POST['no_rawat'];
-                }
-
-                $redirect_url = "index.php?module=rekam_medis&action=form_penilaian_medis_ralan_kandungan";
-
-                if (!empty($no_rawat)) {
-                    $redirect_url .= "&no_rawat=" . $no_rawat;
-                }
-
-                if (!empty($no_rkm_medis)) {
-                    $redirect_url .= "&no_rkm_medis=" . $no_rkm_medis;
-                }
-
-                header("Location: " . $redirect_url);
-            } elseif ($source == 'detail_pasien') {
-                // Redirect to detail_pasien
-                header("Location: index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=" . $no_rkm_medis);
-            } else {
-                // Default redirect to halaman detail pasien
-                header("Location: index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=" . $no_rkm_medis);
-            }
+            error_log("Final no_rawat value for redirection: " . $no_rawat);
+            
+            // Use helper function for consistent redirect handling
+            handleRedirect($source, $no_rawat, $no_rkm_medis);
             exit;
         } catch (Exception $e) {
             error_log("Error in update_status_ginekologi: " . $e->getMessage());
@@ -2606,12 +2601,19 @@ class RekamMedisController
                 throw new Exception("Gagal menghapus data status ginekologi");
             }
 
-            // Redirect ke halaman detail pasien dengan tab status ginekologi aktif
-            if (isset($_GET['source']) && $_GET['source'] == 'detail_pasien') {
-                header("Location: index.php?module=rekam_medis&action=detail_pasien&no_rkm_medis=" . $no_rkm_medis . "#status-ginekologi");
-            } else {
-                header("Location: index.php?module=rekam_medis&action=detail_pasien&no_rkm_medis=" . $no_rkm_medis);
+            // Cek source parameter untuk redirect
+            $source = isset($_GET['source']) ? $_GET['source'] : '';
+            
+            // Get no_rawat from GET or session
+            $no_rawat = '';
+            if (isset($_GET['no_rawat']) && !empty($_GET['no_rawat'])) {
+                $no_rawat = $_GET['no_rawat'];
+            } elseif (isset($_SESSION['no_rawat']) && !empty($_SESSION['no_rawat'])) {
+                $no_rawat = $_SESSION['no_rawat'];
             }
+            
+            // Use helper function for consistent redirect handling
+            handleRedirect($source, $no_rawat, $no_rkm_medis);
             exit;
         } catch (Exception $e) {
             error_log("Error in hapus_status_ginekologi: " . $e->getMessage());

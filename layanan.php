@@ -57,276 +57,221 @@ try {
         /* Base Styles */
         body {
             font-family: 'Nunito', sans-serif;
-            background-color: #f8f9fa;
-            overflow-x: hidden; /* Prevent horizontal scrollbar */
+            background-color: #f4f7f6; /* Lighter, softer background */
+            overflow-x: hidden;
         }
-        
+
         /* Main Content Layout */
         .main-content {
             margin-left: 240px;
-            padding: 20px;
+            padding: 24px;
             transition: margin-left 0.3s ease, width 0.3s ease;
-            width: calc(100% - 240px); /* Width minus sidebar width */
+            width: calc(100% - 240px);
             box-sizing: border-box;
         }
-        
-        /* Adjust main content when sidebar is minimized */
+
         .sidebar.minimized ~ .main-content {
             margin-left: 60px;
-            width: calc(100% - 60px); /* Width minus minimized sidebar width */
+            width: calc(100% - 60px);
         }
-        
-        /* Mobile adjustments */
+
         @media (max-width: 991.98px) {
             .main-content {
                 margin-left: 0;
                 width: 100%;
+                padding: 16px;
             }
         }
-        
-        /* Card Styles */
+
+        /* Page Header */
+        .page-header {
+            margin-bottom: 2rem;
+        }
+        .page-header .page-title-icon {
+            font-size: 2.25rem; /* Larger icon */
+            color: #0d6efd;
+        }
+        .page-header .page-title {
+            font-size: 1.8rem; /* Larger title */
+            font-weight: 700;
+            color: #343a40;
+        }
+        .page-header .page-subtitle {
+            font-size: 1rem;
+            color: #6c757d;
+        }
+
+        /* Category Section (if made visible later) */
+        .category-section {
+            margin-bottom: 2.5rem;
+        }
+        .category-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        /* New Service Card Styles */
         .service-card {
-            height: 100%;
-            transition: all 0.3s ease;
-            border: none;
-            border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-            overflow: hidden;
-            margin-bottom: 10px;
+            background-color: #fff;
+            border: 1px solid #e0e7ef; /* Softer border */
+            border-radius: 12px; /* More rounded corners */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* Softer, more diffused shadow */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            height: 100%; /* Ensure cards in a row have same height if using flex */
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+            overflow: hidden; /* To contain potential image or top bar */
         }
 
         .service-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 5px 12px rgba(0, 0, 0, 0.08);
-        }
-        
-        /* Category Styling - Hidden as requested */
-        .category-section {
-            margin-bottom: 1.5rem;
-            background-color: transparent;
-            box-shadow: none;
-            padding: 0;
+            transform: translateY(-5px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
         }
 
-        /* Card Hover and Clickable Styling */
-        .service-card {
-            cursor: pointer;
-            position: relative;
-        }
-        
-        .service-card::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(13, 110, 253, 0.05);
-            opacity: 0;
-            transition: opacity 0.2s ease;
-            border-radius: 10px;
-        }
-        
-        .service-card:hover::after {
-            opacity: 1;
+        .service-card .card-body {
+            padding: 1.25rem; /* More padding */
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1; /* Allows footer to stick to bottom */
         }
 
-        /* Text Styling */
-        .service-description {
-            color: #6c757d;
-            font-size: 0.85rem;
-            line-height: 1.4;
-            margin-bottom: 8px;
+        .service-card .card-title {
+            font-size: 1.15rem; /* Slightly larger */
+            font-weight: 600; /* Bolder */
+            color: #2c3e50;
+            margin-bottom: 0.75rem;
+            /* Removed white-space, overflow, text-overflow for now, can be re-added if titles are too long */
+        }
+
+        .service-card .service-description {
+            font-size: 0.9rem;
+            color: #5a6570;
+            line-height: 1.6;
+            margin-bottom: 1rem;
             display: -webkit-box;
-            -webkit-line-clamp: 2;
-            line-clamp: 2;
+            -webkit-line-clamp: 3; /* Allow 3 lines */
+            line-clamp: 3;
             -webkit-box-orient: vertical;
             overflow: hidden;
-        }
-        
-        @media (max-width: 767.98px) {
-            .service-description {
-                margin-bottom: 6px;
-                font-size: 0.8rem;
-                line-height: 1.3;
-            }
+            flex-grow: 1; /* Takes available space before footer */
         }
 
-        .service-preparation {
+        .service-card .service-preparation {
             font-size: 0.8rem;
-            background-color: #f0f7ff;
+            background-color: #e9f5ff; /* Light blue */
             border-radius: 6px;
-            padding: 8px 10px;
-            margin-top: 8px;
-            border-left: 3px solid #0d6efd;
+            padding: 0.5rem 0.75rem;
+            margin-top: 0.75rem;
+            margin-bottom: 0.75rem;
+            border-left: 3px solid #007bff; /* Primary blue accent */
+            color: #345A7C;
         }
-        
-        @media (max-width: 767.98px) {
-            .service-preparation {
-                padding: 6px 8px;
-                margin-top: 6px;
-                font-size: 0.75rem;
-            }
+        .service-card .service-preparation strong {
+             color: #0056b3;
         }
-
-        .service-duration {
-            font-size: 0.75rem;
-            color: #6c757d;
-            display: flex;
-            align-items: center;
-        }
-        
-        .service-duration i {
-            margin-right: 4px;
-            color: #6c757d;
+        .service-card .service-preparation div {
+            font-size: 0.8rem;
         }
 
-        .service-price {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: #198754;
-        }
-
-        /* Layout Styling */
-        .category-icon {
-            display: none; /* Hide category icon as requested */
-        }
-        
-        /* Grid Layout */
-        .services-grid {
-            display: flex;
-            flex-wrap: wrap;
-            margin: 0 -5px;
-        }
-        
-        .service-item {
-            padding: 0 5px;
-            margin-bottom: 10px;
-        }
-        
-        @media (max-width: 767.98px) {
-            .service-item {
-                margin-bottom: 8px;
-            }
-        }
-        
-        /* Desktop - 4 columns */
-        @media (min-width: 992px) {
-            .service-item {
-                width: 25%;
-            }
-        }
-        
-        /* Tablet - 3 columns */
-        @media (min-width: 768px) and (max-width: 991.98px) {
-            .service-item {
-                width: 33.333%;
-            }
-        }
-        
-        /* Mobile - 2 columns */
-        @media (max-width: 767.98px) {
-            .service-item {
-                width: 50%;
-            }
-        }
-
-        .card-title {
-            margin-top: 0;
-            margin-bottom: 8px;
-            font-weight: 700;
-            color: #2c3e50;
-            font-size: 1rem;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .card-body {
-            padding: 1rem;
-        }
-
-        .service-footer {
+        .service-card .service-footer {
+            margin-top: auto; /* Pushes footer to the bottom */
+            padding-top: 1rem;
+            border-top: 1px solid #f0f0f0; /* Lighter separator */
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-top: 8px;
-            padding-top: 8px;
-            border-top: 1px solid #f0f0f0;
+        }
+
+        .service-card .service-duration {
+            font-size: 0.85rem;
+            color: #6c757d;
+            display: flex;
+            align-items: center;
+        }
+        .service-card .service-duration i {
+            margin-right: 0.3rem;
+            color: #0d6efd;
+        }
+
+        .service-card .service-price {
+            font-size: 1.25rem; /* Larger price */
+            font-weight: 700;
+            color: #007bff; /* Primary color for price */
         }
         
-        @media (max-width: 767.98px) {
-            .service-footer {
-                margin-top: 6px;
-                padding-top: 6px;
-            }
-        }
-        
-        /* Mobile Optimizations */
-        @media (max-width: 767.98px) {
-            .main-content {
-                padding: 10px;
-            }
-            
-            .mobile-hide {
-                display: none;
-            }
-            
-            .col-6 {
-                padding-left: 5px;
-                padding-right: 5px;
-            }
-            
-            .row.g-3 {
-                margin-left: -5px;
-                margin-right: -5px;
-            }
-            
-            .card-body {
-                padding: 0.75rem 0.75rem 0.5rem;
-            }
-            
-            .service-card {
-                margin-bottom: 10px;
-            }
-            
-            .container-fluid {
-                padding: 0;
-            }
-            
-            .category-section {
-                padding: 15px;
-                margin-bottom: 20px;
-            }
-            
-            .card-body {
-                padding: 15px;
-            }
-            
-            .row.g-4 {
-                margin-left: -8px;
-                margin-right: -8px;
-            }
-            
-            .col-12, .col-md-6, .col-lg-4 {
-                padding-left: 8px;
-                padding-right: 8px;
-            }
-            
-            .service-card {
-                margin-bottom: 16px;
-            }
-            
-            .page-title {
+        /* Grid Layout (using Bootstrap classes is preferred, but this is a fallback/enhancement) */
+        /* The .services-grid and .service-item classes might be replaced by Bootstrap's row/col */
+        /* .services-grid {
+            /* If not using Bootstrap row, uncomment and adjust */
+            /* display: flex; flex-wrap: wrap; margin-left: -12px; margin-right: -12px; */
+        /* } */
+        /* .service-item {
+            /* If not using Bootstrap col-*, uncomment and adjust padding */
+            /* padding-left: 12px; padding-right: 12px; margin-bottom: 24px; */
+        /* } */
+
+        /* Fallback for non-Bootstrap grid - adjust as needed if Bootstrap grid is not used for cards */
+        @media (max-width: 767.98px) { /* sm and xs */
+            /* .service-item { width: 100%; } */
+             .page-header .page-title {
                 font-size: 1.5rem;
             }
-            
-            .category-title {
-                font-size: 1.3rem;
+            .page-header .page-subtitle {
+                font-size: 0.9rem;
+            }
+            .service-card .card-title {
+                font-size: 1.05rem;
+            }
+            .service-card .service-description {
+                font-size: 0.85rem;
+                 -webkit-line-clamp: 2;
+                line-clamp: 2;
+            }
+            .service-card .service-price {
+                font-size: 1.1rem;
             }
         }
+
+        /* Modal Styling (copied from original, can be refined if needed) */
+        .modal-body .service-detail-item {
+            margin-bottom: 0.75rem;
+        }
+        .modal-body .service-detail-item strong {
+            display: block;
+            color: #343a40;
+            margin-bottom: 0.25rem;
+        }
+        .modal-body .service-detail-item p {
+            margin-bottom: 0;
+            color: #495057;
+        }
+        .modal-body .badge {
+            font-size: 0.9rem;
+        }
+
+        /* Animation for cards */
+        .service-card {
+            animation: fadeInScaleUp 0.4s ease-out forwards;
+            opacity: 0;
+            transform: scale(0.98);
+        }
+        @keyframes fadeInScaleUp {
+            from {
+                opacity: 0;
+                transform: scale(0.98) translateY(15px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+        /* Ensure animation delay is still applied by JS if needed */
         
-        /* Animation */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -343,71 +288,72 @@ try {
 
     <div class="main-content">
         <div class="container-fluid">
-            <div class="row mb-3 mb-md-4">
-                <div class="col-12">
-                    <div class="d-flex align-items-center mb-2">
-                        <i class="bi bi-clipboard-pulse text-primary me-2" style="font-size: 1.75rem;"></i>
-                        <h2 class="page-title mb-0">Layanan Kami</h2>
+            <div class="page-header">
+                <div class="row align-items-center">
+                    <div class="col-auto">
+                        <i class="bi bi-clipboard-heart page-title-icon"></i>
                     </div>
-                    <p class="text-muted mobile-hide">Temukan berbagai layanan kesehatan yang kami sediakan untuk Anda</p>
+                    <div class="col">
+                        <h1 class="page-title mb-1">Layanan Kami</h1>
+                        <p class="page-subtitle text-muted">Temukan berbagai layanan kesehatan berkualitas yang kami sediakan untuk Anda.</p>
+                    </div>
                 </div>
             </div>
 
             <?php if (isset($error_message)): ?>
                 <div class="alert alert-danger" role="alert">
-                    <?= $error_message ?>
+                    <?= htmlspecialchars($error_message) ?>
                 </div>
             <?php endif; ?>
 
-            <?php foreach ($layanan_by_kategori as $kategori => $items): ?>
-                <div class="category-section">
+            <?php if (!empty($layanan_by_kategori)): ?>
+                <?php foreach ($layanan_by_kategori as $kategori => $items): ?>
+                    <div class="category-section">
+                        <h2 class="category-title"><?= htmlspecialchars($kategori) ?></h2>
+                        <div class="row g-4">
+                            <?php foreach ($items as $item): ?>
+                            <div class="col-lg-4 col-md-6 col-sm-12 d-flex align-items-stretch">
+                                <div class="card service-card h-100" onclick=\"redirectToRegistration('<?= htmlspecialchars($item['id_layanan']) ?>')\">
+                                    <div class="card-body d-flex flex-column">
+                                        <h5 class="card-title"><?= htmlspecialchars($item['nama_layanan']) ?></h5>
+                                        
+                                        <?php if (!empty($item['deskripsi'])): ?>
+                                            <p class="service-description">
+                                                <?= nl2br(htmlspecialchars(mb_strimwidth($item['deskripsi'], 0, 120, "..."))) ?>
+                                            </p>
+                                        <?php endif; ?>
 
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="services-grid">
-                                <?php foreach ($items as $item): ?>
-                                <div class="service-item">
-                                    <div class="card service-card" onclick="redirectToRegistration('<?= $item['id_layanan'] ?>')">
-                                        <div class="card-body">
-                                            <h5 class="card-title"><?= htmlspecialchars($item['nama_layanan']) ?></h5>
-
-                                            <?php if (!empty($item['deskripsi'])): ?>
-                                                <p class="service-description"><?= nl2br(htmlspecialchars($item['deskripsi'])) ?></p>
-                                            <?php endif; ?>
-
-                                            <?php if (!empty($item['persiapan'])): ?>
-                                                <div class="service-preparation">
-                                                    <small><i class="bi bi-info-circle"></i> <strong>Persiapan:</strong></small>
-                                                    <div class="mt-1"><?= nl2br(htmlspecialchars($item['persiapan'])) ?></div>
+                                        <?php if (!empty($item['persiapan'])): ?>
+                                            <div class="service-preparation">
+                                                <small><i class="bi bi-info-circle-fill me-1"></i><strong>Persiapan:</strong></small>
+                                                <div class="mt-1 small">
+                                                    <?= nl2br(htmlspecialchars(mb_strimwidth($item['persiapan'], 0, 100, "..."))) ?>
                                                 </div>
-                                            <?php endif; ?>
-
-                                            <div class="service-footer">
-                                                <?php if ($item['durasi_estimasi']): ?>
-                                                    <span class="service-duration">
-                                                        <i class="bi bi-clock"></i> <?= $item['durasi_estimasi'] ?> menit
-                                                    </span>
-                                                <?php else: ?>
-                                                    <span></span>
-                                                <?php endif; ?>
-
-                                                <span class="service-price"><?= formatRupiah($item['harga']) ?></span>
                                             </div>
+                                        <?php endif; ?>
+                                        
+                                        <div class="service-footer mt-auto">
+                                            <?php if ($item['durasi_estimasi']): ?>
+                                                <span class="service-duration">
+                                                    <i class="bi bi-clock-history"></i> <?= htmlspecialchars($item['durasi_estimasi']) ?> menit
+                                                </span>
+                                            <?php else: ?>
+                                                <span class="service-duration"><i class="bi bi-clock-history"></i> Estimasi variatif</span>
+                                            <?php endif; ?>
+                                            <span class="service-price"><?= formatRupiah($item['harga']) ?></span>
                                         </div>
                                     </div>
                                 </div>
-                                <?php endforeach; ?>
                             </div>
+                            <?php endforeach; ?>
                         </div>
                     </div>
-                </div>
-            <?php endforeach; ?>
-
-            <?php if (empty($layanan_by_kategori)): ?>
-                <div class="text-center py-5 bg-white rounded shadow-sm">
-                    <i class="bi bi-inbox display-1 text-muted"></i>
-                    <h4 class="mt-3">Belum ada layanan tersedia</h4>
-                    <p class="text-muted">Silakan cek kembali di lain waktu</p>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <div class="text-center py-5 my-5 bg-light rounded shadow-sm">
+                    <i class="bi bi-inbox-fill display-1 text-info mb-3"></i>
+                    <h4 class="mt-3 fw-bold">Belum Ada Layanan Tersedia</h4>
+                    <p class="text-muted fs-5">Saat ini belum ada layanan yang dapat ditampilkan. Silakan cek kembali di lain waktu.</p>
                 </div>
             <?php endif; ?>
         </div>

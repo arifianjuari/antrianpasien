@@ -32,11 +32,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     throw new Exception("Kode voucher sudah digunakan");
                 }
 
+                // Ambil kuota dari input
+                $kuota = isset($_POST['kuota']) ? intval($_POST['kuota']) : 1;
+                $terpakai = 0;
+
                 // Insert voucher baru
                 $stmt = $conn->prepare("INSERT INTO voucher (
                     voucher_code, nama_voucher, deskripsi, tipe_voucher, 
-                    nilai_voucher, valid_awal, valid_akhir, status
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+                    nilai_voucher, valid_awal, valid_akhir, status, kuota, terpakai
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
                 $stmt->execute([
                     $voucher_code,
@@ -46,7 +50,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $nilai_voucher,
                     $valid_awal,
                     $valid_akhir,
-                    $status
+                    $status,
+                    $kuota,
+                    $terpakai
                 ]);
 
                 $_SESSION['success'] = "Voucher berhasil ditambahkan";
@@ -60,6 +66,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $valid_akhir = $_POST['valid_akhir'];
                 $status = $_POST['status'];
 
+                // Ambil kuota dari input
+                $kuota = isset($_POST['kuota']) ? intval($_POST['kuota']) : 1;
+                
+                // Ambil jumlah terpakai saat ini dari database
+                $stmt = $conn->prepare("SELECT terpakai FROM voucher WHERE voucher_id = ?");
+                $stmt->execute([$voucher_id]);
+                $row = $stmt->fetch();
+                $terpakai = $row ? intval($row['terpakai']) : 0;
+                
+                // Jika terpakai >= kuota, set status otomatis ke 'terpakai'
+                if ($terpakai >= $kuota) {
+                    $status = 'terpakai';
+                }
+                
+                // Log untuk debugging
+                error_log("Updating voucher ID: $voucher_id");
+                error_log("Kuota: $kuota, Terpakai: $terpakai, Status: $status");
+
                 // Update voucher
                 $stmt = $conn->prepare("UPDATE voucher SET 
                     nama_voucher = ?,
@@ -68,7 +92,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     nilai_voucher = ?,
                     valid_awal = ?,
                     valid_akhir = ?,
-                    status = ?
+                    status = ?,
+                    kuota = ?,
+                    terpakai = ?,
+                    updated_at = CURRENT_TIMESTAMP
                     WHERE voucher_id = ?");
 
                 $stmt->execute([
@@ -79,6 +106,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $valid_awal,
                     $valid_akhir,
                     $status,
+                    $kuota,
+                    $terpakai,
                     $voucher_id
                 ]);
 
@@ -154,6 +183,8 @@ ob_start();
                                     <th>Nama</th>
                                     <th>Tipe</th>
                                     <th>Nilai</th>
+                                    <th>Kuota</th>
+                                    <th>Terpakai</th>
                                     <th>Berlaku Dari</th>
                                     <th>Berlaku Sampai</th>
                                     <th>Status</th>
@@ -177,6 +208,8 @@ ob_start();
                                             }
                                             ?>
                                         </td>
+                                        <td><?= htmlspecialchars($voucher['kuota']) ?></td>
+                                        <td><?= htmlspecialchars($voucher['terpakai']) ?></td>
                                         <td><?= date('d/m/Y', strtotime($voucher['valid_awal'])) ?></td>
                                         <td><?= date('d/m/Y', strtotime($voucher['valid_akhir'])) ?></td>
                                         <td>
@@ -248,6 +281,12 @@ ob_start();
                     </div>
 
                     <div class="mb-3">
+                        <label for="kuota" class="form-label">Kuota Voucher</label>
+                        <input type="number" class="form-control" id="kuota" name="kuota" min="1" value="1" required>
+                        <div id="kuota_help" class="form-text">Jumlah maksimum voucher bisa digunakan</div>
+                    </div>
+
+                    <div class="mb-3">
                         <label for="valid_awal" class="form-label">Berlaku Dari</label>
                         <input type="date" class="form-control" id="valid_awal" name="valid_awal" required>
                     </div>
@@ -307,6 +346,23 @@ ob_start();
                         <label for="edit_nilai_voucher" class="form-label">Nilai Voucher</label>
                         <input type="number" step="0.01" class="form-control" id="edit_nilai_voucher" name="nilai_voucher" required>
                         <div id="nilai_help" class="form-text">Untuk tipe persentase, masukkan nilai 1-100</div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="edit_kuota" class="form-label">Kuota Voucher</label>
+                                <input type="number" class="form-control" id="edit_kuota" name="kuota" min="1" value="1" required>
+                                <div id="kuota_help" class="form-text">Jumlah maksimum voucher bisa digunakan</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="edit_terpakai" class="form-label">Terpakai</label>
+                                <input type="number" class="form-control" id="edit_terpakai" name="terpakai" min="0" value="0" readonly>
+                                <div class="form-text">Jumlah voucher yang sudah digunakan</div>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="mb-3">
@@ -431,13 +487,19 @@ $(document).ready(function() {
 
 // Fungsi untuk mengedit voucher
 function editVoucher(voucher) {
+    console.log('Edit voucher data:', voucher); // Debug log
+    
     // Isi form edit dengan data voucher
     $('#edit_voucher_id').val(voucher.voucher_id);
     $('#edit_voucher_code').val(voucher.voucher_code);
     $('#edit_nama_voucher').val(voucher.nama_voucher);
-    $('#edit_deskripsi').val(voucher.deskripsi);
+    $('#edit_deskripsi').val(voucher.deskripsi || '');
     $('#edit_tipe_voucher').val(voucher.tipe_voucher);
     $('#edit_nilai_voucher').val(voucher.nilai_voucher);
+    
+    // Set nilai kuota dan terpakai
+    $('#edit_kuota').val(voucher.kuota !== undefined ? voucher.kuota : 1);
+    $('#edit_terpakai').val(voucher.terpakai !== undefined ? voucher.terpakai : 0);
     
     // Format tanggal
     var validAwal = voucher.valid_awal.split(' ')[0];  // Ambil hanya tanggal tanpa waktu

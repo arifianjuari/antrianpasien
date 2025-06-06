@@ -144,6 +144,49 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($id_jadwal)) {
         $errors[] = "Jadwal harus dipilih";
     }
+    
+    // Validasi voucher jika diisi
+    $voucher_code = trim($_POST['voucher_code'] ?? '');
+    if (!empty($voucher_code)) {
+        try {
+            // Periksa validitas voucher
+            $stmt = $conn->prepare("SELECT * FROM voucher WHERE voucher_code = :voucher_code");
+            $stmt->execute(['voucher_code' => $voucher_code]);
+            $voucher = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if (!$voucher) {
+                $errors[] = "Kode voucher tidak ditemukan";
+            } else {
+                $now = new DateTime();
+                $valid_awal = new DateTime($voucher['valid_awal']);
+                $valid_akhir = new DateTime($voucher['valid_akhir']);
+                
+                // Cek status
+                if ($voucher['status'] !== 'aktif') {
+                    $errors[] = "Voucher tidak dapat digunakan (status: " . $voucher['status'] . ")";
+                }
+                // Cek periode validitas
+                else if ($now < $valid_awal) {
+                    $errors[] = "Voucher belum berlaku";
+                }
+                else if ($now > $valid_akhir) {
+                    $errors[] = "Voucher sudah kadaluarsa";
+                }
+                // Cek kuota
+                else {
+                    $kuota = isset($voucher['kuota']) ? intval($voucher['kuota']) : 1;
+                    $terpakai = isset($voucher['terpakai']) ? intval($voucher['terpakai']) : 0;
+                    
+                    if ($terpakai >= $kuota) {
+                        $errors[] = "Voucher sudah mencapai batas penggunaan (kuota habis)";
+                    }
+                }
+            }
+        } catch (PDOException $e) {
+            error_log("Voucher validation error: " . $e->getMessage());
+            $errors[] = "Terjadi kesalahan saat memvalidasi voucher";
+        }
+    }
 
     // Jika tidak ada error, simpan data
     if (empty($errors)) {
@@ -963,26 +1006,39 @@ ob_start();
             const voucherCode = document.getElementById('voucher_code').value.trim();
             if (voucherCode) {
                 try {
-                    const formData = new FormData();
-                    formData.append('voucher_code', voucherCode);
-                    formData.append('mode', 'use');
-                    formData.append('id_pendaftaran', 'TEMP'); // Akan diupdate setelah pendaftaran berhasil
+                    // Buat FormData baru khusus untuk validasi voucher
+                    const voucherFormData = new FormData();
+                    voucherFormData.append('voucher_code', voucherCode);
 
                     // Cek validitas voucher terakhir kali sebelum submit
                     const response = await fetch('check_voucher.php', {
                         method: 'POST',
-                        body: formData
+                        body: voucherFormData
                     });
 
                     const data = await response.json();
                     if (!data.valid) {
-                        alert('Voucher tidak valid: ' + data.message);
-                        return;
+                        // Tampilkan pesan error dan fokus ke field voucher
+                        const feedbackElement = document.getElementById('voucher_feedback');
+                        const voucherInput = document.getElementById('voucher_code');
+                        
+                        feedbackElement.innerHTML = `<span class="text-danger"><i class="bi bi-exclamation-circle"></i> ${data.message}</span>`;
+                        voucherInput.classList.add('is-invalid');
+                        voucherInput.classList.remove('is-valid');
+                        voucherInput.focus();
+                        
+                        // Hilangkan loading overlay
+                        loadingOverlay.style.display = 'none';
+                        submitBtn.disabled = false;
+                        
+                        return false;
                     }
                 } catch (error) {
                     console.error('Error checking voucher:', error);
                     alert('Terjadi kesalahan saat memvalidasi voucher');
-                    return;
+                    loadingOverlay.style.display = 'none';
+                    submitBtn.disabled = false;
+                    return false;
                 }
             }
 
@@ -1298,6 +1354,10 @@ $additional_css = "
     .card-body .card {
         border-radius: 0;
         box-shadow: none !important;
+    }
+    /* Warna khusus untuk widget pengumuman */
+    .card-header:has(i.bi-megaphone) {
+        background-color: #800000 !important; /* Warna merah maroon */
     }
     .pengumuman-preview {
         font-size: 0.9rem;

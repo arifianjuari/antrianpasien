@@ -548,7 +548,7 @@ if ($conn) {
                 <div class="tab-pane fade collapse" id="skrining" role="tabpanel">
                     <div class="mb-3 d-flex justify-content-between">
                         <h6 class="font-weight-bold">Status Obstetri</h6>
-                        <a href="index.php?module=rekam_medis&action=tambah_status_obstetri&no_rkm_medis=<?= $pasien['no_rkm_medis'] ?>&source=form_edit_pemeriksaan" class="btn btn-primary btn-sm">
+                        <a href="index.php?module=rekam_medis&action=tambah_status_obstetri&no_rkm_medis=<?= $pasien['no_rkm_medis'] ?>&source=form_edit_pemeriksaan<?= isset($_GET['no_rawat']) ? '&no_rawat='.$_GET['no_rawat'] : '' ?>" class="btn btn-primary btn-sm">
                             <i class="fas fa-plus"></i> Tambah Data
                         </a>
                     </div>
@@ -591,10 +591,10 @@ if ($conn) {
                                                     ?>
                                                 </td>
                                                 <td>
-                                                    <a href="index.php?module=rekam_medis&action=edit_status_obstetri&id=<?= $so['id_status_obstetri'] ?>&source=form_edit_pemeriksaan" class="btn btn-warning btn-sm">
+                                                    <a href="index.php?module=rekam_medis&action=edit_status_obstetri&id=<?= $so['id_status_obstetri'] ?>&source=form_edit_pemeriksaan<?= isset($_GET['no_rawat']) ? '&no_rawat='.$_GET['no_rawat'] : '' ?>" class="btn btn-warning btn-sm">
                                                         <i class="fas fa-edit"></i>
                                                     </a>
-                                                    <a href="index.php?module=rekam_medis&action=hapus_status_obstetri&id=<?= $so['id_status_obstetri'] ?>&source=form_edit_pemeriksaan" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
+                                                    <a href="index.php?module=rekam_medis&action=hapus_status_obstetri&id=<?= $so['id_status_obstetri'] ?>&source=form_edit_pemeriksaan<?= isset($_GET['no_rawat']) ? '&no_rawat='.$_GET['no_rawat'] : '' ?>" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
                                                         <i class="fas fa-trash"></i>
                                                     </a>
                                                 </td>
@@ -615,7 +615,7 @@ if ($conn) {
                 <div class="tab-pane fade collapse" id="riwayat-kehamilan" role="tabpanel">
                     <div class="mb-3 d-flex justify-content-between">
                         <h6 class="font-weight-bold">Riwayat Kehamilan</h6>
-                        <a href="index.php?module=rekam_medis&action=tambah_riwayat_kehamilan&no_rkm_medis=<?= $pasien['no_rkm_medis'] ?>&source=form_edit_pemeriksaan" class="btn btn-primary btn-sm">
+                        <a href="index.php?module=rekam_medis&action=tambah_riwayat_kehamilan&no_rkm_medis=<?= $pasien['no_rkm_medis'] ?>&source=form_edit_pemeriksaan<?= isset($_GET['no_rawat']) ? '&no_rawat='.$_GET['no_rawat'] : '' ?>" class="btn btn-primary btn-sm">
                             <i class="fas fa-plus"></i> Tambah Data
                         </a>
                     </div>
@@ -650,10 +650,10 @@ if ($conn) {
                                                 <td><?= htmlspecialchars($rk['berat_badan_lahir'] ?? '-') ?></td>
                                                 <td><?= htmlspecialchars($rk['kondisi_lahir'] ?? '-') ?></td>
                                                 <td>
-                                                    <a href="index.php?module=rekam_medis&action=edit_riwayat_kehamilan&id=<?= $rk['id_riwayat_kehamilan'] ?>&source=form_edit_pemeriksaan" class="btn btn-warning btn-sm">
+                                                    <a href="index.php?module=rekam_medis&action=edit_riwayat_kehamilan&id=<?= $rk['id_riwayat_kehamilan'] ?>&source=form_edit_pemeriksaan<?= isset($_GET['no_rawat']) ? '&no_rawat='.$_GET['no_rawat'] : '' ?>" class="btn btn-warning btn-sm">
                                                         <i class="fas fa-edit"></i>
                                                     </a>
-                                                    <a href="index.php?module=rekam_medis&action=hapus_riwayat_kehamilan&id=<?= $rk['id_riwayat_kehamilan'] ?>&source=form_edit_pemeriksaan" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
+                                                    <a href="index.php?module=rekam_medis&action=hapus_riwayat_kehamilan&id=<?= $rk['id_riwayat_kehamilan'] ?>&source=form_edit_pemeriksaan<?= isset($_GET['no_rawat']) ? '&no_rawat='.$_GET['no_rawat'] : '' ?>" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
                                                         <i class="fas fa-trash"></i>
                                                     </a>
                                                 </td>
@@ -674,7 +674,7 @@ if ($conn) {
                 <div class="tab-pane fade collapse" id="status-ginekologi" role="tabpanel">
                     <div class="mb-3 d-flex justify-content-between">
                         <h6 class="font-weight-bold">Status Ginekologi</h6>
-                        <a href="index.php?module=rekam_medis&action=tambah_status_ginekologi&no_rkm_medis=<?= $pasien['no_rkm_medis'] ?>&source=form_edit_pemeriksaan" class="btn btn-primary btn-sm">
+                        <a href="index.php?module=rekam_medis&action=tambah_status_ginekologi&no_rkm_medis=<?= $pasien['no_rkm_medis'] ?>&source=form_edit_pemeriksaan<?= isset($_GET['no_rawat']) ? '&no_rawat='.$_GET['no_rawat'] : '' ?>" class="btn btn-primary btn-sm">
                             <i class="fas fa-plus"></i> Tambah Data
                         </a>
                     </div>
@@ -703,10 +703,10 @@ if ($conn) {
                                                 <td><?= htmlspecialchars($sg['Kontrasepsi_terakhir'] ?? '-') ?></td>
                                                 <td><?= htmlspecialchars($sg['lama_menikah_th'] ?? '-') ?></td>
                                                 <td>
-                                                    <a href="index.php?module=rekam_medis&action=edit_status_ginekologi&id=<?= $sg['id_status_ginekologi'] ?>&source=form_edit_pemeriksaan" class="btn btn-warning btn-sm">
+                                                    <a href="index.php?module=rekam_medis&action=edit_status_ginekologi&id=<?= $sg['id_status_ginekologi'] ?>&source=form_edit_pemeriksaan<?= isset($_GET['no_rawat']) ? '&no_rawat='.$_GET['no_rawat'] : '' ?>" class="btn btn-warning btn-sm">
                                                         <i class="fas fa-edit"></i>
                                                     </a>
-                                                    <a href="index.php?module=rekam_medis&action=hapus_status_ginekologi&id=<?= $sg['id_status_ginekologi'] ?>&source=form_edit_pemeriksaan" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
+                                                    <a href="index.php?module=rekam_medis&action=hapus_status_ginekologi&id=<?= $sg['id_status_ginekologi'] ?>&source=form_edit_pemeriksaan<?= isset($_GET['no_rawat']) ? '&no_rawat='.$_GET['no_rawat'] : '' ?>" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
                                                         <i class="fas fa-trash"></i>
                                                     </a>
                                                 </td>
@@ -1301,6 +1301,9 @@ if ($conn) {
                                                 <div class="card-body p-2">
                                                     <button type="button" class="btn btn-sm btn-info w-100 mb-2" onclick="masukkanIdentitasPasien()">
                                                         <i class="fas fa-user-plus"></i> Identitas
+                                                    </button>
+                                                    <button type="button" class="btn btn-sm btn-info w-100 mb-2" onclick="masukkanStatusUmum()">
+                                                        <i class="fas fa-heartbeat"></i> Status Umum
                                                     </button>
                                                     <button type="button" class="btn btn-sm btn-info w-100 mb-2" onclick="masukkanStatusObstetri()">
                                                         <i class="fas fa-female"></i> Status Obstetri
@@ -2932,6 +2935,38 @@ error_log("Form Edit Pemeriksaan: File execution completed");
         // updateResumeFormat();
     }
 
+    function masukkanStatusUmum() {
+        // Ambil data TD, N, dan BB dari input fields di form
+        var td = document.querySelector('input[name="td"]') ? document.querySelector('input[name="td"]').value : '<?= isset($pemeriksaan["td"]) ? $pemeriksaan["td"] : "" ?>';
+        var nadi = document.querySelector('input[name="nadi"]') ? document.querySelector('input[name="nadi"]').value : '<?= isset($pemeriksaan["nadi"]) ? $pemeriksaan["nadi"] : "" ?>';
+        var bb = document.querySelector('input[name="bb"]') ? document.querySelector('input[name="bb"]').value : '<?= isset($pemeriksaan["bb"]) ? $pemeriksaan["bb"] : "" ?>';
+
+        // Format teks yang akan dimasukkan
+        var statusUmumText = "Status Umum:\n";
+        if (td) statusUmumText += "TD: " + td + " mmHg\n";
+        if (nadi) statusUmumText += "N: " + nadi + " x/menit\n";
+        if (bb) statusUmumText += "BB: " + bb + " kg\n";
+
+        // Masukkan ke textarea resume
+        var resumeField = document.getElementById('resume');
+        var currentContent = resumeField.value;
+
+        // Tambahkan status umum di akhir konten yang sudah ada
+        if (currentContent.trim() === '') {
+            // Jika field kosong, langsung tambahkan
+            resumeField.value = statusUmumText;
+        } else {
+            // Jika sudah ada konten, tambahkan baris baru dan status umum di akhir
+            resumeField.value = currentContent + (currentContent.endsWith('\n') ? '' : '\n\n') + statusUmumText + "\n";
+        }
+
+        // Auto resize textarea
+        autoResizeTextarea(resumeField);
+
+        // Log untuk debugging
+        console.log('Status Umum ditambahkan dengan nilai TD:', td, 'Nadi:', nadi, 'BB:', bb);
+    }
+
     function masukkanStatusObstetriDiagnosis() {
         // Cek jenis kelamin, hanya lanjutkan jika pasien perempuan
         var jenisKelamin = "<?= isset($pasien['jk']) ? $pasien['jk'] : '' ?>";
@@ -2991,41 +3026,40 @@ error_log("Form Edit Pemeriksaan: File execution completed");
 
         // Format status obstetri untuk diagnosis
         var statusObstetriText = "G" + gravida + "P" + paritas + "A" + abortus;
-        
+
         // Hitung usia kehamilan (UK) berdasarkan tanggal_tp_penyesuaian (EDD)
         if (tanggalTpPenyesuaian && tanggalTpPenyesuaian !== '-') {
-            // Konversi tanggal TP dari format dd-mm-yyyy ke objek Date
-            var parts = tanggalTpPenyesuaian.split('-');
-            var tpDate = new Date(parts[2], parts[1] - 1, parts[0]); // year, month (0-based), day
-            
-            // Tanggal hari ini
-            var today = new Date();
-            
-            // Hitung selisih dalam milidetik
-            var diffTime = tpDate.getTime() - today.getTime();
-            
-            // Konversi ke hari
-            var diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            
-            // Kehamilan normal sekitar 280 hari (40 minggu)
-            // UK = 40 minggu - (sisa waktu dalam minggu)
-            var sisaWaktuMinggu = Math.floor(diffDays / 7);
-            var ukMinggu = 40 - sisaWaktuMinggu;
-            var ukHari = 7 - (diffDays % 7);
-            
-            // Pastikan nilai UK valid
-            if (ukMinggu >= 0 && ukMinggu <= 45) {
-                statusObstetriText += " UK: " + ukMinggu;
-                if (ukHari > 0 && ukHari < 7) {
-                    statusObstetriText += "+" + ukHari;
-                }
-                statusObstetriText += " minggu";
+            // Fungsi untuk menghitung usia kehamilan berdasarkan tanggal TP
+            function hitungUKdariTP(tanggalTP_ddmmyyyy) {
+                const parts = tanggalTP_ddmmyyyy.split('-');
+                const tp = new Date(parts[2], parts[1] - 1, parts[0]); // yyyy, mm-1, dd
+                const today = new Date();
+
+                const tpClean = new Date(tp.getFullYear(), tp.getMonth(), tp.getDate());
+                const todayClean = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+
+                const selisihHari = Math.floor((tpClean - todayClean) / (1000 * 60 * 60 * 24));
+                const totalHariKehamilan = 280 - selisihHari;
+                const minggu = Math.floor(totalHariKehamilan / 7);
+                const hari = totalHariKehamilan % 7;
+
+                let output = `UK ${minggu} minggu`;
+                if (hari > 0) output += ` ${hari} hari`;
+                if (selisihHari < 0) output += ` (Post Date)`;
+
+                return output;
             }
+
+            // Hitung usia kehamilan
+            var hasilUK = hitungUKdariTP(tanggalTpPenyesuaian);
+
+            // Tambahkan hasil ke status obstetri
+            statusObstetriText += " " + hasilUK + "\n";
         }
 
         // Tambahkan faktor risiko jika ada
         var adaFaktorRisiko = false;
-        var faktorRisikoText = " FR: ";
+        var faktorRisikoText = "+ ";
 
         if (faktorRisikoUmum && faktorRisikoUmum !== '-') {
             faktorRisikoText += faktorRisikoUmum;
@@ -3038,7 +3072,7 @@ error_log("Form Edit Pemeriksaan: File execution completed");
         }
 
         if (faktorRisikoPreeklampsia && faktorRisikoPreeklampsia !== '-') {
-            faktorRisikoText += (adaFaktorRisiko ? ", PE: " : "PE: ") + faktorRisikoPreeklampsia;
+            faktorRisikoText += (adaFaktorRisiko ? "\n" + "\n" + "+ Risiko PE: " : "PE: ") + faktorRisikoPreeklampsia;
             adaFaktorRisiko = true;
         }
 
@@ -3053,14 +3087,14 @@ error_log("Form Edit Pemeriksaan: File execution completed");
         // Sisipkan ke field diagnosis
         var diagnosisField = document.getElementById('diagnosis');
         var currentText = diagnosisField.value;
-        
+
         // Tambahkan status obstetri ke awal diagnosis jika kosong, atau tambahkan di akhir dengan baris baru
         if (currentText.trim() === '') {
             diagnosisField.value = statusObstetriText;
         } else {
             diagnosisField.value = currentText + "\n" + statusObstetriText;
         }
-        
+
         autoResizeTextarea(diagnosisField);
     }
 
@@ -3596,10 +3630,10 @@ error_log("Form Edit Pemeriksaan: File execution completed");
                                             <td>${rk.berat_badan_lahir || '-'}</td>
                                             <td>${tanggalPersalinan}</td>
                                             <td>
-                                                <a href="index.php?module=rekam_medis&action=edit_riwayat_kehamilan&id=${rk.id_riwayat_kehamilan}&source=<?= $_SESSION['source_page'] ?? 'form_edit_pemeriksaan' ?>" class="btn btn-warning btn-sm">
+                                                <a href="index.php?module=rekam_medis&action=edit_riwayat_kehamilan&id=${rk.id_riwayat_kehamilan}&source=<?= $_SESSION['source_page'] ?? 'form_edit_pemeriksaan' ?><?= isset($_GET['no_rawat']) ? '&no_rawat='.$_GET['no_rawat'] : '' ?>" class="btn btn-warning btn-sm">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
-                                                <a href="index.php?module=rekam_medis&action=hapus_riwayat_kehamilan&id=${rk.id_riwayat_kehamilan}&source=<?= $_SESSION['source_page'] ?? 'form_edit_pemeriksaan' ?>" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
+                                                <a href="index.php?module=rekam_medis&action=hapus_riwayat_kehamilan&id=${rk.id_riwayat_kehamilan}&source=<?= $_SESSION['source_page'] ?? 'form_edit_pemeriksaan' ?><?= isset($_GET['no_rawat']) ? '&no_rawat='.$_GET['no_rawat'] : '' ?>" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
                                                     <i class="fas fa-trash"></i>
                                                 </a>
                                             </td>

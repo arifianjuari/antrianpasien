@@ -30,7 +30,7 @@ return [
     // Security configuration
     'security' => [
         'csrf_protection' => true,
-        'session_timeout' => 3600, // 1 hour
+        'session_timeout' => 172800, // 48 hours
         'password_algo' => PASSWORD_ARGON2ID,
         'password_options' => [
             'memory_cost' => 65536,

@@ -58,6 +58,10 @@ $faktor_risiko_preeklampsia = $isEdit && !empty($statusObstetri['faktor_risiko_p
                         <?php endif; ?>
                         <input type="hidden" name="no_rkm_medis" value="<?= $pasien['no_rkm_medis'] ?>">
                         <input type="hidden" name="updated_at" value="<?= date('Y-m-d H:i:s') ?>">
+                        <!-- Tambahkan parameter source untuk redirect -->
+                        <input type="hidden" name="source" value="<?= isset($_GET['source']) ? $_GET['source'] : '' ?>">
+                        <!-- Tambahkan parameter no_rawat jika ada -->
+                        <input type="hidden" name="no_rawat" value="<?= isset($_GET['no_rawat']) ? $_GET['no_rawat'] : '' ?>">
 
                         <div class="row mb-3">
                             <div class="col-md-6">

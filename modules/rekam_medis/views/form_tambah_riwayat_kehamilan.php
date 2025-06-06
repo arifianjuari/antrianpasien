@@ -47,6 +47,10 @@ $page_title = "Form Tambah Riwayat Kehamilan";
                     <!-- Form Riwayat Kehamilan -->
                     <form action="index.php?module=rekam_medis&action=simpan_riwayat_kehamilan" method="POST" class="needs-validation" novalidate>
                         <input type="hidden" name="no_rkm_medis" value="<?= htmlspecialchars($data['no_rkm_medis']) ?>">
+                        <!-- Tambahkan parameter source untuk redirect -->
+                        <input type="hidden" name="source" value="<?= isset($_GET['source']) ? $_GET['source'] : '' ?>">
+                        <!-- Tambahkan parameter no_rawat jika ada -->
+                        <input type="hidden" name="no_rawat" value="<?= isset($_GET['no_rawat']) ? $_GET['no_rawat'] : '' ?>">
 
                         <!-- Informasi Pasien -->
                         <div class="form-group row">

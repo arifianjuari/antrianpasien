@@ -368,7 +368,7 @@ $conn->close();
                         <div class="tab-pane fade" id="skrining" role="tabpanel">
                             <div class="mb-3 d-flex justify-content-between">
                                 <h6 class="font-weight-bold">Status Obstetri</h6>
-                                <a href="index.php?module=rekam_medis&action=tambah_status_obstetri&no_rkm_medis=<?= $data['no_rkm_medis'] ?>&source=form_penilaian_medis_ralan_kandungan" class="btn btn-primary btn-sm">
+                                <a href="index.php?module=rekam_medis&action=tambah_status_obstetri&no_rkm_medis=<?= $data['no_rkm_medis'] ?>&source=form_penilaian_medis_ralan_kandungan&no_rawat=<?= $data['no_rawat'] ?>" class="btn btn-primary btn-sm">
                                     <i class="fas fa-plus"></i> Tambah Data
                                 </a>
                             </div>
@@ -411,10 +411,10 @@ $conn->close();
                                                             ?>
                                                         </td>
                                                         <td>
-                                                            <a href="index.php?module=rekam_medis&action=edit_status_obstetri&id=<?= $so['id_status_obstetri'] ?>&source=form_penilaian_medis_ralan_kandungan" class="btn btn-warning btn-sm">
+                                                            <a href="index.php?module=rekam_medis&action=edit_status_obstetri&id=<?= $so['id_status_obstetri'] ?>&source=form_penilaian_medis_ralan_kandungan&no_rawat=<?= $data['no_rawat'] ?>" class="btn btn-warning btn-sm">
                                                                 <i class="fas fa-edit"></i>
                                                             </a>
-                                                            <a href="index.php?module=rekam_medis&action=hapus_status_obstetri&id=<?= $so['id_status_obstetri'] ?>&source=form_penilaian_medis_ralan_kandungan" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
+                                                            <a href="index.php?module=rekam_medis&action=hapus_status_obstetri&id=<?= $so['id_status_obstetri'] ?>&source=form_penilaian_medis_ralan_kandungan&no_rawat=<?= $data['no_rawat'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
                                                                 <i class="fas fa-trash"></i>
                                                             </a>
                                                         </td>
@@ -435,7 +435,7 @@ $conn->close();
                         <div class="tab-pane fade" id="riwayat-kehamilan" role="tabpanel">
                             <div class="mb-3 d-flex justify-content-between">
                                 <h6 class="font-weight-bold">Riwayat Kehamilan</h6>
-                                <a href="index.php?module=rekam_medis&action=tambah_riwayat_kehamilan&no_rkm_medis=<?= $pasien['no_rkm_medis'] ?>&source=form_edit_pemeriksaan" class="btn btn-primary btn-sm">
+                                <a href="index.php?module=rekam_medis&action=tambah_riwayat_kehamilan&no_rkm_medis=<?= $pasien['no_rkm_medis'] ?>&source=form_penilaian_medis_ralan_kandungan&no_rawat=<?= $data['no_rawat'] ?>" class="btn btn-primary btn-sm">
                                     <i class="fas fa-plus"></i> Tambah Data
                                 </a>
                             </div>
@@ -469,10 +469,10 @@ $conn->close();
                                                         <td><?= htmlspecialchars($rk['berat_badan_lahir'] ?? '-') ?></td>
                                                         <td><?= htmlspecialchars($rk['kondisi_lahir'] ?? '-') ?></td>
                                                         <td>
-                                                            <a href="index.php?module=rekam_medis&action=edit_riwayat_kehamilan&id=<?= $rk['id_riwayat_kehamilan'] ?>&source=form_penilaian_medis_ralan_kandungan" class="btn btn-warning btn-sm">
+                                                            <a href="index.php?module=rekam_medis&action=edit_riwayat_kehamilan&id=<?= $rk['id_riwayat_kehamilan'] ?>&source=form_penilaian_medis_ralan_kandungan&no_rawat=<?= $data['no_rawat'] ?>" class="btn btn-warning btn-sm">
                                                                 <i class="fas fa-edit"></i>
                                                             </a>
-                                                            <a href="index.php?module=rekam_medis&action=hapus_riwayat_kehamilan&id=<?= $rk['id_riwayat_kehamilan'] ?>&source=form_penilaian_medis_ralan_kandungan" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
+                                                            <a href="index.php?module=rekam_medis&action=hapus_riwayat_kehamilan&id=<?= $rk['id_riwayat_kehamilan'] ?>&source=form_penilaian_medis_ralan_kandungan&no_rawat=<?= $data['no_rawat'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
                                                                 <i class="fas fa-trash"></i>
                                                             </a>
                                                         </td>
@@ -522,10 +522,10 @@ $conn->close();
                                                         <td><?= htmlspecialchars($sg['Kontrasepsi_terakhir'] ?? '-') ?></td>
                                                         <td><?= htmlspecialchars($sg['lama_menikah_th'] ?? '-') ?></td>
                                                         <td>
-                                                            <a href="index.php?module=rekam_medis&action=edit_status_ginekologi&id=<?= $sg['id_status_ginekologi'] ?>&source=penilaian_medis" class="btn btn-warning btn-sm">
+                                                            <a href="index.php?module=rekam_medis&action=edit_status_ginekologi&id=<?= $sg['id_status_ginekologi'] ?>&source=form_penilaian_medis_ralan_kandungan&no_rawat=<?= $data['no_rawat'] ?>" class="btn btn-warning btn-sm">
                                                                 <i class="fas fa-edit"></i>
                                                             </a>
-                                                            <a href="index.php?module=rekam_medis&action=hapus_status_ginekologi&id=<?= $sg['id_status_ginekologi'] ?>&source=penilaian_medis" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
+                                                            <a href="index.php?module=rekam_medis&action=hapus_status_ginekologi&id=<?= $sg['id_status_ginekologi'] ?>&source=form_penilaian_medis_ralan_kandungan&no_rawat=<?= $data['no_rawat'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
                                                                 <i class="fas fa-trash"></i>
                                                             </a>
                                                         </td>

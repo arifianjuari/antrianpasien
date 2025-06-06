@@ -100,19 +100,41 @@ try {
 
         // Jika mode adalah 'use', update status voucher menjadi terpakai
         if (isset($_POST['mode']) && $_POST['mode'] === 'use') {
+            // Cek quota dan terpakai
+            $kuota = isset($debug_voucher['kuota']) ? intval($debug_voucher['kuota']) : 1;
+            $terpakai = isset($debug_voucher['terpakai']) ? intval($debug_voucher['terpakai']) : 0;
+
+            if ($terpakai >= $kuota) {
+                echo json_encode([
+                    'valid' => false,
+                    'message' => 'Voucher sudah mencapai batas penggunaan (quota habis)'
+                ]);
+                exit;
+            }
+
             try {
                 $conn->beginTransaction();
-
-                $update_query = "UPDATE voucher SET status = 'terpakai' WHERE voucher_code = :voucher_code";
+                $terpakai_baru = $terpakai + 1;
+                if ($terpakai_baru >= $kuota) {
+                    // Update both terpakai and status
+                    $update_query = "UPDATE voucher SET terpakai = :terpakai, status = 'terpakai' WHERE voucher_code = :voucher_code";
+                } else {
+                    // Only increment terpakai
+                    $update_query = "UPDATE voucher SET terpakai = :terpakai WHERE voucher_code = :voucher_code";
+                }
                 $update_stmt = $conn->prepare($update_query);
+                $update_stmt->bindParam(':terpakai', $terpakai_baru, PDO::PARAM_INT);
                 $update_stmt->bindParam(':voucher_code', $voucher_code, PDO::PARAM_STR);
                 $update_stmt->execute();
 
                 $conn->commit();
-                error_log("Voucher status updated to 'terpakai'");
+                error_log("Voucher terpakai incremented to $terpakai_baru");
+                if ($terpakai_baru >= $kuota) {
+                    error_log("Voucher status updated to 'terpakai' (quota reached)");
+                }
             } catch (PDOException $e) {
                 $conn->rollBack();
-                error_log("Error updating voucher status: " . $e->getMessage());
+                error_log("Error updating voucher usage/quota: " . $e->getMessage());
                 throw $e;
             }
         }
